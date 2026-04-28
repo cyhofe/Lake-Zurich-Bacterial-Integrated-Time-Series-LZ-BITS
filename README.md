@@ -81,10 +81,7 @@ Together with the Zenodo data archive, this enables full reproducibility of the 
 **Adrian-Stefan Andrei**  
 📧 stefan.andrei@limnol.uzh.ch  
 
+**Cyrill Hofer**
+📧 cyrill.hofer@uzh.ch  
 ---
 
-## Citation
-
-If you use this work, please cite:
-
-> Hofer C. *et al.* Genome architecture predicts proteome allocation in natural bacterial communities.
