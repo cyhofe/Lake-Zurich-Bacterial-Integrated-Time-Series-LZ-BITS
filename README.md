@@ -81,7 +81,7 @@ Together with the Zenodo data archive, this enables full reproducibility of the 
 **Adrian-Stefan Andrei**  
 📧 stefan.andrei@limnol.uzh.ch  
 
-**Cyrill Hofer**
+**Cyrill Hofer**  
 📧 cyrill.hofer@uzh.ch  
 
 ---
