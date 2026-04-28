@@ -1,0 +1,570 @@
+---
+title: "Lake Profiles - SpringBloom2021"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+rm(list = ls())
+############################################################
+# 0) INITIAL SETUP FOR CLEAN SCRIPT EXECUTION
+# - Loads required packages
+# - Installs missing ones automatically
+# - Sets working directory and paths
+# - Ensures reproducibility
+############################################################
+
+# ---- 0.1 Package management ----
+required_packages <- c(
+  "tidyverse",   # dplyr, ggplot2, tidyr, readr, stringr
+  "lubridate",   # date handling
+  "readxl",      # Excel import
+  "scales",      # axis formatting
+  "metR"         # contour labeling
+)
+
+# Install missing packages
+installed <- rownames(installed.packages())
+for (pkg in required_packages) {
+  if (!pkg %in% installed) {
+    install.packages(pkg, dependencies = TRUE)
+  }
+}
+
+# Load libraries
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lubridate)
+  library(readxl)
+  library(scales)
+  library(metR)
+})
+
+# ---- 0.2 Reproducibility ----
+set.seed(123)  # ensures reproducibility where randomness might occur
+
+# ---- 0.3 Set working directory ----
+# IMPORTANT: adjust this path to your system
+data_dir <- "/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/LakeProfiles/LongTermLakeProfiles/"
+out_dir  <- data_dir
+
+setwd(data_dir)
+
+# ---- 0.4 Global options ----
+options(stringsAsFactors = FALSE)
+
+# Ensure consistent date labels (avoid German locale issues)
+Sys.setlocale("LC_TIME", "C")
+
+# ---- 0.5 Time windows (used throughout script) ----
+LONG_START  <- as.Date("2009-01-01")
+LONG_END    <- as.Date("2024-09-24")
+
+PANEL_START <- as.Date("2012-01-01")
+PANEL_END   <- as.Date("2021-12-31")
+
+############################################################
+# 1) LOAD INPUT DATASETS
+# - Reads all required input files
+# - Performs minimal sanity checks
+############################################################
+
+# ---- 1.1 File paths ----
+env_file  <- file.path(data_dir, "Data/ENV_VAR_FULL.csv")
+fc_file   <- file.path(data_dir, "Data/FC_FULL.csv")
+phos_file <- file.path(data_dir, "Data/Data_Phosphate.xlsx")
+
+# ---- 1.2 Check that files exist ----
+if (!file.exists(env_file))  stop("Missing file: ENV_VAR_FULL.csv")
+if (!file.exists(fc_file))   stop("Missing file: FC_FULL.csv")
+if (!file.exists(phos_file)) stop("Missing file: Data_Phosphate.xlsx")
+
+# ---- 1.3 Load data ----
+env_raw  <- readr::read_csv(env_file, show_col_types = FALSE)
+fc_data  <- readr::read_csv(fc_file, show_col_types = FALSE)
+phos_raw <- readxl::read_excel(phos_file)
+
+# ---- 1.4 Quick sanity check ----
+cat("ENV_VAR rows:", nrow(env_raw), "\n")
+cat("FC rows:", nrow(fc_data), "\n")
+cat("Phosphate rows:", nrow(phos_raw), "\n")
+
+# ---- 1.5 Optional: preview structure ----
+str(env_raw)
+str(fc_data)
+str(phos_raw)
+```
+
+```{r}
+############################################################
+# Reproduce yearly oxygen panel plot with 6 mg/L isoline
+#
+# ASSUMPTION:
+# - You have already run the setup/data-loading block
+# - Therefore `env_raw` already exists in memory
+#
+# OUTPUT:
+# - Plot object: Long_Term_Oxygen_Profiles
+# - Saved file: Long_Term_Oxygen_Profiles.pdf
+############################################################
+
+# -------------------------
+# 1) Helper functions needed for this plot
+# -------------------------
+
+# Robust numeric conversion
+as_num <- function(x) {
+  readr::parse_number(as.character(x), locale = readr::locale(decimal_mark = ","))
+}
+
+# Interpolate along depth for each sampling date
+interp_depth <- function(df, value_col, depth_max = 120, depth_step = 1) {
+  value_col <- rlang::ensym(value_col)
+  
+  df %>%
+    dplyr::group_by(date) %>%
+    dplyr::group_modify(~ {
+      sub <- .x %>%
+        dplyr::transmute(depth = depth, value = !!value_col) %>%
+        dplyr::filter(!is.na(depth), !is.na(value)) %>%
+        dplyr::arrange(depth)
+      
+      if (nrow(sub) < 2) {
+        return(tibble::tibble(
+          depth = numeric(0),
+          !!value_col := numeric(0)
+        ))
+      }
+      
+      depth_out <- seq(0, depth_max, by = depth_step)
+      
+      tibble::tibble(
+        depth = depth_out,
+        !!value_col := approx(
+          x = sub$depth,
+          y = sub$value,
+          xout = depth_out,
+          rule = 2
+        )$y
+      )
+    }) %>%
+    dplyr::ungroup()
+}
+
+# Interpolate through time to daily values for each depth
+interp_time_daily <- function(df, value_col, start_date, end_date) {
+  value_col <- rlang::ensym(value_col)
+  
+  df %>%
+    dplyr::filter(date >= start_date, date <= end_date) %>%
+    dplyr::group_by(depth) %>%
+    dplyr::group_modify(~ {
+      base <- .x %>%
+        dplyr::transmute(date = date, value = !!value_col) %>%
+        tidyr::complete(date = seq(start_date, end_date, by = "day")) %>%
+        dplyr::arrange(date)
+      
+      good <- !is.na(base$value)
+      
+      if (sum(good) >= 2) {
+        base$value <- approx(
+          x = as.numeric(base$date[good]),
+          y = base$value[good],
+          xout = as.numeric(base$date),
+          rule = 2
+        )$y
+      }
+      
+      tibble::tibble(
+        date  = base$date,
+        depth = unique(.x$depth)[1],
+        !!value_col := base$value
+      )
+    }) %>%
+    dplyr::ungroup()
+}
+
+# -------------------------
+# 2) Define time window
+# -------------------------
+PANEL_START <- as.Date("2012-01-01")
+PANEL_END   <- as.Date("2021-12-31")
+
+# -------------------------
+# 3) Clean oxygen data from env_raw
+# -------------------------
+env <- env_raw %>%
+  dplyr::mutate(
+    date  = as.Date(Day, format = "%m/%d/%Y"),
+    depth = as_num(Depth)
+  ) %>%
+  dplyr::filter(!is.na(date), !is.na(depth))
+
+# -------------------------
+# 4) Depth interpolation for oxygen
+# -------------------------
+oxy_depth <- interp_depth(env, Oxygen, depth_max = 120, depth_step = 1)
+
+# -------------------------
+# 5) Daily interpolation for yearly panels
+# -------------------------
+oxy_panel <- interp_time_daily(oxy_depth, Oxygen, PANEL_START, PANEL_END) %>%
+  dplyr::mutate(Year = lubridate::year(date))
+
+# -------------------------
+# 6) Build colour scale exactly as in original script
+# -------------------------
+oxygen_palette_long <- c(
+  "#deebf7", "#c6dbef", "#9ecae1",
+  "#6baed6", "#2171b5", "#08519c",
+  "#67000d", "#a50f15", "#cb181d", "#ef3b2c"
+)
+
+omin <- floor(min(oxy_panel$Oxygen, na.rm = TRUE) * 2) / 2
+omax <- ceiling(max(oxy_panel$Oxygen, na.rm = TRUE) * 2) / 2
+obreaks <- seq(omin, omax, by = 2.5)
+
+oxygen_palette_cont <- colorRampPalette(oxygen_palette_long)(256)
+
+# -------------------------
+# 7) Yearly summary labels at 120 m
+# -------------------------
+oxy_stats_120m <- oxy_panel %>%
+  dplyr::filter(depth == 120) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(
+    max120  = max(Oxygen, na.rm = TRUE),
+    mean120 = mean(Oxygen, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    label = sprintf("120 m\nmax = %.1f mg/L\nmean = %.1f mg/L", max120, mean120),
+    x = as.Date(paste0(Year, "-07-01")),
+    y = 110
+  )
+
+# -------------------------
+# 8) Common panel theme
+# -------------------------
+theme_panel <- ggplot2::theme_minimal() +
+  ggplot2::theme(
+    axis.text.x      = ggplot2::element_text(angle = 45, hjust = 1),
+    strip.background = ggplot2::element_rect(fill = "grey90", color = NA),
+    strip.text       = ggplot2::element_text(face = "bold"),
+    legend.position  = "right"
+  )
+
+# -------------------------
+# 9) Build final plot
+# -------------------------
+Long_Term_Oxygen_Profiles <- ggplot2::ggplot(oxy_panel, ggplot2::aes(x = date, y = depth)) +
+  ggplot2::geom_raster(ggplot2::aes(fill = Oxygen)) +
+  ggplot2::geom_contour(
+    ggplot2::aes(z = Oxygen),
+    binwidth  = 0.5,
+    colour    = "white",
+    alpha     = 0.4,
+    linewidth = 0.2
+  ) +
+  ggplot2::geom_contour(
+    ggplot2::aes(z = Oxygen),
+    breaks    = 6,
+    colour    = "black",
+    linewidth = 0.6
+  ) +
+  ggplot2::scale_fill_gradientn(
+    colours = oxygen_palette_cont,
+    limits  = c(omin, omax),
+    breaks  = obreaks,
+    labels  = scales::number_format(accuracy = 0.5, decimal.mark = "."),
+    name    = "Oxygen (mg/L)"
+  ) +
+  ggplot2::scale_y_reverse(expand = c(0, 0), breaks = seq(0, 120, 30)) +
+  ggplot2::geom_hline(yintercept = c(2, 8), color = "gray80") +
+  ggplot2::facet_wrap(~ Year, ncol = 5, scales = "free_x") +
+  ggplot2::scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b",
+    expand      = c(0, 0)
+  ) +
+  ggplot2::geom_text(
+    data = oxy_stats_120m,
+    ggplot2::aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    hjust = 0,
+    vjust = 1,
+    size = 3
+  ) +
+  theme_panel +
+  ggplot2::labs(
+    title = "Oxygen Profiles by Year (2012–2021)",
+    x     = "Month",
+    y     = "Depth (m)"
+  )
+
+# -------------------------
+# 10) Show plot
+# -------------------------
+Long_Term_Oxygen_Profiles
+
+# -------------------------
+# 11) Save plot with new filename
+# -------------------------
+ggplot2::ggsave(
+  filename = file.path(out_dir, "Long_Term_Oxygen_Profiles.png"),
+  plot     = Long_Term_Oxygen_Profiles,
+  width    = 13,
+  height   = 12,
+  units    = "in",
+  device   = "png"
+)
+```
+```{r}
+############################################################
+# FINAL ORTHOPHOSPHATE YEARLY PANEL PLOT
+# - restricted strictly to 0-120 m
+# - depth + time interpolation
+# - reduced background isolines
+# - 10 isoline: thin grey
+# - 60 isoline: thicker black
+# - greener palette
+# - 120 m yearly max and mean labels
+#
+# ASSUMPTION:
+# - phos_raw already exists in memory
+# - out_dir already exists
+############################################################
+
+# -------------------------
+# 1) Depth interpolation per date
+# strictly restricted to 0-120 m
+# -------------------------
+interp_depth_phos <- function(df, depth_max = 120, depth_step = 1) {
+  df %>%
+    dplyr::group_by(date) %>%
+    dplyr::group_modify(~ {
+      sub <- .x %>%
+        dplyr::select(depth, phos) %>%
+        dplyr::filter(!is.na(depth), !is.na(phos), depth >= 0, depth <= depth_max) %>%
+        dplyr::group_by(depth) %>%
+        dplyr::summarise(phos = mean(phos), .groups = "drop") %>%
+        dplyr::arrange(depth)
+
+      if (nrow(sub) < 2) {
+        return(tibble::tibble(depth = numeric(0), phos = numeric(0)))
+      }
+
+      depth_out <- seq(0, depth_max, by = depth_step)
+
+      tibble::tibble(
+        depth = depth_out,
+        phos = stats::approx(
+          x = sub$depth,
+          y = sub$phos,
+          xout = depth_out,
+          rule = 2
+        )$y
+      )
+    }) %>%
+    dplyr::ungroup()
+}
+
+# -------------------------
+# 2) Time interpolation per depth
+# -------------------------
+interp_time_daily <- function(df, value_col, start_date, end_date) {
+  value_col <- rlang::ensym(value_col)
+
+  df %>%
+    dplyr::filter(date >= start_date, date <= end_date) %>%
+    dplyr::group_by(depth) %>%
+    dplyr::group_modify(~ {
+      base <- .x %>%
+        dplyr::transmute(date = as.Date(date), value = !!value_col) %>%
+        tidyr::complete(date = seq(start_date, end_date, by = "day")) %>%
+        dplyr::arrange(date)
+
+      good <- !is.na(base$value)
+
+      if (sum(good) >= 2) {
+        base$value <- stats::approx(
+          x = as.numeric(base$date[good]),
+          y = base$value[good],
+          xout = as.numeric(base$date),
+          rule = 2
+        )$y
+      }
+
+      tibble::tibble(
+        date  = base$date,
+        depth = unique(.x$depth)[1],
+        !!value_col := base$value
+      )
+    }) %>%
+    dplyr::ungroup()
+}
+
+# -------------------------
+# 3) Time window
+# -------------------------
+PANEL_START <- as.Date("2012-01-01")
+PANEL_END   <- as.Date("2021-12-31")
+
+# -------------------------
+# 4) Clean input data
+# strictly keep 0-120 m only
+# -------------------------
+phos_data <- phos_raw %>%
+  dplyr::mutate(
+    date  = as.Date(date),
+    depth = as.numeric(depth),
+    phos  = as.numeric(phos)
+  ) %>%
+  dplyr::filter(!is.na(date), !is.na(depth), !is.na(phos), depth >= 0, depth <= 120)
+
+# -------------------------
+# 5) Depth interpolation
+# -------------------------
+phos_interp <- interp_depth_phos(phos_data, depth_max = 120, depth_step = 1) %>%
+  dplyr::filter(depth <= 120)
+
+# -------------------------
+# 6) Time interpolation
+# -------------------------
+phos_panel <- interp_time_daily(phos_interp, phos, PANEL_START, PANEL_END) %>%
+  dplyr::filter(depth <= 120) %>%
+  dplyr::mutate(Year = lubridate::year(date))
+
+# -------------------------
+# 7) 120 m yearly summary labels
+# bottom-aligned
+# -------------------------
+phos_stats_120m <- phos_panel %>%
+  dplyr::filter(depth == 120) %>%
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(
+    max120  = max(phos, na.rm = TRUE),
+    mean120 = mean(phos, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    label = sprintf("120 m\nmax = %.1f µg/L\nmean = %.1f µg/L", max120, mean120),
+    x = as.Date(paste0(Year, "-07-01")),
+    y = 120
+  )
+
+# -------------------------
+# 8) Green palette
+# less white, darker highs
+# -------------------------
+phos_limits <- c(0, 200)
+phos_breaks <- c(0, 50, 100, 150, 200)
+
+phos_green_base <- c(
+  "#eef7ee",
+  "#d9f0d3",
+  "#b8e3b2",
+  "#8fd08a",
+  "#5cb85c",
+  "#2f8f46",
+  "#0f6b2a",
+  "#00441b"
+)
+
+phos_palette_cont <- grDevices::colorRampPalette(phos_green_base)(256)
+
+# -------------------------
+# 9) Theme matching oxygen plot
+# -------------------------
+theme_panel <- ggplot2::theme_minimal() +
+  ggplot2::theme(
+    axis.text.x      = ggplot2::element_text(angle = 45, hjust = 1),
+    strip.background = ggplot2::element_rect(fill = "grey90", color = NA),
+    strip.text       = ggplot2::element_text(face = "bold"),
+    legend.position  = "right"
+  )
+
+# -------------------------
+# 10) Final plot
+# -------------------------
+Long_Term_Orthophosphate_Profiles <- ggplot2::ggplot(
+  phos_panel,
+  ggplot2::aes(x = date, y = depth)
+) +
+  ggplot2::geom_tile(
+    ggplot2::aes(fill = phos),
+    width = 1,
+    height = 1
+  ) +
+  ggplot2::geom_contour(
+    ggplot2::aes(z = phos),
+    binwidth  = 5,
+    colour    = "white",
+    alpha     = 0.15,
+    linewidth = 0.15
+  ) +
+  ggplot2::geom_contour(
+    ggplot2::aes(z = phos),
+    breaks    = 10,
+    colour    = "grey40",
+    linewidth = 0.25
+  ) +
+  ggplot2::geom_contour(
+    ggplot2::aes(z = phos),
+    breaks    = 60,
+    colour    = "black",
+    linewidth = 0.7
+  ) +
+  ggplot2::scale_fill_gradientn(
+    colours = phos_palette_cont,
+    limits  = phos_limits,
+    breaks  = phos_breaks,
+    labels  = scales::number_format(accuracy = 1),
+    name    = expression("Orthophosphate ["*mu*"g P L"^{-1}*"]")
+  ) +
+  ggplot2::scale_y_reverse(
+    limits = c(120, 0),
+    breaks = seq(0, 120, 30),
+    expand = c(0, 0)
+  ) +
+  ggplot2::geom_hline(yintercept = c(2, 8), color = "gray80") +
+  ggplot2::facet_wrap(~ Year, ncol = 5, scales = "free_x") +
+  ggplot2::scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b",
+    expand      = c(0, 0)
+  ) +
+  ggplot2::geom_text(
+    data = phos_stats_120m,
+    ggplot2::aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    hjust = 0,
+    vjust = 0,
+    size = 3
+  ) +
+  theme_panel +
+  ggplot2::labs(
+    title = "Orthophosphate Profiles by Year (2012–2021)",
+    x     = "Month",
+    y     = "Depth (m)"
+  )
+
+# -------------------------
+# 11) Show plot
+# -------------------------
+Long_Term_Orthophosphate_Profiles
+
+# -------------------------
+# 12) Save plot
+# -------------------------
+ggplot2::ggsave(
+  filename = file.path(out_dir, "Long_Term_Orthophosphate_Profiles.png"),
+  plot     = Long_Term_Orthophosphate_Profiles,
+  width    = 13,
+  height   = 12,
+  units    = "in",
+  device = png
+)
+```
+

@@ -1,0 +1,281 @@
+---
+title: Protein Database Description
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_02/PeptidesProteinsRecovered/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+# Load the color palette (optional, keep if you want)
+source("ColorPalette.R")
+
+# ----------------------------------------------------------------------
+# Load the NEW data (this replaces PeptideProteinDistribution.csv)
+# ----------------------------------------------------------------------
+dat <- read_csv("PeptideProteinDistribution_withResolution.csv", show_col_types = FALSE)
+```
+
+# publication
+```{r}
+# ----------------------------------------------------------------------
+# 1) Recode & order Stage (same as your script)
+# ----------------------------------------------------------------------
+dat <- dat %>%
+  mutate(
+    Stage = recode(Stage,
+      Raw      = "Unfiltered",
+      `Q<1%`   = "1% Peptide FDR",
+      `All<1%` = "1% Protein FDR",
+      `2+ pep` = ">2 Peptides Per Protein"
+    ),
+    Stage = factor(Stage, levels = c(
+      "Unfiltered",
+      "1% Peptide FDR",
+      "1% Protein FDR",
+      ">2 Peptides Per Protein"
+    ))
+  ) %>%
+  filter(Stage != "Unfiltered")
+
+# ----------------------------------------------------------------------
+# 2) Panel A+B (unchanged): Proteotypic vs Non-proteotypic
+# ----------------------------------------------------------------------
+bar_data_proteotypic <- bind_rows(
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Proteotypic",     Count = ProteotypicPeptides),
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Non-proteotypic", Count = Peptides - ProteotypicPeptides),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Proteotypic",     Count = ProteotypicProteins),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Non-proteotypic", Count = Proteins - ProteotypicProteins)
+)
+
+# ----------------------------------------------------------------------
+# 3) NEW Panel C+D: Species-specific vs Not species-specific
+#    (Requires columns from new file)
+#    - SpeciesSpecificPeptides
+#    - SpeciesSpecificProteinGroups  (or SpeciesSpecificProteins depending on your export)
+# ----------------------------------------------------------------------
+
+# Some earlier versions of the script used "SpeciesSpecificProteins".
+# This makes your plotting robust to either naming.
+if (!"SpeciesSpecificProteinGroups" %in% names(dat) && "SpeciesSpecificProteins" %in% names(dat)) {
+  dat <- dat %>% rename(SpeciesSpecificProteinGroups = SpeciesSpecificProteins)
+}
+
+bar_data_specificity <- bind_rows(
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Species-specific",     Count = SpeciesSpecificPeptides),
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Not species-specific", Count = Peptides - SpeciesSpecificPeptides),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Species-specific",     Count = SpeciesSpecificProteinGroups),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Not species-specific", Count = Proteins - SpeciesSpecificProteinGroups)
+)
+
+# ----------------------------------------------------------------------
+# 4) Colors
+# ----------------------------------------------------------------------
+fill_cols_proteotypic <- c(
+  "Proteotypic"     = "#1f77b4",
+  "Non-proteotypic" = "#ff7f0e"
+)
+
+fill_cols_specificity <- c(
+  "Species-specific"      = "#2ca02c",
+  "Not species-specific"  = "#7f7f7f"
+)
+
+# ----------------------------------------------------------------------
+# 5) Helper to build each panel
+# ----------------------------------------------------------------------
+make_panel <- function(df, metric, breaks, limits, fill_cols) {
+  ggplot(filter(df, Metric == metric), aes(Stage, Count, fill = Category)) +
+    geom_col(color = "black", linewidth = 0.2) +
+    scale_y_continuous(breaks = breaks, limits = limits, labels = comma) +
+    labs(title = NULL, x = NULL, y = "Count") +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x  = element_text(angle = 45, hjust = 1, face = "bold"),
+      axis.title.y = element_blank(),
+      legend.title = element_blank()
+    ) +
+    scale_fill_manual(values = fill_cols)
+}
+
+# ----------------------------------------------------------------------
+# 6) Make panels (adjust limits if your counts differ)
+# ----------------------------------------------------------------------
+# Proteotypic panels (original)
+p_pep_prot <- make_panel(bar_data_proteotypic, "Peptides", seq(0, 90000, 10000), c(0, 95000), fill_cols_proteotypic)
+p_prt_prot <- make_panel(bar_data_proteotypic, "Proteins", seq(0, 40000,  5000), c(0, 40000), fill_cols_proteotypic)
+
+# Specificity panels (new)
+p_pep_spec <- make_panel(bar_data_specificity, "Peptides", seq(0, 90000, 10000), c(0, 95000), fill_cols_specificity)
+p_prt_spec <- make_panel(bar_data_specificity, "Proteins", seq(0, 40000,  5000), c(0, 40000), fill_cols_specificity)
+
+# ----------------------------------------------------------------------
+# 7) Combine into one figure (4 panels, 2 legends)
+# ----------------------------------------------------------------------
+p <- (p_pep_prot + p_prt_prot) / (p_pep_spec + p_prt_spec) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+print(p)
+```
+```{r}
+# 1) Recode & order Stage (same as before)
+dat <- dat %>%
+  mutate(
+    Stage = recode(Stage,
+      Raw      = "Unfiltered",
+      `Q<1%`   = "1% Peptide FDR",
+      `All<1%` = "1% Protein FDR",
+      `2+ pep` = ">2 Peptides Per Protein"
+    ),
+    Stage = factor(Stage, levels = c(
+      "Unfiltered",
+      "1% Peptide FDR",
+      "1% Protein FDR",
+      ">2 Peptides Per Protein"
+    ))
+  ) %>%
+  filter(Stage != "Unfiltered")
+
+# 2) Long-form table: species-specific vs not
+bar_data <- bind_rows(
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Species-specific",     Count = SpeciesSpecificPeptides),
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Not species-specific", Count = Peptides - SpeciesSpecificPeptides),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Species-specific",     Count = SpeciesSpecificProteinGroups),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Not species-specific", Count = Proteins - SpeciesSpecificProteinGroups)
+)
+
+# 3) Colors
+fill_cols <- c(
+  "Species-specific"     = "#2ca02c",
+  "Not species-specific" = "#7f7f7f"
+)
+
+# 4) Helper to build each panel
+make_panel <- function(metric, breaks, limits) {
+  df <- filter(bar_data, Metric == metric)
+
+  ggplot(df, aes(Stage, Count, fill = Category)) +
+    geom_col(color = "black", linewidth = 0.2) +
+    scale_y_continuous(breaks = breaks, limits = limits, labels = comma) +
+    labs(title = NULL, x = NULL, y = "Count") +
+    scale_fill_manual(values = fill_cols) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x  = element_text(angle = 45, hjust = 1, face = "bold"),
+      axis.title.y = element_blank(),
+      legend.title = element_blank()
+    )
+}
+
+# 5) Create panels
+p_pep <- make_panel("Peptides", seq(0, 90000, 10000), c(0, 95000))
+p_prt <- make_panel("Proteins", seq(0, 40000,  5000), c(0, 40000))
+
+# 6) Combine and save
+p <- (p_pep + p_prt) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+print(p)
+
+ggsave(
+  filename = "SpeciesSpecificity_Peptides_Proteins.pdf",
+  plot     = p,
+  width    = 12,
+  height   = 20,
+  units    = "cm",
+  device   = pdf,
+  dpi      = 300
+)
+
+```
+
+## Species-specificity assignment for proteins and peptides
+
+### Protein group specificity
+
+Species specificity of protein identifications was assessed at the level of DIA-NN protein groups using a genome-resolved taxonomy reference.
+
+- Protein groups reported by DIA-NN consist of one or multiple protein identifiers; multi-protein groups are represented as semicolon-separated lists.
+- Each protein identifier encodes a species identifier as the prefix preceding the first hyphen.
+- Species identifiers were mapped to a curated taxonomy table containing phylum, class, order, family, genus, and species assignments.
+- For each protein group, all member proteins were compared across taxonomic ranks to determine the highest possible taxonomic resolution shared by **all** group members.
+- Protein groups were assigned a single taxonomic resolution according to the following hierarchical logic:
+  - **Species-resolved**: all group members belong to the same species.
+  - **Genus-resolved**: group members differ at species level but share the same genus.
+  - **Family-resolved**, **order-resolved**, **class-resolved**, or **phylum-resolved**: defined analogously.
+  - **No match**: assigned if any group member lacked a valid taxonomy annotation or if no common taxonomic rank was shared.
+- Protein groups classified as species-resolved were defined as **species-specific protein groups**.
+- This approach provides a conservative estimate of taxonomic specificity by requiring complete agreement among all proteins within a group.
+
+---
+
+### Peptide specificity
+
+Peptide-level specificity was derived directly from protein-group specificity assignments.
+
+- Each unique peptide sequence (stripped sequence, without modifications) was associated with one or more protein groups as reported by DIA-NN.
+- For each peptide, the taxonomic resolutions of all associated protein groups were collected.
+- Peptide specificity was assigned conservatively as the **least specific** (highest-level) taxonomic resolution among its associated protein groups.
+  - For example, a peptide mapping to both species-resolved and genus-resolved protein groups was classified as genus-resolved.
+- Peptides were defined as **species-specific** only if all associated protein groups were species-resolved.
+- This conservative propagation ensures that peptides are considered species-specific only when unambiguous taxonomic attribution is supported across all protein-group mappings.
+
+```{r}
+# ----------------------------------------------------------------------
+# Summary table: species-specific vs non species-specific
+# ----------------------------------------------------------------------
+
+summary_table <- bind_rows(
+  dat %>%
+    transmute(
+      Stage,
+      Metric = "Peptides",
+      Total = Peptides,
+      Species_Specific = SpeciesSpecificPeptides
+    ),
+  dat %>%
+    transmute(
+      Stage,
+      Metric = "Proteins",
+      Total = Proteins,
+      Species_Specific = SpeciesSpecificProteinGroups
+    )
+) %>%
+  mutate(
+    Not_Species_Specific = Total - Species_Specific,
+    Fraction_Species_Specific = Species_Specific / Total
+  ) %>%
+  arrange(Metric, Stage)
+summary_table
+```
+

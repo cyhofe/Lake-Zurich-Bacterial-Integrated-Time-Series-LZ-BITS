@@ -1,0 +1,3303 @@
+---
+title: "Rhodopsin Expression Analysis"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+# Reproducibility
+set.seed(1)
+
+############################################################
+# 0) Clear R "brain" + libraries
+############################################################
+rm(list = ls())
+gc()
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(lubridate)
+  library(tibble)   # for glimpse()
+  library(ggplot2)
+})
+
+############################################################
+# 1) Set working directory (analysis folder)
+############################################################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_05/")
+
+############################################################
+# 2) Load exported analysis tables (from the preparation script)
+############################################################
+
+species_meta      <- readr::read_csv("../Figure_03/LakeOverview/Species_Meta_Table.csv", show_col_types = FALSE)
+species_abundance <- readr::read_csv("../Figure_03/LakeOverview/Species_Abundance_Table.csv", show_col_types = FALSE)
+gene_table        <- readr::read_csv("../Figure_03/LakeOverview/Species_Gene_Table.csv", show_col_types = FALSE)
+protein_table     <- readr::read_csv("../Figure_03/LakeOverview/Species_Protein_Table.csv", show_col_types = FALSE)
+
+############################################################
+# 3) Quick look
+############################################################
+glimpse(species_meta)
+glimpse(species_abundance)
+glimpse(gene_table)
+glimpse(protein_table)
+
+############################################################
+# 4) Ensure Date columns are Date class (robust to CSV parsing)
+############################################################
+if ("Date" %in% names(species_abundance)) {
+  species_abundance <- species_abundance %>% mutate(Date = as.Date(Date))
+}
+if ("Date" %in% names(protein_table)) {
+  protein_table <- protein_table %>% mutate(Date = as.Date(Date))
+}
+```
+
+
+# fetch rhodopsins
+```{r}
+# Rhodopsin KEGG Orthologs of interest
+rhodo_kos <- c("K04643", "K04641")
+
+# ------------------------------------------------------------------------------
+# 1) Keep only species that encode at least one rhodopsin KO (GENE TABLE)
+#    - This retains ALL rows for those species (not only the rhodopsin rows).
+# ------------------------------------------------------------------------------
+gene_table_rhodopsin <- gene_table %>%
+  group_by(Species_ID) %>%
+  filter(any(KEGG_ID %in% rhodo_kos, na.rm = TRUE)) %>%
+  ungroup()
+
+# Species universe that is rhodopsin-positive in genes
+rhodo_species <- gene_table_rhodopsin %>%
+  distinct(Species_ID)
+
+# ------------------------------------------------------------------------------
+# 2) Add KEGG info to protein_table and keep only species with rhodopsin KOs
+#    - left_join keeps all protein rows and adds KEGG columns where available
+#    - then we filter species-level (keep all protein rows for species that have
+#      at least one rhodopsin KO mapped somewhere)
+# ------------------------------------------------------------------------------
+protein_table_rhodopsin <- protein_table %>%
+  left_join(
+    gene_table %>% select(Protein_ID, KEGG_ID, KEGG_Annotation),
+    by = "Protein_ID"
+  ) %>%
+  group_by(Species_ID) %>%
+  filter(any(KEGG_ID %in% rhodo_kos, na.rm = TRUE)) %>%
+  ungroup()
+
+# ------------------------------------------------------------------------------
+# 3) Filter other tables to the same rhodopsin-positive species set (from genes)
+# ------------------------------------------------------------------------------
+species_meta_rhodopsin <- species_meta %>%
+  filter(Species_ID %in% rhodo_species$Species_ID)
+
+species_abundance_rhodopsin <- species_abundance %>%
+  filter(Species_ID %in% rhodo_species$Species_ID)
+
+# ------------------------------------------------------------------------------
+# 4) Overview: How many rhodopsin-positive species per TrophicGroup?
+#    - "Genes": species that encode rhodopsin KOs (from gene_table_rhodopsin)
+#    - "Proteins": species with rhodopsin KOs detected in proteomics
+#      (from protein_table_rhodopsin)
+#    IMPORTANT: We count unique species per trophic group (not rows).
+# ------------------------------------------------------------------------------
+gene_counts <- gene_table_rhodopsin %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(Source = "Genes (encode rhodopsin)")
+
+protein_counts <- protein_table_rhodopsin %>%
+  distinct(Species_ID, Group_For_Plots) %>%   # removes multiple dates / proteins
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(Source = "Proteins (detect rhodopsin)")
+
+overview_counts <- bind_rows(gene_counts, protein_counts) %>%
+  # optional: make missing trophic group explicit
+  mutate(Group_For_Plots = if_else(is.na(Group_For_Plots), "Unknown", Group_For_Plots))
+
+# ------------------------------------------------------------------------------
+# 5) Plot (side-by-side bars per trophic group)
+# ------------------------------------------------------------------------------
+ggplot(overview_counts, aes(x = Group_For_Plots, y = n_species, fill = Source)) +
+  geom_col(
+    position = position_dodge(width = 0.8),
+    width = 0.7
+  ) +
+  geom_text(
+    aes(label = n_species),
+    position = position_dodge(width = 0.8),
+    vjust = -0.3,
+    size = 3
+  ) +
+  labs(
+    title = "Rhodopsin-positive species per trophic group",
+    x = "Trophic group",
+    y = "Number of species"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+
+
+# ------------------------------------------------------------------------------
+# 6) Export rhodopsin-filtered tables to disk
+#    (written to the current working directory)
+# ------------------------------------------------------------------------------
+
+readr::write_csv(
+  gene_table_rhodopsin,
+  "Gene_Table_Rhodopsin.csv"
+)
+
+readr::write_csv(
+  protein_table_rhodopsin,
+  "Protein_Table_Rhodopsin.csv"
+)
+
+readr::write_csv(
+  species_meta_rhodopsin,
+  "Species_Meta_Table_Rhodopsin.csv"
+)
+
+readr::write_csv(
+  species_abundance_rhodopsin,
+  "Species_Abundance_Table_Rhodopsin.csv"
+)
+
+glimpse(gene_table_rhodopsin)
+glimpse(protein_table_rhodopsin)
+glimpse(species_meta_rhodopsin)
+glimpse(species_abundance_rhodopsin)
+
+```
+
+# how many species have rhodopsins expressed and how abundant are they ? 
+```{r}
+############################################################
+# RHODOPSIN MULTIPANEL FIGURE
+# FINAL REFACTORED VERSION
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+############################################################
+# 1) DEFINE RHODOPSIN SPECIES SETS
+############################################################
+
+rhodo_gene_species <- gene_table %>%
+  filter(KEGG_ID %in% rhodo_kos) %>%
+  distinct(Species_ID) %>%
+  mutate(has_rhodo_gene = TRUE)
+
+rhodo_detected_species <- protein_table %>%
+  left_join(
+    gene_table %>%
+      select(Protein_ID, KEGG_ID) %>%
+      distinct(),
+    by = "Protein_ID"
+  ) %>%
+  filter(KEGG_ID %in% rhodo_kos) %>%
+  distinct(Species_ID) %>%
+  mutate(has_rhodo_detected = TRUE)
+
+############################################################
+# 2) BUILD MASTER SPECIES TABLE
+############################################################
+
+species_status <- species_meta %>%
+  select(Species_ID, Group_For_Plots) %>%
+  left_join(rhodo_gene_species, by = "Species_ID") %>%
+  left_join(rhodo_detected_species, by = "Species_ID") %>%
+  mutate(
+    has_rhodo_gene     = ifelse(is.na(has_rhodo_gene), FALSE, has_rhodo_gene),
+    has_rhodo_detected = ifelse(is.na(has_rhodo_detected), FALSE, has_rhodo_detected),
+
+    genome_class = case_when(
+      has_rhodo_gene & Group_For_Plots == "Oligo_like" ~ "Oligo-like",
+      has_rhodo_gene                                   ~ "Rest",
+      TRUE                                             ~ "Non-rhodopsin"
+    ),
+
+    detect_class = case_when(
+      has_rhodo_gene & has_rhodo_detected & Group_For_Plots == "Oligo_like" ~ "Oligo-like",
+      has_rhodo_gene & has_rhodo_detected                                   ~ "Rest",
+      has_rhodo_gene & !has_rhodo_detected                                  ~ "Not detected",
+      TRUE                                                                  ~ NA_character_
+    ),
+
+    point_class = case_when(
+      has_rhodo_gene & has_rhodo_detected & Group_For_Plots == "Oligo_like" ~ "Oligo-like",
+      has_rhodo_gene & has_rhodo_detected                                   ~ "Rest",
+      has_rhodo_gene & !has_rhodo_detected                                  ~ "Not detected",
+      TRUE                                                                  ~ NA_character_
+    )
+  )
+
+############################################################
+# 3) CALCULATE MEAN RELATIVE ABUNDANCE PER SPECIES
+############################################################
+
+species_rel_abundance <- species_abundance %>%
+  group_by(Date) %>%
+  mutate(
+    rel_abundance = Species_Abundance / sum(Species_Abundance, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  group_by(Species_ID) %>%
+  summarise(
+    mean_rel_abundance = mean(rel_abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+############################################################
+# 4) PANEL A DATA
+# IMPORTANT:
+# ggplot stacks in reverse of factor order for fill,
+# so to get Oligo-like on TOP we use:
+# levels = c("Oligo-like", "Rest", "Non-rhodopsin")
+############################################################
+
+panelA_data <- species_status %>%
+  count(genome_class, name = "n") %>%
+  complete(
+    genome_class = c("Oligo-like", "Rest", "Non-rhodopsin"),
+    fill = list(n = 0)
+  ) %>%
+  mutate(
+    genome_class = factor(
+      genome_class,
+      levels = c("Oligo-like", "Rest", "Non-rhodopsin")
+    ),
+    prop = n / sum(n)
+  )
+
+############################################################
+# 5) PANEL B DATA
+# To get Not detected on BOTTOM and Oligo-like on TOP:
+# levels = c("Oligo-like", "Rest", "Not detected")
+############################################################
+
+panelB_data <- species_status %>%
+  filter(has_rhodo_gene) %>%
+  count(detect_class, name = "n") %>%
+  complete(
+    detect_class = c("Oligo-like", "Rest", "Not detected"),
+    fill = list(n = 0)
+  ) %>%
+  mutate(
+    detect_class = factor(
+      detect_class,
+      levels = c("Oligo-like", "Rest", "Not detected")
+    ),
+    prop = n / sum(n)
+  )
+
+############################################################
+# 6) PANEL C DATA
+############################################################
+
+panelC_data <- species_status %>%
+  filter(has_rhodo_gene) %>%
+  left_join(species_rel_abundance, by = "Species_ID") %>%
+  mutate(
+    mean_rel_abundance = ifelse(is.na(mean_rel_abundance), 0, mean_rel_abundance),
+    detect_binary = ifelse(has_rhodo_detected, "Detected", "Not detected"),
+    detect_binary = factor(detect_binary, levels = c("Detected", "Not detected")),
+    point_class = case_when(
+      has_rhodo_detected & Group_For_Plots == "Oligo_like" ~ "Oligo-like",
+      has_rhodo_detected ~ "Rest",
+      TRUE ~ "Not detected"
+    ),
+    point_class = factor(point_class, levels = c("Oligo-like", "Rest", "Not detected"))
+  ) %>%
+  filter(mean_rel_abundance > 0)
+
+############################################################
+# 7) STATISTICS
+############################################################
+
+wilcox_res <- wilcox.test(
+  mean_rel_abundance ~ detect_binary,
+  data = panelC_data,
+  exact = FALSE
+)
+
+p_val <- wilcox_res$p.value
+
+sig_label <- dplyr::case_when(
+  is.na(p_val)    ~ "ns",
+  p_val < 1e-4    ~ "****",
+  p_val < 1e-3    ~ "***",
+  p_val < 1e-2    ~ "**",
+  p_val < 5e-2    ~ "*",
+  TRUE            ~ "ns"
+)
+
+############################################################
+# 8) COLORS AND THEME
+############################################################
+
+fill_values <- c(
+  "Oligo-like"    = "#9ecae1",
+  "Rest"          = "#4d4d4d",
+  "Non-rhodopsin" = "#bdbdbd",
+  "Not detected"  = "#f0ad6b"
+)
+
+base_theme <- theme_bw(base_size = 12) +
+  theme(
+    plot.title      = element_text(face = "bold", size = 13),
+    axis.title      = element_text(size = 12),
+    axis.text       = element_text(size = 11),
+    legend.title    = element_blank(),
+    legend.position = "bottom",
+    legend.box      = "horizontal",
+    legend.text     = element_text(size = 10),
+    plot.margin     = margin(6, 8, 6, 8)
+  )
+
+############################################################
+# 9) PANEL A
+############################################################
+
+pA <- ggplot(
+  panelA_data,
+  aes(x = "Genome prevalence", y = prop, fill = genome_class)
+) +
+  geom_col(width = 0.72, colour = "black", linewidth = 0.35) +
+  geom_text(
+    aes(label = ifelse(n > 0, n, "")),
+    position = position_stack(vjust = 0.5),
+    colour = "white",
+    fontface = "bold",
+    size = 3.6
+  ) +
+  scale_fill_manual(
+    values = fill_values,
+    breaks = c("Oligo-like", "Rest", "Non-rhodopsin")
+  ) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    limits = c(0, 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Species (%)",
+    title = "A. Genome prevalence"
+  ) +
+  base_theme +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+############################################################
+# 10) PANEL B
+############################################################
+
+pB <- ggplot(
+  panelB_data,
+  aes(x = "Expression prevalence", y = prop, fill = detect_class)
+) +
+  geom_col(width = 0.72, colour = "black", linewidth = 0.35) +
+  geom_text(
+    aes(label = ifelse(n > 0, n, "")),
+    position = position_stack(vjust = 0.5),
+    colour = "white",
+    fontface = "bold",
+    size = 3.6
+  ) +
+  scale_fill_manual(
+    values = fill_values,
+    breaks = c("Oligo-like", "Rest", "Not detected")
+  ) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    limits = c(0, 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = "B. Expression prevalence"
+  ) +
+  base_theme +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.line.y  = element_blank()
+  )
+
+############################################################
+# 11) PANEL C
+############################################################
+
+y_max_C   <- max(panelC_data$mean_rel_abundance, na.rm = TRUE)
+y_bracket <- y_max_C * 1.8
+y_star    <- y_max_C * 2.15
+
+pC <- ggplot(
+  panelC_data,
+  aes(x = detect_binary, y = mean_rel_abundance)
+) +
+  geom_boxplot(
+    aes(group = detect_binary),
+    width = 0.5,
+    outlier.shape = NA,
+    fill = "white",
+    colour = "black",
+    linewidth = 0.45
+  ) +
+  geom_jitter(
+    aes(color = point_class),
+    width = 0.23,
+    size = 5,
+    alpha = 0.75
+  ) +
+  annotate("segment", x = 1, xend = 2, y = y_bracket, yend = y_bracket, linewidth = 0.4) +
+  annotate("segment", x = 1, xend = 1, y = y_bracket / 1.15, yend = y_bracket, linewidth = 0.4) +
+  annotate("segment", x = 2, xend = 2, y = y_bracket / 1.15, yend = y_bracket, linewidth = 0.4) +
+  annotate(
+    "text",
+    x = 1.5,
+    y = y_star,
+    label = sig_label,
+    size = 5.5,
+    fontface = "bold"
+  ) +
+   scale_color_manual(
+    limits = c("Oligo-like", "Rest", "Not detected"),
+    values = c("#9ecae1", "#4d4d4d", "#f0ad6b"),
+    drop = FALSE
+  ) +
+  scale_y_log10(
+    labels = function(x) paste0(scales::number(x * 100, accuracy = 0.01), "%")
+  ) +
+  labs(
+    x = NULL,
+    y = "Mean relative abundance (%)",
+    color = NULL,
+    title = "C. Detected carriers are more abundant"
+  ) +
+  base_theme
+
+############################################################
+# 12) COMBINE
+############################################################
+
+p_final <- (pA | pB | pC) +
+  plot_layout(widths = c(1, 1, 1.35), guides = "collect") &
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal"
+  )
+
+print(p_final)
+
+ggsave(
+  filename = "Rhodopsin_Multipanel_OneRow_Refactored.pdf",
+  plot = p_final,
+  width = 9,
+  height = 9,
+  device = pdf,
+  bg = "white"
+)
+
+############################################################
+# 13) OPTIONAL CONSOLE OUTPUT
+############################################################
+
+cat("\n========================================\n")
+cat("Rhodopsin multipanel figure exported\n")
+cat("File: Rhodopsin_Multipanel_OneRow_Refactored.pdf\n")
+cat("========================================\n\n")
+
+cat("Panel C Wilcoxon test:\n")
+print(wilcox_res)
+
+cat("\nPanel C significance label:\n")
+cat(sig_label, "\n")
+
+############################################################
+# 14) EXPORT SUMMARY TABLES AND STATS REPORT
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(readr)
+})
+
+############################################################
+# A) PANEL A SUMMARY
+#    Genome prevalence among all species
+############################################################
+
+panelA_summary <- panelA_data %>%
+  transmute(
+    panel = "A_genome_prevalence",
+    category = as.character(genome_class),
+    n_species = n,
+    proportion = prop
+  )
+
+############################################################
+# B) PANEL B SUMMARY
+#    Expression prevalence among rhodopsin-genome species
+############################################################
+
+panelB_summary <- panelB_data %>%
+  transmute(
+    panel = "B_expression_prevalence",
+    category = as.character(detect_class),
+    n_species = n,
+    proportion = prop
+  )
+
+############################################################
+# C) PANEL C SUMMARY
+#    Mean relative abundance statistics by detection group
+############################################################
+
+panelC_summary_full <- panelC_data %>%
+  group_by(detect_binary) %>%
+  summarise(
+    n_species = n(),
+    min = min(mean_rel_abundance, na.rm = TRUE),
+    q1 = quantile(mean_rel_abundance, 0.25, na.rm = TRUE),
+    median = median(mean_rel_abundance, na.rm = TRUE),
+    mean = mean(mean_rel_abundance, na.rm = TRUE),
+    q3 = quantile(mean_rel_abundance, 0.75, na.rm = TRUE),
+    max = max(mean_rel_abundance, na.rm = TRUE),
+    sd = sd(mean_rel_abundance, na.rm = TRUE),
+    iqr = IQR(mean_rel_abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    panel = "C_mean_relative_abundance"
+  ) %>%
+  select(
+    panel, detect_binary, n_species,
+    min, q1, median, mean, q3, max, sd, iqr
+  )
+
+############################################################
+# D) PANEL C SUMMARY BY POINT CLASS
+#    Optional: Oligo-like / Rest / Not detected
+############################################################
+
+panelC_pointclass_summary <- panelC_data %>%
+  group_by(point_class) %>%
+  summarise(
+    n_species = n(),
+    min = min(mean_rel_abundance, na.rm = TRUE),
+    q1 = quantile(mean_rel_abundance, 0.25, na.rm = TRUE),
+    median = median(mean_rel_abundance, na.rm = TRUE),
+    mean = mean(mean_rel_abundance, na.rm = TRUE),
+    q3 = quantile(mean_rel_abundance, 0.75, na.rm = TRUE),
+    max = max(mean_rel_abundance, na.rm = TRUE),
+    sd = sd(mean_rel_abundance, na.rm = TRUE),
+    iqr = IQR(mean_rel_abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    panel = "C_mean_relative_abundance_point_class"
+  ) %>%
+  select(
+    panel, point_class, n_species,
+    min, q1, median, mean, q3, max, sd, iqr
+  )
+
+############################################################
+# E) COMBINED MANUSCRIPT SUMMARY TABLE
+############################################################
+
+summary_table_counts <- bind_rows(
+  panelA_summary,
+  panelB_summary
+)
+
+summary_file_counts <- "Rhodopsin_Figure_Summary_Counts.csv"
+summary_file_abund  <- "Rhodopsin_Figure_Summary_Abundance.csv"
+
+write_csv(summary_table_counts, summary_file_counts)
+write_csv(bind_rows(panelC_summary_full, panelC_pointclass_summary), summary_file_abund)
+
+############################################################
+# F) EFFECT SIZE / FOLD CHANGE HELPERS FOR MANUSCRIPT TEXT
+############################################################
+
+detected_stats <- panelC_data %>%
+  filter(detect_binary == "Detected") %>%
+  summarise(
+    n = n(),
+    mean = mean(mean_rel_abundance, na.rm = TRUE),
+    median = median(mean_rel_abundance, na.rm = TRUE),
+    sd = sd(mean_rel_abundance, na.rm = TRUE),
+    iqr = IQR(mean_rel_abundance, na.rm = TRUE)
+  )
+
+not_detected_stats <- panelC_data %>%
+  filter(detect_binary == "Not detected") %>%
+  summarise(
+    n = n(),
+    mean = mean(mean_rel_abundance, na.rm = TRUE),
+    median = median(mean_rel_abundance, na.rm = TRUE),
+    sd = sd(mean_rel_abundance, na.rm = TRUE),
+    iqr = IQR(mean_rel_abundance, na.rm = TRUE)
+  )
+
+median_fold_change <- detected_stats$median / not_detected_stats$median
+mean_fold_change   <- detected_stats$mean / not_detected_stats$mean
+
+############################################################
+# G) STATS REPORT AS TXT
+############################################################
+
+stats_file <- "Rhodopsin_Figure_Stats_Report.txt"
+
+sink(stats_file)
+
+cat("============================================================\n")
+cat("Rhodopsin multipanel figure: statistical report\n")
+cat("============================================================\n\n")
+
+cat("Figure files\n")
+cat("------------\n")
+cat("Plot PDF: Rhodopsin_Multipanel_OneRow_Refactored.pdf\n")
+cat("Counts summary CSV: ", summary_file_counts, "\n", sep = "")
+cat("Abundance summary CSV: ", summary_file_abund, "\n", sep = "")
+cat("Stats report TXT: ", stats_file, "\n\n", sep = "")
+
+cat("Panel A: Genome prevalence\n")
+cat("--------------------------\n")
+print(panelA_summary)
+cat("\n")
+
+cat("Panel B: Expression prevalence\n")
+cat("------------------------------\n")
+print(panelB_summary)
+cat("\n")
+
+cat("Panel C: Mean relative abundance summary by detection group\n")
+cat("-----------------------------------------------------------\n")
+print(panelC_summary_full)
+cat("\n")
+
+cat("Panel C: Mean relative abundance summary by point class\n")
+cat("-------------------------------------------------------\n")
+print(panelC_pointclass_summary)
+cat("\n")
+
+cat("Wilcoxon rank-sum test\n")
+cat("----------------------\n")
+print(wilcox_res)
+cat("\n")
+
+cat("Significance label used in figure: ", sig_label, "\n\n", sep = "")
+
+cat("Detected vs Not detected manuscript-ready numbers\n")
+cat("-------------------------------------------------\n")
+cat("Detected species (n): ", detected_stats$n, "\n", sep = "")
+cat("Not detected species (n): ", not_detected_stats$n, "\n", sep = "")
+cat("Detected mean relative abundance: ", format(detected_stats$mean, scientific = TRUE), "\n", sep = "")
+cat("Not detected mean relative abundance: ", format(not_detected_stats$mean, scientific = TRUE), "\n", sep = "")
+cat("Detected median relative abundance: ", format(detected_stats$median, scientific = TRUE), "\n", sep = "")
+cat("Not detected median relative abundance: ", format(not_detected_stats$median, scientific = TRUE), "\n", sep = "")
+cat("Detected SD: ", format(detected_stats$sd, scientific = TRUE), "\n", sep = "")
+cat("Not detected SD: ", format(not_detected_stats$sd, scientific = TRUE), "\n", sep = "")
+cat("Detected IQR: ", format(detected_stats$iqr, scientific = TRUE), "\n", sep = "")
+cat("Not detected IQR: ", format(not_detected_stats$iqr, scientific = TRUE), "\n", sep = "")
+cat("Median fold-change (Detected / Not detected): ", round(median_fold_change, 3), "\n", sep = "")
+cat("Mean fold-change (Detected / Not detected): ", round(mean_fold_change, 3), "\n\n", sep = "")
+
+cat("Percent-format helpers for manuscript text\n")
+cat("------------------------------------------\n")
+cat("Detected mean relative abundance (%): ", round(detected_stats$mean * 100, 4), "\n", sep = "")
+cat("Not detected mean relative abundance (%): ", round(not_detected_stats$mean * 100, 4), "\n", sep = "")
+cat("Detected median relative abundance (%): ", round(detected_stats$median * 100, 4), "\n", sep = "")
+cat("Not detected median relative abundance (%): ", round(not_detected_stats$median * 100, 4), "\n", sep = "")
+
+sink()
+
+############################################################
+# H) CONSOLE MESSAGE
+############################################################
+
+cat("\n========================================\n")
+cat("Summary tables and stats report exported\n")
+cat("========================================\n")
+cat("Counts summary: ", summary_file_counts, "\n", sep = "")
+cat("Abundance summary: ", summary_file_abund, "\n", sep = "")
+cat("Stats report: ", stats_file, "\n", sep = "")
+```
+
+
+# which proteins are covarrying with rhodopsins ? 
+```{r}
+############################################################
+# Spearman correlations between pooled rhodopsin dynamics
+# and non-rhodopsin proteins within species
+#
+# LOGIC
+#   1) Retain species with:
+#        - at least 8 sampled dates
+#        - at least 4 unique pooled rhodopsin abundance values
+#   2) Compute CLR-transformed protein abundances within each
+#      Species × Date proteome using a small pseudocount
+#   3) Exclude rhodopsin proteins from the tested universe
+#   4) Compute Spearman correlations across dates, within species,
+#      between pooled rhodopsin abundance and each non-rhodopsin protein
+#   5) Test only protein–species pairs with at least 5 paired dates
+#   6) Apply BH correction within species
+#   7) Retain positive significant hits:
+#        rho >= 0.6 and BH-adjusted p <= 0.05
+#   8) Summarize functional composition of positive hits
+#   9) Export one final figure + one final stats file
+#
+# REQUIRED OBJECTS
+#   - protein_table_rhodopsin
+#   - species_meta_rhodopsin
+#   - gene_table
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(scales)
+  library(readr)
+  library(grid)
+})
+
+############################################################
+# PARAMETERS
+############################################################
+rhodo_kos          <- c("K04641", "K04643")
+min_dates_total    <- 8
+min_unique_values  <- 4
+min_pairs_for_test <- 5
+rho_cutoff         <- 0.6
+fdr_cutoff         <- 0.05
+lump_threshold     <- 0.02
+pseudo             <- 1e-8
+
+############################################################
+# OUTPUT FILE NAMES
+############################################################
+suffix_tag <- paste0("rho_ge_", gsub("\\.", "_", as.character(rho_cutoff)))
+
+plot_file <- paste0(
+  "Spearman_correlations_with_rhodopsin_dynamics_",
+  suffix_tag,
+  ".pdf"
+)
+
+stats_file <- paste0(
+  "Spearman_correlations_with_rhodopsin_dynamics_",
+  suffix_tag,
+  "_stats.csv"
+)
+
+############################################################
+# 1) GROUP DEFINITIONS
+############################################################
+species_groups <- species_meta_rhodopsin %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  mutate(
+    Group = if_else(Group_For_Plots == "Oligo_like", "Oligo-like", "Rest")
+  ) %>%
+  select(Species_ID, Group)
+
+############################################################
+# 2) KEGG MAPPING AND ANNOTATION TABLES
+############################################################
+protein_kegg_map <- gene_table %>%
+  select(Protein_ID, KEGG_ID) %>%
+  distinct()
+
+gene_annot_min <- gene_table %>%
+  select(Protein_ID, KEGG_Category, KEGG_Subcategory, Transporter_Family) %>%
+  distinct()
+
+############################################################
+# 3) BUILD POOLED RHODOPSIN TIME SERIES PER SPECIES × DATE
+############################################################
+rhodo_ts <- protein_table_rhodopsin %>%
+  left_join(protein_kegg_map, by = c("Protein_ID", "KEGG_ID")) %>%
+  filter(KEGG_ID %in% rhodo_kos) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    rhodo_iBAQ = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+all_species_dates <- protein_table_rhodopsin %>%
+  distinct(Species_ID, Date)
+
+# Fill absent rhodopsin observations as zero
+rhodo_ts_full <- all_species_dates %>%
+  left_join(rhodo_ts, by = c("Species_ID", "Date")) %>%
+  mutate(
+    rhodo_iBAQ = ifelse(is.na(rhodo_iBAQ), 0, rhodo_iBAQ)
+  )
+
+############################################################
+# 4) SPECIES-LEVEL FILTERING
+#    Species must have:
+#      - >= 8 sampled dates
+#      - >= 4 unique rhodopsin abundance values
+############################################################
+qc_species_filter <- all_species_dates %>%
+  group_by(Species_ID) %>%
+  summarise(
+    n_dates_total = n_distinct(Date),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    rhodo_ts_full %>%
+      group_by(Species_ID) %>%
+      summarise(
+        n_unique_rhodo = n_distinct(rhodo_iBAQ),
+        n_rhodo_pos_dates = sum(rhodo_iBAQ > 0, na.rm = TRUE),
+        .groups = "drop"
+      ),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    pass_filter = (n_dates_total >= min_dates_total) &
+                  (n_unique_rhodo >= min_unique_values)
+  ) %>%
+  left_join(species_groups, by = "Species_ID")
+
+filtered_species <- qc_species_filter %>%
+  filter(pass_filter) %>%
+  pull(Species_ID)
+
+############################################################
+# 5) CLR TRANSFORM WITHIN EACH SPECIES × DATE PROTEOME
+#    Pseudocount is retained because zeros are present and
+#    CLR requires finite log-values.
+############################################################
+protein_clr_long <- protein_table_rhodopsin %>%
+  filter(Species_ID %in% filtered_species) %>%
+  group_by(Species_ID, Date) %>%
+  mutate(
+    logx = log(Protein_Abundance_IBAQ_Norm + pseudo),
+    clr  = logx - mean(logx, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm, clr) %>%
+  left_join(species_groups, by = "Species_ID")
+
+clr_means <- protein_table_rhodopsin %>%
+  filter(Species_ID %in% filtered_species) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    mean_logx = mean(log(Protein_Abundance_IBAQ_Norm + pseudo), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+rhodo_clr <- rhodo_ts_full %>%
+  filter(Species_ID %in% filtered_species) %>%
+  left_join(clr_means, by = c("Species_ID", "Date")) %>%
+  mutate(
+    clr_rhodo = log(rhodo_iBAQ + pseudo) - mean_logx
+  ) %>%
+  select(Species_ID, Date, rhodo_iBAQ, clr_rhodo)
+
+############################################################
+# 6) EXCLUDE RHODOPSIN PROTEINS FROM CORRELATION TESTING
+############################################################
+protein_clr_no_rhodo <- protein_clr_long %>%
+  left_join(protein_kegg_map, by = "Protein_ID") %>%
+  filter(!(KEGG_ID %in% rhodo_kos)) %>%
+  select(-KEGG_ID)
+
+############################################################
+# 7) ROBUST SPEARMAN FUNCTION
+#    Correlations are computed within species across dates.
+#    Only protein–species pairs with >= 5 paired dates are tested.
+############################################################
+safe_spearman <- function(df, min_pairs = 5) {
+  df <- df[is.finite(df$clr) & is.finite(df$clr_rhodo), , drop = FALSE]
+  n_pairs <- nrow(df)
+
+  if (n_pairs < min_pairs) {
+    return(tibble(
+      n_pairs = n_pairs,
+      rho = NA_real_,
+      p_value = NA_real_
+    ))
+  }
+
+  rho <- suppressWarnings(cor(df$clr, df$clr_rhodo, method = "spearman"))
+  p_value <- suppressWarnings(cor.test(df$clr, df$clr_rhodo, method = "spearman")$p.value)
+
+  tibble(
+    n_pairs = n_pairs,
+    rho = rho,
+    p_value = p_value
+  )
+}
+
+############################################################
+# 8) COMPUTE CORRELATIONS AND APPLY BH WITHIN SPECIES
+############################################################
+corr_results <- protein_clr_no_rhodo %>%
+  inner_join(rhodo_clr, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Protein_ID, Group) %>%
+  group_modify(~ safe_spearman(.x, min_pairs = min_pairs_for_test)) %>%
+  ungroup() %>%
+  group_by(Species_ID) %>%
+  mutate(
+    p_adj = ifelse(is.na(p_value), NA_real_, p.adjust(p_value, method = "BH"))
+  ) %>%
+  ungroup()
+
+############################################################
+# 9) QC CHECK: ENSURE NO RHODOPSIN SELF-CORRELATIONS
+############################################################
+qc_selfcorr_check <- corr_results %>%
+  left_join(protein_kegg_map, by = "Protein_ID") %>%
+  summarise(
+    n_total_rows = n(),
+    n_rhodopsin_proteins_in_tests = sum(KEGG_ID %in% rhodo_kos, na.rm = TRUE)
+  )
+
+print(qc_selfcorr_check)
+
+############################################################
+# 10) DEFINE POSITIVE SIGNIFICANT HITS
+############################################################
+corr_hits_pos <- corr_results %>%
+  filter(
+    !is.na(p_adj),
+    rho > 0,
+    rho >= rho_cutoff,
+    p_adj <= fdr_cutoff
+  )
+
+############################################################
+# 11) MEAN PROTEIN ABUNDANCE PER SPECIES × PROTEIN
+#     Used for abundance-weighted functional summaries
+############################################################
+mean_iBAQ_map <- protein_table_rhodopsin %>%
+  filter(Protein_Abundance_IBAQ_Norm > 0) %>%
+  group_by(Species_ID, Protein_ID) %>%
+  summarise(
+    mean_iBAQ = mean(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+############################################################
+# 12) BUILD BASE TABLE FOR SUMMARIES
+############################################################
+df_base <- corr_results %>%
+  filter(!is.na(rho), is.finite(rho)) %>%
+  left_join(mean_iBAQ_map, by = c("Species_ID", "Protein_ID")) %>%
+  left_join(gene_annot_min, by = "Protein_ID") %>%
+  mutate(
+    mean_iBAQ = ifelse(is.na(mean_iBAQ), 0, mean_iBAQ),
+    KEGG_Category = ifelse(is.na(KEGG_Category) | KEGG_Category == "", "Unclassified", KEGG_Category),
+    KEGG_Subcategory = ifelse(is.na(KEGG_Subcategory) | KEGG_Subcategory == "", "Unclassified", KEGG_Subcategory),
+    Transporter_Family = ifelse(is.na(Transporter_Family) | Transporter_Family == "", "Unclassified", Transporter_Family),
+    is_transporter = str_detect(KEGG_Subcategory, regex("Transporters", ignore_case = TRUE)),
+    positive_sig = !is.na(p_adj) & p_adj <= fdr_cutoff & rho >= rho_cutoff & rho > 0
+  ) %>%
+  filter(mean_iBAQ > 0)
+
+df_sig <- df_base %>%
+  filter(positive_sig)
+
+############################################################
+# 13) ASSIGN FUNCTIONAL PLOTTING CATEGORIES
+#     Transporters are split by transporter family
+#     Non-transporters use KEGG_Category
+############################################################
+df_sig <- df_sig %>%
+  mutate(
+    Plot_Category_raw = ifelse(
+      is_transporter,
+      paste0("Transporter_", Transporter_Family),
+      KEGG_Category
+    )
+  )
+
+############################################################
+# 14) SPLIT MULTI-ANNOTATION ENTRIES AND WEIGHT EQUALLY
+############################################################
+df_long <- df_sig %>%
+  rowwise() %>%
+  mutate(
+    Plot_Category_list = list(str_split(Plot_Category_raw, "\\s*;\\s*|\\s*,\\s*|\\s*\\|\\s*")[[1]]),
+    n_cats = length(Plot_Category_list)
+  ) %>%
+  ungroup() %>%
+  unnest_longer(Plot_Category_list, values_to = "Plot_Category") %>%
+  mutate(
+    Plot_Category = str_replace_all(Plot_Category, "_", " "),
+    Plot_Category = ifelse(Plot_Category == "" | is.na(Plot_Category), "Unclassified", Plot_Category),
+    w_count = 1 / n_cats,
+    w_abund = mean_iBAQ / n_cats
+  ) %>%
+  filter(Plot_Category != "Unclassified")
+
+############################################################
+# 15) LUMP SMALL CATEGORIES INTO "OTHER"
+############################################################
+category_sizes <- df_long %>%
+  group_by(Plot_Category) %>%
+  summarise(
+    total_abund = sum(w_abund, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    prop_global = total_abund / sum(total_abund, na.rm = TRUE),
+    Plot_Category2 = ifelse(prop_global < lump_threshold, "Other", Plot_Category)
+  )
+
+df_long <- df_long %>%
+  left_join(
+    category_sizes %>% select(Plot_Category, Plot_Category2),
+    by = "Plot_Category"
+  )
+
+############################################################
+# 16) SET CATEGORY ORDER
+############################################################
+category_order <- df_long %>%
+  group_by(Plot_Category2) %>%
+  summarise(
+    total_abund = sum(w_abund, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_abund)) %>%
+  pull(Plot_Category2)
+
+df_long <- df_long %>%
+  mutate(
+    Group = factor(Group, levels = c("Oligo-like", "Rest")),
+    Plot_Category2 = factor(Plot_Category2, levels = category_order)
+  )
+
+fill_vals <- setNames(
+  grDevices::hcl.colors(length(category_order), "Dynamic"),
+  category_order
+)
+
+############################################################
+# 17) GROUP-LEVEL COUNTS FOR REPORTING
+############################################################
+tested_counts <- df_base %>%
+  group_by(Group) %>%
+  summarise(
+    tested_proteins = n_distinct(paste(Species_ID, Protein_ID, sep = "__")),
+    tested_species  = n_distinct(Species_ID),
+    .groups = "drop"
+  )
+
+sig_counts <- df_sig %>%
+  group_by(Group) %>%
+  summarise(
+    sig_proteins = n_distinct(paste(Species_ID, Protein_ID, sep = "__")),
+    sig_species  = n_distinct(Species_ID),
+    .groups = "drop"
+  )
+
+panel_info <- tested_counts %>%
+  left_join(sig_counts, by = "Group") %>%
+  mutate(
+    sig_proteins = ifelse(is.na(sig_proteins), 0, sig_proteins),
+    sig_species  = ifelse(is.na(sig_species), 0, sig_species)
+  )
+
+print(panel_info)
+
+############################################################
+# 18) COUNT-WEIGHTED FUNCTIONAL COMPOSITION
+############################################################
+plot_counts <- df_long %>%
+  group_by(Group, Plot_Category2) %>%
+  summarise(
+    value = sum(w_count, na.rm = TRUE),
+    n_species = n_distinct(Species_ID),
+    n_proteins = n_distinct(paste(Species_ID, Protein_ID, sep = "__")),
+    .groups = "drop"
+  ) %>%
+  group_by(Group) %>%
+  mutate(
+    prop = value / sum(value, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+############################################################
+# 19) ABUNDANCE-WEIGHTED FUNCTIONAL COMPOSITION
+############################################################
+plot_abund <- df_long %>%
+  group_by(Group, Plot_Category2) %>%
+  summarise(
+    value = sum(w_abund, na.rm = TRUE),
+    n_species = n_distinct(Species_ID),
+    n_proteins = n_distinct(paste(Species_ID, Protein_ID, sep = "__")),
+    .groups = "drop"
+  ) %>%
+  group_by(Group) %>%
+  mutate(
+    prop = value / sum(value, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+############################################################
+# 20) COMPLETE MISSING CATEGORIES
+############################################################
+plot_counts <- plot_counts %>%
+  complete(
+    Group = factor(c("Oligo-like", "Rest"), levels = c("Oligo-like", "Rest")),
+    Plot_Category2 = factor(category_order, levels = category_order),
+    fill = list(
+      value = 0,
+      n_species = 0,
+      n_proteins = 0,
+      prop = 0
+    )
+  )
+
+plot_abund <- plot_abund %>%
+  complete(
+    Group = factor(c("Oligo-like", "Rest"), levels = c("Oligo-like", "Rest")),
+    Plot_Category2 = factor(category_order, levels = category_order),
+    fill = list(
+      value = 0,
+      n_species = 0,
+      n_proteins = 0,
+      prop = 0
+    )
+  )
+
+############################################################
+# 21) BUILD ONE FINAL FIGURE
+############################################################
+plot_counts2 <- plot_counts %>%
+  mutate(Metric = "Proteins")
+
+plot_abund2 <- plot_abund %>%
+  mutate(Metric = "Protein abundance")
+
+plot_all <- bind_rows(plot_counts2, plot_abund2) %>%
+  mutate(
+    Metric = factor(Metric, levels = c("Proteins", "Protein abundance")),
+    Group = factor(Group, levels = c("Oligo-like", "Rest")),
+    GroupLabel = factor(
+      paste(Group, Metric, sep = "___"),
+      levels = c(
+        "Oligo-like___Proteins",
+        "Oligo-like___Protein abundance",
+        "Rest___Proteins",
+        "Rest___Protein abundance"
+      )
+    )
+  )
+
+x_labels <- c(
+  "Oligo-like___Proteins" = "Proteins",
+  "Oligo-like___Protein abundance" = "Protein abundance",
+  "Rest___Proteins" = "Proteins",
+  "Rest___Protein abundance" = "Protein abundance"
+)
+
+p_final <- ggplot(
+  plot_all,
+  aes(x = GroupLabel, y = prop, fill = Plot_Category2)
+) +
+  geom_col(width = 0.72) +
+  scale_fill_manual(values = fill_vals, drop = FALSE) +
+  scale_x_discrete(labels = x_labels) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    title = "Spearman correlations with rhodopsin dynamics",
+    subtitle = paste0(
+      "Species retained if represented at >= ", min_dates_total,
+      " dates and showing >= ", min_unique_values,
+      " unique pooled rhodopsin abundance values; ",
+      "proteins tested with >= ", min_pairs_for_test,
+      " paired dates; positive significant hits defined as rho >= ",
+      rho_cutoff, " and BH-adjusted p <= ", fdr_cutoff
+    ),
+    x = NULL,
+    y = "Proportion",
+    fill = "Category"
+  ) +
+  facet_grid(
+    . ~ Group,
+    scales = "free_x",
+    space = "free_x",
+    switch = "x"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    strip.background = element_blank(),
+    strip.placement = "outside",
+    strip.text.x = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(face = "bold"),
+    axis.title.x = element_blank(),
+    panel.spacing.x = unit(1.2, "lines")
+  )
+
+print(p_final)
+
+ggsave(
+  filename = plot_file,
+  plot = p_final,
+  width = 8.2,
+  height = 5.8,
+  device = pdf,
+  bg = "white"
+)
+
+############################################################
+# 22) DIAGNOSTIC / STATS TABLE
+#     Export one compact reviewer-safe CSV
+############################################################
+
+# Parameters
+stats_parameters <- tibble(
+  section = "parameters",
+  metric = c(
+    "rhodo_kos",
+    "min_dates_total",
+    "min_unique_values",
+    "min_pairs_for_test",
+    "rho_cutoff",
+    "fdr_cutoff",
+    "lump_threshold",
+    "pseudo"
+  ),
+  group = NA_character_,
+  category = NA_character_,
+  value = c(
+    paste(rhodo_kos, collapse = ";"),
+    as.character(min_dates_total),
+    as.character(min_unique_values),
+    as.character(min_pairs_for_test),
+    as.character(rho_cutoff),
+    as.character(fdr_cutoff),
+    as.character(lump_threshold),
+    as.character(pseudo)
+  )
+)
+
+# Species filter summary
+stats_species_filter <- qc_species_filter %>%
+  group_by(Group, pass_filter) %>%
+  summarise(
+    n_species = n(),
+    .groups = "drop"
+  ) %>%
+  transmute(
+    section = "species_filter",
+    metric = ifelse(pass_filter, "passed_species", "failed_species"),
+    group = Group,
+    category = NA_character_,
+    value = as.character(n_species)
+  )
+
+# Group counts
+stats_group_counts <- panel_info %>%
+  pivot_longer(
+    cols = c(tested_proteins, tested_species, sig_proteins, sig_species),
+    names_to = "metric",
+    values_to = "value"
+  ) %>%
+  transmute(
+    section = "group_counts",
+    metric = metric,
+    group = as.character(Group),
+    category = NA_character_,
+    value = as.character(value)
+  )
+
+# Rho diagnostics at rho >= 0.6
+rho_plot_df <- corr_results %>%
+  filter(!is.na(rho), !is.na(p_value)) %>%
+  mutate(Group = factor(Group, levels = c("Oligo-like", "Rest")))
+
+stats_rho_diag <- rho_plot_df %>%
+  group_by(Group) %>%
+  summarise(
+    n_tested = n(),
+    n_rho_ge_cutoff = sum(rho >= rho_cutoff, na.rm = TRUE),
+    prop_rho_ge_cutoff = n_rho_ge_cutoff / n_tested,
+    median_rho = median(rho, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(n_tested, n_rho_ge_cutoff, prop_rho_ge_cutoff, median_rho),
+    names_to = "metric",
+    values_to = "value"
+  ) %>%
+  transmute(
+    section = "rho_diagnostics",
+    metric = metric,
+    group = as.character(Group),
+    category = NA_character_,
+    value = as.character(value)
+  )
+
+# Functional composition by counts
+stats_functional_counts <- plot_counts %>%
+  transmute(
+    section = "functional_composition_detected_proteins",
+    metric = "category_prop",
+    group = as.character(Group),
+    category = as.character(Plot_Category2),
+    value = as.character(prop)
+  )
+
+# Functional composition by abundance
+stats_functional_abund <- plot_abund %>%
+  transmute(
+    section = "functional_composition_protein_abundance",
+    metric = "category_prop",
+    group = as.character(Group),
+    category = as.character(Plot_Category2),
+    value = as.character(prop)
+  )
+
+stats_export <- bind_rows(
+  stats_parameters,
+  stats_species_filter,
+  stats_group_counts,
+  stats_rho_diag,
+  stats_functional_counts,
+  stats_functional_abund
+)
+
+write_csv(stats_export, stats_file)
+
+############################################################
+# 23) CONSOLE OUTPUT
+############################################################
+cat("\n========================================\n")
+cat("Done\n")
+cat("========================================\n")
+cat("Final plot: ", plot_file, "\n", sep = "")
+cat("Final stats: ", stats_file, "\n", sep = "")
+cat("Species retained: ", length(filtered_species), "\n", sep = "")
+cat("Positive significant hits: ", nrow(corr_hits_pos), "\n", sep = "")
+```
+
+# how abundant are rhodopsins vs the rest of the rhodopsin expressing proteomes
+```{r}
+# =====================================================================
+# PROTEIN EXPRESSION SCALING ANALYSIS
+# =====================================================================
+#
+# PURPOSE
+# ---------------------------------------------------------------------
+# This script quantifies how protein abundance scales with species
+# abundance across time using a log–log linear mixed-effects model.
+# The analysis compares scaling relationships among protein classes
+# (Cytoplasmic, Transporter/Secreted, Rhodopsin) and between ecological
+# species groups (Oligo-like vs Rest).
+#
+# The model evaluates whether different protein classes scale
+# differently with species abundance and whether these scaling
+# relationships differ between ecological groups.
+#
+#
+# MODEL STRUCTURE
+# ---------------------------------------------------------------------
+# Response variable:
+#   log10(Protein abundance iBAQ)
+#
+# Predictor:
+#   log10(Species abundance)
+#
+# Fixed effects:
+#   logA * ProteinClass * Group2
+#
+# Random effects:
+#   (1 | Species_ID)  – controls for repeated measurements per species
+#   (1 | Date)        – controls for shared environmental variation
+#
+# This log–log formulation corresponds to a power-law scaling:
+#
+#   Protein abundance = k * (Species abundance)^β
+#
+# where β is the scaling exponent estimated by the model.
+#
+#
+# DATA FILTERING
+# ---------------------------------------------------------------------
+# Observations are retained only if:
+#
+#   - Protein abundance > 0
+#   - Species abundance > 0
+#   - KEGG annotation is present and valid
+#   - Species group classification is available
+#
+# Protein classes are assigned with the following priority:
+#
+#   1. Rhodopsin
+#   2. Transporter (or Secreted in the first version)
+#   3. Cytoplasmic
+#
+# Proteins are assigned to only one class using this hierarchy.
+#
+#
+# SLOPE ESTIMATION
+# ---------------------------------------------------------------------
+# Class-specific scaling slopes are estimated using:
+#
+#   emtrends()
+#
+# which extracts the derivative:
+#
+#   d log10(Protein) / d log10(Species)
+#
+# Pairwise slope differences within each ecological group are tested
+# using Tukey-adjusted contrasts.
+#
+#
+# FIGURE TYPES GENERATED
+# ---------------------------------------------------------------------
+# Two visualization strategies are produced without changing the
+# underlying statistical model.
+#
+# 1) FITTED MODEL VISUALIZATION
+#
+#    - Shows only the mixed-model fitted relationships
+#    - Includes 95% confidence intervals for the fitted mean
+#    - Highlights model-estimated scaling relationships
+#
+# 2) EMPIRICAL SPREAD VISUALIZATION
+#
+#    - Shows the fitted mixed-model line
+#    - Adds ribbons summarizing the observed data distribution
+#
+#      outer ribbon : 10–90% empirical quantiles
+#      inner ribbon : 25–75% empirical quantiles
+#      dashed line  : empirical median per abundance bin
+#
+#    - These ribbons describe the observed spread of the data and
+#      are not model confidence intervals.
+#
+#
+# OUTPUT FILES
+# ---------------------------------------------------------------------
+# Each pipeline produces three files:
+#
+#   1) Figure PDF
+#        - stacked panels for Oligo-like and Rest groups
+#
+#   2) Statistics file
+#        - model summary
+#        - ANOVA table
+#        - slope estimates
+#        - pairwise slope contrasts
+#        - QC statistics
+#
+#   3) Model diagnostics PDF
+#        - residual vs fitted
+#        - Q–Q plot
+#        - residual histogram
+#        - residual vs predictor
+#
+#
+# INTERPRETATION
+# ---------------------------------------------------------------------
+# Slopes represent scaling exponents on the log–log scale.
+#
+#   β = 1   → protein abundance scales proportionally with species
+#   β < 1   → protein increases more slowly than species abundance
+#   β > 1   → protein increases faster than species abundance
+#
+# Differences in slopes among protein classes indicate differences
+# in how cellular functions scale with species abundance across
+# ecological groups.
+#
+# =====================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(lme4)
+  library(lmerTest)
+  library(emmeans)
+  library(readr)
+  library(patchwork)
+})
+
+# ============================================================
+# PARAMETERS
+# ============================================================
+rhodo_kos <- c("K04641", "K04643")
+
+PSEUDO_A <- 1e-12
+PSEUDO_P <- 1e-6
+
+# empirical spread settings
+n_bins         <- 24
+min_points_bin <- 5
+
+# output prefixes
+prefix_fitted <- "Protein_Expression_FittedOnly_Transporter_Cytoplasmic_Rhodopsin"
+prefix_spread <- "Protein_Expression_EmpiricalSpread_Transporter_Cytoplasmic_Rhodopsin"
+
+plot_file_fitted    <- paste0(prefix_fitted, ".pdf")
+summary_file_fitted <- paste0(prefix_fitted, "_summary.csv")
+stats_file_fitted   <- paste0(prefix_fitted, "_stats.txt")
+
+plot_file_spread    <- paste0(prefix_spread, ".pdf")
+summary_file_spread <- paste0(prefix_spread, "_summary.csv")
+stats_file_spread   <- paste0(prefix_spread, "_stats.txt")
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+num_stats <- function(x) {
+  tibble(
+    min    = min(x, na.rm = TRUE),
+    max    = max(x, na.rm = TRUE),
+    mean   = mean(x, na.rm = TRUE),
+    sd     = sd(x, na.rm = TRUE),
+    median = median(x, na.rm = TRUE),
+    iqr    = IQR(x, na.rm = TRUE)
+  )
+}
+
+safe_p_line <- function(pairs_tbl, group_name, labelA, labelB) {
+  x1 <- pairs_tbl %>%
+    filter(Group2 == group_name, contrast == paste(labelA, "-", labelB))
+
+  x2 <- pairs_tbl %>%
+    filter(Group2 == group_name, contrast == paste(labelB, "-", labelA))
+
+  if (nrow(x1) == 1) {
+    return(sprintf("%s vs %s: p = %s", labelA, labelB, signif(x1$p.value[1], 3)))
+  }
+  if (nrow(x2) == 1) {
+    return(sprintf("%s vs %s: p = %s", labelA, labelB, signif(x2$p.value[1], 3)))
+  }
+  sprintf("%s vs %s: p = NA", labelA, labelB)
+}
+
+safe_slope_line <- function(slopes_tbl, group_name, class_name) {
+  x <- slopes_tbl %>%
+    filter(Group2 == group_name, ProteinClass == class_name)
+
+  if (nrow(x) == 1) {
+    sprintf("%s slope = %.3f", class_name, x$logA.trend[1])
+  } else {
+    sprintf("%s slope = NA", class_name)
+  }
+}
+
+make_prediction_grid <- function(model, dat, n = 200, with_ci = TRUE) {
+
+  grid <- dat %>%
+    group_by(Group2, ProteinClass) %>%
+    summarise(
+      logA_min = quantile(logA, 0.02, na.rm = TRUE),
+      logA_max = quantile(logA, 0.98, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    rowwise() %>%
+    do({
+      tibble(
+        Group2 = .$Group2,
+        ProteinClass = .$ProteinClass,
+        logA = seq(.$logA_min, .$logA_max, length.out = n)
+      )
+    }) %>%
+    ungroup() %>%
+    mutate(
+      Group2 = factor(Group2, levels = levels(dat$Group2)),
+      ProteinClass = factor(ProteinClass, levels = levels(dat$ProteinClass))
+    )
+
+  X <- model.matrix(~ logA * ProteinClass * Group2, data = grid)
+  beta <- fixef(model)
+
+  grid$fit <- as.numeric(X %*% beta)
+
+  if (with_ci) {
+    V <- vcov(model)
+    grid$se  <- sqrt(diag(X %*% V %*% t(X)))
+    grid$lwr <- grid$fit - 1.96 * grid$se
+    grid$upr <- grid$fit + 1.96 * grid$se
+  }
+
+  grid
+}
+
+make_empirical_spread <- function(dat, n_bins = 24, min_points_bin = 5) {
+
+  dat %>%
+    group_by(Group2, ProteinClass) %>%
+    mutate(
+      x_bin = cut(logA, breaks = n_bins, include.lowest = TRUE)
+    ) %>%
+    group_by(Group2, ProteinClass, x_bin) %>%
+    summarise(
+      x_mid = mean(logA, na.rm = TRUE),
+      x_min = min(logA, na.rm = TRUE),
+      x_max = max(logA, na.rm = TRUE),
+      y_q10 = quantile(logP, 0.10, na.rm = TRUE),
+      y_q25 = quantile(logP, 0.25, na.rm = TRUE),
+      y_med = quantile(logP, 0.50, na.rm = TRUE),
+      y_q75 = quantile(logP, 0.75, na.rm = TRUE),
+      y_q90 = quantile(logP, 0.90, na.rm = TRUE),
+      n_bin = n(),
+      .groups = "drop"
+    ) %>%
+    filter(n_bin >= min_points_bin) %>%
+    arrange(Group2, ProteinClass, x_mid)
+}
+
+write_stats_file <- function(
+  out_file,
+  plot_file,
+  summary_file,
+  mode_label,
+  qc_counts,
+  qc_summary,
+  model_summary,
+  model_anova,
+  slopes_tbl,
+  pairs_tbl,
+  ann_df,
+  summary_csv,
+  spread_bin_summary = NULL
+) {
+  sink(out_file)
+
+  cat("============================================================\n")
+  cat("Protein expression mixed model statistics\n")
+  cat(mode_label, "\n")
+  cat("============================================================\n\n")
+
+  cat("Files written by this script:\n")
+  cat(" -", plot_file, "\n")
+  cat(" -", summary_file, "\n")
+  cat(" -", out_file, "\n\n")
+
+  cat("============================================================\n")
+  cat("QC COUNTS\n")
+  cat("============================================================\n\n")
+  print(qc_counts)
+  cat("\n")
+  print(qc_summary)
+  cat("\n\n")
+
+  if (!is.null(spread_bin_summary)) {
+    cat("============================================================\n")
+    cat("EMPIRICAL SPREAD BIN SUMMARY\n")
+    cat("============================================================\n\n")
+    print(spread_bin_summary)
+    cat("\n\n")
+  }
+
+  cat("============================================================\n")
+  cat("MIXED MODEL SUMMARY\n")
+  cat("============================================================\n\n")
+  print(model_summary)
+  cat("\n\n")
+
+  cat("============================================================\n")
+  cat("MIXED MODEL ANOVA\n")
+  cat("============================================================\n\n")
+  print(model_anova)
+  cat("\n\n")
+
+  cat("============================================================\n")
+  cat("SLOPES (EMTRENDS)\n")
+  cat("============================================================\n\n")
+  print(slopes_tbl)
+  cat("\n\n")
+
+  cat("============================================================\n")
+  cat("PAIRWISE SLOPE CONTRASTS WITHIN GROUP (TUKEY)\n")
+  cat("============================================================\n\n")
+  print(pairs_tbl)
+  cat("\n\n")
+
+  cat("============================================================\n")
+  cat("ANNOTATION TEXT USED IN FIGURE\n")
+  cat("============================================================\n\n")
+  print(ann_df)
+  cat("\n\n")
+
+  cat("============================================================\n")
+  cat("SUMMARY CSV CONTENT\n")
+  cat("============================================================\n\n")
+  print(summary_csv)
+  cat("\n\n")
+
+  sink()
+}
+
+# ------------------------------------------------------------
+# plotting function
+# mode = "fitted_only" or "empirical_spread"
+# ------------------------------------------------------------
+make_group_plot <- function(
+  group_name,
+  ann_df,
+  grid,
+  spread_dat = NULL,
+  mode = c("fitted_only", "empirical_spread"),
+  show_x_axis = TRUE
+) {
+  mode <- match.arg(mode)
+
+  x_limits <- c(-1.2, 1.6)
+  y_limits <- c(2, 8)
+
+  x_breaks <- seq(-1, 1.5, by = 0.5)
+  y_breaks <- seq(2, 8, by = 2)
+
+  x_labels <- sprintf("%.1f", x_breaks)
+  x_labels[x_labels == "-0.0"] <- "0.0"
+
+  ann_x <- -1.18
+  ann_y <- 7.95
+
+  ann_sub <- ann_df %>%
+    filter(Group2 == group_name)
+
+  p <- ggplot()
+
+  if (mode == "fitted_only") {
+    p <- p +
+      geom_ribbon(
+        data = grid %>% filter(Group2 == group_name),
+        aes(x = logA, ymin = lwr, ymax = upr, fill = ProteinClass),
+        alpha = 0.18
+      )
+  }
+
+  if (mode == "empirical_spread") {
+    p <- p +
+      geom_ribbon(
+        data = spread_dat %>% filter(Group2 == group_name),
+        aes(x = x_mid, ymin = y_q10, ymax = y_q90, fill = ProteinClass),
+        alpha = 0.10
+      ) +
+      geom_ribbon(
+        data = spread_dat %>% filter(Group2 == group_name),
+        aes(x = x_mid, ymin = y_q25, ymax = y_q75, fill = ProteinClass),
+        alpha = 0.22
+      ) +
+      geom_line(
+        data = spread_dat %>% filter(Group2 == group_name),
+        aes(x = x_mid, y = y_med, color = ProteinClass),
+        linewidth = 0.7,
+        linetype = "22"
+      )
+  }
+
+  p <- p +
+    geom_line(
+      data = grid %>% filter(Group2 == group_name),
+      aes(x = logA, y = fit, color = ProteinClass),
+      linewidth = 1.1
+    ) +
+    geom_text(
+      data = ann_sub,
+      aes(label = ann),
+      x = ann_x,
+      y = ann_y,
+      inherit.aes = FALSE,
+      hjust = 0,
+      vjust = 1,
+      size = 3.1
+    ) +
+    scale_color_manual(
+      values = c(
+        "Cytoplasmic" = "#1f77b4",
+        "Transporter" = "#ff7f0e",
+        "Rhodopsin"   = "#d62728"
+      ),
+      drop = FALSE
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Cytoplasmic" = "#1f77b4",
+        "Transporter" = "#ff7f0e",
+        "Rhodopsin"   = "#d62728"
+      ),
+      drop = FALSE
+    ) +
+    scale_x_continuous(
+      breaks = x_breaks,
+      labels = x_labels
+    ) +
+    scale_y_continuous(
+      breaks = y_breaks,
+      labels = y_breaks
+    ) +
+    coord_cartesian(
+      xlim = x_limits,
+      ylim = y_limits,
+      expand = FALSE
+    ) +
+    labs(
+      title = group_name,
+      x = if (show_x_axis) "log10(Species abundance)" else NULL,
+      y = "log10(Protein abundance iBAQ)",
+      color = "Protein class",
+      fill  = "Protein class"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      legend.position = "top",
+      legend.title = element_text(face = "bold"),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "grey50", linewidth = 0.4),
+      axis.title.x = if (show_x_axis) element_text() else element_blank(),
+      axis.text.x  = if (show_x_axis) element_text() else element_blank(),
+      axis.ticks.x = if (show_x_axis) element_line(color = "grey50") else element_blank()
+    )
+
+  p
+}
+
+# ============================================================
+# 1) SPECIES GROUPS
+# ============================================================
+species_groups2 <- species_meta_rhodopsin %>%
+  select(Species_ID, Group_For_Plots) %>%
+  distinct() %>%
+  mutate(Group2 = ifelse(Group_For_Plots == "Oligo_like", "Oligo-like", "Rest")) %>%
+  select(Species_ID, Group2)
+
+# ============================================================
+# 2) PROTEIN ANNOTATION MAP
+# ============================================================
+prot_annot <- gene_table_rhodopsin %>%
+  select(Protein_ID, KEGG_ID, KEGG_Subcategory, PHOBIUS_Annotation) %>%
+  distinct()
+
+# ============================================================
+# 3) MAIN ANALYSIS TABLE
+#     same logic as your current computation
+# ============================================================
+dat <- protein_table_rhodopsin %>%
+  left_join(prot_annot, by = c("Protein_ID", "KEGG_ID")) %>%
+  left_join(
+    species_abundance_rhodopsin %>%
+      select(Species_ID, Date, Species_Abundance),
+    by = c("Species_ID", "Date")
+  ) %>%
+  left_join(species_groups2, by = "Species_ID") %>%
+  filter(
+    Protein_Abundance_IBAQ_Norm > 0,
+    Species_Abundance > 0,
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified",
+    !is.na(Group2)
+  ) %>%
+  mutate(
+    ProteinClass = case_when(
+      KEGG_ID %in% rhodo_kos ~ "Rhodopsin",
+      grepl("Transporter", KEGG_Subcategory, ignore.case = TRUE) ~ "Transporter",
+      PHOBIUS_Annotation == "CytoplasmaticProtein" ~ "Cytoplasmic",
+      TRUE ~ NA_character_
+    ),
+    ProteinClass = factor(
+      ProteinClass,
+      levels = c("Cytoplasmic", "Transporter", "Rhodopsin")
+    ),
+    Group2 = factor(Group2, levels = c("Oligo-like", "Rest")),
+    logA = log10(Species_Abundance + PSEUDO_A),
+    logP = log10(Protein_Abundance_IBAQ_Norm + PSEUDO_P)
+  ) %>%
+  filter(!is.na(ProteinClass))
+
+# ============================================================
+# 4) QC
+# ============================================================
+qc_counts <- dat %>%
+  count(Group2, ProteinClass)
+
+qc_summary <- tibble(
+  metric = c("N_obs", "N_species", "N_proteins", "N_dates"),
+  value = c(
+    nrow(dat),
+    n_distinct(dat$Species_ID),
+    n_distinct(dat$Protein_ID),
+    n_distinct(dat$Date)
+  )
+)
+
+cat("\n===== QC =====\n")
+print(qc_counts)
+print(qc_summary)
+
+# ============================================================
+# 5) MIXED MODEL
+# ============================================================
+m <- lmer(
+  logP ~ logA * ProteinClass * Group2 + (1 | Species_ID) + (1 | Date),
+  data = dat,
+  REML = FALSE
+)
+
+model_summary <- summary(m)
+model_anova   <- anova(m)
+
+cat("\n===== MIXED MODEL SUMMARY =====\n")
+print(model_summary)
+
+cat("\n===== MIXED MODEL ANOVA =====\n")
+print(model_anova)
+
+# ============================================================
+# 6) SLOPES PER CLASS WITHIN GROUP
+# ============================================================
+slopes <- emtrends(m, ~ ProteinClass | Group2, var = "logA")
+slopes_tbl <- as.data.frame(slopes)
+
+pairs_tbl <- as.data.frame(
+  pairs(slopes, by = "Group2", adjust = "tukey")
+)
+
+cat("\n===== SLOPES (d logP / d logA) =====\n")
+print(slopes_tbl)
+
+cat("\n===== SLOPE COMPARISONS (within Group2; Tukey) =====\n")
+print(pairs_tbl)
+
+# ============================================================
+# 7) PANEL ANNOTATION TEXT
+# ============================================================
+ann_df <- tibble(
+  Group2 = levels(dat$Group2),
+  ann = c(
+    paste(
+      safe_slope_line(slopes_tbl, "Oligo-like", "Cytoplasmic"),
+      safe_slope_line(slopes_tbl, "Oligo-like", "Transporter"),
+      safe_slope_line(slopes_tbl, "Oligo-like", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Transporter", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Cytoplasmic", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Cytoplasmic", "Transporter"),
+      sep = "\n"
+    ),
+    paste(
+      safe_slope_line(slopes_tbl, "Rest", "Cytoplasmic"),
+      safe_slope_line(slopes_tbl, "Rest", "Transporter"),
+      safe_slope_line(slopes_tbl, "Rest", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Transporter", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Cytoplasmic", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Cytoplasmic", "Transporter"),
+      sep = "\n"
+    )
+  )
+)
+
+# ============================================================
+# 8) SHARED GRIDS / SPREAD
+# ============================================================
+grid_fitted <- make_prediction_grid(m, dat, n = 200, with_ci = TRUE)
+
+spread_dat <- make_empirical_spread(
+  dat = dat,
+  n_bins = n_bins,
+  min_points_bin = min_points_bin
+)
+
+spread_bin_summary <- spread_dat %>%
+  group_by(Group2, ProteinClass) %>%
+  summarise(
+    n_bins_retained = n(),
+    min_bin_n       = min(n_bin, na.rm = TRUE),
+    max_bin_n       = max(n_bin, na.rm = TRUE),
+    mean_bin_n      = mean(n_bin, na.rm = TRUE),
+    median_bin_n    = median(n_bin, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ============================================================
+# 9) SUMMARY CSV
+#     keep logic same, export twice under different names
+# ============================================================
+sum_dat <- protein_table_rhodopsin %>%
+  left_join(prot_annot, by = c("Protein_ID", "KEGG_ID")) %>%
+  left_join(
+    species_abundance_rhodopsin %>%
+      select(Species_ID, Date, Species_Abundance),
+    by = c("Species_ID", "Date")
+  ) %>%
+  left_join(species_groups2, by = "Species_ID") %>%
+  filter(
+    Protein_Abundance_IBAQ_Norm > 0,
+    Species_Abundance > 0,
+    !is.na(Group2)
+  ) %>%
+  mutate(
+    Category = case_when(
+      is.na(KEGG_ID) | KEGG_ID == "" | KEGG_ID == "Unclassified" ~ "NoKEGGID",
+      KEGG_ID %in% rhodo_kos ~ "Rhodopsin",
+      grepl("Transporter", KEGG_Subcategory, ignore.case = TRUE) ~ "Transporter",
+      PHOBIUS_Annotation == "CytoplasmaticProtein" ~ "Cytoplasmic",
+      TRUE ~ "Other_Annotated"
+    ),
+    Category = factor(
+      Category,
+      levels = c("Rhodopsin", "Transporter", "Cytoplasmic", "NoKEGGID", "Other_Annotated")
+    ),
+    Group2 = factor(Group2, levels = c("Oligo-like", "Rest"))
+  )
+
+sum_dat_main <- sum_dat %>%
+  filter(Category %in% c("Rhodopsin", "Transporter", "Cytoplasmic", "NoKEGGID"))
+
+rhodopsin_species_by_group <- sum_dat_main %>%
+  filter(Category == "Rhodopsin") %>%
+  distinct(Group2, Species_ID) %>%
+  count(Group2, name = "n_rhodopsin_containing_species") %>%
+  mutate(section = "rhodopsin_species_by_group") %>%
+  relocate(section)
+
+protein_dates <- sum_dat_main %>%
+  distinct(Category, Protein_ID, Date) %>%
+  count(Category, Protein_ID, name = "n_dates_expressed")
+
+protein_level_summary <- protein_dates %>%
+  group_by(Category) %>%
+  summarise(
+    n_expressed_proteins = n_distinct(Protein_ID),
+    n_total_species      = sum_dat_main %>% filter(Category == first(Category)) %>% pull(Species_ID) %>% n_distinct(),
+    n_total_dates        = sum_dat_main %>% filter(Category == first(Category)) %>% pull(Date) %>% n_distinct(),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    protein_dates %>%
+      group_by(Category) %>%
+      reframe(num_stats(n_dates_expressed)),
+    by = "Category"
+  ) %>%
+  mutate(section = "protein_level_summary") %>%
+  relocate(section)
+
+species_category_counts <- sum_dat_main %>%
+  group_by(Category, Species_ID) %>%
+  summarise(
+    n_proteins = n_distinct(Protein_ID),
+    n_dates    = n_distinct(Date),
+    .groups = "drop"
+  )
+
+species_contribution_summary <- species_category_counts %>%
+  group_by(Category) %>%
+  summarise(
+    n_species_contributing = n_distinct(Species_ID),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    species_category_counts %>%
+      group_by(Category) %>%
+      reframe(
+        proteins_per_species_min    = min(n_proteins, na.rm = TRUE),
+        proteins_per_species_max    = max(n_proteins, na.rm = TRUE),
+        proteins_per_species_mean   = mean(n_proteins, na.rm = TRUE),
+        proteins_per_species_sd     = sd(n_proteins, na.rm = TRUE),
+        proteins_per_species_median = median(n_proteins, na.rm = TRUE),
+        proteins_per_species_iqr    = IQR(n_proteins, na.rm = TRUE),
+        dates_per_species_min       = min(n_dates, na.rm = TRUE),
+        dates_per_species_max       = max(n_dates, na.rm = TRUE),
+        dates_per_species_mean      = mean(n_dates, na.rm = TRUE),
+        dates_per_species_sd        = sd(n_dates, na.rm = TRUE),
+        dates_per_species_median    = median(n_dates, na.rm = TRUE),
+        dates_per_species_iqr       = IQR(n_dates, na.rm = TRUE)
+      ),
+    by = "Category"
+  ) %>%
+  mutate(section = "species_contribution_summary") %>%
+  relocate(section)
+
+species_category_group_counts <- sum_dat_main %>%
+  group_by(Group2, Category, Species_ID) %>%
+  summarise(
+    n_proteins = n_distinct(Protein_ID),
+    n_dates    = n_distinct(Date),
+    .groups = "drop"
+  )
+
+species_contribution_by_group <- species_category_group_counts %>%
+  group_by(Group2, Category) %>%
+  summarise(
+    n_species_contributing = n_distinct(Species_ID),
+    proteins_per_species_min    = min(n_proteins, na.rm = TRUE),
+    proteins_per_species_max    = max(n_proteins, na.rm = TRUE),
+    proteins_per_species_mean   = mean(n_proteins, na.rm = TRUE),
+    proteins_per_species_sd     = sd(n_proteins, na.rm = TRUE),
+    proteins_per_species_median = median(n_proteins, na.rm = TRUE),
+    proteins_per_species_iqr    = IQR(n_proteins, na.rm = TRUE),
+    dates_per_species_min       = min(n_dates, na.rm = TRUE),
+    dates_per_species_max       = max(n_dates, na.rm = TRUE),
+    dates_per_species_mean      = mean(n_dates, na.rm = TRUE),
+    dates_per_species_sd        = sd(n_dates, na.rm = TRUE),
+    dates_per_species_median    = median(n_dates, na.rm = TRUE),
+    dates_per_species_iqr       = IQR(n_dates, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(section = "species_contribution_by_group") %>%
+  relocate(section)
+
+summary_csv <- bind_rows(
+  rhodopsin_species_by_group %>% mutate(Category = NA_character_),
+  protein_level_summary %>% mutate(Group2 = NA_character_),
+  species_contribution_summary %>% mutate(Group2 = NA_character_),
+  species_contribution_by_group
+) %>%
+  relocate(section, Group2, Category)
+
+write_csv(summary_csv, summary_file_fitted)
+write_csv(summary_csv, summary_file_spread)
+
+# ============================================================
+# 10) PLOT 1: FITTED ONLY
+# ============================================================
+p_oligo_fitted <- make_group_plot(
+  group_name = "Oligo-like",
+  ann_df = ann_df,
+  grid = grid_fitted,
+  spread_dat = NULL,
+  mode = "fitted_only",
+  show_x_axis = FALSE
+)
+
+p_rest_fitted <- make_group_plot(
+  group_name = "Rest",
+  ann_df = ann_df,
+  grid = grid_fitted,
+  spread_dat = NULL,
+  mode = "fitted_only",
+  show_x_axis = TRUE
+)
+
+p_combined_fitted <- p_oligo_fitted / p_rest_fitted +
+  plot_layout(guides = "collect", heights = c(1, 1)) &
+  theme(
+    legend.position = "top",
+    legend.box = "horizontal"
+  )
+
+print(p_combined_fitted)
+
+ggsave(
+  plot_file_fitted,
+  p_combined_fitted,
+  width = 8,
+  height = 9,
+  device = pdf,
+  bg = "white"
+)
+
+# ============================================================
+# 11) PLOT 2: FITTED + EMPIRICAL SPREAD
+# ============================================================
+p_oligo_spread <- make_group_plot(
+  group_name = "Oligo-like",
+  ann_df = ann_df,
+  grid = grid_fitted,
+  spread_dat = spread_dat,
+  mode = "empirical_spread",
+  show_x_axis = FALSE
+)
+
+p_rest_spread <- make_group_plot(
+  group_name = "Rest",
+  ann_df = ann_df,
+  grid = grid_fitted,
+  spread_dat = spread_dat,
+  mode = "empirical_spread",
+  show_x_axis = TRUE
+)
+
+p_combined_spread <- p_oligo_spread / p_rest_spread +
+  plot_layout(guides = "collect", heights = c(1, 1)) &
+  theme(
+    legend.position = "top",
+    legend.box = "horizontal"
+  )
+
+print(p_combined_spread)
+
+ggsave(
+  plot_file_spread,
+  p_combined_spread,
+  width = 8,
+  height = 9,
+  device = pdf,
+  bg = "white"
+)
+
+# ============================================================
+# 12) STATS FILES
+# ============================================================
+write_stats_file(
+  out_file = stats_file_fitted,
+  plot_file = plot_file_fitted,
+  summary_file = summary_file_fitted,
+  mode_label = "Fitted mean lines with 95% confidence ribbons",
+  qc_counts = qc_counts,
+  qc_summary = qc_summary,
+  model_summary = model_summary,
+  model_anova = model_anova,
+  slopes_tbl = slopes_tbl,
+  pairs_tbl = pairs_tbl,
+  ann_df = ann_df,
+  summary_csv = summary_csv,
+  spread_bin_summary = NULL
+)
+
+write_stats_file(
+  out_file = stats_file_spread,
+  plot_file = plot_file_spread,
+  summary_file = summary_file_spread,
+  mode_label = "Fitted mean lines with empirical spread ribbons",
+  qc_counts = qc_counts,
+  qc_summary = qc_summary,
+  model_summary = model_summary,
+  model_anova = model_anova,
+  slopes_tbl = slopes_tbl,
+  pairs_tbl = pairs_tbl,
+  ann_df = ann_df,
+  summary_csv = summary_csv,
+  spread_bin_summary = spread_bin_summary
+)
+
+# ============================================================
+# 13) CONSOLE OUTPUT
+# ============================================================
+cat("\nDone.\n")
+cat("Plot 1   :", plot_file_fitted, "\n")
+cat("Summary 1:", summary_file_fitted, "\n")
+cat("Stats 1  :", stats_file_fitted, "\n\n")
+
+cat("Plot 2   :", plot_file_spread, "\n")
+cat("Summary 2:", summary_file_spread, "\n")
+cat("Stats 2  :", stats_file_spread, "\n")
+```
+## Statistical analysis and interpretation
+
+### Data structure and quality control
+
+- **Purpose**
+  - Before fitting the statistical model, we quantified the structure of the dataset to ensure sufficient observations across protein classes and ecological groups.
+
+- **Results**
+  - Total observations: **29,160**
+  - Number of species: **47**
+  - Number of proteins: **1,744**
+  - Number of sampling dates: **36**
+
+- **Protein class distribution**
+
+  | Group | Cytoplasmic | Transporter | Rhodopsin |
+  |------|-------------|-------------|-----------|
+  | Oligo-like | 7,281 | 4,954 | 466 |
+  | Rest | 11,727 | 4,276 | 456 |
+
+- **Interpretation**
+  - All protein classes contain substantial numbers of observations.
+  - Rhodopsins are less frequent but still sufficiently represented for slope estimation.
+  - The dataset spans multiple species and sampling dates, requiring a model that accounts for repeated observations.
+
+---
+
+# Mixed-effects scaling model
+
+### Model definition
+
+We fitted a **linear mixed-effects model**:
+log10(Protein abundance) ~ log10(Species abundance) × ProteinClass × Group2 + (1 | Species_ID) + (1 | Date)
+
+
+- **Response variable**
+  - `log10(Protein abundance)`
+
+- **Predictor**
+  - `log10(Species abundance)`
+
+- **Factors**
+  - `ProteinClass`: Cytoplasmic, Transporter, Rhodopsin
+  - `Group2`: Oligo-like vs Rest
+
+- **Random effects**
+  - Species identity
+  - Sampling date
+
+---
+
+# Why a log–log model is appropriate
+
+The model operates on log-transformed variables.
+
+This implies a **power-law relationship** in the original scale:
+
+\[
+Protein = k \cdot (Species\,abundance)^{\beta}
+\]
+
+- **β = slope of log-log regression**
+
+Biological interpretation:
+
+| β value | Meaning |
+|-------|--------|
+| β = 1 | protein abundance scales proportionally with species abundance |
+| β < 1 | protein increases slower than species abundance |
+| β > 1 | protein increases faster than species abundance |
+
+### Why this is statistically appropriate
+
+- Protein abundances arise from **multiplicative biological processes** (transcription, translation, cell abundance).
+- Multiplicative processes become **linear after log transformation**.
+- Log transformation typically **stabilizes variance** in abundance data.
+
+This modelling approach is widely used in:
+
+- metabolic scaling
+- gene–protein scaling
+- macroecological abundance relationships
+
+---
+
+# Random effects
+
+The model includes: (1 | Species_ID) (1 | Date)
+
+
+### Why random effects are necessary
+
+#### Species random effect
+
+- Each species contributes multiple observations.
+- Without this term, observations from the same species would not be independent.
+- The random intercept accounts for baseline expression differences among species.
+
+#### Date random effect
+
+- Measurements from the same sampling date may share environmental conditions.
+- This term captures shared variation across samples collected at the same time.
+
+### Estimated variance components
+
+| Random effect | Variance | Interpretation |
+|---------------|---------|---------------|
+| Species | 0.029 | modest baseline differences among species |
+| Date | 0.002 | very small date effect |
+| Residual | 0.577 | most variation occurs at the protein observation level |
+
+---
+
+# Fixed-effect tests (Type III ANOVA)
+
+The ANOVA evaluates whether each predictor contributes significantly to explaining protein abundance.
+
+| Term | Interpretation |
+|----|----|
+| logA | overall scaling relationship between protein abundance and species abundance |
+| ProteinClass | baseline expression differences among classes |
+| Group2 | baseline differences between ecological groups |
+| logA:ProteinClass | whether scaling slopes differ among protein classes |
+| logA:Group2 | whether slopes differ between groups |
+| ProteinClass:Group2 | whether class differences vary between groups |
+| logA:ProteinClass:Group2 | whether class-specific slopes differ between groups |
+
+### Results
+
+Key significant effects:
+
+- **ProteinClass** (p < 2e-16)
+  - Strong baseline differences among protein classes.
+
+- **logA × ProteinClass** (p < 2e-16)
+  - Scaling relationships differ among protein classes.
+
+- **ProteinClass × Group2** (p < 2e-16)
+  - Class differences vary between ecological groups.
+
+- **logA × ProteinClass × Group2** (p = 4.8e-16)
+  - Class-specific scaling relationships differ between groups.
+
+### Interpretation
+
+The three-way interaction indicates that **the scaling of protein abundance with species abundance depends on both protein class and ecological group**.
+
+---
+
+# Estimation of scaling slopes
+
+To directly estimate slopes for each class and group, we used: emtrends()
+
+
+This extracts the derivative:
+
+\[
+\frac{d\log_{10}(Protein)}{d\log_{10}(Species)}
+\]
+
+which corresponds to the **scaling exponent**.
+
+---
+
+# Estimated slopes
+
+## Oligo-like group
+
+| Protein class | slope |
+|---------------|------|
+| Cytoplasmic | -0.019 |
+| Transporter | 0.510 |
+| Rhodopsin | 0.429 |
+
+Interpretation:
+
+- Cytoplasmic proteins show **no scaling with species abundance**.
+- Transporters and rhodopsins **increase with species abundance**.
+
+---
+
+## Rest group
+
+| Protein class | slope |
+|---------------|------|
+| Cytoplasmic | 0.204 |
+| Transporter | 0.431 |
+| Rhodopsin | 0.275 |
+
+Interpretation:
+
+- All classes increase with species abundance.
+- Transporters show the strongest scaling.
+
+---
+
+# Pairwise slope comparisons
+
+Slope differences were tested using **Tukey-adjusted contrasts**.
+
+### Why this test is used
+
+When multiple slopes are estimated from the same model, pairwise comparisons require adjustment to control the family-wise error rate.
+
+Tukey correction is appropriate for comparing all pairs.
+
+---
+
+## Oligo-like group
+
+| Comparison | Result |
+|-----------|--------|
+| Cytoplasmic vs Transporter | highly significant difference |
+| Cytoplasmic vs Rhodopsin | significant difference |
+| Transporter vs Rhodopsin | not significant |
+
+Interpretation:
+
+- Transporters and rhodopsins scale similarly.
+- Both scale much more strongly than cytoplasmic proteins.
+
+---
+
+## Rest group
+
+| Comparison | Result |
+|-----------|--------|
+| Cytoplasmic vs Transporter | significant difference |
+| Cytoplasmic vs Rhodopsin | not significant |
+| Transporter vs Rhodopsin | not significant |
+
+Interpretation:
+
+- Transporters scale more strongly than cytoplasmic proteins.
+- Rhodopsin scaling is intermediate.
+
+---
+
+# Model assumptions
+
+The relationship between:
+log10(Protein abundance) and log10(Species abundance)
+
+
+should be approximately linear.
+
+Because abundance relationships often follow power laws, this assumption is typically reasonable.
+
+---
+
+### 2. Residual normality
+
+Residuals should be approximately normally distributed.
+
+Evaluated using:
+
+- Q–Q plots
+- residual histograms
+
+---
+
+### 3. Homoscedasticity
+
+Residual variance should not systematically increase with fitted values.
+
+Evaluated using:
+
+- residual vs fitted plots
+- residual vs logA plots
+
+---
+
+### 4. Independence
+
+Observations are assumed independent **conditional on the random effects**.
+
+This is addressed by including species and date random intercepts.
+
+---
+
+# Why the model is appropriate
+
+Several factors support the validity of this approach:
+
+- Large dataset (**29k observations**)
+- Multiple species and sampling dates
+- Log transformation stabilizes variance
+- Mixed-effects structure accounts for repeated observations
+- Scaling relationships are biologically meaningful
+- Slopes are estimated and compared using established statistical methods
+
+Therefore, fitting a **log–log linear mixed model** provides a robust framework for testing whether protein classes differ in how their abundances scale with species abundance.
+
+```{r}
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(lme4)
+  library(lmerTest)
+  library(emmeans)
+  library(readr)
+  library(patchwork)
+})
+
+# ============================================================
+# PARAMETERS
+# ============================================================
+rhodo_kos <- c("K04641", "K04643")
+
+PSEUDO_A <- 1e-12
+PSEUDO_P <- 1e-6
+
+pdf_file_main <- "Protein_Expression_EmpiricalSpread_Overview_Transporter_Cytoplasmic_Rhodopsin.pdf"
+stats_file    <- "Protein_Expression_EmpiricalSpread_Transporter_Cytoplasmic_Rhodopsin_stats.txt"
+diag_pdf_file <- "Protein_Expression_EmpiricalSpread_Model_Diagnostics.pdf"
+
+# empirical ribbon settings
+n_bins          <- 24   # x-axis bins per Group2 x ProteinClass
+min_points_bin  <- 5    # minimum observations needed per bin
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+
+num_stats <- function(x) {
+  tibble(
+    min    = min(x, na.rm = TRUE),
+    max    = max(x, na.rm = TRUE),
+    mean   = mean(x, na.rm = TRUE),
+    sd     = sd(x, na.rm = TRUE),
+    median = median(x, na.rm = TRUE),
+    iqr    = IQR(x, na.rm = TRUE)
+  )
+}
+
+safe_p_line <- function(pairs_tbl, group_name, labelA, labelB) {
+  x1 <- pairs_tbl %>%
+    filter(Group2 == group_name, contrast == paste(labelA, "-", labelB))
+
+  x2 <- pairs_tbl %>%
+    filter(Group2 == group_name, contrast == paste(labelB, "-", labelA))
+
+  if (nrow(x1) == 1) {
+    return(sprintf("%s vs %s: p = %s", labelA, labelB, signif(x1$p.value[1], 3)))
+  }
+  if (nrow(x2) == 1) {
+    return(sprintf("%s vs %s: p = %s", labelA, labelB, signif(x2$p.value[1], 3)))
+  }
+  sprintf("%s vs %s: p = NA", labelA, labelB)
+}
+
+safe_slope_line <- function(slopes_tbl, group_name, class_name) {
+  x <- slopes_tbl %>%
+    filter(Group2 == group_name, ProteinClass == class_name)
+
+  if (nrow(x) == 1) {
+    sprintf("%s slope = %.3f", class_name, x$logA.trend[1])
+  } else {
+    sprintf("%s slope = NA", class_name)
+  }
+}
+
+# ------------------------------------------------------------
+# Fixed-effect prediction grid
+# line = fitted mean from the mixed model
+# no uncertainty ribbon here; spread is shown empirically
+# ------------------------------------------------------------
+make_prediction_grid <- function(model, dat, n = 200) {
+
+  grid <- dat %>%
+    group_by(Group2, ProteinClass) %>%
+    summarise(
+      logA_min = quantile(logA, 0.02, na.rm = TRUE),
+      logA_max = quantile(logA, 0.98, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    rowwise() %>%
+    do({
+      tibble(
+        Group2 = .$Group2,
+        ProteinClass = .$ProteinClass,
+        logA = seq(.$logA_min, .$logA_max, length.out = n)
+      )
+    }) %>%
+    ungroup() %>%
+    mutate(
+      Group2 = factor(Group2, levels = levels(dat$Group2)),
+      ProteinClass = factor(ProteinClass, levels = levels(dat$ProteinClass))
+    )
+
+  X <- model.matrix(~ logA * ProteinClass * Group2, data = grid)
+  beta <- fixef(model)
+
+  grid$fit <- as.numeric(X %*% beta)
+  grid
+}
+
+# ------------------------------------------------------------
+# Empirical spread ribbons
+# These summarize observed data spread within x-bins
+#
+# outer ribbon: 10th to 90th percentile
+# inner ribbon: 25th to 75th percentile
+# median line : empirical median (optional)
+# ------------------------------------------------------------
+make_empirical_spread <- function(dat, n_bins = 24, min_points_bin = 5) {
+
+  dat %>%
+    group_by(Group2, ProteinClass) %>%
+    mutate(
+      x_bin = cut(logA, breaks = n_bins, include.lowest = TRUE)
+    ) %>%
+    group_by(Group2, ProteinClass, x_bin) %>%
+    summarise(
+      x_mid = mean(logA, na.rm = TRUE),
+      x_min = min(logA, na.rm = TRUE),
+      x_max = max(logA, na.rm = TRUE),
+      y_q10 = quantile(logP, 0.10, na.rm = TRUE),
+      y_q25 = quantile(logP, 0.25, na.rm = TRUE),
+      y_med = quantile(logP, 0.50, na.rm = TRUE),
+      y_q75 = quantile(logP, 0.75, na.rm = TRUE),
+      y_q90 = quantile(logP, 0.90, na.rm = TRUE),
+      n_bin = n(),
+      .groups = "drop"
+    ) %>%
+    filter(n_bin >= min_points_bin) %>%
+    arrange(Group2, ProteinClass, x_mid)
+}
+
+# ------------------------------------------------------------
+# Diagnostic plots on transformed scale
+# ------------------------------------------------------------
+write_model_diagnostics <- function(model, dat, out_pdf) {
+  res <- resid(model)
+  fit <- fitted(model)
+
+  pdf(out_pdf, width = 8, height = 8)
+  par(mfrow = c(2, 2), mar = c(4.5, 4.5, 2, 1))
+
+  plot(
+    fit, res,
+    pch = 16, cex = 0.6,
+    xlab = "Fitted values",
+    ylab = "Residuals",
+    main = "Residuals vs fitted"
+  )
+  abline(h = 0, lty = 2)
+
+  qqnorm(res, pch = 16, cex = 0.6, main = "Normal Q-Q")
+  qqline(res, lty = 2)
+
+  hist(
+    res, breaks = 40,
+    main = "Residual histogram",
+    xlab = "Residuals"
+  )
+
+  plot(
+    dat$logA, res,
+    pch = 16, cex = 0.6,
+    xlab = "log10(Species abundance)",
+    ylab = "Residuals",
+    main = "Residuals vs logA"
+  )
+  abline(h = 0, lty = 2)
+
+  dev.off()
+}
+
+# ============================================================
+# 1) SPECIES GROUPS
+# ============================================================
+species_groups2 <- species_meta_rhodopsin %>%
+  select(Species_ID, Group_For_Plots) %>%
+  distinct() %>%
+  mutate(Group2 = ifelse(Group_For_Plots == "Oligo_like", "Oligo-like", "Rest")) %>%
+  select(Species_ID, Group2)
+
+# ============================================================
+# 2) PROTEIN ANNOTATION MAP
+# ============================================================
+prot_annot <- gene_table_rhodopsin %>%
+  select(Protein_ID, KEGG_ID, KEGG_Subcategory, PHOBIUS_Annotation) %>%
+  distinct()
+
+# ============================================================
+# 3) MAIN ANALYSIS TABLE
+#
+# CLASS PRIORITY:
+#   1. Rhodopsin
+#   2. Transporter
+#   3. Cytoplasmic
+# ============================================================
+dat <- protein_table_rhodopsin %>%
+  left_join(prot_annot, by = c("Protein_ID", "KEGG_ID")) %>%
+  left_join(
+    species_abundance_rhodopsin %>%
+      select(Species_ID, Date, Species_Abundance),
+    by = c("Species_ID", "Date")
+  ) %>%
+  left_join(species_groups2, by = "Species_ID") %>%
+  filter(
+    Protein_Abundance_IBAQ_Norm > 0,
+    Species_Abundance > 0,
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified",
+    !is.na(Group2)
+  ) %>%
+  mutate(
+    ProteinClass = case_when(
+      KEGG_ID %in% rhodo_kos ~ "Rhodopsin",
+      grepl("Transporter", KEGG_Subcategory, ignore.case = TRUE) ~ "Transporter",
+      PHOBIUS_Annotation == "CytoplasmaticProtein" ~ "Cytoplasmic",
+      TRUE ~ NA_character_
+    ),
+    ProteinClass = factor(
+      ProteinClass,
+      levels = c("Cytoplasmic", "Transporter", "Rhodopsin")
+    ),
+    Group2 = factor(Group2, levels = c("Oligo-like", "Rest")),
+    logA = log10(Species_Abundance + PSEUDO_A),
+    logP = log10(Protein_Abundance_IBAQ_Norm + PSEUDO_P)
+  ) %>%
+  filter(!is.na(ProteinClass))
+
+# ============================================================
+# 4) QC
+# ============================================================
+qc_counts <- dat %>%
+  count(Group2, ProteinClass)
+
+qc_summary <- tibble(
+  metric = c("N_obs", "N_species", "N_proteins", "N_dates"),
+  value = c(
+    nrow(dat),
+    n_distinct(dat$Species_ID),
+    n_distinct(dat$Protein_ID),
+    n_distinct(dat$Date)
+  )
+)
+
+cat("\n===== QC =====\n")
+print(qc_counts)
+print(qc_summary)
+
+# ============================================================
+# 5) MIXED MODEL
+# ============================================================
+m <- lmer(
+  logP ~ logA * ProteinClass * Group2 + (1 | Species_ID) + (1 | Date),
+  data = dat,
+  REML = FALSE
+)
+
+model_summary <- summary(m)
+model_anova   <- anova(m)
+
+cat("\n===== MIXED MODEL SUMMARY =====\n")
+print(model_summary)
+
+cat("\n===== MIXED MODEL ANOVA =====\n")
+print(model_anova)
+
+# ============================================================
+# 6) SLOPES PER CLASS WITHIN GROUP
+# ============================================================
+slopes <- emtrends(m, ~ ProteinClass | Group2, var = "logA")
+slopes_tbl <- as.data.frame(slopes)
+
+pairs_tbl <- as.data.frame(
+  pairs(slopes, by = "Group2", adjust = "tukey")
+)
+
+cat("\n===== SLOPES (d logP / d logA) =====\n")
+print(slopes_tbl)
+
+cat("\n===== SLOPE COMPARISONS (within Group2; Tukey) =====\n")
+print(pairs_tbl)
+
+# ============================================================
+# 7) PANEL ANNOTATION TEXT
+# ============================================================
+ann_df <- tibble(
+  Group2 = levels(dat$Group2),
+  ann = c(
+    paste(
+      safe_slope_line(slopes_tbl, "Oligo-like", "Cytoplasmic"),
+      safe_slope_line(slopes_tbl, "Oligo-like", "Transporter"),
+      safe_slope_line(slopes_tbl, "Oligo-like", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Transporter", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Cytoplasmic", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Oligo-like", "Cytoplasmic", "Transporter"),
+      sep = "\n"
+    ),
+    paste(
+      safe_slope_line(slopes_tbl, "Rest", "Cytoplasmic"),
+      safe_slope_line(slopes_tbl, "Rest", "Transporter"),
+      safe_slope_line(slopes_tbl, "Rest", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Transporter", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Cytoplasmic", "Rhodopsin"),
+      safe_p_line(pairs_tbl, "Rest", "Cytoplasmic", "Transporter"),
+      sep = "\n"
+    )
+  )
+)
+
+# ============================================================
+# 8) FITTED LINES + EMPIRICAL SPREAD RIBBONS
+# ============================================================
+grid <- make_prediction_grid(m, dat, n = 200)
+
+spread_dat <- make_empirical_spread(
+  dat = dat,
+  n_bins = n_bins,
+  min_points_bin = min_points_bin
+)
+
+# ribbon QC summary
+spread_bin_summary <- spread_dat %>%
+  group_by(Group2, ProteinClass) %>%
+  summarise(
+    n_bins_retained = n(),
+    min_bin_n       = min(n_bin, na.rm = TRUE),
+    max_bin_n       = max(n_bin, na.rm = TRUE),
+    mean_bin_n      = mean(n_bin, na.rm = TRUE),
+    median_bin_n    = median(n_bin, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ============================================================
+# 9) GLOBAL AXIS LIMITS
+# ============================================================
+x_limits <- c(-1.2, 1.6)
+y_limits <- c(2, 8)
+
+x_breaks <- seq(-1, 1.5, by = 0.5)
+y_breaks <- seq(2, 8, by = 2)
+
+x_labels <- sprintf("%.1f", x_breaks)
+x_labels[x_labels == "-0.0"] <- "0.0"
+
+ann_x <- -1.18
+ann_y <- 7.95
+
+# ============================================================
+# 10) BASE PLOT FUNCTION
+#
+# ribbons now show observed spread of the data:
+# outer ribbon = 10th-90th percentile
+# inner ribbon = 25th-75th percentile
+# solid line   = fitted mixed-model mean
+# dashed line  = empirical median within bins
+# ============================================================
+make_group_plot <- function(group_name, show_x_axis = TRUE) {
+
+  ann_sub <- ann_df %>%
+    filter(Group2 == group_name)
+
+  ggplot() +
+    # outer empirical spread
+    geom_ribbon(
+      data = spread_dat %>% filter(Group2 == group_name),
+      aes(x = x_mid, ymin = y_q10, ymax = y_q90, fill = ProteinClass),
+      alpha = 0.10
+    ) +
+
+    # inner empirical spread
+    geom_ribbon(
+      data = spread_dat %>% filter(Group2 == group_name),
+      aes(x = x_mid, ymin = y_q25, ymax = y_q75, fill = ProteinClass),
+      alpha = 0.22
+    ) +
+
+    # empirical median
+    geom_line(
+      data = spread_dat %>% filter(Group2 == group_name),
+      aes(x = x_mid, y = y_med, color = ProteinClass),
+      linewidth = 0.7,
+      linetype = "22"
+    ) +
+
+    # fitted mixed-model line
+    geom_line(
+      data = grid %>% filter(Group2 == group_name),
+      aes(x = logA, y = fit, color = ProteinClass),
+      linewidth = 1.1
+    ) +
+
+    # annotation
+    geom_text(
+      data = ann_sub,
+      aes(label = ann),
+      x = ann_x,
+      y = ann_y,
+      inherit.aes = FALSE,
+      hjust = 0,
+      vjust = 1,
+      size = 3.1
+    ) +
+
+    scale_color_manual(
+      values = c(
+        "Cytoplasmic" = "#1f77b4",
+        "Transporter" = "#ff7f0e",
+        "Rhodopsin"   = "#d62728"
+      ),
+      drop = FALSE
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Cytoplasmic" = "#1f77b4",
+        "Transporter" = "#ff7f0e",
+        "Rhodopsin"   = "#d62728"
+      ),
+      drop = FALSE
+    ) +
+    scale_x_continuous(
+      breaks = x_breaks,
+      labels = x_labels
+    ) +
+    scale_y_continuous(
+      breaks = y_breaks,
+      labels = y_breaks
+    ) +
+    coord_cartesian(
+      xlim = x_limits,
+      ylim = y_limits,
+      expand = FALSE
+    ) +
+    labs(
+      title = group_name,
+      x = if (show_x_axis) "log10(Species abundance)" else NULL,
+      y = "log10(Protein abundance iBAQ)",
+      color = "Protein class",
+      fill  = "Protein class"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      legend.position = "top",
+      legend.title = element_text(face = "bold"),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "grey50", linewidth = 0.4),
+      axis.title.x = if (show_x_axis) element_text() else element_blank(),
+      axis.text.x  = if (show_x_axis) element_text() else element_blank(),
+      axis.ticks.x = if (show_x_axis) element_line(color = "grey50") else element_blank()
+    )
+}
+
+# ============================================================
+# 11) BUILD THE TWO ALIGNED PLOTS
+# ============================================================
+p_oligo <- make_group_plot("Oligo-like", show_x_axis = FALSE)
+p_rest  <- make_group_plot("Rest", show_x_axis = TRUE)
+
+# ============================================================
+# 12) STACK THEM WITH A SHARED LEGEND
+# ============================================================
+p_combined <- p_oligo / p_rest +
+  plot_layout(guides = "collect", heights = c(1, 1)) &
+  theme(
+    legend.position = "top",
+    legend.box = "horizontal"
+  )
+
+print(p_combined)
+
+ggsave(
+  pdf_file_main,
+  p_combined,
+  width = 8,
+  height = 9,
+  device = pdf,
+  bg = "white"
+)
+
+# ============================================================
+# 13) MODEL DIAGNOSTICS
+# ============================================================
+write_model_diagnostics(m, dat, diag_pdf_file)
+
+# ============================================================
+# 14) WRITE STATS FILE
+# ============================================================
+sink(stats_file)
+
+cat("============================================================\n")
+cat("Protein expression mixed model statistics\n")
+cat("Rhodopsin vs Transporter vs Cytoplasmic\n")
+cat("Empirical spread ribbons + fitted mixed-model lines\n")
+cat("============================================================\n\n")
+
+cat("Files written by this script:\n")
+cat(" -", pdf_file_main, "\n")
+cat(" -", diag_pdf_file, "\n")
+cat(" -", stats_file, "\n\n")
+
+cat("============================================================\n")
+cat("CLASSIFICATION RULES\n")
+cat("============================================================\n\n")
+cat("Priority order used for classification:\n")
+cat("1. Rhodopsin   : KEGG_ID in rhodo_kos\n")
+cat("2. Transporter : KEGG_Subcategory contains 'Transporter'\n")
+cat("3. Cytoplasmic : PHOBIUS_Annotation == 'CytoplasmaticProtein'\n")
+cat("Proteins are assigned once only, using this priority order.\n\n")
+
+cat("============================================================\n")
+cat("PLOT INTERPRETATION\n")
+cat("============================================================\n\n")
+cat("Solid line  : fitted mixed-model relationship on log10-log10 scale\n")
+cat("Dashed line : empirical median log10(Protein abundance) within x-bins\n")
+cat("Inner ribbon: empirical 25th-75th percentile of observed log10(Protein abundance)\n")
+cat("Outer ribbon: empirical 10th-90th percentile of observed log10(Protein abundance)\n")
+cat("Ribbons show observed data spread and are NOT confidence intervals of the fitted line.\n\n")
+
+cat("Empirical ribbon construction parameters:\n")
+cat(" - number of x-bins per Group2 x ProteinClass =", n_bins, "\n")
+cat(" - minimum observations required per retained bin =", min_points_bin, "\n\n")
+
+cat("============================================================\n")
+cat("QC COUNTS\n")
+cat("============================================================\n\n")
+print(qc_counts)
+cat("\n")
+print(qc_summary)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("RIBBON BIN SUMMARY\n")
+cat("============================================================\n\n")
+print(spread_bin_summary)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("MIXED MODEL SUMMARY\n")
+cat("============================================================\n\n")
+print(model_summary)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("MIXED MODEL ANOVA\n")
+cat("============================================================\n\n")
+print(model_anova)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("SLOPES (EMTRENDS)\n")
+cat("============================================================\n\n")
+print(slopes_tbl)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("PAIRWISE SLOPE CONTRASTS WITHIN GROUP (TUKEY)\n")
+cat("============================================================\n\n")
+print(pairs_tbl)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("ANNOTATION TEXT USED IN FIGURE\n")
+cat("============================================================\n\n")
+print(ann_df)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("MODEL INTERPRETATION NOTES\n")
+cat("============================================================\n\n")
+cat(
+  paste(
+    "The mixed model was fitted on log10-transformed abundance variables.",
+    "This implies a linear relationship on the transformed scale and a power-law relationship on the original scale.",
+    "Slope differences were tested using emtrends(), which estimates class-specific trends of logP versus logA within each Group2 level.",
+    "These slopes are scaling exponents on the log-log scale.",
+    "The plotted ribbons do not come from model uncertainty; they summarize the empirical distribution of observed data within local x-bins.",
+    sep = "\n"
+  )
+)
+cat("\n\n")
+
+cat("============================================================\n")
+cat("MODEL ASSUMPTION CHECKLIST\n")
+cat("============================================================\n\n")
+cat(
+  paste(
+    "Inspect the diagnostics PDF and verify:",
+    "1. Residuals vs fitted: no strong curvature or funnel pattern.",
+    "2. Q-Q plot: no severe deviation from normality in residuals.",
+    "3. Residuals vs logA: no remaining systematic trend.",
+    "4. No single class/group combination with extreme leverage due to very small n.",
+    "",
+    "If these checks look acceptable, the log-log linear mixed model and slope contrasts are defensible.",
+    "The empirical ribbons are descriptive visual summaries of observed spread and do not rely on model-distribution assumptions.",
+    "",
+    "If assumptions are poor, possible next steps include:",
+    "- class-specific variance structures (e.g. nlme::lme with varIdent),",
+    "- robust mixed modelling,",
+    "- or restricting inference to the abundance range shared by all classes.",
+    sep = "\n"
+  )
+)
+cat("\n\n")
+
+sink()
+
+cat("\nDone.\n")
+cat("Main plot    :", pdf_file_main, "\n")
+cat("Diagnostics  :", diag_pdf_file, "\n")
+cat("Stats        :", stats_file, "\n")
+```
+
+# Output fasta files with rhodopsins for alignment
+```{r}
+############################################################
+# Export expressed rhodopsins as FASTA
+# Header format:
+# Species_ID_Group2_Phylum_Class_Order_Family_Genus_Species
+#
+# Assumes:
+# - protein_table_rhodopsin contains expressed proteins
+# - gene_table contains KEGG_ID and protein sequence
+# - species_meta contains taxonomy
+# - protein sequence column is named Protein_Sequence
+#   (change below if your column has a different name)
+############################################################
+
+library(dplyr)
+
+# Rhodopsin KO IDs
+rhodo_kos <- c("K04643", "K04641")
+
+############################################################
+# 1) Identify expressed rhodopsins
+############################################################
+
+rhodo_expressed <- protein_table_rhodopsin %>%
+  filter(KEGG_ID %in% rhodo_kos) %>%
+  distinct(Species_ID, Protein_ID)
+
+############################################################
+# 2) Add sequence, taxonomy, and Oligo-like vs Rest category
+############################################################
+
+rhodo_fasta_df <- rhodo_expressed %>%
+  left_join(
+    gene_table %>% select(Protein_ID, Protein_Sequence),
+    by = "Protein_ID"
+  ) %>%
+  left_join(
+    species_meta %>%
+      select(Species_ID, Group_For_Plots, Phylum, Class, Order, Family, Genus, Species),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Group2 = ifelse(Group_For_Plots == "Oligo_like", "Oligo-like", "Rest"),
+    fasta_header = paste(
+      Species_ID,
+      Group2,
+      Phylum,
+      Class,
+      Order,
+      Family,
+      Genus,
+      Species,
+      sep = "_"
+    )
+  ) %>%
+  filter(!is.na(Protein_Sequence))
+
+############################################################
+# 3) Write FASTA
+############################################################
+
+fasta_file <- "Expressed_Rhodopsins_Group2.fasta"
+con <- file(fasta_file, "w")
+
+for (i in seq_len(nrow(rhodo_fasta_df))) {
+  writeLines(paste0(">", rhodo_fasta_df$fasta_header[i]), con)
+  writeLines(rhodo_fasta_df$Protein_Sequence[i], con)
+}
+
+close(con)
+
+cat("FASTA exported:", fasta_file, "\n")
+```
+

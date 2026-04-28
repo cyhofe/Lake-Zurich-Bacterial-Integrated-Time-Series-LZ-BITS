@@ -1,0 +1,2374 @@
+---
+title: "Lake Overivew - SpringBloom2021"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+# Reproducibility
+set.seed(1)
+
+############################################################
+# 0) Clear R "brain" + libraries
+############################################################
+rm(list = ls())
+gc()
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(lubridate)
+  library(tibble)   # for glimpse()
+  library(ggplot2)
+})
+
+############################################################
+# 1) Set working directory (analysis folder)
+############################################################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_03/LakeOverview/")
+
+############################################################
+# 2) Load exported analysis tables (from the preparation script)
+############################################################
+
+species_meta      <- readr::read_csv("Species_Meta_Table.csv", show_col_types = FALSE)
+species_abundance <- readr::read_csv("Species_Abundance_Table.csv", show_col_types = FALSE)
+gene_table        <- readr::read_csv("Species_Gene_Table.csv", show_col_types = FALSE)
+protein_table     <- readr::read_csv("Species_Protein_Table.csv", show_col_types = FALSE)
+
+############################################################
+# 3) Quick look
+############################################################
+glimpse(species_meta)
+glimpse(species_abundance)
+glimpse(gene_table)
+glimpse(protein_table)
+
+############################################################
+# 4) Ensure Date columns are Date class (robust to CSV parsing)
+############################################################
+if ("Date" %in% names(species_abundance)) {
+  species_abundance <- species_abundance %>% mutate(Date = as.Date(Date))
+}
+if ("Date" %in% names(protein_table)) {
+  protein_table <- protein_table %>% mutate(Date = as.Date(Date))
+}
+```
+
+## Data inputs and preprocessing summary (reviewer-proof)
+
+This notebook uses four **pre-exported** tables produced by a dedicated data-preparation script. The preparation step standardises time alignment between metagenomics and proteomics, applies conservative proteomics QC, and defines a single, transparent grouping variable used throughout the analyses.
+
+### 1) `Species_Meta_Table.csv` (`species_meta`)
+- **What it represents**
+  - One row per MAG / `Species_ID` (**N = 495**).
+  - Taxonomy columns: `Domain`, `Phylum`, `Class`, `Order`, `Family`, `Genus`, `Species`.
+- **Trophic annotation**
+  - `TrophicIndex` (numeric) and `TrophicGroup` (categorical: `Oligo_like`, `Intermediate`, `Copio_like`, or `not_defined`).
+  - `TrophicInfo_Available` indicates whether a trophic index exists for the MAG.
+  - **Interpretation:** trophic indices were computed only for MAGs meeting the **≥80% completeness** criterion used in the trophic-index workflow; therefore **missing `TrophicIndex` (i.e., `TrophicInfo_Available == FALSE`) is treated as insufficient completeness for trophic inference**.
+- **Species-level QC fields used for data availability**
+  - `Proteome_Total_iBAQ_Norm`: total normalised proteome signal across all proteomics dates (sum of `Protein_Abundance_IBAQ_Norm` from species-specific proteins).
+  - `Proteome_Recovered`: `TRUE` if any species-specific proteome signal is detected across the time series.
+  - `Species_Abundance_in_Proteomics_Dates`: total metagenomic abundance summed across proteomics sampling dates.
+  - `Abundance_In_Proteomics_Dates`: `TRUE` if metagenomic abundance is >0 on proteomics sampling dates (i.e., the species is present during the proteomics window).
+- **Single grouping variable used in the notebook**
+  - `Group_For_Plots` is the **only** grouping variable used for stacked bars and group-wise summaries.
+  - It encodes whether a MAG meets all requirements for joint interpretation across metagenomes and proteomes:
+    - If **all three** are true:
+      1) `TrophicInfo_Available == TRUE` (proxy for ≥80% completeness),
+      2) `Proteome_Recovered == TRUE` (species-specific proteome evidence),
+      3) `Abundance_In_Proteomics_Dates == TRUE` (present during proteomics dates),
+      → then **`Group_For_Plots = TrophicGroup`** (e.g., `Oligo_like`, `Intermediate`, `Copio_like`).
+    - Otherwise → **`Group_For_Plots = "Filtered"`**.
+  - **Interpretation:** `"Filtered"` does **not** mean the MAG is removed from tables; it means it does not meet one or more criteria required for joint genome–proteome interpretation with trophic stratification.
+
+---
+
+### 2) `Species_Abundance_Table.csv` (`species_abundance`)
+- **What it represents**
+  - Date-resolved metagenomic abundance table with one row per `Species_ID × Date`.
+  - Restricted to the **proteomics sampling dates** to ensure direct temporal comparability with proteomics.
+- **Explicit handling of absences**
+  - The table is built on a complete `Species_ID × Date` grid.
+  - If a species has no metagenomic observation on a proteomics date, this is encoded as **`Species_Abundance = 0`** (explicit absence, not a missing row).
+- **Columns**
+  - Core abundance fields: `Species_ID`, `Date`, `Species_Abundance`.
+  - Species-level annotations propagated from `species_meta`:  
+    `TrophicIndex`, `TrophicGroup`, `TrophicInfo_Available`, `Proteome_Recovered`, `Abundance_In_Proteomics_Dates`, `Group_For_Plots`.
+- **Interpretation**
+  - These are metagenomic abundances *only on proteomics dates*; total abundance summaries therefore refer to the proteomics sampling window, not the full metagenomics timeline.
+
+---
+
+### 3) `Species_Gene_Table.csv` (`gene_table`)
+- **What it represents**
+  - One row per predicted gene/protein (gene product) linked to a `Species_ID`.
+- **Functional annotations**
+  - Includes KEGG / COG / TIGR / PFAM / PHOBIUS annotations at gene level, and KEGG category information joined via `KEGG_ID`:
+    - `KEGG_Category`, `KEGG_Subcategory_ID`, `KEGG_Subcategory`,
+    - `Transporter_Family`, `Substracte_Group`, `Substrate_Category` (if available).
+- **Species-level grouping/QC annotations**
+  - Includes `TrophicIndex`, `TrophicGroup`, `TrophicInfo_Available`,
+    `Proteome_Recovered`, `Abundance_In_Proteomics_Dates`, and `Group_For_Plots`.
+- **Interpretation**
+  - Enables group-wise summaries of **genomic functional potential** across trophic strategies and the `"Filtered"` category.
+
+---
+
+### 4) `Species_Protein_Table.csv` (`protein_table`)
+- **What it represents**
+  - Date-resolved proteomics table with rows at `Species_ID × Protein_ID × Date`.
+  - Contains **species-specific protein groups only** (conservative taxonomy rule).
+- **Proteomics preprocessing applied upstream**
+  - Contaminant removal (e.g., excludes `Phylum == "Y-FGCZCont"`).
+  - Retains quantified proteins (`Protein_Abundance_IBAQ > 0`).
+  - **Median-centering normalisation per Date:**  
+    iBAQ values are scaled so each sample median equals the global median (making dates comparable).
+  - Protein-group specificity filtering:
+    - A protein group is kept only if all group members resolve to the same taxonomy **Species** label.
+    - Diagnostics retained: `any_missing_taxonomy`, `n_species_labels`, `Species_Specific_ProteinGroup`.
+- **Key quantitative fields**
+  - `Protein_Abundance_IBAQ_Raw`: summed raw iBAQ per protein per date.
+  - `Protein_Abundance_IBAQ_Norm`: summed median-centred iBAQ per protein per date.
+- **Species-level grouping/QC annotations**
+  - Includes `TrophicIndex`, `TrophicGroup`, `TrophicInfo_Available`,
+    `Proteome_Recovered`, `Abundance_In_Proteomics_Dates`, and `Group_For_Plots`.
+
+---
+
+### Summary: how grouping is achieved and what it means
+- The notebook uses **one** categorical variable, `Group_For_Plots`, to stratify all figures and summaries.
+- `Group_For_Plots` assigns a species to `Oligo_like`, `Intermediate`, or `Copio_like` **only when**:
+  - trophic information is available (proxy for ≥80% completeness),
+  - metagenomic abundance is present on proteomics dates,
+  - and species-specific proteome evidence is recovered.
+- Species failing any of these criteria are labelled `"Filtered"`.
+- **Crucially:** `"Filtered"` species are still retained in the exported tables and remain available for transparent reporting of data coverage and limitations.
+
+
+```{r}
+############################################################
+# Dataset overview: contribution by trophic strategy vs Filtered
+# (uses exported Group_For_Plots; no re-definition in notebook)
+############################################################
+
+# Define plotting order once (consistent across all panels)
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like", "Filtered")
+
+############################################################
+# 1) Group assignment (authoritative)
+############################################################
+# Group_For_Plots was computed in the preparation script:
+# - Trophic group only if trophic info available AND proteome recovered AND abundance present
+# - otherwise "Filtered"
+species_groups <- species_meta %>%
+  transmute(
+    Species_ID,
+    Plot_Group = factor(as.character(Group_For_Plots), levels = group_levels)
+  )
+
+############################################################
+# 2) Species-level metrics (computed once per species)
+############################################################
+
+# Genes per species (gene_table is gene-level; count distinct Protein_ID)
+genes_per_species <- gene_table %>%
+  group_by(Species_ID) %>%
+  summarise(N_Genes = n_distinct(Protein_ID), .groups = "drop")
+
+# Proteins per species + total proteome abundance (protein_table is protein-level by Date)
+proteome_per_species <- protein_table %>%
+  group_by(Species_ID) %>%
+  summarise(
+    N_Proteins = n_distinct(Protein_ID),
+    Protein_Abundance_Sum = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Metagenomic abundance per species (species_abundance is Species_ID × Date)
+abundance_per_species <- species_abundance %>%
+  group_by(Species_ID) %>%
+  summarise(
+    Species_Abundance_Sum = sum(Species_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Combine (keep ALL species from species_meta)
+species_summary <- species_groups %>%
+  left_join(genes_per_species,     by = "Species_ID") %>%
+  left_join(proteome_per_species,  by = "Species_ID") %>%
+  left_join(abundance_per_species, by = "Species_ID") %>%
+  mutate(
+    N_Genes               = ifelse(is.na(N_Genes), 0, N_Genes),
+    N_Proteins            = ifelse(is.na(N_Proteins), 0, N_Proteins),
+    Protein_Abundance_Sum = ifelse(is.na(Protein_Abundance_Sum), 0, Protein_Abundance_Sum),
+    Species_Abundance_Sum = ifelse(is.na(Species_Abundance_Sum), 0, Species_Abundance_Sum)
+  )
+
+############################################################
+# 3) Summaries by Plot_Group (trophic groups vs Filtered)
+############################################################
+overview_stats <- species_summary %>%
+  group_by(Plot_Group) %>%
+  summarise(
+    N_Species               = n_distinct(Species_ID),
+    N_Genes_Total           = sum(N_Genes, na.rm = TRUE),
+    N_Proteins_Total        = sum(N_Proteins, na.rm = TRUE),
+    Species_Abundance_Total = sum(Species_Abundance_Sum, na.rm = TRUE),
+    Protein_Abundance_Total = sum(Protein_Abundance_Sum, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+############################################################
+# 4) Long format + proportions within each metric
+############################################################
+overview_long <- overview_stats %>%
+  tidyr::pivot_longer(
+    cols = c(N_Species, N_Genes_Total, N_Proteins_Total,
+             Species_Abundance_Total, Protein_Abundance_Total),
+    names_to  = "Metric",
+    values_to = "Value"
+  ) %>%
+  group_by(Metric) %>%
+  mutate(
+    Total = sum(Value, na.rm = TRUE),
+    Prop  = ifelse(Total > 0, Value / Total, 0)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    Plot_Group = factor(as.character(Plot_Group), levels = group_levels),
+    Metric = factor(
+      Metric,
+      levels = c("N_Species", "N_Genes_Total", "N_Proteins_Total",
+                 "Species_Abundance_Total", "Protein_Abundance_Total"),
+      labels = c("Species", "Genes", "Proteins", "Metagenome abundance", "Proteome abundance")
+    )
+  )
+
+
+############################################################
+# 5) Plot: stacked proportions with absolute labels
+############################################################
+p_overview_horizontal <- ggplot(overview_long, aes(x = Metric, y = Prop, fill = Plot_Group)) +
+  geom_col(width = 0.75) +
+  geom_text(
+    aes(label = ifelse(Value > 0, scales::comma(round(Value, 0)), "")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Proportion of total (within each metric)",
+    fill = "Group",
+    title = "SpringBloom2021 dataset overview by trophic strategy vs Filtered"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "right",
+    axis.text.x = element_text(angle = 20, hjust = 1)
+  )
+
+ggsave("Fig_Overview_TrophicStrategy_horizontal.pdf", p_overview_horizontal,
+       width = 9, height = 9, units = "in", dpi = 300)
+
+############################################################
+# Vertical version (bars run vertically; proportion on y axis)
+############################################################
+library(ggplot2)
+library(scales)
+
+p_overview_vertical <- ggplot(overview_long, aes(x = Metric, y = Prop, fill = Plot_Group)) +
+  geom_col(width = 0.75) +
+  geom_text(
+    aes(label = ifelse(Value > 0, scales::comma(round(Value, 0)), "")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Proportion of total (within each metric)",
+    fill = "Group",
+    title = "SpringBloom2021 dataset overview by trophic strategy vs Filtered"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "right"
+  ) +
+  coord_flip()
+
+print(p_overview_vertical)
+
+# Optional save
+ggsave("Fig_Overview_TrophicStrategy_vertical.pdf", p_overview_vertical,
+       width = 7, height = 4, units = "in", dpi = 300)
+```
+## Dataset overview: trophic strategies vs *Filtered*
+
+### Goal
+- To provide a **transparent, high-level overview** of how data coverage is distributed across:
+  - trophic strategies (*Oligo_like*, *Intermediate*, *Copio_like*), and
+  - species labelled **Filtered** (i.e. not suitable for joint trophic genome–proteome interpretation).
+- To summarise, **for each data layer**, how much of the dataset is contributed by each group:
+  - number of species,
+  - number of genes,
+  - number of proteins,
+  - total metagenomic abundance (on proteomics dates),
+  - total proteomic abundance.
+
+### How grouping was defined (methodological)
+- Grouping is based on the precomputed `Group_For_Plots` variable from the data-preparation script.
+- A species is assigned to its **trophic group** (*Oligo_like*, *Intermediate*, *Copio_like*) **only if all three conditions are met**:
+  1. `TrophicInfo_Available == TRUE`  
+     → proxy for ≥80% genome completeness (required for trophic index calculation),
+  2. `Proteome_Recovered == TRUE`  
+     → at least one species-specific protein detected,
+  3. `Abundance_In_Proteomics_Dates == TRUE`  
+     → metagenomic presence during the proteomics sampling window.
+- If **any** of these conditions is not met, the species is labelled **`Filtered`**.
+- Importantly, *Filtered species are not removed from the dataset*; they are retained for transparency and context.
+
+### What is shown in the figure (statistical)
+- Each bar represents **one metric**, normalised to **100%**:
+  - *Species*: count of MAGs,
+  - *Genes*: total number of gene products,
+  - *Proteins*: total number of species-specific proteins,
+  - *Metagenome abundance*: summed metagenomic abundance across proteomics dates,
+  - *Proteome abundance*: summed normalised iBAQ across all dates.
+- Bars are **stacked by group**, showing **relative contributions**.
+- Numbers inside bars show **absolute values**, allowing direct comparison across metrics.
+
+### Interpretation of results (biological)
+- **Species and genes**:  
+  - A substantial fraction of species and genes fall into the **Filtered** category.
+  - This reflects expected biological and technical constraints (e.g. incomplete genomes, rare taxa, or lack of proteome detection), not data loss.
+- **Proteins and proteome abundance**:  
+  - The majority of detected proteins and proteomic signal originates from species assigned to trophic groups.
+  - This indicates that **species meeting the joint-analysis criteria dominate expressed functional activity**.
+- **Metagenome vs proteome contrast**:
+  - Some species contribute genomic potential but little or no proteomic signal, highlighting the importance of separating *presence* from *expression*.
+- **Ecological implication**:
+  - Trophic strategies inferred from well-supported genomes (≥80% complete, expressed, and present) capture most of the **functional signal** in the system.
+  - Filtered species provide important background diversity but contribute less to measurable protein expression during the sampled period.
+
+### Take-home message
+- This overview demonstrates that downstream analyses focusing on `Group_For_Plots`:
+  - are **data-driven and conservative**,
+  - retain transparency about excluded strata,
+  - and are biologically justified by where most functional signal resides.
+
+
+# Funcional Overview
+
+```{r}
+############################################################
+# Part A (Main Figure):
+#   Ecological strategy allocation across data layers
+#   - Collapse to Top 3 modules (defined ONCE from GENES layer) + Rest
+#   - Proteomics summarised per species by MEDIAN across dates
+#   - Plot style: median lines + IQR ribbons (no points/boxplots)
+#   - Output: EXACTLY 5 panels in this order:
+#       Overall, Oligo_like, Intermediate, Copio_like, Filtered
+#
+# Part B (Supplementary Figure):
+#   Full 7 modules (no Top3+Rest), distributions across species
+#   - 5 plots: Overall, Oligo_like, Intermediate, Copio_like, Filtered
+#   - Each plot has 3 facets (Genes / Proteins detected / Proteome investment)
+#   - Boxplots + light jitter (species as replicates)
+#
+# Core methodological choices (clear for reviewers):
+#   1) Multi-label KEGG_Subcategory is split on ';'
+#   2) If a protein maps to multiple DISTINCT modules, it is fractionally assigned (1/n)
+#   3) NA KEGG_Subcategory is excluded BEFORE proportions (removed from denominator)
+#   4) Species are biological replicates: proportions computed per species
+#   5) Proteomics layers: compute proportions per species×date first,
+#      then summarise across dates per species using MEDIAN
+#
+# Inputs required in environment:
+#   species_meta:  Species_ID, Group_For_Plots
+#   gene_table:    Species_ID, Protein_ID, KEGG_Subcategory (+ may include Group_For_Plots.x/y)
+#   protein_table: Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm, Group_For_Plots
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(tibble)
+  library(ggplot2)
+})
+
+# ============================================================
+# 1) Strategy module mapping (7 modules)
+# ============================================================
+module_map <- tribble(
+  ~Label,                                    ~Module,
+  # Resource acquisition
+  "Transporters",                             "Resource acquisition",
+  "Secretion system",                         "Resource acquisition",
+  "Two-component system",                     "Resource acquisition",
+  "Membrane trafficking",                     "Resource acquisition",
+  "Ion channels",                             "Resource acquisition",
+  "Lectins",                                  "Resource acquisition",
+
+  # Growth machinery
+  "Ribosome",                                 "Growth machinery",
+  "Ribosome biogenesis",                      "Growth machinery",
+  "Translation factors",                      "Growth machinery",
+  "Transfer RNA biogenesis",                  "Growth machinery",
+
+  # Genome replication
+  "DNA replication proteins",                 "Genome replication",
+  "DNA repair and recombination proteins",    "Genome replication",
+  "Chromosome and associated proteins",       "Genome replication",
+
+  # Regulation and sensing
+  "Transcription factors",                    "Regulation and sensing",
+  "Transcription machinery",                  "Regulation and sensing",
+  "Protein kinases",                          "Regulation and sensing",
+
+  # Stress/defence/interactions
+  "Antimicrobial resistance genes",           "Stress/defence/interactions",
+  "Prokaryotic defense system",               "Stress/defence/interactions",
+  "Bacterial toxins",                         "Stress/defence/interactions",
+  "Peptidases and inhibitors",                "Stress/defence/interactions",
+
+  # Core metabolism/biosynthesis
+  "Enzymes",                                  "Core metabolism/biosynthesis",
+  "Amino acid related enzymes",               "Core metabolism/biosynthesis",
+  "Lipid biosynthesis proteins",              "Core metabolism/biosynthesis",
+  "Lipopolysaccharide biosynthesis proteins", "Core metabolism/biosynthesis",
+  "Glycosyltransferases",                     "Core metabolism/biosynthesis",
+  "Polyketide biosynthesis proteins",         "Core metabolism/biosynthesis",
+  "Prenyltransferases",                       "Core metabolism/biosynthesis",
+  "Cytochrome P450",                          "Core metabolism/biosynthesis",
+
+  # Motility/dispersal
+  "Bacterial motility proteins",              "Motility/dispersal",
+  "Cytoskeleton proteins",                    "Motility/dispersal",
+  "Cilium and associated proteins",           "Motility/dispersal"
+) %>% distinct()
+
+module_levels <- c(
+  "Resource acquisition",
+  "Growth machinery",
+  "Genome replication",
+  "Regulation and sensing",
+  "Stress/defence/interactions",
+  "Core metabolism/biosynthesis",
+  "Motility/dispersal"
+)
+
+layer_levels_main <- c(
+  "Genes (functional potential)",
+  "Proteins detected (median across dates per species)",
+  "Proteome investment (median across dates per species)"
+)
+
+layer_levels_supp <- c(
+  "Genes (functional potential)",
+  "Proteins detected (per species across dates)",
+  "Proteome investment (per species across dates)"
+)
+
+# ============================================================
+# 2) Group mapping and a safe way to use Group_For_Plots
+#    - We do NOT overwrite your big tables (gene_table/protein_table)
+#    - For genes, we use Group_For_Plots.x/y if present; otherwise species_meta
+# ============================================================
+group_map <- species_meta %>% distinct(Species_ID, Group_For_Plots)
+
+pick_group_col <- function(df) {
+  cand <- c("Group_For_Plots", "Group_For_Plots.x", "Group_For_Plots.y")
+  cand[cand %in% names(df)][1]
+}
+
+# ============================================================
+# 3) Core helper: map KEGG_Subcategory -> Module with fractional assignment
+#    - Split KEGG_Subcategory on ';'
+#    - Map each label to a module
+#    - Fractional assignment per protein across DISTINCT modules: weight = 1/n
+# ============================================================
+to_module_weights <- function(df, id_cols) {
+  df %>%
+    select(all_of(c(id_cols, "Protein_ID", "KEGG_Subcategory"))) %>%
+    filter(!is.na(KEGG_Subcategory)) %>%
+    mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+    separate_rows(.sub, sep = ";") %>%
+    mutate(Label = str_trim(.sub)) %>%
+    distinct(across(all_of(c(id_cols, "Protein_ID", "Label")))) %>%
+    inner_join(module_map, by = "Label") %>%
+    mutate(Module = factor(Module, levels = module_levels)) %>%
+    group_by(across(all_of(c(id_cols, "Protein_ID")))) %>%
+    mutate(weight = 1 / n_distinct(Module)) %>%
+    ungroup() %>%
+    select(all_of(id_cols), Protein_ID, Module, weight)
+}
+
+# ============================================================
+# 4) Build per-species proportions for each layer
+#    Proteomics layers: MEDIAN across dates per species
+# ============================================================
+
+# ---- Genes layer base (clean Group_For_Plots column without touching gene_table)
+gene_group_col <- pick_group_col(gene_table)
+
+genes_base <- if (!is.na(gene_group_col)) {
+  gene_table %>%
+    transmute(
+      Species_ID,
+      Group_For_Plots = .data[[gene_group_col]],
+      Protein_ID,
+      KEGG_Subcategory
+    )
+} else {
+  gene_table %>%
+    select(Species_ID, Protein_ID, KEGG_Subcategory) %>%
+    left_join(group_map, by = "Species_ID")
+}
+
+genes_prop <- to_module_weights(genes_base, id_cols = c("Species_ID", "Group_For_Plots")) %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Value = sum(weight), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots) %>%
+  mutate(Prop = Value / sum(Value)) %>%
+  ungroup() %>%
+  transmute(
+    Species_ID, Group_For_Plots, Module, Prop,
+    Layer = "Genes (functional potential)"
+  )
+
+# ---- Proteomics annotated table (clean Group_For_Plots without touching protein_table)
+prot_annot <- protein_table %>%
+  select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm, Group_For_Plots) %>%
+  left_join(
+    gene_table %>% distinct(Species_ID, Protein_ID, KEGG_Subcategory),
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+  left_join(group_map, by = "Species_ID", suffix = c("", ".meta")) %>%
+  mutate(Group_For_Plots = coalesce(Group_For_Plots, Group_For_Plots.meta)) %>%
+  select(-Group_For_Plots.meta)
+
+prot_map <- to_module_weights(prot_annot, id_cols = c("Species_ID", "Group_For_Plots", "Date"))
+
+# A) Proteins detected
+prot_detected <- prot_map %>%
+  group_by(Species_ID, Group_For_Plots, Date, Module) %>%
+  summarise(Value = sum(weight), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots, Date) %>%
+  mutate(Prop = Value / sum(Value)) %>%
+  ungroup() %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Prop = median(Prop, na.rm = TRUE), .groups = "drop") %>%
+  transmute(
+    Species_ID, Group_For_Plots, Module, Prop,
+    Layer = "Proteins detected (median across dates per species)"
+  )
+
+# B) Proteome investment
+prot_invest <- prot_map %>%
+  left_join(
+    prot_annot %>% select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm),
+    by = c("Species_ID", "Date", "Protein_ID")
+  ) %>%
+  mutate(wIBAQ = Protein_Abundance_IBAQ_Norm * weight) %>%
+  group_by(Species_ID, Group_For_Plots, Date, Module) %>%
+  summarise(Value = sum(wIBAQ, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots, Date) %>%
+  mutate(Prop = Value / sum(Value, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Prop = median(Prop, na.rm = TRUE), .groups = "drop") %>%
+  transmute(
+    Species_ID, Group_For_Plots, Module, Prop,
+    Layer = "Proteome investment (median across dates per species)"
+  )
+
+# Combined long table (used for MAIN Top3+Rest figure)
+all_layers <- bind_rows(genes_prop, prot_detected, prot_invest) %>%
+  mutate(
+    Layer  = factor(Layer, levels = layer_levels_main),
+    Module = factor(Module, levels = module_levels)
+  ) %>%
+  filter(!is.na(Prop))
+
+# ============================================================
+# 5) MAIN FIGURE: define Top 3 once from GENES and collapse to Top3 + Rest
+# ============================================================
+top3 <- genes_prop %>%
+  group_by(Module) %>%
+  summarise(mean_prop = mean(Prop, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(mean_prop), as.character(Module)) %>%
+  slice_head(n = 3) %>%
+  pull(Module) %>%
+  as.character()
+
+message("Top 3 modules (from Genes layer): ", paste(top3, collapse = " | "))
+
+collapsed_median <- all_layers %>%
+  mutate(
+    Module4 = ifelse(as.character(Module) %in% top3, as.character(Module), "Rest"),
+    Module4 = factor(Module4, levels = c(top3, "Rest"))
+  ) %>%
+  group_by(Species_ID, Group_For_Plots, Layer, Module4) %>%
+  summarise(Prop = sum(Prop, na.rm = TRUE), .groups = "drop")
+
+# Plot helper for MAIN figure (median + IQR ribbons)
+plot_panel_median_iqr_ribbon <- function(df_species, title_text) {
+
+  stats_df <- df_species %>%
+    mutate(Layer = factor(as.character(Layer), levels = layer_levels_main)) %>%
+    group_by(Layer, Module4) %>%
+    summarise(
+      Q1     = quantile(Prop, 0.25, na.rm = TRUE),
+      Median = median(Prop, na.rm = TRUE),
+      Q3     = quantile(Prop, 0.75, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  ggplot(stats_df, aes(x = Layer, group = Module4, color = Module4, fill = Module4)) +
+    geom_ribbon(aes(ymin = Q1, ymax = Q3), alpha = 0.20, color = NA) +
+    geom_line(aes(y = Median), linewidth = 0.72) +
+    geom_point(aes(y = Median), size = 5) +
+    scale_x_discrete(drop = FALSE) +
+    coord_cartesian(ylim = c(0, 1)) +
+    labs(
+      x = NULL,
+      y = "Per-species proportion",
+      color = "Functional group",
+      fill  = "Functional group",
+      title = title_text,
+      subtitle = paste0(
+        "Lines = median across species; ribbons = IQR (25–75%) across species.\n",
+        "Proteomics summarised per species by MEDIAN across dates; multi-module proteins split 1/n."
+      )
+    ) +
+    theme_classic() +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      axis.text.x = element_text(angle = 15, hjust = 1)
+    )
+}
+
+# EXACT 5 panels in requested order (no NA)
+group_levels <- c("Overall", "Oligo_like", "Intermediate", "Copio_like", "Filtered")
+
+collapsed_for_plot <- bind_rows(
+  collapsed_median %>% mutate(Group_For_Plots = "Overall"),
+  collapsed_median
+) %>%
+  filter(!is.na(Group_For_Plots)) %>%
+  filter(Group_For_Plots %in% group_levels) %>%
+  mutate(
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    Layer = factor(as.character(Layer), levels = layer_levels_main)
+  )
+
+stats_all_main <- collapsed_for_plot %>%
+  group_by(Group_For_Plots, Layer, Module4) %>%
+  summarise(
+    Q1     = quantile(Prop, 0.25, na.rm = TRUE),
+    Median = median(Prop, na.rm = TRUE),
+    Q3     = quantile(Prop, 0.75, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+p_main_5panels <- ggplot(stats_all_main, aes(x = Layer, group = Module4, color = Module4, fill = Module4)) +
+  geom_ribbon(aes(ymin = Q1, ymax = Q3), alpha = 0.20, color = NA) +
+  geom_line(aes(y = Median), linewidth = 1.1) +
+  geom_point(aes(y = Median), size = 5) +
+  facet_wrap(~ Group_For_Plots, nrow = 1, drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(
+    x = NULL,
+    y = "Per-species proportion",
+    color = "Functional group",
+    fill  = "Functional group",
+    title = "Ecological strategy allocation across data layers",
+    subtitle = "Lines = medians across species; ribbons = IQR (25–75%). Proteomics summarised per species by MEDIAN across dates."
+  ) +
+  theme_classic() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 15, hjust = 1)
+  )
+
+p_main_5panels
+
+# ============================================================
+# 6) SUPPLEMENTARY: Full 7 modules (no Top3+Rest)
+#    - Boxplots across species, facetted by Layer (3 facets)
+#    - Same median-across-dates per species used for proteomics layers
+# ============================================================
+
+# Reuse the already-computed per-species proportions, but relabel layer names for the supplement
+all_layers_full <- bind_rows(
+  genes_prop %>% mutate(Layer = "Genes (functional potential)"),
+  prot_detected %>% mutate(Layer = "Proteins detected (per species across dates)"),
+  prot_invest %>% mutate(Layer = "Proteome investment (per species across dates)")
+) %>%
+  mutate(
+    Layer  = factor(Layer, levels = layer_levels_supp),
+    Module = factor(Module, levels = module_levels)
+  ) %>%
+  filter(!is.na(Prop)) %>%
+  filter(!is.na(Group_For_Plots)) %>%
+  filter(Group_For_Plots %in% c("Oligo_like","Intermediate","Copio_like","Filtered"))
+
+plot_full7_facets <- function(df, title_text) {
+  ggplot(df, aes(x = Module, y = Prop)) +
+    geom_boxplot(outlier.shape = NA, linewidth = 0.7) +
+    geom_point(position = position_jitter(width = 0.12, height = 0),
+               alpha = 0.12, size = 0.7) +
+    facet_wrap(~ Layer, nrow = 1, scales = "fixed") +
+    coord_cartesian(ylim = c(0, 1)) +
+    labs(
+      x = NULL,
+      y = "Per-species proportion",
+      title = title_text,
+      subtitle = paste0(
+        "Species are replicates (points). Boxplots summarise across-species distributions.\n",
+        "Proteomics: per species×date proportions → MEDIAN across dates per species.\n",
+        "Multi-module proteins fractionally assigned (1/n); unannotated proteins excluded."
+      )
+    ) +
+    theme_classic() +
+    theme(
+      strip.background = element_blank(),
+      strip.text = element_text(size = 11),
+      axis.text.x = element_text(angle = 35, hjust = 1),
+      plot.title = element_text(face = "bold")
+    )
+}
+
+# Five supplementary plots (Overall + 4 groups) in your preferred order
+supp_levels <- c("Overall", "Oligo_like", "Intermediate", "Copio_like", "Filtered")
+
+df_supp_overall <- all_layers_full %>% mutate(Group_For_Plots = "Overall")
+df_supp_oligo   <- all_layers_full %>% filter(Group_For_Plots == "Oligo_like")
+df_supp_inter   <- all_layers_full %>% filter(Group_For_Plots == "Intermediate")
+df_supp_copio   <- all_layers_full %>% filter(Group_For_Plots == "Copio_like")
+df_supp_filt    <- all_layers_full %>% filter(Group_For_Plots == "Filtered")
+
+p_supp_overall <- plot_full7_facets(df_supp_overall, "Supplementary: Full 7 strategy modules — Overall")
+p_supp_oligo   <- plot_full7_facets(df_supp_oligo,   "Supplementary: Full 7 strategy modules — Oligo_like")
+p_supp_inter   <- plot_full7_facets(df_supp_inter,   "Supplementary: Full 7 strategy modules — Intermediate")
+p_supp_copio   <- plot_full7_facets(df_supp_copio,   "Supplementary: Full 7 strategy modules — Copio_like")
+p_supp_filt    <- plot_full7_facets(df_supp_filt,    "Supplementary: Full 7 strategy modules — Filtered")
+
+print(p_supp_overall)
+print(p_supp_oligo)
+print(p_supp_inter)
+print(p_supp_copio)
+print(p_supp_filt)
+```
+
+```{r}
+# ---- FINAL PANEL ORDER (no Filtered) ----
+final_group_levels <- c("Oligo_like", "Intermediate", "Copio_like", "Overall")
+
+stats_all_main_final <- stats_all_main %>%
+  filter(Group_For_Plots %in% final_group_levels) %>%
+  mutate(Group_For_Plots = factor(Group_For_Plots, levels = final_group_levels))
+
+# ---- Non-blue, print-safe 4-color palette ----
+pal4 <- c("#E69F00", "#009E73", "#CC79A7", "#4D4D4D")
+lev4  <- levels(stats_all_main_final$Module4)
+cols4 <- setNames(pal4, lev4)
+
+# ---- REBUILD plot from filtered data (this is the key) ----
+p_main_4panels <- ggplot(
+  stats_all_main_final,
+  aes(x = Layer, group = Module4, color = Module4, fill = Module4)
+) +
+  geom_ribbon(aes(ymin = Q1, ymax = Q3), alpha = 0.12, color = NA) +
+  geom_line(aes(y = Median), linewidth = 1.1) +
+  geom_point(aes(y = Median), size = 6) +
+  facet_wrap(~ Group_For_Plots, nrow = 1, drop = TRUE) +
+  scale_x_discrete(drop = FALSE) +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_color_manual(values = cols4) +
+  scale_fill_manual(values  = cols4) +
+  guides(
+    fill  = guide_legend(override.aes = list(alpha = 0.35)),
+    color = guide_legend(override.aes = list(linewidth = 1.2))
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position   = "top",
+    legend.box        = "horizontal",
+    panel.grid.minor  = element_blank(),
+    strip.background  = element_blank(),
+    strip.text        = element_text(face = "bold"),
+    axis.text.x       = element_text(angle = 15, hjust = 1),
+    plot.title        = element_blank(),
+    plot.subtitle     = element_blank(),
+    plot.margin       = margin(5.5, 5.5, 5.5, 5.5)
+  ) +
+  labs(title = NULL, subtitle = NULL)
+
+p_main_4panels
+
+ggsave(
+  filename = "Fig_Main_4Panels_Median_IQR.pdf",
+  plot     = p_main_4panels,
+  width    = 13,
+  height   = 9,
+  units    = "in",
+  dpi      = 300,
+  device   = pdf
+)
+
+
+
+
+p_overview <- ggplot(overview_long, aes(x = Metric, y = Prop, fill = Plot_Group)) +
+  geom_col(width = 0.75) +
+  geom_text(
+    aes(label = ifelse(Value > 0, scales::comma(round(Value, 0)), "")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Proportion of total",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "top",
+    panel.grid.minor = element_blank(),
+    axis.text.x      = element_text(angle = 20, hjust = 1),
+    plot.title       = element_blank(),
+    plot.subtitle    = element_blank()
+  )
+
+ggsave(
+  filename = "Fig_Overview_TrophicStrategy.pdf",
+  plot     = p_overview,
+  width    = 4,     # adjust if needed
+  height   = 7,    # SAME HEIGHT
+  units    = "in",
+  dpi      = 300
+)
+```
+```{r}
+############################################################
+# Produces:
+#   1) Figure: bars (median) + IQR + GLOBAL profile PERMANOVA label per panel
+#      + PAIRWISE profile comparisons (ns/*/**/***/****) as clean brackets per panel
+#   2) Stats outputs:
+#        - CSV: PERMANOVA global per layer
+#        - CSV: PERMANOVA pairwise per layer (BH-adjusted)
+#        - CSV: stats_plot (medians/IQR used in figure)
+#        - TXT: full stats report (global + pairwise + dispersion + notes)
+#
+# Why this is robust:
+#   - Species are independent replicates (each species in exactly one trophic group)
+#   - We test the *profile* (Core, Resource, Growth) simultaneously using PERMANOVA
+#   - Permutation-based p-values -> no normality assumptions
+#   - We check dispersion via betadisper per layer (important PERMANOVA diagnostic)
+#   - Pairwise tests use BH-FDR correction across ALL pairwise tests (27)
+#
+# IMPORTANT:
+#   Your Prop values were computed using ALL modules (7) before subsetting to 3 for plotting,
+#   so the 3 plotted fractions do NOT have to sum to 1. That makes Euclidean distance OK here.
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(tibble)
+  library(ggplot2)
+  library(grid)
+  library(vegan)
+})
+
+# ============================================================
+# 0) Settings
+# ============================================================
+
+x_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+
+module_keep <- c(
+  "Core metabolism/biosynthesis",
+  "Resource acquisition",
+  "Growth machinery"
+)
+
+layer_levels <- c(
+  "Genes (functional potential)",
+  "Proteins detected (median across dates per species)",
+  "Proteome investment (median across dates per species)"
+)
+
+pal3 <- c(
+  "Core metabolism/biosynthesis" = "#E69F00",
+  "Resource acquisition"         = "#009E73",
+  "Growth machinery"             = "#CC79A7"
+)
+
+n_perm <- 9999
+
+out_prefix <- "TrophicStrategy_ProfileStats"  # filenames will start with this
+
+q25 <- function(x) quantile(x, 0.25, na.rm = TRUE)
+q75 <- function(x) quantile(x, 0.75, na.rm = TRUE)
+
+p_to_stars <- function(p) {
+  dplyr::case_when(
+    is.na(p)  ~ "ns",
+    p <= 1e-4 ~ "****",
+    p <= 1e-3 ~ "***",
+    p <= 1e-2 ~ "**",
+    p <= 5e-2 ~ "*",
+    TRUE      ~ "ns"
+  )
+}
+
+# ============================================================
+# 1) Strategy module mapping (7 modules)
+# ============================================================
+
+module_map <- tribble(
+  ~Label,                                    ~Module,
+  # Resource acquisition
+  "Transporters",                             "Resource acquisition",
+  "Secretion system",                         "Resource acquisition",
+  "Two-component system",                     "Resource acquisition",
+  "Membrane trafficking",                     "Resource acquisition",
+  "Ion channels",                             "Resource acquisition",
+  "Lectins",                                  "Resource acquisition",
+
+  # Growth machinery
+  "Ribosome",                                 "Growth machinery",
+  "Ribosome biogenesis",                      "Growth machinery",
+  "Translation factors",                      "Growth machinery",
+  "Transfer RNA biogenesis",                  "Growth machinery",
+
+  # Genome replication
+  "DNA replication proteins",                 "Genome replication",
+  "DNA repair and recombination proteins",    "Genome replication",
+  "Chromosome and associated proteins",       "Genome replication",
+
+  # Regulation and sensing
+  "Transcription factors",                    "Regulation and sensing",
+  "Transcription machinery",                  "Regulation and sensing",
+  "Protein kinases",                          "Regulation and sensing",
+
+  # Stress/defence/interactions
+  "Antimicrobial resistance genes",           "Stress/defence/interactions",
+  "Prokaryotic defense system",               "Stress/defence/interactions",
+  "Bacterial toxins",                         "Stress/defence/interactions",
+  "Peptidases and inhibitors",                "Stress/defence/interactions",
+
+  # Core metabolism/biosynthesis
+  "Enzymes",                                  "Core metabolism/biosynthesis",
+  "Amino acid related enzymes",               "Core metabolism/biosynthesis",
+  "Lipid biosynthesis proteins",              "Core metabolism/biosynthesis",
+  "Lipopolysaccharide biosynthesis proteins", "Core metabolism/biosynthesis",
+  "Glycosyltransferases",                     "Core metabolism/biosynthesis",
+  "Polyketide biosynthesis proteins",         "Core metabolism/biosynthesis",
+  "Prenyltransferases",                       "Core metabolism/biosynthesis",
+  "Cytochrome P450",                          "Core metabolism/biosynthesis",
+
+  # Motility/dispersal
+  "Bacterial motility proteins",              "Motility/dispersal",
+  "Cytoskeleton proteins",                    "Motility/dispersal",
+  "Cilium and associated proteins",           "Motility/dispersal"
+) %>% distinct()
+
+module_levels_all <- c(
+  "Resource acquisition",
+  "Growth machinery",
+  "Genome replication",
+  "Regulation and sensing",
+  "Stress/defence/interactions",
+  "Core metabolism/biosynthesis",
+  "Motility/dispersal"
+)
+
+# ============================================================
+# 2) Helpers
+# ============================================================
+
+pick_group_col <- function(df) {
+  cand <- c("Group_For_Plots", "Group_For_Plots.x", "Group_For_Plots.y")
+  out <- cand[cand %in% names(df)][1]
+  if (length(out) == 0) NA_character_ else out
+}
+
+to_module_weights <- function(df, id_cols) {
+  df %>%
+    select(all_of(c(id_cols, "Protein_ID", "KEGG_Subcategory"))) %>%
+    filter(!is.na(KEGG_Subcategory)) %>%  # NA removed BEFORE denominator
+    mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+    separate_rows(.sub, sep = ";") %>%
+    mutate(Label = str_trim(.sub)) %>%
+    distinct(across(all_of(c(id_cols, "Protein_ID", "Label")))) %>%
+    inner_join(module_map, by = "Label") %>%
+    mutate(Module = factor(Module, levels = module_levels_all)) %>%
+    group_by(across(all_of(c(id_cols, "Protein_ID")))) %>%
+    mutate(weight = 1 / n_distinct(Module)) %>%
+    ungroup() %>%
+    select(all_of(id_cols), Protein_ID, Module, weight)
+}
+
+# Manual bracket drawing (no ggpubr/ggsignif issues)
+make_bracket_geoms <- function(pairwise_df, y_top = 1.10, y_step = 0.03, tick = 0.01) {
+  # pairwise_df must contain: Layer, group1, group2, label
+  # returns list(segments_df, labels_df)
+
+  x_map <- tibble(
+    Group_For_Plots = factor(x_levels, levels = x_levels),
+    x = seq_along(x_levels)
+  )
+
+  # assign bracket heights consistently by contrast width
+  dfb <- pairwise_df %>%
+    mutate(
+      width_rank = case_when(
+        group1 == "Oligo_like"      & group2 == "Copio_like"      ~ 3L,
+        group1 == "Oligo_like"      & group2 == "Intermediate"    ~ 2L,
+        group1 == "Intermediate"    & group2 == "Copio_like"      ~ 1L,
+        TRUE ~ 1L
+      ),
+      y = y_top - (3L - width_rank) * y_step
+    ) %>%
+    left_join(x_map, by = c("group1" = "Group_For_Plots")) %>%
+    rename(x1 = x) %>%
+    left_join(x_map, by = c("group2" = "Group_For_Plots")) %>%
+    rename(x2 = x)
+
+  # 3 segments per bracket: left tick, right tick, top line
+  seg_top <- dfb %>% transmute(Layer, x = x1, xend = x2, y = y, yend = y)
+  seg_l   <- dfb %>% transmute(Layer, x = x1, xend = x1, y = y - tick, yend = y)
+  seg_r   <- dfb %>% transmute(Layer, x = x2, xend = x2, y = y - tick, yend = y)
+
+  segments_df <- bind_rows(seg_top, seg_l, seg_r)
+
+  labels_df <- dfb %>%
+    transmute(
+      Layer,
+      x = (x1 + x2) / 2,
+      y = y + tick * 0.7,
+      label
+    )
+
+  list(segments_df = segments_df, labels_df = labels_df)
+}
+
+# ============================================================
+# 3) Group mapping (authoritative fallback)
+# ============================================================
+
+group_map <- species_meta %>% distinct(Species_ID, Group_For_Plots)
+
+# ============================================================
+# 4) Build per-species proportions for each layer
+# ============================================================
+
+# ---- 4.1 Genes layer ----
+gene_group_col <- pick_group_col(gene_table)
+
+genes_base <- if (!is.na(gene_group_col)) {
+  gene_table %>%
+    transmute(Species_ID,
+              Group_For_Plots = .data[[gene_group_col]],
+              Protein_ID,
+              KEGG_Subcategory)
+} else {
+  gene_table %>%
+    select(Species_ID, Protein_ID, KEGG_Subcategory) %>%
+    left_join(group_map, by = "Species_ID")
+}
+
+genes_prop <- to_module_weights(genes_base, id_cols = c("Species_ID", "Group_For_Plots")) %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Value = sum(weight), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots) %>%
+  mutate(Prop = Value / sum(Value)) %>%
+  ungroup() %>%
+  transmute(Species_ID, Group_For_Plots, Module, Prop,
+            Layer = "Genes (functional potential)")
+
+# ---- 4.2 Proteomics: annotate proteins with KEGG_Subcategory (from genes) ----
+prot_annot <- protein_table %>%
+  select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm, Group_For_Plots) %>%
+  left_join(gene_table %>% distinct(Species_ID, Protein_ID, KEGG_Subcategory),
+            by = c("Species_ID", "Protein_ID")) %>%
+  left_join(group_map, by = "Species_ID", suffix = c("", ".meta")) %>%
+  mutate(Group_For_Plots = coalesce(Group_For_Plots, Group_For_Plots.meta)) %>%
+  select(-Group_For_Plots.meta)
+
+prot_map <- to_module_weights(prot_annot, id_cols = c("Species_ID", "Group_For_Plots", "Date"))
+
+# A) Proteins detected: per species×date proportions -> median across dates per species
+prot_detected <- prot_map %>%
+  group_by(Species_ID, Group_For_Plots, Date, Module) %>%
+  summarise(Value = sum(weight), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots, Date) %>%
+  mutate(Prop = Value / sum(Value)) %>%
+  ungroup() %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Prop = median(Prop, na.rm = TRUE), .groups = "drop") %>%
+  transmute(Species_ID, Group_For_Plots, Module, Prop,
+            Layer = "Proteins detected (median across dates per species)")
+
+# B) Proteome investment: abundance-weighted proportions -> median across dates per species
+prot_invest <- prot_map %>%
+  left_join(prot_annot %>% select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm),
+            by = c("Species_ID", "Date", "Protein_ID")) %>%
+  mutate(wIBAQ = Protein_Abundance_IBAQ_Norm * weight) %>%
+  group_by(Species_ID, Group_For_Plots, Date, Module) %>%
+  summarise(Value = sum(wIBAQ, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Species_ID, Group_For_Plots, Date) %>%
+  mutate(Prop = Value / sum(Value, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(Species_ID, Group_For_Plots, Module) %>%
+  summarise(Prop = median(Prop, na.rm = TRUE), .groups = "drop") %>%
+  transmute(Species_ID, Group_For_Plots, Module, Prop,
+            Layer = "Proteome investment (median across dates per species)")
+
+# Combine the three layers
+all_layers <- bind_rows(genes_prop, prot_detected, prot_invest) %>%
+  mutate(
+    Layer  = factor(Layer, levels = layer_levels),
+    Module = factor(as.character(Module), levels = module_levels_all)
+  ) %>%
+  filter(!is.na(Prop))
+
+# Keep ONLY the 3 requested functional categories and the 3 x-groups
+all_layers_3modules <- all_layers %>%
+  filter(Group_For_Plots %in% x_levels,
+         as.character(Module) %in% module_keep) %>%
+  mutate(
+    Group_For_Plots = factor(Group_For_Plots, levels = x_levels),
+    Module4         = factor(as.character(Module), levels = module_keep)
+  ) %>%
+  select(Species_ID, Group_For_Plots, Layer, Module4, Prop)
+
+# ============================================================
+# 5) Summarise across species: Median + IQR for each x × layer × module
+# ============================================================
+
+stats_plot <- all_layers_3modules %>%
+  group_by(Group_For_Plots, Layer, Module4) %>%
+  summarise(
+    Q1     = q25(Prop),
+    Median = median(Prop, na.rm = TRUE),
+    Q3     = q75(Prop),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Q1_fix = ifelse(is.na(Q1), Median, Q1),
+    Q3_fix = ifelse(is.na(Q3), Median, Q3),
+    Group_For_Plots = factor(Group_For_Plots, levels = x_levels),
+    Module4 = factor(Module4, levels = module_keep),
+    Layer = factor(Layer, levels = layer_levels)
+  )
+
+# ============================================================
+# 6) Profile PERMANOVA (global + pairwise) per layer
+# ============================================================
+
+pairwise_adonis2 <- function(mat, groups, permutations = 9999) {
+  groups <- droplevels(factor(groups))
+  combs <- combn(levels(groups), 2, simplify = FALSE)
+
+  bind_rows(lapply(combs, function(pair) {
+    idx <- groups %in% pair
+    g2 <- droplevels(groups[idx])
+    m2 <- mat[idx, , drop = FALSE]
+    fit <- adonis2(m2 ~ g2, method = "euclidean", permutations = permutations)
+    tibble(
+      group1 = pair[1],
+      group2 = pair[2],
+      p = fit$`Pr(>F)`[1],
+      F = fit$F[1],
+      R2 = fit$R2[1]
+    )
+  }))
+}
+
+layer_tbl_list <- list()
+pairwise_tbl_list <- list()
+
+for (L in levels(all_layers_3modules$Layer)) {
+
+  wide <- all_layers_3modules %>%
+    filter(Layer == L) %>%
+    select(Species_ID, Group_For_Plots, Module4, Prop) %>%
+    pivot_wider(names_from = Module4, values_from = Prop) %>%
+    mutate(across(all_of(module_keep), ~replace_na(.x, 0)))
+
+  groups <- factor(wide$Group_For_Plots, levels = x_levels)
+  mat <- wide %>% select(all_of(module_keep)) %>% as.matrix()
+
+  perm <- adonis2(mat ~ groups, method = "euclidean", permutations = n_perm)
+
+  disp <- betadisper(dist(mat), groups)
+  disp_p <- anova(disp)$`Pr(>F)`[1]
+
+  layer_tbl_list[[as.character(L)]] <- tibble(
+    Layer = factor(as.character(L), levels = layer_levels),
+    F  = perm$F[1],
+    R2 = perm$R2[1],
+    p  = perm$`Pr(>F)`[1],
+    dispersion_p = disp_p,
+    n_species = nrow(mat)
+  )
+
+  pairwise_tbl_list[[as.character(L)]] <- pairwise_adonis2(mat, groups, permutations = n_perm) %>%
+    mutate(Layer = factor(as.character(L), levels = layer_levels))
+}
+
+layer_tbl <- bind_rows(layer_tbl_list) %>%
+  mutate(
+    p_adj_BH = p.adjust(p, method = "BH"),  # correction across the 3 global tests
+    label_global = paste0("Profile PERMANOVA (BH): p=", format.pval(p_adj_BH, digits = 2, eps = 1e-4))
+  )
+
+pairwise_tbl <- bind_rows(pairwise_tbl_list) %>%
+  mutate(
+    p_adj_BH = p.adjust(p, method = "BH"),  # correction across ALL pairwise tests (27)
+    label = p_to_stars(p_adj_BH)
+  )
+
+# ============================================================
+# 7) Build bracket layers (manual brackets via geom_segment + geom_text)
+# ============================================================
+
+# Include ns in brackets (you asked for ns/*/**/***/****).
+# If you want to hide ns, replace: pairwise_tbl %>% filter(label != "ns")
+pairwise_for_plot <- pairwise_tbl
+
+br <- make_bracket_geoms(pairwise_for_plot, y_top = 1.10, y_step = 0.025, tick = 0.01)
+br_segments <- br$segments_df
+br_labels   <- br$labels_df
+
+# Global label per facet
+ann_panel <- layer_tbl %>%
+  transmute(
+    Layer,
+    x = 1.0,     # left side (numeric x scale)
+    y = 1.14,
+    label = label_global
+  )
+
+# ============================================================
+# 8) FINAL PLOT
+# ============================================================
+
+pd <- position_dodge(width = 0.85)
+
+p_final <- ggplot(
+  stats_plot,
+  aes(x = Group_For_Plots, y = Median, fill = Module4, group = Module4)
+) +
+  geom_col(position = pd, width = 0.80, color = NA) +
+  geom_errorbar(
+    aes(ymin = Q1_fix, ymax = Q3_fix),
+    position = pd,
+    width = 0.18,
+    linewidth = 0.3
+  ) +
+  facet_wrap(~ Layer, nrow = 1, drop = TRUE) +
+  coord_cartesian(ylim = c(0, 1.16), clip = "off") +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.25),
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  scale_fill_manual(values = pal3) +
+  geom_segment(
+    data = br_segments,
+    aes(x = x, xend = xend, y = y, yend = yend),
+    inherit.aes = FALSE,
+    linewidth = 0.35
+  ) +
+  geom_text(
+    data = br_labels,
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    size = 3
+  ) +
+  geom_text(
+    data = ann_panel,
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    hjust = 0,
+    vjust = 1,
+    size = 3.0,
+    fontface = "bold"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "top",
+    legend.box       = "horizontal",
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold"),
+    axis.text.x      = element_text(angle = 0, hjust = 0.5),
+    panel.spacing.x  = unit(3, "lines"),
+    plot.margin      = margin(10, 6, 6, 6)
+  ) +
+  labs(
+    x = NULL,
+    y = "Median per-species proportion (%)",
+    fill = "Functional category"
+  )
+
+print(p_final)
+
+# ============================================================
+# 9) EXPORTS: figure + CSV tables + TXT report
+# ============================================================
+
+fig_file <- paste0(out_prefix, "_Figure_ProfilePERMANOVA_PairwiseStars.pdf")
+csv_stats_plot <- paste0(out_prefix, "_stats_plot_median_IQR.csv")
+csv_global     <- paste0(out_prefix, "_PERMANOVA_global_byLayer.csv")
+csv_pairwise   <- paste0(out_prefix, "_PERMANOVA_pairwise_byLayer_BH.csv")
+txt_report     <- paste0(out_prefix, "_FULL_REPORT.txt")
+
+ggsave(
+  filename = fig_file,
+  plot     = p_final,
+  width    = 13,
+  height   = 6.5,
+  units    = "in",
+  dpi      = 300,
+  device   = pdf
+)
+
+write.csv(stats_plot,  csv_stats_plot, row.names = FALSE)
+write.csv(layer_tbl,   csv_global,     row.names = FALSE)
+write.csv(pairwise_tbl %>% arrange(Layer, p_adj_BH), csv_pairwise, row.names = FALSE)
+
+# Full report (.txt)
+sink(txt_report)
+cat("=============================================\n")
+cat("Trophic Strategy Allocation Profile Statistics\n")
+cat("=============================================\n\n")
+
+cat("DATA UNIT:\n")
+cat("  Species are replicates; each species belongs to one trophic group.\n\n")
+
+cat("PROFILE TESTED (per layer):\n")
+cat("  Vector = (Core metabolism/biosynthesis, Resource acquisition, Growth machinery)\n")
+cat("  These are species-level proportions (Prop) computed from your pipeline.\n\n")
+
+cat("GLOBAL TEST (per layer):\n")
+cat("  PERMANOVA (vegan::adonis2), Euclidean distance, permutations = ", n_perm, "\n", sep="")
+cat("  Multiple testing correction across 3 layers: BH\n\n")
+
+cat("DISPERSION CHECK (per layer):\n")
+cat("  vegan::betadisper on Euclidean distances; ANOVA p-value reported.\n")
+cat("  If dispersion_p is significant, interpret PERMANOVA with caution.\n\n")
+
+cat("PAIRWISE TESTS (within each layer):\n")
+cat("  Pairwise PERMANOVA for the 3 group contrasts.\n")
+cat("  Multiple testing correction across ALL pairwise tests (27): BH\n\n")
+
+cat("----- GLOBAL PERMANOVA RESULTS -----\n")
+print(layer_tbl)
+cat("\n")
+
+cat("----- PAIRWISE PERMANOVA RESULTS (BH-adjusted) -----\n")
+print(pairwise_tbl %>% arrange(Layer, p_adj_BH))
+cat("\n")
+
+cat("----- FIGURE SUMMARY TABLE (MEDIAN + IQR) -----\n")
+print(stats_plot)
+cat("\n")
+
+cat("FILES WRITTEN:\n")
+cat("  Figure PDF: ", fig_file, "\n", sep="")
+cat("  CSV stats_plot: ", csv_stats_plot, "\n", sep="")
+cat("  CSV global PERMANOVA: ", csv_global, "\n", sep="")
+cat("  CSV pairwise PERMANOVA: ", csv_pairwise, "\n", sep="")
+cat("  TXT report: ", txt_report, "\n", sep="")
+cat("\n")
+
+cat("SESSION INFO:\n")
+print(sessionInfo())
+
+sink()
+############################################################
+# END
+############################################################
+```
+
+
+```{r}
+# ============================================================
+# Resource acquisition vs Transporters summary (refactored)
+#
+# 1) Genes: unique Protein_IDs per species in RA; how many are Transporters∩RA; sum across species (count + %)
+# 2) Proteins detected: unique Protein_IDs per species in RA; how many are Transporters∩RA; sum across species (count + %)
+# 3) Proteome signal: summed weighted IBAQ signal in RA; Transporters∩RA signal; % within RA
+#
+# Requires:
+#   genes_base, prot_annot, prot_map, module_map
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(tibble)
+})
+
+kegg_labels_long <- function(df, id_cols) {
+  df %>%
+    select(all_of(c(id_cols, "Protein_ID", "KEGG_Subcategory"))) %>%
+    filter(!is.na(KEGG_Subcategory)) %>%
+    mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+    separate_rows(.sub, sep = ";") %>%
+    mutate(Label = str_trim(.sub)) %>%
+    distinct(across(all_of(c(id_cols, "Protein_ID", "Label"))))
+}
+
+pct <- function(num, den) ifelse(den > 0, 100 * num / den, NA_real_)
+
+# ------------------------------------------------------------
+# 1) GENES (per species, then sum across species)
+# ------------------------------------------------------------
+genes_labels <- kegg_labels_long(genes_base, id_cols = c("Species_ID")) %>%
+  inner_join(module_map, by = "Label")
+
+genes_RA_by_sp <- genes_labels %>%
+  filter(Module == "Resource acquisition") %>%
+  distinct(Species_ID, Protein_ID) %>%
+  group_by(Species_ID) %>%
+  summarise(RA_n = n_distinct(Protein_ID), .groups = "drop")
+
+genes_T_by_sp <- genes_labels %>%
+  filter(Label == "Transporters") %>%
+  distinct(Species_ID, Protein_ID)
+
+genes_T_in_RA_by_sp <- genes_labels %>%
+  filter(Module == "Resource acquisition") %>%
+  distinct(Species_ID, Protein_ID) %>%
+  inner_join(genes_T_by_sp, by = c("Species_ID", "Protein_ID")) %>%
+  group_by(Species_ID) %>%
+  summarise(T_in_RA_n = n_distinct(Protein_ID), .groups = "drop")
+
+genes_counts <- genes_RA_by_sp %>%
+  left_join(genes_T_in_RA_by_sp, by = "Species_ID") %>%
+  mutate(T_in_RA_n = coalesce(T_in_RA_n, 0L)) %>%
+  summarise(
+    RA_total = sum(RA_n),
+    Transporters_in_RA = sum(T_in_RA_n),
+    Percent = pct(sum(T_in_RA_n), sum(RA_n))
+  ) %>%
+  mutate(Metric = "Genes (sum of per-species unique Protein_ID counts)")
+
+# ------------------------------------------------------------
+# 2) PROTEINS DETECTED (per species, then sum across species)  ✅ corrected
+# ------------------------------------------------------------
+prot_labels <- kegg_labels_long(prot_annot, id_cols = c("Species_ID")) %>%
+  inner_join(module_map, by = "Label")
+
+prot_RA_by_sp <- prot_labels %>%
+  filter(Module == "Resource acquisition") %>%
+  distinct(Species_ID, Protein_ID) %>%
+  group_by(Species_ID) %>%
+  summarise(RA_n = n_distinct(Protein_ID), .groups = "drop")
+
+prot_T_by_sp <- prot_labels %>%
+  filter(Label == "Transporters") %>%
+  distinct(Species_ID, Protein_ID)
+
+prot_T_in_RA_by_sp <- prot_labels %>%
+  filter(Module == "Resource acquisition") %>%
+  distinct(Species_ID, Protein_ID) %>%
+  inner_join(prot_T_by_sp, by = c("Species_ID", "Protein_ID")) %>%
+  group_by(Species_ID) %>%
+  summarise(T_in_RA_n = n_distinct(Protein_ID), .groups = "drop")
+
+prot_counts <- prot_RA_by_sp %>%
+  left_join(prot_T_in_RA_by_sp, by = "Species_ID") %>%
+  mutate(T_in_RA_n = coalesce(T_in_RA_n, 0L)) %>%
+  summarise(
+    RA_total = sum(RA_n),
+    Transporters_in_RA = sum(T_in_RA_n),
+    Percent = pct(sum(T_in_RA_n), sum(RA_n))
+  ) %>%
+  mutate(Metric = "Proteins detected (sum of per-species unique Protein_ID counts)")
+
+# ------------------------------------------------------------
+# 3) PROTEOME SIGNAL (global sum across species×dates)
+# ------------------------------------------------------------
+prot_abund_unique <- prot_annot %>%
+  select(Species_ID, Date, Protein_ID, Protein_Abundance_IBAQ_Norm) %>%
+  group_by(Species_ID, Date, Protein_ID) %>%
+  summarise(
+    Protein_Abundance_IBAQ_Norm = median(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+prot_transporters_sd <- prot_annot %>%
+  filter(!is.na(KEGG_Subcategory)) %>%
+  transmute(
+    Species_ID, Date, Protein_ID,
+    .sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")
+  ) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(Label = str_trim(.sub)) %>%
+  filter(Label == "Transporters") %>%
+  distinct(Species_ID, Date, Protein_ID)
+
+prot_weighted <- prot_map %>%
+  left_join(prot_abund_unique, by = c("Species_ID", "Date", "Protein_ID")) %>%
+  mutate(wIBAQ = Protein_Abundance_IBAQ_Norm * weight)
+
+RA_signal_total <- prot_weighted %>%
+  filter(Module == "Resource acquisition") %>%
+  summarise(signal = sum(wIBAQ, na.rm = TRUE)) %>%
+  pull(signal)
+
+T_RA_signal_total <- prot_weighted %>%
+  filter(Module == "Resource acquisition") %>%
+  semi_join(prot_transporters_sd, by = c("Species_ID", "Date", "Protein_ID")) %>%
+  summarise(signal = sum(wIBAQ, na.rm = TRUE)) %>%
+  pull(signal)
+
+signal_summary <- tibble(
+  Metric = "Proteome investment signal (global sum of weighted IBAQ)",
+  RA_total = RA_signal_total,
+  Transporters_in_RA = T_RA_signal_total,
+  Percent = pct(T_RA_signal_total, RA_signal_total)
+)
+
+# ------------------------------------------------------------
+# Final table
+# ------------------------------------------------------------
+bind_rows(genes_counts, prot_counts, signal_summary) %>%
+  mutate(Percent = round(Percent, 2)) %>%
+  select(Metric, RA_total, Transporters_in_RA, Percent) %>%
+  print(n = Inf)
+
+```
+
+# Check within functional category if they are functionally similar but differentially expressed or the oposite
+```{r}
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# ------------------------------------------
+# SETTINGS
+# ------------------------------------------
+groups_use <- c("Oligo_like","Intermediate","Copio_like")
+
+modules_5 <- c(
+  "Overall",
+  "Core metabolism/biosynthesis",
+  "Resource acquisition",
+  "Growth machinery",
+  "Rest"
+)
+
+top3_fixed <- c(
+  "Core metabolism/biosynthesis",
+  "Resource acquisition",
+  "Growth machinery"
+)
+
+# ------------------------------------------
+# Similarity functions (presence/absence)
+# ------------------------------------------
+jaccard <- function(a,b){
+  length(intersect(a,b)) / length(union(a,b))
+}
+
+sorensen <- function(a,b){
+  (2 * length(intersect(a,b))) / (length(a) + length(b))
+}
+
+# ------------------------------------------
+# 1) Expressed proteins (at least once)
+# ------------------------------------------
+prot_expr <- protein_table %>%
+  filter(Protein_Abundance_IBAQ_Norm > 0) %>%
+  distinct(Species_ID, Protein_ID, Group_For_Plots) %>%
+  filter(Group_For_Plots %in% groups_use)
+
+prot_expr_kegg <- prot_expr %>%
+  left_join(
+    gene_table %>% distinct(Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory),
+    by = c("Species_ID","Protein_ID")
+  ) %>%
+  filter(!is.na(KEGG_ID), KEGG_ID != "", !is.na(KEGG_Subcategory))
+
+# ------------------------------------------
+# 2) Map to modules + define Rest
+# ------------------------------------------
+expr_long <- prot_expr_kegg %>%
+  mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(Label = str_trim(.sub)) %>%
+  inner_join(module_map, by = "Label") %>%
+  distinct(Species_ID, Group_For_Plots, KEGG_ID, Module) %>%
+  mutate(
+    Module5 = ifelse(Module %in% top3_fixed, Module, "Rest")
+  )
+
+# Overall set
+expr_overall <- prot_expr_kegg %>%
+  distinct(Species_ID, Group_For_Plots, KEGG_ID) %>%
+  mutate(Module5 = "Overall")
+
+expr_all <- bind_rows(
+  expr_overall %>% select(Species_ID, Group_For_Plots, KEGG_ID, Module5),
+  expr_long     %>% select(Species_ID, Group_For_Plots, KEGG_ID, Module5)
+)
+
+# ------------------------------------------
+# 3) Build similarity matrices manually
+# ------------------------------------------
+all_results <- list()
+
+for (mod in modules_5) {
+
+  df_mod <- expr_all %>%
+    filter(Module5 == mod)
+
+  # union of KEGG_ID per trophic group
+  group_sets <- df_mod %>%
+    group_by(Group_For_Plots) %>%
+    summarise(kegg_set = list(unique(KEGG_ID)), .groups="drop")
+
+  # initialize matrices
+  jac_mat <- matrix(NA, nrow=length(groups_use), ncol=length(groups_use))
+  sor_mat <- matrix(NA, nrow=length(groups_use), ncol=length(groups_use))
+
+  rownames(jac_mat) <- colnames(jac_mat) <- groups_use
+  rownames(sor_mat) <- colnames(sor_mat) <- groups_use
+
+  for (g1 in groups_use) {
+    for (g2 in groups_use) {
+
+      set1 <- group_sets$kegg_set[group_sets$Group_For_Plots == g1][[1]]
+      set2 <- group_sets$kegg_set[group_sets$Group_For_Plots == g2][[1]]
+
+      jac_mat[g1,g2] <- jaccard(set1,set2)
+      sor_mat[g1,g2] <- sorensen(set1,set2)
+    }
+  }
+
+  # convert to long
+  jac_df <- as.data.frame(as.table(jac_mat)) %>%
+    rename(Group1=Var1, Group2=Var2, Similarity=Freq) %>%
+    mutate(Module=mod, Metric="Jaccard")
+
+  sor_df <- as.data.frame(as.table(sor_mat)) %>%
+    rename(Group1=Var1, Group2=Var2, Similarity=Freq) %>%
+    mutate(Module=mod, Metric="Sørensen")
+
+  all_results[[mod]] <- bind_rows(jac_df, sor_df)
+}
+
+sim_long <- bind_rows(all_results)
+
+# ------------------------------------------
+# 4) Plot heatmaps
+# ------------------------------------------
+plot_heat <- function(metric_name){
+
+  ggplot(sim_long %>% filter(Metric==metric_name),
+         aes(Group1, Group2, fill=Similarity)) +
+    geom_tile(color="white") +
+    geom_text(aes(label=sprintf("%.2f",Similarity)), size=3.5) +
+    scale_fill_gradient(limits=c(0,1)) +
+    facet_wrap(~Module, nrow=1) +
+    coord_fixed() +
+    theme_minimal(base_size=12) +
+    theme(
+      panel.grid=element_blank(),
+      strip.text=element_text(face="bold"),
+      axis.text.x=element_text(angle=20,hjust=1)
+    ) +
+    labs(
+      title=metric_name,
+      subtitle="Expressed KEGG_ID sets (≥1 detection)",
+      x=NULL, y=NULL
+    )
+}
+
+p_j <- plot_heat("Jaccard")
+p_s <- plot_heat("Sørensen")
+
+p_j / p_s
+```
+```{r}
+############################################################
+# Focus modules: Core metabolism/biosynthesis, Growth machinery, Resource acquisition
+#
+# What this produces:
+#   Panel A: Union-level BETWEEN-group Sørensen heatmaps (3 modules, side-by-side)
+#   Panel B: Species-level distributions (Within vs Between) for each module (violin+box)
+#   Panel C: Two summary barplots per module:
+#            (i) Mean BETWEEN (absolute divergence; lower = more different)
+#            (ii) Effect size = Mean WITHIN − Mean BETWEEN (trophic structuring)
+#
+# Definition of "expressed":
+#   Protein_Abundance_IBAQ_Norm > 0 on at least one date
+#
+# Requires in environment:
+#   protein_table: Species_ID, Protein_ID, Date, Protein_Abundance_IBAQ_Norm, Group_For_Plots
+#   gene_table:    Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory
+#   module_map:    Label -> Module (your 7-module mapping)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -------------------------
+# SETTINGS (edit if needed)
+# -------------------------
+groups_use <- c("Oligo_like","Intermediate","Copio_like")
+
+modules_focus <- c(
+  "Core metabolism/biosynthesis",
+  "Growth machinery",
+  "Resource acquisition"
+)
+
+# -------------------------
+# Similarity function
+# -------------------------
+sorensen <- function(a, b){
+  a <- unique(a); b <- unique(b)
+  if(length(a)==0 && length(b)==0) return(NA_real_)
+  (2 * length(intersect(a,b))) / (length(a) + length(b))
+}
+
+# -------------------------
+# 1) Build expressed (≥1 detection) KEGG IDs per Species × Module
+# -------------------------
+prot_expr <- protein_table %>%
+  filter(Protein_Abundance_IBAQ_Norm > 0) %>%
+  distinct(Species_ID, Protein_ID, Group_For_Plots) %>%
+  filter(Group_For_Plots %in% groups_use)
+
+prot_expr_kegg <- prot_expr %>%
+  left_join(
+    gene_table %>% distinct(Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory),
+    by = c("Species_ID","Protein_ID")
+  ) %>%
+  filter(!is.na(KEGG_ID), KEGG_ID != "", !is.na(KEGG_Subcategory))
+
+expr_long <- prot_expr_kegg %>%
+  mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(Label = str_trim(.sub)) %>%
+  inner_join(module_map, by = "Label") %>%
+  filter(Module %in% modules_focus) %>%
+  distinct(Species_ID, Group_For_Plots, KEGG_ID, Module) %>%
+  mutate(
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_use),
+    Module = factor(Module, levels = modules_focus)
+  )
+
+# Species-level sets for each module
+species_sets <- expr_long %>%
+  group_by(Module, Species_ID, Group_For_Plots) %>%
+  summarise(kegg_set = list(unique(KEGG_ID)), .groups="drop")
+
+# -------------------------
+# 2) PANEL A: Union-level BETWEEN-group heatmaps (Sørensen)
+# -------------------------
+make_union_heat_df <- function(mod){
+
+  df_mod <- expr_long %>%
+    filter(Module == mod) %>%
+    group_by(Group_For_Plots) %>%
+    summarise(kegg_set = list(unique(KEGG_ID)), .groups="drop")
+
+  mat <- matrix(NA, nrow=length(groups_use), ncol=length(groups_use),
+                dimnames=list(groups_use, groups_use))
+
+  for(g1 in groups_use){
+    for(g2 in groups_use){
+      set1 <- df_mod$kegg_set[df_mod$Group_For_Plots == g1][[1]]
+      set2 <- df_mod$kegg_set[df_mod$Group_For_Plots == g2][[1]]
+      mat[g1,g2] <- sorensen(set1,set2)
+    }
+  }
+
+  as.data.frame(as.table(mat)) %>%
+    rename(Group1=Var1, Group2=Var2, Similarity=Freq) %>%
+    mutate(Module = mod)
+}
+
+union_heat_df <- bind_rows(lapply(modules_focus, make_union_heat_df)) %>%
+  mutate(
+    Module = factor(Module, levels = modules_focus),
+    Group1 = factor(Group1, levels = groups_use),
+    Group2 = factor(Group2, levels = groups_use)
+  )
+
+pA <- ggplot(union_heat_df, aes(Group1, Group2, fill = Similarity)) +
+  geom_tile(color="white", linewidth=0.5) +
+  geom_text(aes(label=sprintf("%.2f", Similarity)), size=3.8) +
+  facet_wrap(~Module, nrow=1) +
+  coord_fixed() +
+  scale_fill_gradient(limits=c(0,1)) +
+  theme_minimal(base_size=12) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(face="bold"),
+    axis.text.x = element_text(angle=20, hjust=1),
+    plot.title = element_text(face="bold"),
+    legend.position = "right"
+  ) +
+  labs(
+    title = "A. Union-level overlap of expressed KEGG repertoires (Sørensen)",
+    subtitle = "Each cell: overlap between GROUP-level KEGG sets (union across species). Expressed = ≥1 detection.",
+    x = NULL, y = NULL, fill = "Sørensen"
+  )
+
+# -------------------------
+# 3) PANEL B: Species-level pairwise similarities (Within vs Between)
+# -------------------------
+pairwise_species <- list()
+
+for(mod in modules_focus){
+
+  ss <- species_sets %>% filter(Module == mod)
+
+  tmp <- list()
+  for(i in 1:nrow(ss)){
+    for(j in 1:nrow(ss)){
+      if(i < j){
+        sim <- sorensen(ss$kegg_set[[i]], ss$kegg_set[[j]])
+        tmp[[length(tmp)+1]] <- data.frame(
+          Module = mod,
+          Similarity = sim,
+          Comparison = ifelse(ss$Group_For_Plots[i] == ss$Group_For_Plots[j],
+                              "Within trophic group", "Between trophic groups")
+        )
+      }
+    }
+  }
+
+  pairwise_species[[as.character(mod)]] <- bind_rows(tmp)
+}
+
+species_pair_df <- bind_rows(pairwise_species) %>%
+  mutate(
+    Module = factor(Module, levels = modules_focus),
+    Comparison = factor(Comparison, levels = c("Within trophic group","Between trophic groups"))
+  )
+
+pB <- ggplot(species_pair_df, aes(x = Module, y = Similarity, fill = Comparison)) +
+  geom_violin(scale="width", trim=TRUE, alpha=0.35, color=NA) +
+  geom_boxplot(width=0.18, outlier.shape=NA, linewidth=0.5, alpha=0.6) +
+  coord_cartesian(ylim=c(0,1)) +
+  theme_minimal(base_size=12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle=20, hjust=1),
+    plot.title = element_text(face="bold"),
+    legend.position = "top"
+  ) +
+  labs(
+    title = "B. Species-level overlap distributions (Sørensen)",
+    subtitle = "Pairwise Sørensen across species: within trophic group vs between trophic groups.",
+    x = NULL, y = "Species-pair Sørensen similarity"
+  )
+
+# -------------------------
+# 4) PANEL C: Summary metrics per module
+#    - Mean Between = absolute divergence (lower = more different)
+#    - Effect size = Mean Within − Mean Between (trophic structuring)
+# -------------------------
+summary_mod <- species_pair_df %>%
+  group_by(Module) %>%
+  summarise(
+    Mean_Within  = mean(Similarity[Comparison=="Within trophic group"],  na.rm=TRUE),
+    Mean_Between = mean(Similarity[Comparison=="Between trophic groups"], na.rm=TRUE),
+    Effect_size  = Mean_Within - Mean_Between,
+    .groups="drop"
+  )
+
+pC1 <- ggplot(summary_mod, aes(x = Module, y = Mean_Between)) +
+  geom_col() +
+  theme_minimal(base_size=12) +
+  theme(
+    axis.text.x = element_text(angle=20, hjust=1),
+    plot.title = element_text(face="bold")
+  ) +
+  labs(
+    title = "C1. Absolute divergence (Mean BETWEEN-group Sørensen)",
+    subtitle = "Lower values indicate stronger between-group differences.",
+    x = NULL, y = "Mean BETWEEN Sørensen"
+  )
+
+pC2 <- ggplot(summary_mod, aes(x = Module, y = Effect_size)) +
+  geom_col() +
+  theme_minimal(base_size=12) +
+  theme(
+    axis.text.x = element_text(angle=20, hjust=1),
+    plot.title = element_text(face="bold")
+  ) +
+  labs(
+    title = "C2. Trophic structuring (Mean WITHIN − Mean BETWEEN)",
+    subtitle = "Higher values indicate stronger within-group coherence.",
+    x = NULL, y = "Effect size"
+  )
+
+pC <- pC1 | pC2
+
+# -------------------------
+# 5) Combine into one publication figure
+# -------------------------
+final_fig <- pA / pB / pC +
+  plot_layout(heights = c(1.05, 1.05, 0.85))
+
+print(final_fig)
+
+ggsave(
+  filename = "Fig_Sorensen_ModuleOverlap_Publication_Multipanel.pdf",
+  plot     = final_fig,
+  width    = 13.5,
+  height   = 11,
+  units    = "in",
+  dpi      = 300
+)
+
+ggsave(
+  filename = "Fig_Sorensen_ModuleOverlap_Publication_Multipanel.png",
+  plot     = final_fig,
+  width    = 13.5,
+  height   = 11,
+  units    = "in",
+  dpi      = 400
+)
+```
+
+
+
+
+```{r}
+############################################################
+# 6 heatmaps (Sørensen)
+# Top row  : GENES (functional potential)
+# Bottom row: PROTEINS detected (expressed proteins; detection_filter rule)
+#
+# Modules (3 panels per row):
+#   Core metabolism/biosynthesis, Growth machinery, Resource acquisition
+#
+# Similarity definition:
+#   Union-level overlap between trophic groups (union across species)
+#   Sørensen similarity on KEGG_ID presence/absence
+#
+# Requires in environment:
+#   protein_table: Species_ID, Protein_ID, Protein_Abundance_IBAQ_Norm, Group_For_Plots
+#   gene_table:    Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory (+ optional Group_For_Plots.x/y)
+#   module_map:    Label, Module
+#   species_meta:  Species_ID, Group_For_Plots   (used as fallback for genes grouping)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+})
+
+# -------------------------
+# SETTINGS
+# -------------------------
+groups_use <- c("Oligo_like","Intermediate","Copio_like")
+
+modules_focus <- c(
+  "Core metabolism/biosynthesis",
+  "Growth machinery",
+  "Resource acquisition"
+)
+
+detection_filter <- 5  # protein must be detected in >= this many dates
+
+# -------------------------
+# Similarity (presence/absence)
+# -------------------------
+sorensen <- function(a, b){
+  a <- unique(a); b <- unique(b)
+  if(length(a)==0 && length(b)==0) return(NA_real_)
+  (2 * length(intersect(a,b))) / (length(a) + length(b))
+}
+
+# -------------------------
+# Helper: safe Group_For_Plots for genes (handles Group_For_Plots.x/y)
+# -------------------------
+pick_group_col <- function(df) {
+  cand <- c("Group_For_Plots", "Group_For_Plots.x", "Group_For_Plots.y")
+  out <- cand[cand %in% names(df)][1]
+  if (length(out) == 0) NA_character_ else out
+}
+
+group_map <- species_meta %>% distinct(Species_ID, Group_For_Plots)
+
+# ============================================================
+# 1) BUILD LONG TABLES OF KEGG_ID presence per (Group, Module)
+#    A) GENES: union KEGG repertoire from gene_table
+#    B) PROTEINS: union KEGG repertoire from expressed proteins (>= detection_filter dates)
+# ============================================================
+
+# -------------------------
+# 1A) GENES long table
+# -------------------------
+gene_group_col <- pick_group_col(gene_table)
+
+genes_kegg <- if (!is.na(gene_group_col)) {
+  gene_table %>%
+    transmute(
+      Species_ID,
+      Group_For_Plots = .data[[gene_group_col]],
+      Protein_ID,
+      KEGG_ID,
+      KEGG_Subcategory
+    )
+} else {
+  gene_table %>%
+    select(Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory) %>%
+    left_join(group_map, by = "Species_ID")
+}
+
+genes_long <- genes_kegg %>%
+  filter(Group_For_Plots %in% groups_use) %>%
+  filter(!is.na(KEGG_ID), KEGG_ID != "", !is.na(KEGG_Subcategory)) %>%
+  mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(Label = str_trim(.sub)) %>%
+  inner_join(module_map, by = "Label") %>%
+  filter(Module %in% modules_focus) %>%
+  distinct(Species_ID, Group_For_Plots, KEGG_ID, Module) %>%
+  mutate(
+    DataLayer = "Genes",
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_use),
+    Module = factor(Module, levels = modules_focus)
+  )
+
+# -------------------------
+# 1B) PROTEINS detected long table
+# -------------------------
+prot_expr <- protein_table %>%
+  mutate(detected = Protein_Abundance_IBAQ_Norm > 0) %>%
+  group_by(Species_ID, Protein_ID, Group_For_Plots) %>%
+  summarise(
+    n_dates_detected = sum(detected, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(Group_For_Plots %in% groups_use) %>%
+  filter(n_dates_detected >= detection_filter)
+
+prot_expr_kegg <- prot_expr %>%
+  left_join(
+    gene_table %>% distinct(Species_ID, Protein_ID, KEGG_ID, KEGG_Subcategory),
+    by = c("Species_ID","Protein_ID")
+  ) %>%
+  filter(!is.na(KEGG_ID), KEGG_ID != "", !is.na(KEGG_Subcategory))
+
+proteins_long <- prot_expr_kegg %>%
+  mutate(.sub = str_replace_all(as.character(KEGG_Subcategory), "\\s*;\\s*", ";")) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(Label = str_trim(.sub)) %>%
+  inner_join(module_map, by = "Label") %>%
+  filter(Module %in% modules_focus) %>%
+  distinct(Species_ID, Group_For_Plots, KEGG_ID, Module) %>%
+  mutate(
+    DataLayer = paste0("Proteins detected (≥", detection_filter, ")"),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_use),
+    Module = factor(Module, levels = modules_focus)
+  )
+
+# Combine both layers into one table
+long_all <- bind_rows(genes_long, proteins_long) %>%
+  mutate(
+    DataLayer = factor(DataLayer, levels = c("Genes", paste0("Proteins detected (≥", detection_filter, ")")))
+  )
+
+# ============================================================
+# 2) Build union-level similarity matrices -> long table
+# ============================================================
+
+make_union_heat_df <- function(df_long, layer_name, mod){
+
+  df_mod <- df_long %>%
+    filter(DataLayer == layer_name, Module == mod) %>%
+    group_by(Group_For_Plots) %>%
+    summarise(kegg_set = list(unique(KEGG_ID)), .groups="drop")
+
+  # Ensure every group exists (even if empty) to avoid [[1]] errors
+  df_mod <- tibble(Group_For_Plots = factor(groups_use, levels = groups_use)) %>%
+    left_join(df_mod, by = "Group_For_Plots") %>%
+    mutate(kegg_set = lapply(kegg_set, function(x) if (is.null(x)) character(0) else x))
+
+  mat <- matrix(NA_real_, nrow=length(groups_use), ncol=length(groups_use),
+                dimnames=list(groups_use, groups_use))
+
+  for(g1 in groups_use){
+    for(g2 in groups_use){
+      set1 <- df_mod$kegg_set[df_mod$Group_For_Plots == g1][[1]]
+      set2 <- df_mod$kegg_set[df_mod$Group_For_Plots == g2][[1]]
+      mat[g1,g2] <- sorensen(set1, set2)
+    }
+  }
+
+  as.data.frame(as.table(mat)) %>%
+    rename(Group1=Var1, Group2=Var2, Similarity=Freq) %>%
+    mutate(
+      Module = mod,
+      DataLayer = layer_name
+    )
+}
+
+layer_levels <- levels(long_all$DataLayer)
+
+heat_df <- bind_rows(lapply(layer_levels, function(L) {
+  bind_rows(lapply(modules_focus, function(M) make_union_heat_df(long_all, L, M)))
+})) %>%
+  mutate(
+    DataLayer = factor(DataLayer, levels = layer_levels),
+    Module = factor(Module, levels = modules_focus),
+    Group1 = factor(Group1, levels = groups_use),
+    Group2 = factor(Group2, levels = groups_use),
+    Label  = ifelse(is.na(Similarity), "NA", sprintf("%.2f", Similarity))
+  )
+
+# ============================================================
+# 3) Plot: 2 rows (Genes top, Proteins bottom) x 3 modules
+# ============================================================
+
+p_heat_2rows <- ggplot(heat_df, aes(x = Group1, y = Group2, fill = Similarity)) +
+  geom_tile(color = "white", linewidth = 0.6) +
+  geom_text(aes(label = Label), size = 4.1, fontface = "bold") +
+  facet_grid(DataLayer ~ Module) +   # <-- THIS makes 2 rows x 3 columns
+  coord_fixed() +
+  scale_fill_gradient(
+    limits = c(0, 1),
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
+    name = "Sørensen\nsimilarity"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold", size = 12),
+    axis.title = element_blank(),
+    axis.text.x = element_text(angle = 20, hjust = 1),
+    axis.text = element_text(face = "bold"),
+    legend.position = "right",
+    plot.title = element_text(face = "bold")
+  ) +
+  labs(
+    title = "Overlap of KEGG repertoires across trophic strategies",
+    subtitle = paste0(
+      "Union-level Sørensen similarity within each functional module.\n",
+      "Proteins detected = ≥", detection_filter, " detection dates (Protein_Abundance_IBAQ_Norm > 0)."
+    )
+  )
+
+print(p_heat_2rows)
+
+# ggsave(
+#   filename = "Fig_Main_Heatmaps_Genes_vs_Proteins_Sorensen.pdf",
+#   plot     = p_heat_2rows,
+#   width    = 10.8,
+#   height   = 6.8,
+#   units    = "in",
+#   dpi      = 300
+# )
+# 
+# ggsave(
+#   filename = "Fig_Main_Heatmaps_Genes_vs_Proteins_Sorensen.png",
+#   plot     = p_heat_2rows,
+#   width    = 10.8,
+#   height   = 6.8,
+#   units    = "in",
+#   dpi      = 400
+# )
+```
+```{r}
+# ============================================================
+# NATURE-READY COMPRESSED DUMBBELL
+# - 3 rows: Oligo–Intermediate, Intermediate–Copio, Copio–Oligo
+# - 3 colored modules per row (slightly offset)
+# - open circle = Genes similarity
+# - filled circle = Proteins similarity
+# - segment color = Δ (Genes − Proteins) magnitude (bigger = darker)
+# - BIG dots, clean theme, publication margins
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+})
+
+# ---- Palette for modules (your pal3) ----
+pal3 <- c(
+  "Core metabolism/biosynthesis" = "#E69F00",
+  "Resource acquisition"         = "#009E73",
+  "Growth machinery"             = "#CC79A7"
+)
+
+# ---- DataLayer names must match your heat_df ----
+gene_name <- "Genes"
+prot_name <- paste0("Proteins detected (≥", detection_filter, ")")
+
+# ---- 3 unique comparisons in your requested order ----
+pairs_keep <- tibble(
+  A = c("Oligo_like", "Intermediate", "Copio_like"),
+  B = c("Intermediate", "Copio_like", "Oligo_like"),
+  Pair = factor(
+    c("Oligo–Intermediate", "Intermediate–Copio", "Copio–Oligo"),
+    levels = c("Copio–Oligo", "Intermediate–Copio", "Oligo–Intermediate")
+  )
+) %>%
+  mutate(Gmin = pmin(A, B), Gmax = pmax(A, B)) %>%
+  select(Gmin, Gmax, Pair)
+
+# ---- 1) Filter + make direction-agnostic + collapse duplicates ----
+heat_pairs <- heat_df %>%
+  mutate(
+    Gmin = pmin(as.character(Group1), as.character(Group2)),
+    Gmax = pmax(as.character(Group1), as.character(Group2))
+  ) %>%
+  inner_join(pairs_keep, by = c("Gmin", "Gmax")) %>%
+  filter(Module %in% names(pal3)) %>%
+  group_by(Module, Pair, DataLayer) %>%
+  summarise(Similarity = mean(as.numeric(Similarity), na.rm = TRUE), .groups = "drop")
+
+# ---- 2) Wide: Genes + Proteins per Module × Pair ----
+df_wide <- heat_pairs %>%
+  filter(DataLayer %in% c(gene_name, prot_name)) %>%
+  pivot_wider(
+    names_from  = DataLayer,
+    values_from = Similarity,
+    values_fn   = mean
+  ) %>%
+  mutate(
+    Module = factor(Module, levels = names(pal3)),
+    Pair   = factor(Pair, levels = levels(pairs_keep$Pair)),
+    Delta  = .data[[gene_name]] - .data[[prot_name]],
+    AbsDelta = abs(Delta)
+  )
+
+# ---- 3) Slight vertical offsets so lines don't overlap within each row ----
+offset_map <- tibble(
+  Module = factor(names(pal3), levels = names(pal3)),
+  y_off  = c(+0.22, 0, -0.22)  # Core up, Resource middle, Growth down
+)
+
+df_plot <- df_wide %>%
+  left_join(offset_map, by = "Module") %>%
+  mutate(
+    y_base = as.numeric(Pair),
+    y      = y_base + y_off
+  )
+
+# ---- 4) Nature-style plot ----
+pdot <- 8  # BIG dots
+pstroke <- 1
+
+p_compact_nature <- ggplot(df_plot) +
+  # Segment (colored by delta magnitude)
+  geom_segment(
+    aes(
+      x = .data[[prot_name]], xend = .data[[gene_name]],
+      y = y, yend = y,
+      alpha = AbsDelta
+    ),
+    linewidth = 1.5,
+    lineend = "round",
+    color = "black"
+  ) +
+  # Proteins point (filled, module-colored)
+  geom_point(
+    aes(x = .data[[prot_name]], y = y, fill = Module),
+    size = pdot,
+    shape = 21,
+    color = "black",
+    stroke = pstroke
+  ) +
+  # Genes point (open, module-colored outline)
+  geom_point(
+    aes(x = .data[[gene_name]], y = y, color = Module),
+    size = pdot,
+    shape = 21,
+    fill = "white",
+    stroke = pstroke
+  ) +
+  scale_fill_manual(values = pal3, guide = guide_legend(order = 1)) +
+  scale_color_manual(values = pal3, guide = "none") +
+  # Delta magnitude mapped to alpha (no legend to keep clean)
+  scale_alpha_continuous(range = c(0.25, 0.95), guide = "none") +
+  scale_y_continuous(
+    breaks = seq_along(levels(df_plot$Pair)),
+    labels = levels(df_plot$Pair),
+    expand = expansion(mult = c(0.18, 0.18))
+  ) +
+  scale_x_continuous(
+    breaks = seq(0.25, 1, by = 0.25),
+    limits = c(0.25, 1)
+  ) +
+  theme_classic(base_size = 13) +
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(margin = margin(t = 6)),
+    axis.text.y  = element_text(face = "bold", size = 11),
+    axis.text.x  = element_text(size = 11),
+    legend.position = "top",
+    legend.title = element_blank(),
+    legend.key.width = unit(1.1, "lines"),
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    plot.margin = margin(6, 10, 6, 10)
+  ) +
+  labs(
+    x = "Sørensen similarity",
+    title = "Gene content vs expressed proteins across trophic strategies",
+    subtitle = "Open circles = genes; filled circles = proteins detected. Connector darkness scales with |Genes − Proteins|."
+  )
+
+print(p_compact_nature)
+
+# Optional save:
+ggsave("Fig_Dumbbell_Compact_NatureReady.pdf", p_compact_nature,
+       width = 8.2, height = 6, units = "in", dpi = 300)
+```
+
+

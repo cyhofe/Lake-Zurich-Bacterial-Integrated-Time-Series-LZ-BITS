@@ -1,0 +1,1946 @@
+---
+title: "Investment Stability Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+rm(list = ls())
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TransporterInvestment/Investment_Stability/")
+############################################################
+# 0) LOAD RETAINED DATA (CSV exports from QC pipeline)
+#    Then reproduce transporter vs non-transporter pie charts
+############################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- Load
+protein_final          <- read_csv("../../../Figure_04/Data_Filtration/retained_protein_table.csv", show_col_types = FALSE)
+retained_species       <- read_csv("../../../Figure_04/Data_Filtration/retained_species.csv", show_col_types = FALSE)
+retained_species_dates <- read_csv("../../../Figure_04/Data_Filtration/retained_species_dates.csv",    show_col_types = FALSE)
+species_taxonomy <- read_csv("../../../../Data/Species_Data/Final_Data/Species_Table.csv", show_col_types = FALSE)
+
+species_taxonomy <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class, Order, Family, Genus, Species) %>%
+  distinct()
+
+# ---- Basic cleanup / checks
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+retained_species_dates <- retained_species_dates %>% mutate(Date = as.Date(Date))
+
+stopifnot(
+  all(c("Species_ID","Protein_ID","Date","Group_For_Plots") %in% names(protein_final)),
+  all(c("Species_ID","Date","Group_For_Plots") %in% names(retained_species_dates))
+)
+
+cat("\n=== Loaded retained datasets ===\n")
+cat("protein_final rows:", nrow(protein_final), "\n")
+cat("retained species×dates:", nrow(retained_species_dates), "\n")
+cat("retained species:", nrow(retained_species), "\n")
+
+glimpse(protein_final)
+glimpse(retained_species)
+glimpse(retained_species_dates)
+glimpse(species_taxonomy)
+```
+
+# distribution overview
+```{r}
+############################################################
+# Supplementary Figure 1
+# Distributional properties of transporter responses
+#
+# Panel A:
+#   species-level mean transporter proteome fraction (TPF)
+#   on the raw 0-1 scale with fine binning and a rug layer
+#   to show that analysed values remain inside the open
+#   interval and do not occur exactly at 0 or 1.
+#
+# Panel B:
+#   species-level mean transporter Bray-Curtis dissimilarity
+#   after logit transformation, shown on the analysis scale
+#   used for Gaussian modelling.
+#
+# IMPORTANT:
+#   Bray-Curtis is calculated between consecutive dates in the
+#   filtered retained date series for each species
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(vegan)
+  library(patchwork)
+  library(scales)
+})
+
+set.seed(1)
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+out_dir <- "Supplementary_ModelChoice"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+fig_width  <- 10
+fig_height <- 7
+dpi_out    <- 300
+
+min_valid_dates_per_species <- 5
+eps <- 1e-6
+
+fill_hist <- "grey84"
+col_trans <- "#3C78B5"
+
+# Finer TPF bins to make internal support visually obvious
+tpf_binwidth <- 0.025
+
+############################################################
+# 2) BASIC CHECKS
+############################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy")
+)
+
+required_protein_cols <- c(
+  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
+  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory", "KEGG_ID"
+)
+
+required_species_cols <- c("Species_ID", "Group_For_Plots")
+required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
+required_tax_cols <- c("Species_ID", "Phylum", "Class")
+
+stopifnot(all(required_protein_cols %in% names(protein_final)))
+stopifnot(all(required_species_cols %in% names(retained_species)))
+stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
+stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+
+species_taxonomy_use <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class) %>%
+  distinct()
+
+############################################################
+# 3) HELPERS
+############################################################
+
+theme_nat <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", size = base_size + 1),
+      plot.subtitle = element_text(size = base_size - 1),
+      axis.title = element_text(size = base_size),
+      axis.text = element_text(size = base_size - 1, colour = "black"),
+      legend.position = "none",
+      plot.margin = margin(6, 6, 6, 6)
+    )
+}
+
+logit_bounded <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+############################################################
+# 4) SPECIES-LEVEL MEAN TPF
+############################################################
+
+protein_flagged <- protein_final %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) &
+      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
+    abund = Protein_Abundance_IBAQ_Norm
+  )
+
+species_date_tpf <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    abund_total = sum(abund, na.rm = TRUE),
+    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    TPF = abund_trans / abund_total,
+    .groups = "drop"
+  ) %>%
+  filter(
+    is.finite(TPF),
+    abund_total > 0,
+    TPF > 0,
+    TPF < 1
+  )
+
+species_traits <- protein_final %>%
+  distinct(Species_ID, TrophicIndex, Group_For_Plots)
+
+species_tpf_df <- species_date_tpf %>%
+  left_join(species_traits, by = "Species_ID") %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class) %>%
+  summarise(
+    n_dates  = n(),
+    mean_TPF = mean(TPF, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_dates >= min_valid_dates_per_species,
+    is.finite(TrophicIndex),
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1,
+    !is.na(Phylum),
+    !is.na(Class)
+  )
+
+############################################################
+# 5) SPECIES-LEVEL MEAN TRANSPORTER BRAY-CURTIS
+############################################################
+
+analysis_species_dates <- retained_species_dates %>%
+  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, Phylum, Class) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  arrange(Species_ID, Date)
+
+kegg_sd_trans <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    !is.na(KEGG_Subcategory),
+    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+  ) %>%
+  group_by(Species_ID, Date, KEGG_ID) %>%
+  summarise(
+    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(is.finite(kegg_abund), kegg_abund > 0)
+
+compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+  dates_tbl <- keep_tbl %>%
+    filter(Species_ID == sp_id) %>%
+    arrange(Date)
+
+  dates <- dates_tbl$Date
+  if (length(dates) < 2) return(NULL)
+
+  mat_wide <- kegg_tbl %>%
+    filter(Species_ID == sp_id, Date %in% dates) %>%
+    mutate(Date_chr = as.character(Date)) %>%
+    select(Date_chr, KEGG_ID, kegg_abund) %>%
+    pivot_wider(
+      names_from = KEGG_ID,
+      values_from = kegg_abund,
+      values_fill = 0
+    ) %>%
+    arrange(Date_chr)
+
+  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
+
+  present_dates_chr <- mat_wide$Date_chr
+  present_dates <- as.Date(present_dates_chr)
+
+  M_abs <- as.matrix(mat_wide %>% select(-Date_chr))
+  rownames(M_abs) <- present_dates_chr
+
+  pair_tbl <- tibble(
+    Date1 = present_dates[-length(present_dates)],
+    Date2 = present_dates[-1]
+  )
+
+  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
+    d1 <- as.character(pair_tbl$Date1[i])
+    d2 <- as.character(pair_tbl$Date2[i])
+
+    bc_abs <- as.numeric(
+      vegan::vegdist(
+        M_abs[c(d1, d2), , drop = FALSE],
+        method = "bray"
+      )
+    )
+
+    tibble(
+      Species_ID = sp_id,
+      Date1 = as.Date(d1),
+      Date2 = as.Date(d2),
+      bc_abs = bc_abs
+    )
+  })
+
+  bind_rows(out)
+}
+
+all_species <- sort(unique(analysis_species_dates$Species_ID))
+
+transitions <- bind_rows(lapply(
+  all_species,
+  compute_species_transitions_bc,
+  keep_tbl = analysis_species_dates,
+  kegg_tbl = kegg_sd_trans
+)) %>%
+  left_join(
+    analysis_species_dates %>%
+      distinct(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(bc_abs),
+    !is.na(Phylum),
+    !is.na(Class)
+  )
+
+species_bc_df <- transitions %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class) %>%
+  summarise(
+    n_transitions = n(),
+    mean_bc_abs   = mean(bc_abs, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    is.finite(TrophicIndex),
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1,
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    mean_bc_abs_logit = logit_bounded(mean_bc_abs, eps = eps)
+  )
+
+############################################################
+# 6) PANEL A — TPF RAW DISTRIBUTION
+############################################################
+
+n_tpf <- nrow(species_tpf_df)
+n_bc  <- nrow(species_bc_df)
+
+p_a <- ggplot(species_tpf_df, aes(x = mean_TPF)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    binwidth = tpf_binwidth,
+    boundary = 0,
+    fill = fill_hist,
+    colour = "black",
+    linewidth = 0.25
+  ) +
+  geom_density(
+    linewidth = 0.9,
+    adjust = 0.9,
+    colour = "black"
+  ) +
+  geom_rug(
+    sides = "b",
+    alpha = 0.20,
+    linewidth = 0.25
+  ) +
+  geom_vline(
+    xintercept = c(0, 1),
+    linetype = 3,
+    linewidth = 0.4,
+    colour = "grey45"
+  ) +
+  annotate(
+    "text",
+    x = 0.08,
+    y = max(hist(
+      species_tpf_df$mean_TPF,
+      plot = FALSE,
+      breaks = seq(0, 1, by = tpf_binwidth)
+    )$density) * 1.08,
+    label = "exact 0 = 0, exact 1 = 0",
+    hjust = 0,
+    size = 3.3
+  ) +
+  coord_cartesian(xlim = c(-0.02, 1.02)) +
+  scale_x_continuous(
+    breaks = seq(0, 1, 0.1),
+    labels = number_format(accuracy = 0.1)
+  ) +
+  labs(
+    title = "A. TPF | beta model",
+    subtitle = paste0(
+      "Species-level mean transporter proteome fraction (n = ", n_tpf, ")"
+    ),
+    x = "Mean transporter proteome fraction (TPF)",
+    y = "Density"
+  ) +
+  theme_nat()
+
+############################################################
+# 7) PANEL B — LOGIT-TRANSFORMED BRAY-CURTIS
+############################################################
+
+p_b <- ggplot(species_bc_df, aes(x = mean_bc_abs_logit)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 18,
+    fill = fill_hist,
+    colour = "black",
+    linewidth = 0.25
+  ) +
+  geom_density(
+    colour = "black",
+    linewidth = 0.9,
+    adjust = 0.9
+  ) +
+  labs(
+    title = "B. Bray–Curtis | Gaussian model on logit scale",
+    subtitle = paste0(
+      "Species-level mean transporter Bray–Curtis dissimilarity after logit transformation (n = ",
+      n_bc, ")"
+    ),
+    x = "logit(mean Bray–Curtis dissimilarity)",
+    y = "Density"
+  ) +
+  theme_nat()
+
+############################################################
+# 8) COMBINE FIGURE
+############################################################
+
+supp_fig1 <- (p_a | p_b) +
+  plot_layout(widths = c(1, 1)) +
+  plot_annotation(
+    title = "Distributional properties of transporter responses"
+  ) &
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 9.5)
+  )
+
+print(supp_fig1)
+
+############################################################
+# 9) SAVE OUTPUTS
+############################################################
+
+ggsave(
+  filename = file.path(out_dir, "Supp_Fig1_ResponseDistributions_ModelChoice_updated.png"),
+  plot = supp_fig1,
+  width = fig_width,
+  height = fig_height,
+  dpi = dpi_out,
+  bg = "white"
+)
+
+############################################################
+# 10) SAVE SUMMARY TABLE
+############################################################
+
+fig1_summary <- bind_rows(
+  tibble(
+    Response = "Species-level mean TPF",
+    n = n_tpf,
+    min = min(species_tpf_df$mean_TPF, na.rm = TRUE),
+    max = max(species_tpf_df$mean_TPF, na.rm = TRUE),
+    exact_0 = sum(species_tpf_df$mean_TPF == 0, na.rm = TRUE),
+    exact_1 = sum(species_tpf_df$mean_TPF == 1, na.rm = TRUE),
+    analysis_scale = "raw 0-1 scale",
+    candidate_family = "beta"
+  ),
+  tibble(
+    Response = "Species-level mean transporter Bray-Curtis",
+    n = n_bc,
+    min = min(species_bc_df$mean_bc_abs, na.rm = TRUE),
+    max = max(species_bc_df$mean_bc_abs, na.rm = TRUE),
+    exact_0 = sum(species_bc_df$mean_bc_abs == 0, na.rm = TRUE),
+    exact_1 = sum(species_bc_df$mean_bc_abs == 1, na.rm = TRUE),
+    analysis_scale = "logit-transformed scale",
+    candidate_family = "Gaussian after logit transform"
+  )
+)
+
+write.csv(
+  fig1_summary,
+  file = file.path(out_dir, "Supp_Fig1_ResponseDistributions_ModelChoice_summary.csv"),
+  row.names = FALSE
+)
+
+print(fig1_summary)
+```
+
+# QC table
+```{r}
+############################################################
+# Supplementary Figure S2 and Supplementary Table S1
+# Primary species-level model adequacy checks
+#
+# This script performs only two tasks:
+#
+#   1) Figure S2
+#      Creates a minimal two-panel diagnostic figure showing
+#      DHARMa scaled residuals versus fitted values for the
+#      primary species-level models:
+#        - mean transporter proteome fraction (TPF)
+#        - mean transporter Bray-Curtis dissimilarity
+#
+#   2) Table S1
+#      Creates a compact QC table containing only model
+#      adequacy and numerical stability metrics:
+#        - DHARMa uniformity test
+#        - DHARMa dispersion test
+#        - DHARMa outlier test
+#        - maximum VIF
+#        - singular fit check
+#        - positive-definite Hessian
+#
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(vegan)
+  library(glmmTMB)
+  library(DHARMa)
+  library(performance)
+  library(patchwork)
+  library(scales)
+  library(gt)
+})
+
+set.seed(1)
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+out_dir <- "Supplementary_ModelQC"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+fig_width  <- 12
+fig_height <- 4
+dpi_out    <- 300
+
+# Species-level summaries are built from the retained
+# species-date universe. For TPF, at least 5 retained dates
+# are required to match the main species-level workflow.
+min_valid_dates_per_species <- 5
+
+# Small epsilon for bounded logit transformation of Bray-Curtis
+eps <- 1e-6
+
+############################################################
+# 2) BASIC CHECKS
+############################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy")
+)
+
+required_protein_cols <- c(
+  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
+  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory", "KEGG_ID"
+)
+
+required_species_cols <- c("Species_ID", "Group_For_Plots")
+required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
+required_tax_cols <- c("Species_ID", "Phylum", "Class")
+
+stopifnot(all(required_protein_cols %in% names(protein_final)))
+stopifnot(all(required_species_cols %in% names(retained_species)))
+stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
+stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+
+species_taxonomy_use <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class) %>%
+  distinct()
+
+############################################################
+# 3) HELPERS
+############################################################
+
+theme_nat <- function(base_size = 10.5) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", size = base_size + 1),
+      plot.subtitle = element_text(size = base_size - 1),
+      axis.title = element_text(size = base_size),
+      axis.text = element_text(size = base_size - 1, colour = "black"),
+      legend.position = "none",
+      plot.margin = margin(6, 6, 6, 6)
+    )
+}
+
+# Bounded logit transform to avoid infinities if a response
+# falls extremely close to 0 or 1.
+logit_bounded <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+# Simple z-scaling helper for model covariates
+scale_z <- function(x) {
+  as.numeric(scale(x))
+}
+
+# Numeric formatting helpers for QC tables
+fmt_num <- function(x, digits = 3) {
+  ifelse(is.na(x), "NA", formatC(x, digits = digits, format = "fg", flag = "#"))
+}
+
+fmt_p <- function(x) {
+  ifelse(
+    is.na(x), "NA",
+    ifelse(x < 0.001, "<0.001", formatC(x, digits = 3, format = "fg", flag = "#"))
+  )
+}
+
+############################################################
+# 4) BUILD SPECIES-LEVEL TPF DATA
+############################################################
+# Transporter proteome fraction is calculated per retained
+# species-date as transporter signal divided by total signal,
+# then averaged to one species-level value. Coverage
+# covariates are retained because they are part of the
+# primary species-level model specification.
+
+protein_flagged <- protein_final %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) &
+      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
+    abund = Protein_Abundance_IBAQ_Norm
+  )
+
+species_date_qc <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+species_date_tpf <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    abund_total = sum(abund, na.rm = TRUE),
+    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    TPF = abund_trans / abund_total,
+    .groups = "drop"
+  ) %>%
+  left_join(species_date_qc, by = c("Species_ID", "Date")) %>%
+  filter(
+    is.finite(TPF),
+    abund_total > 0,
+    TPF > 0,
+    TPF < 1
+  )
+
+species_traits <- protein_final %>%
+  distinct(Species_ID, TrophicIndex, Group_For_Plots)
+
+model_df_tpf <- species_date_tpf %>%
+  left_join(species_traits, by = "Species_ID") %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class) %>%
+  summarise(
+    n_dates            = n(),
+    mean_TPF           = mean(TPF, na.rm = TRUE),
+    mean_prot_detected = mean(N_prot_detected, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_dates >= min_valid_dates_per_species,
+    is.finite(TrophicIndex),
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1,
+    is.finite(mean_prot_detected),
+    mean_prot_detected > 0,
+    !is.na(Phylum)
+  ) %>%
+  mutate(
+    TrophicIndex_z      = scale_z(TrophicIndex),
+    n_dates_z           = scale_z(n_dates),
+    log_prot_detected_z = scale_z(log1p(mean_prot_detected))
+  )
+
+############################################################
+# 5) BUILD SPECIES-LEVEL BRAY-CURTIS DATA
+############################################################
+# Bray-Curtis is calculated from transporter-only KEGG
+# profiles. For each species, retained dates are ordered, and
+# dissimilarity is computed only between adjacent dates in
+# that filtered sequence. No explicit minimum-transition
+# filter is imposed here; this matches the harmonized
+# species-level Bray-Curtis workflow.
+
+analysis_species_dates <- retained_species_dates %>%
+  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, Phylum, Class) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(Phylum)
+  ) %>%
+  arrange(Species_ID, Date)
+
+# Per-date protein counts are retained as a coverage proxy
+# for pairwise Bray-Curtis summaries.
+prot_counts <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% dplyr::select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+analysis_species_dates <- analysis_species_dates %>%
+  left_join(prot_counts, by = c("Species_ID", "Date"))
+
+# Build transporter-only KEGG abundance profiles:
+# one summed intensity per Species × Date × KEGG_ID
+kegg_sd_trans <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% dplyr::select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    !is.na(KEGG_Subcategory),
+    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+  ) %>%
+  group_by(Species_ID, Date, KEGG_ID) %>%
+  summarise(
+    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(is.finite(kegg_abund), kegg_abund > 0)
+
+compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+  dates_tbl <- keep_tbl %>%
+    filter(Species_ID == sp_id) %>%
+    arrange(Date)
+
+  dates <- dates_tbl$Date
+  if (length(dates) < 2) return(NULL)
+
+  mat_wide <- kegg_tbl %>%
+    filter(Species_ID == sp_id, Date %in% dates) %>%
+    mutate(Date_chr = as.character(Date)) %>%
+    dplyr::select(Date_chr, KEGG_ID, kegg_abund) %>%
+    pivot_wider(
+      names_from = KEGG_ID,
+      values_from = kegg_abund,
+      values_fill = 0
+    ) %>%
+    arrange(Date_chr)
+
+  # If fewer than two profile rows remain, or no KEGG feature
+  # columns are available, Bray-Curtis cannot be computed.
+  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
+
+  present_dates_chr <- mat_wide$Date_chr
+  present_dates <- as.Date(present_dates_chr)
+
+  M_abs <- as.matrix(mat_wide %>% dplyr::select(-Date_chr))
+  rownames(M_abs) <- present_dates_chr
+
+  # Consecutive pairs are defined within the filtered retained
+  # species-specific date sequence, not by strict calendar adjacency.
+  pair_tbl <- tibble(
+    Date1 = present_dates[-length(present_dates)],
+    Date2 = present_dates[-1]
+  )
+
+  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
+    d1 <- pair_tbl$Date1[i]
+    d2 <- pair_tbl$Date2[i]
+
+    bc_abs <- as.numeric(
+      vegan::vegdist(
+        M_abs[c(as.character(d1), as.character(d2)), , drop = FALSE],
+        method = "bray"
+      )
+    )
+
+    nd1 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == d1) %>%
+      pull(N_prot_detected)
+
+    nd2 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == d2) %>%
+      pull(N_prot_detected)
+
+    tibble(
+      Species_ID  = sp_id,
+      Date1       = d1,
+      Date2       = d2,
+      bc_abs      = bc_abs,
+      N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE)
+    )
+  })
+
+  bind_rows(out)
+}
+
+all_species <- sort(unique(analysis_species_dates$Species_ID))
+
+transitions <- bind_rows(lapply(
+  all_species,
+  compute_species_transitions_bc,
+  keep_tbl = analysis_species_dates,
+  kegg_tbl = kegg_sd_trans
+)) %>%
+  left_join(
+    analysis_species_dates %>%
+      distinct(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(bc_abs),
+    is.finite(N_prot_pair),
+    !is.na(Phylum)
+  )
+
+model_df_bc <- transitions %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, Phylum, Class) %>%
+  summarise(
+    n_transitions  = n(),
+    mean_bc_abs    = mean(bc_abs, na.rm = TRUE),
+    mean_prot_pair = mean(N_prot_pair, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    is.finite(TrophicIndex),
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1,
+    is.finite(mean_prot_pair),
+    mean_prot_pair > 0,
+    !is.na(Phylum)
+  ) %>%
+  mutate(
+    mean_bc_abs_logit = logit_bounded(mean_bc_abs, eps = eps),
+    TrophicIndex_z    = scale_z(TrophicIndex),
+    log_prot_pair_z   = scale_z(log1p(mean_prot_pair))
+  )
+
+############################################################
+# 6) FIT PRIMARY SPECIES-LEVEL MODELS
+############################################################
+# These are the primary species-level models whose adequacy
+# is evaluated here. The goal is not model comparison, but
+# validation of the chosen model classes.
+#
+# TPF model:
+#   beta response on the raw 0-1 scale
+# BC model:
+#   Gaussian model on logit-transformed mean Bray-Curtis
+#
+# Coverage covariates are retained, but no explicit
+# transition-count covariate is included in the Bray-Curtis
+# model, keeping the formulation aligned with the harmonized
+# workflow.
+
+m_tpf <- glmmTMB(
+  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + (1 | Phylum),
+  family = beta_family(link = "logit"),
+  data = model_df_tpf
+)
+
+m_bc <- glmmTMB(
+  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + (1 | Phylum),
+  family = gaussian(),
+  data = model_df_bc
+)
+
+############################################################
+# 7) DHARMa RESIDUALS
+############################################################
+
+sim_tpf <- simulateResiduals(m_tpf, n = 1000)
+sim_bc  <- simulateResiduals(m_bc,  n = 1000)
+
+diag_tpf <- tibble(
+  fitted = predict(m_tpf, type = "response"),
+  resid  = sim_tpf$scaledResiduals
+)
+
+diag_bc <- tibble(
+  fitted = predict(m_bc, type = "response"),
+  resid  = sim_bc$scaledResiduals
+)
+
+############################################################
+# 8) FIGURE S2 — RESIDUAL DIAGNOSTICS
+############################################################
+# Uniformly distributed DHARMa residuals should not show
+# strong structure across the fitted-value range. The dashed
+# smoother is included as a visual guide only.
+
+p_tpf <- ggplot(diag_tpf, aes(x = fitted, y = resid)) +
+  geom_point(size = 1.8, alpha = 0.75, colour = "black") +
+  geom_smooth(
+    method = "loess",
+    formula = y ~ x,
+    se = FALSE,
+    linewidth = 1.0,
+    linetype = 2,
+    colour = "grey20",
+    span = 1.0
+  ) +
+  geom_hline(
+    yintercept = 0.5,
+    linetype = 3,
+    linewidth = 0.4,
+    colour = "grey45"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.25),
+    labels = number_format(accuracy = 0.01)
+  ) +
+  labs(
+    title = "A. TPF beta model",
+    subtitle = "DHARMa residuals versus fitted values",
+    x = "Fitted mean TPF",
+    y = "Scaled residual"
+  ) +
+  theme_nat()
+
+p_bc <- ggplot(diag_bc, aes(x = fitted, y = resid)) +
+  geom_point(size = 1.8, alpha = 0.75, colour = "black") +
+  geom_smooth(
+    method = "loess",
+    formula = y ~ x,
+    se = FALSE,
+    linewidth = 1.0,
+    linetype = 2,
+    colour = "grey20",
+    span = 1.0
+  ) +
+  geom_hline(
+    yintercept = 0.5,
+    linetype = 3,
+    linewidth = 0.4,
+    colour = "grey45"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.25),
+    labels = number_format(accuracy = 0.01)
+  ) +
+  labs(
+    title = "B. Bray–Curtis Gaussian model",
+    subtitle = "DHARMa residuals versus fitted values",
+    x = "Fitted logit(mean Bray–Curtis)",
+    y = "Scaled residual"
+  ) +
+  theme_nat()
+
+fig_s2 <- p_tpf | p_bc
+
+print(fig_s2)
+
+ggsave(
+  filename = file.path(out_dir, "Fig_S2_residual_diagnostics.png"),
+  plot = fig_s2,
+  width = fig_width,
+  height = fig_height,
+  dpi = dpi_out,
+  bg = "white"
+)
+
+############################################################
+# 9) TABLE S1 — PURE QC METRICS
+############################################################
+# Only adequacy and numerical stability metrics are reported:
+#   - DHARMa uniformity
+#   - DHARMa dispersion
+#   - DHARMa outliers
+#   - maximum VIF
+#   - singular fit
+#   - positive-definite Hessian
+#
+# Model coefficients, p-values, effect sizes, and R² are not
+# included here because they belong in the model summary /
+# robustness tables rather than a QC table.
+
+ks_tpf   <- testUniformity(sim_tpf)
+disp_tpf <- testDispersion(sim_tpf)
+out_tpf  <- testOutliers(sim_tpf)
+
+ks_bc    <- testUniformity(sim_bc)
+disp_bc  <- testDispersion(sim_bc)
+out_bc   <- testOutliers(sim_bc)
+
+col_tpf  <- check_collinearity(m_tpf)
+col_bc   <- check_collinearity(m_bc)
+
+sing_tpf <- check_singularity(m_tpf)
+sing_bc  <- check_singularity(m_bc)
+
+qc_table_raw <- tibble(
+  Metric = c(
+    "N",
+    "DHARMa uniformity p",
+    "DHARMa dispersion p",
+    "DHARMa outlier p",
+    "Maximum VIF",
+    "Singular fit",
+    "Positive-definite Hessian"
+  ),
+  `TPF model` = c(
+    as.character(nrow(model_df_tpf)),
+    fmt_p(ks_tpf$p.value),
+    fmt_p(disp_tpf$p.value),
+    fmt_p(out_tpf$p.value),
+    fmt_num(max(col_tpf$VIF, na.rm = TRUE), 3),
+    as.character(sing_tpf),
+    as.character(m_tpf$sdr$pdHess)
+  ),
+  `Bray-Curtis model` = c(
+    as.character(nrow(model_df_bc)),
+    fmt_p(ks_bc$p.value),
+    fmt_p(disp_bc$p.value),
+    fmt_p(out_bc$p.value),
+    fmt_num(max(col_bc$VIF, na.rm = TRUE), 3),
+    as.character(sing_bc),
+    as.character(m_bc$sdr$pdHess)
+  )
+)
+
+write.csv(
+  qc_table_raw,
+  file = file.path(out_dir, "Table_S1_model_adequacy_metrics.csv"),
+  row.names = FALSE
+)
+
+print(qc_table_raw)
+
+############################################################
+# 10) RENDERED GT TABLE S1
+############################################################
+
+table_s1_gt <- qc_table_raw %>%
+  gt() %>%
+  tab_header(
+    title = md("**Model adequacy diagnostics**"),
+    subtitle = "Primary species-level models for transporter allocation and variability"
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Metric
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(`TPF model`, `Bray-Curtis model`)
+  ) %>%
+  cols_label(
+    Metric = "",
+    `TPF model` = "TPF (beta)",
+    `Bray-Curtis model` = "Bray–Curtis (Gaussian)"
+  ) %>%
+  cols_width(
+    Metric ~ px(280),
+    `TPF model` ~ px(190),
+    `Bray-Curtis model` ~ px(220)
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping() %>%
+  tab_options(
+    table.font.size = px(11),
+    data_row.padding = px(6),
+    column_labels.font.size = px(11),
+    heading.title.font.size = px(13),
+    heading.subtitle.font.size = px(10),
+    source_notes.font.size = px(9),
+    table.width = px(1050)
+  ) %>%
+  tab_source_note(
+    source_note = md(
+      "Uniformity, dispersion, and outlier rows report DHARMa test p-values. Higher p-values indicate no evidence for model misspecification; low maximum VIF indicates low collinearity; non-singular fits with positive-definite Hessians indicate numerical stability."
+    )
+  )
+
+print(table_s1_gt)
+
+gtsave(
+  table_s1_gt,
+  filename = file.path(out_dir, "Table_S1_model_adequacy_diagnostics.png"),
+  vwidth = 1200,
+  vheight = 1100
+)
+
+gtsave(
+  table_s1_gt,
+  filename = file.path(out_dir, "Table_S1_model_adequacy_diagnostics.html")
+)
+```
+
+# correlation with trophic index
+```{r}
+############################################################
+# Supplementary model figure and model summary table
+#
+# This script:
+#   1) rebuilds the species-level response datasets
+#   2) fits the primary species-level models
+#   3) plots the model-implied fits against trophic index
+#   4) exports a compact model summary table
+#
+# Figure panels:
+#   A) trophic-index coverage across retained species
+#   B) species-level mean transporter proteome fraction (TPF)
+#      with fitted beta-model mean response
+#   C) species-level mean transporter Bray-Curtis dissimilarity
+#      with fitted Gaussian-model mean response, shown on the
+#      raw Bray-Curtis scale after inverse-logit transformation
+#
+# IMPORTANT UPDATE
+#   The Bray-Curtis workflow is harmonized with the revised
+#   species-level analyses:
+#     - transporter-only KEGG intensity profiles
+#     - Bray-Curtis between consecutive dates within the
+#       filtered retained series for each species
+#     - no explicit minimum-transition filter
+#     - no transition-count covariate in the primary model
+#
+# Expected objects already loaded in memory:
+#   protein_final
+#   retained_species
+#   retained_species_dates
+#   species_taxonomy
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(vegan)
+  library(glmmTMB)
+  library(performance)
+  library(patchwork)
+  library(scales)
+  library(gt)
+})
+
+set.seed(1)
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+out_dir <- "Supplementary_ModelFits"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+fig_width  <- 12
+fig_height <- 7
+dpi_out    <- 300
+
+# TPF summaries are retained only for species with at least
+# 5 valid retained dates, matching the main species-level
+# workflow.
+min_valid_dates_per_species <- 5
+
+# Small epsilon for bounded logit transformation
+eps <- 1e-6
+
+trophic_cols <- c(
+  "Oligotroph"   = "#99C3E6",
+  "Intermediate" = "#ECEAE9",
+  "Copiotroph"   = "#B25009"
+)
+
+############################################################
+# 2) BASIC CHECKS
+############################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy")
+)
+
+required_protein_cols <- c(
+  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
+  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory", "KEGG_ID"
+)
+
+required_species_cols <- c("Species_ID", "Group_For_Plots")
+required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
+required_tax_cols <- c("Species_ID", "Phylum", "Class")
+
+stopifnot(all(required_protein_cols %in% names(protein_final)))
+stopifnot(all(required_species_cols %in% names(retained_species)))
+stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
+stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+
+species_taxonomy_use <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class) %>%
+  distinct()
+
+############################################################
+# 3) HELPERS
+############################################################
+
+theme_nat <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", size = base_size + 1),
+      plot.subtitle = element_text(size = base_size - 1),
+      axis.title = element_text(size = base_size),
+      axis.text = element_text(size = base_size - 1, colour = "black"),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.key = element_blank(),
+      plot.margin = margin(6, 6, 6, 6)
+    )
+}
+
+recode_plot_group <- function(x) {
+  out <- dplyr::case_when(
+    x == "Oligo_like"   ~ "Oligotroph",
+    x == "Copio_like"   ~ "Copiotroph",
+    x == "Intermediate" ~ "Intermediate",
+    TRUE                ~ NA_character_
+  )
+  factor(out, levels = c("Oligotroph", "Intermediate", "Copiotroph"))
+}
+
+logit_bounded <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+inv_logit <- function(x) {
+  plogis(x)
+}
+
+scale_z <- function(x) {
+  as.numeric(scale(x))
+}
+
+fmt_num <- function(x, digits = 3) {
+  ifelse(is.na(x), "NA", formatC(x, digits = digits, format = "fg", flag = "#"))
+}
+
+fmt_p <- function(x) {
+  ifelse(
+    is.na(x), "NA",
+    ifelse(x < 0.001, "<0.001", formatC(x, digits = 3, format = "fg", flag = "#"))
+  )
+}
+
+extract_fixed_effect <- function(model, term_name = "TrophicIndex_z") {
+  sm <- summary(model)$coefficients$cond
+  if (!term_name %in% rownames(sm)) {
+    return(tibble(
+      estimate = NA_real_,
+      std_error = NA_real_,
+      p_value = NA_real_
+    ))
+  }
+  tibble(
+    estimate  = unname(sm[term_name, "Estimate"]),
+    std_error = unname(sm[term_name, "Std. Error"]),
+    p_value   = unname(sm[term_name, "Pr(>|z|)"])
+  )
+}
+
+safe_numeric <- function(x) {
+  out <- suppressWarnings(as.numeric(x))
+  if (length(out) == 0 || all(is.na(out))) NA_real_ else out[1]
+}
+
+############################################################
+# 4) BUILD SPECIES-LEVEL TPF DATA
+############################################################
+# Transporter proteome fraction is calculated per retained
+# species-date as transporter signal divided by total signal,
+# then summarized to one species-level mean.
+
+protein_flagged <- protein_final %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) &
+      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
+    abund = Protein_Abundance_IBAQ_Norm
+  )
+
+species_date_qc <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+species_date_tpf <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    abund_total = sum(abund, na.rm = TRUE),
+    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    TPF = abund_trans / abund_total,
+    .groups = "drop"
+  ) %>%
+  left_join(species_date_qc, by = c("Species_ID", "Date")) %>%
+  filter(
+    is.finite(TPF),
+    abund_total > 0,
+    TPF > 0,
+    TPF < 1
+  )
+
+species_traits <- protein_final %>%
+  distinct(Species_ID, TrophicIndex, Group_For_Plots)
+
+species_tpf_df <- species_date_tpf %>%
+  left_join(species_traits, by = "Species_ID") %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  summarise(
+    n_dates            = n(),
+    mean_TPF           = mean(TPF, na.rm = TRUE),
+    mean_prot_detected = mean(N_prot_detected, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_dates >= min_valid_dates_per_species,
+    is.finite(TrophicIndex),
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1,
+    is.finite(mean_prot_detected),
+    mean_prot_detected > 0,
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    TrophicIndex_z      = scale_z(TrophicIndex),
+    n_dates_z           = scale_z(n_dates),
+    log_prot_detected_z = scale_z(log1p(mean_prot_detected))
+  )
+
+############################################################
+# 5) BUILD SPECIES-LEVEL BRAY-CURTIS DATA
+############################################################
+# Bray-Curtis is calculated from transporter-only KEGG
+# profiles. For each species, retained dates are ordered, and
+# dissimilarity is computed only between adjacent dates in
+# that filtered sequence. No explicit minimum-transition
+# filter is applied.
+
+analysis_species_dates <- retained_species_dates %>%
+  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, TrophicGroupPlot, Phylum, Class) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  arrange(Species_ID, Date)
+
+prot_counts <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+analysis_species_dates <- analysis_species_dates %>%
+  left_join(prot_counts, by = c("Species_ID", "Date"))
+
+kegg_sd_trans <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    !is.na(KEGG_Subcategory),
+    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+  ) %>%
+  group_by(Species_ID, Date, KEGG_ID) %>%
+  summarise(
+    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(is.finite(kegg_abund), kegg_abund > 0)
+
+compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+  dates_tbl <- keep_tbl %>%
+    filter(Species_ID == sp_id) %>%
+    arrange(Date)
+
+  dates <- dates_tbl$Date
+  if (length(dates) < 2) return(NULL)
+
+  mat_wide <- kegg_tbl %>%
+    filter(Species_ID == sp_id, Date %in% dates) %>%
+    mutate(Date_chr = as.character(Date)) %>%
+    select(Date_chr, KEGG_ID, kegg_abund) %>%
+    pivot_wider(
+      names_from = KEGG_ID,
+      values_from = kegg_abund,
+      values_fill = 0
+    ) %>%
+    arrange(Date_chr)
+
+  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
+
+  present_dates_chr <- mat_wide$Date_chr
+  present_dates <- as.Date(present_dates_chr)
+
+  M_abs <- as.matrix(mat_wide %>% select(-Date_chr))
+  rownames(M_abs) <- present_dates_chr
+
+  # Consecutive pairs are defined within the filtered retained
+  # date sequence, not by strict calendar adjacency.
+  pair_tbl <- tibble(
+    Date1 = present_dates[-length(present_dates)],
+    Date2 = present_dates[-1]
+  )
+
+  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
+    d1 <- as.character(pair_tbl$Date1[i])
+    d2 <- as.character(pair_tbl$Date2[i])
+
+    bc_abs <- as.numeric(
+      vegan::vegdist(
+        M_abs[c(d1, d2), , drop = FALSE],
+        method = "bray"
+      )
+    )
+
+    nd1 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d1)) %>%
+      pull(N_prot_detected)
+
+    nd2 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d2)) %>%
+      pull(N_prot_detected)
+
+    tibble(
+      Species_ID  = sp_id,
+      Date1       = as.Date(d1),
+      Date2       = as.Date(d2),
+      bc_abs      = bc_abs,
+      N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE)
+    )
+  })
+
+  bind_rows(out)
+}
+
+all_species <- sort(unique(analysis_species_dates$Species_ID))
+
+transitions <- bind_rows(lapply(
+  all_species,
+  compute_species_transitions_bc,
+  keep_tbl = analysis_species_dates,
+  kegg_tbl = kegg_sd_trans
+)) %>%
+  left_join(
+    analysis_species_dates %>%
+      distinct(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(bc_abs),
+    is.finite(N_prot_pair),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  )
+
+species_bc_df <- transitions %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  summarise(
+    n_transitions  = n(),
+    mean_bc_abs    = mean(bc_abs, na.rm = TRUE),
+    mean_prot_pair = mean(N_prot_pair, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    is.finite(TrophicIndex),
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1,
+    is.finite(mean_prot_pair),
+    mean_prot_pair > 0,
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    mean_bc_abs_logit = logit_bounded(mean_bc_abs, eps = eps),
+    TrophicIndex_z    = scale_z(TrophicIndex),
+    log_prot_pair_z   = scale_z(log1p(mean_prot_pair))
+  )
+
+############################################################
+# 6) TROPHIC-INDEX COVERAGE DATA
+############################################################
+
+coverage_df <- retained_species %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(TrophicGroupPlot)
+  ) %>%
+  distinct(Species_ID, TrophicIndex, TrophicGroupPlot)
+
+############################################################
+# 7) FIT PRIMARY SPECIES-LEVEL MODELS
+############################################################
+# These are the primary cross-species models whose fitted mean
+# relationships are shown in the figure.
+
+m_tpf <- glmmTMB(
+  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + (1 | Phylum),
+  family = beta_family(link = "logit"),
+  data = species_tpf_df
+)
+
+m_bc <- glmmTMB(
+  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + (1 | Phylum),
+  family = gaussian(),
+  data = species_bc_df
+)
+
+############################################################
+# 8) BUILD MODEL-IMPLIED PREDICTIONS
+############################################################
+# Predictions are generated across the observed trophic-index
+# range while holding non-focal covariates at their sample means.
+# Random effects are excluded so the fitted curves represent the
+# population-level fixed-effect trend.
+
+pred_tpf <- tibble(
+  TrophicIndex = seq(
+    min(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    max(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z      = (TrophicIndex - mean(species_tpf_df$TrophicIndex, na.rm = TRUE)) /
+                          sd(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    n_dates_z           = 0,
+    log_prot_detected_z = 0
+  )
+
+pred_tpf$fit <- predict(
+  m_tpf,
+  newdata = pred_tpf,
+  type = "response",
+  re.form = NA
+)
+
+pred_bc <- tibble(
+  TrophicIndex = seq(
+    min(species_bc_df$TrophicIndex, na.rm = TRUE),
+    max(species_bc_df$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z  = (TrophicIndex - mean(species_bc_df$TrophicIndex, na.rm = TRUE)) /
+                      sd(species_bc_df$TrophicIndex, na.rm = TRUE),
+    log_prot_pair_z = 0
+  )
+
+pred_bc$fit_logit <- predict(
+  m_bc,
+  newdata = pred_bc,
+  type = "response",
+  re.form = NA
+)
+
+pred_bc <- pred_bc %>%
+  mutate(
+    fit_bc_raw = inv_logit(fit_logit)
+  )
+
+############################################################
+# 9) EXTRACT MODEL SUMMARY STATISTICS
+############################################################
+
+fix_tpf <- extract_fixed_effect(m_tpf, "TrophicIndex_z")
+fix_bc  <- extract_fixed_effect(m_bc,  "TrophicIndex_z")
+
+r2_tpf <- r2_nakagawa(m_tpf)
+r2_bc  <- r2_nakagawa(m_bc)
+
+model_table_raw <- bind_rows(
+  tibble(
+    Response         = "Mean TPF",
+    Level            = "Species",
+    Family           = "Beta (logit)",
+    `Fixed effects`  = "Trophic index + n dates + mean detection depth",
+    `Random effects` = "(1 | Phylum)",
+    N                = nrow(species_tpf_df),
+    `TI estimate`    = fix_tpf$estimate,
+    `TI SE`          = fix_tpf$std_error,
+    `TI p`           = fix_tpf$p_value,
+    `Marginal R2`    = safe_numeric(r2_tpf$R2_marginal),
+    `Conditional R2` = safe_numeric(r2_tpf$R2_conditional),
+    `Key conclusion` = "Transporter allocation declines with increasing trophic index."
+  ),
+  tibble(
+    Response         = "Mean transporter Bray-Curtis",
+    Level            = "Species",
+    Family           = "Gaussian on logit scale",
+    `Fixed effects`  = "Trophic index + mean pairwise detection depth",
+    `Random effects` = "(1 | Phylum)",
+    N                = nrow(species_bc_df),
+    `TI estimate`    = fix_bc$estimate,
+    `TI SE`          = fix_bc$std_error,
+    `TI p`           = fix_bc$p_value,
+    `Marginal R2`    = safe_numeric(r2_bc$R2_marginal),
+    `Conditional R2` = safe_numeric(r2_bc$R2_conditional),
+    `Key conclusion` = "Transporter variability increases with increasing trophic index."
+  )
+)
+
+model_table_csv <- model_table_raw %>%
+  mutate(
+    `TI estimate`    = signif(`TI estimate`, 3),
+    `TI SE`          = signif(`TI SE`, 3),
+    `TI p`           = signif(`TI p`, 3),
+    `Marginal R2`    = signif(`Marginal R2`, 3),
+    `Conditional R2` = signif(`Conditional R2`, 3)
+  )
+
+write.csv(
+  model_table_csv,
+  file = file.path(out_dir, "Supp_ModelTable_primary_species_models.csv"),
+  row.names = FALSE
+)
+
+############################################################
+# 10) FIGURE PANEL A — TROPHIC-INDEX COVERAGE
+############################################################
+
+p_a <- ggplot(coverage_df, aes(x = TrophicIndex, fill = TrophicGroupPlot)) +
+  geom_histogram(
+    bins = 22,
+    colour = "black",
+    linewidth = 0.25,
+    alpha = 0.95
+  ) +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  labs(
+    title = "A. Trophic-index coverage",
+    subtitle = paste0("Retained species (n = ", nrow(coverage_df), ")"),
+    x = "Trophic index",
+    y = "Species [n]"
+  ) +
+  theme_nat()
+
+############################################################
+# 11) FIGURE PANEL B — TPF WITH PRIMARY MODEL FIT
+############################################################
+
+p_b <- ggplot(
+  species_tpf_df,
+  aes(x = TrophicIndex, y = mean_TPF, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 2.3,
+    stroke = 0.3,
+    alpha = 0.95
+  ) +
+  geom_line(
+    data = pred_tpf,
+    aes(x = TrophicIndex, y = fit),
+    inherit.aes = FALSE,
+    linewidth = 1.0,
+    colour = "black"
+  ) +
+  geom_rug(
+    aes(x = TrophicIndex),
+    inherit.aes = FALSE,
+    data = species_tpf_df,
+    sides = "b",
+    alpha = 0.20,
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(
+    xlim = range(coverage_df$TrophicIndex, na.rm = TRUE),
+    ylim = c(0, 1)
+  ) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "B. Transporter proteome fraction",
+    subtitle = paste0("Species means with fitted beta-model response (n = ", nrow(species_tpf_df), ")"),
+    x = "Trophic index",
+    y = "Mean transporter proteome fraction"
+  ) +
+  theme_nat()
+
+############################################################
+# 12) FIGURE PANEL C — BRAY-CURTIS WITH PRIMARY MODEL FIT
+############################################################
+
+p_c <- ggplot(
+  species_bc_df,
+  aes(x = TrophicIndex, y = mean_bc_abs, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 2.3,
+    stroke = 0.3,
+    alpha = 0.95
+  ) +
+  geom_line(
+    data = pred_bc,
+    aes(x = TrophicIndex, y = fit_bc_raw),
+    inherit.aes = FALSE,
+    linewidth = 1.0,
+    colour = "black"
+  ) +
+  geom_rug(
+    aes(x = TrophicIndex),
+    inherit.aes = FALSE,
+    data = species_bc_df,
+    sides = "b",
+    alpha = 0.20,
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(
+    xlim = range(coverage_df$TrophicIndex, na.rm = TRUE),
+    ylim = c(0, 1)
+  ) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "C. Bray-Curtis dissimilarity",
+    subtitle = paste0("Species means with fitted Gaussian-model response (n = ", nrow(species_bc_df), ")"),
+    x = "Trophic index",
+    y = "Mean transporter Bray–Curtis dissimilarity"
+  ) +
+  theme_nat()
+
+############################################################
+# 13) COMBINE MODEL FIGURE — ONE ROW, THREE COLUMNS
+############################################################
+
+p_a_row <- p_a + labs(
+  subtitle = paste0("Retained species (n = ", nrow(coverage_df), ")")
+)
+
+p_b_row <- p_b + labs(
+  subtitle = paste0(
+    "Fitted beta-model mean response (n = ",
+    nrow(species_tpf_df), ")"
+  )
+)
+
+p_c_row <- p_c + labs(
+  subtitle = paste0(
+    "Fitted Gaussian-model mean response (n = ",
+    nrow(species_bc_df), ")"
+  )
+)
+
+supp_model_fig <- (p_a_row | p_b_row | p_c_row) +
+  plot_layout(
+    ncol = 3,
+    widths = c(0.9, 1, 1),
+    guides = "collect"
+  ) &
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 8.5),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 9)
+  )
+
+print(supp_model_fig)
+
+ggsave(
+  filename = file.path(out_dir, "Supp_ModelFigure_primary_species_models_row.png"),
+  plot = supp_model_fig,
+  width = 12,
+  height = 6,
+  dpi = dpi_out,
+  bg = "white"
+)
+
+############################################################
+# 14) RENDERED SUPPLEMENTARY MODEL TABLE
+############################################################
+# Model attributes are arranged in rows and the two primary
+# models are arranged in columns.
+
+model_table_portrait <- tibble(
+  Metric = c(
+    "Response",
+    "Family",
+    "Fixed effects",
+    "Random effects",
+    "N",
+    "Trophic-index estimate",
+    "Trophic-index SE",
+    "Trophic-index p",
+    "Marginal R²",
+    "Conditional R²",
+    "Key conclusion"
+  ),
+  `TPF model` = c(
+    "Mean TPF",
+    "Beta (logit)",
+    "Trophic index + n dates + mean species protein recovery",
+    "(1 | Phylum)",
+    as.character(model_table_raw$N[model_table_raw$Response == "Mean TPF"]),
+    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Mean TPF"], 3),
+    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Mean TPF"], 3),
+    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Mean TPF"]),
+    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Mean TPF"], 3),
+    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Mean TPF"], 3),
+    model_table_raw$`Key conclusion`[model_table_raw$Response == "Mean TPF"]
+  ),
+  `Bray-Curtis model` = c(
+    "Mean transporter Bray-Curtis",
+    "Gaussian on logit scale",
+    "Trophic index + Mean species protein recovery (paired consecutive dates)",
+    "(1 | Phylum)",
+    as.character(model_table_raw$N[model_table_raw$Response == "Mean transporter Bray-Curtis"]),
+    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Mean transporter Bray-Curtis"], 3),
+    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Mean transporter Bray-Curtis"], 3),
+    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Mean transporter Bray-Curtis"]),
+    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Mean transporter Bray-Curtis"], 3),
+    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Mean transporter Bray-Curtis"], 3),
+    model_table_raw$`Key conclusion`[model_table_raw$Response == "Mean transporter Bray-Curtis"]
+  )
+)
+
+write.csv(
+  model_table_portrait,
+  file = file.path(out_dir, "Supp_ModelTable_primary_species_models_portrait.csv"),
+  row.names = FALSE
+)
+
+model_table_gt <- model_table_portrait %>%
+  gt() %>%
+  tab_header(
+    title = md("**Primary species-level model summary**"),
+    subtitle = "Mixed models relating trophic index to transporter allocation and variability"
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Metric
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(`TPF model`, `Bray-Curtis model`)
+  ) %>%
+  cols_label(
+    Metric = "",
+    `TPF model` = "TPF (beta)",
+    `Bray-Curtis model` = "Bray–Curtis (Gaussian)"
+  ) %>%
+  cols_width(
+    Metric ~ px(260),
+    `TPF model` ~ px(330),
+    `Bray-Curtis model` ~ px(330)
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping() %>%
+  tab_options(
+    table.font.size = px(10.5),
+    data_row.padding = px(6),
+    column_labels.font.size = px(10.5),
+    heading.title.font.size = px(13),
+    heading.subtitle.font.size = px(10),
+    source_notes.font.size = px(9),
+    table.width = px(1050)
+  ) %>%
+  tab_source_note(
+    source_note = md(
+      "Trophic-index estimates are standardized fixed-effect coefficients from the primary species-level models. Marginal R² denotes variance explained by fixed effects alone, whereas conditional R² includes both fixed and random effects."
+    )
+  )
+
+print(model_table_gt)
+
+gtsave(
+  model_table_gt,
+  filename = file.path(out_dir, "Supp_ModelTable_primary_species_models_portrait.png"),
+  vwidth = 1200,
+  vheight = 1500
+)
+
+gtsave(
+  model_table_gt,
+  filename = file.path(out_dir, "Supp_ModelTable_primary_species_models_portrait.html")
+)
+```
+

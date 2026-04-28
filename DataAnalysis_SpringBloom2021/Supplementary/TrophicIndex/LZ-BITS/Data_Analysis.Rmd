@@ -1,0 +1,1765 @@
+---
+title: "Trophic Index Overview"
+author: "Cyrill Hofer"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: paged
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r}
+# =============================================================================
+# BLOCK 0 — Setup and data loading
+# =============================================================================
+
+rm(list = ls())
+gc()
+options(stringsAsFactors = FALSE)
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(ggplot2)
+  library(ggrepel)
+  library(scales)
+  library(patchwork)
+  library(tidyr)
+})
+
+# ---- Working directory ----
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TrophicIndex/LZ-BITS/")
+
+# ---- Load data ----
+train_dat <- read_csv("IndicatorSpecies_GenomicProperties.csv")
+lake_dat  <- read_csv("Species_GenomicProperties_ObservedVsEstimated.csv")
+species_dat <- read_csv("../../../../Data/Species_Data/Final_Data/Species_Table.csv")
+source(file = "ColorPalette.R")
+
+# ---- Core metadata columns ----
+meta_cols <- c("Species_ID", "Taxonomy", "Accession", "Classification")
+
+# ---- Enforce trophic class order (training data only) ----
+train_dat <- train_dat %>%
+  mutate(Classification = factor(
+    Classification,
+    levels = c("Oligotroph", "Mesotroph", "Copiotroph")
+  ))
+
+# ---- Minimal sanity check ----
+cat("\nTraining set:", nrow(train_dat), "species\n")
+print(table(train_dat$Classification, useNA = "ifany"))
+
+# ---- Consistent colors for all plots ----
+trophic_cols <- c(
+  Oligotroph = "#2166AC",
+  Mesotroph  = "grey60",
+  Copiotroph = "#B2182B"
+)
+
+# prepare species dat
+species_dat <- species_dat %>%
+  select(Species_ID, Phylum, Class, Order, Family, Genus, Species) %>%
+  distinct()
+
+# ---- seed for reproducibility of bootstraps ---- 
+set.seed(1234)
+glimpse(species_dat)
+glimpse(train_dat)
+glimpse(lake_dat)
+```
+
+# Motivation for the trophic index
+```{r}
+# =============================================================================
+# Supplementary opening figure for trophic index rationale
+# Clean 3-panel version: genome size, trait correlations, PCA
+# =============================================================================
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(scales)
+library(ggrepel)
+library(patchwork)
+
+train_dat <- train_dat %>%
+  mutate(
+    Classification = recode(Classification,
+      Mesotroph = "Intermediate"
+    )
+  )
+
+train_dat <- train_dat %>%
+  mutate(
+    Classification = factor(
+      Classification,
+      levels = c("Oligotroph", "Intermediate", "Copiotroph")
+    )
+  )
+
+# -----------------------------------------------------------------------------
+# Settings
+# -----------------------------------------------------------------------------
+trophic_cols <- c(
+  Oligotroph = "#2166AC",
+  Intermediate  = "grey60",
+  Copiotroph = "#B2182B"
+)
+
+size_cutoff_bp  <- 2.1e6
+size_cutoff_mbp <- 2.1
+
+theme_nat <- theme_bw(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+    panel.border = element_rect(colour = "black", linewidth = 0.5),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 9, colour = "black"),
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    legend.key = element_blank(),
+    plot.title = element_text(size = 11, face = "bold"),
+    plot.margin = margin(6, 6, 6, 6)
+  )
+
+train_plot <- train_dat %>%
+  mutate(
+    Genome_Mbp = GENOME_LENGTH / 1e6,
+    Size_Class = ifelse(GENOME_LENGTH < size_cutoff_bp, "< 2.1 Mbp", ">= 2.1 Mbp"),
+    Size_Class = factor(Size_Class, levels = c("< 2.1 Mbp", ">= 2.1 Mbp"))
+  )
+
+# -----------------------------------------------------------------------------
+# Panel a — genome size vs trophic class
+# -----------------------------------------------------------------------------
+p_a <- ggplot(
+  train_plot,
+  aes(x = Genome_Mbp, y = Classification, colour = Classification)
+) +
+  geom_vline(
+    xintercept = size_cutoff_mbp,
+    linetype = "dashed",
+    linewidth = 0.5,
+    colour = "black"
+  ) +
+  geom_jitter(height = 0.12, width = 0, size = 2.8, alpha = 0.95) +
+  scale_colour_manual(values = trophic_cols) +
+  scale_x_continuous(
+    breaks = pretty_breaks(n = 6),
+    expand = expansion(mult = c(0.02, 0.04))
+  ) +
+  labs(
+    x = "Genome size (Mbp)",
+    y = NULL,
+    title = "a"
+  ) +
+  annotate(
+    "text",
+    x = size_cutoff_mbp,
+    y = 3.35,
+    label = "2.1 Mbp cutoff",
+    size = 3,
+    vjust = -0.4
+  ) +
+  theme_nat +
+  theme(
+    legend.position = "none",
+    plot.title.position = "plot"
+  )
+
+# -----------------------------------------------------------------------------
+# Panel b — lower-triangle correlation matrix of selected traits
+# -----------------------------------------------------------------------------
+corr_df <- train_plot %>%
+  transmute(
+    `Genome size`    = Genome_Mbp,
+    `Coding density` = CODING_DENSITY,
+    `tRNA count`     = TOTAL_TRNA,
+    `Sigma factors`  = NUM_SIGMA
+  )
+
+corr_mat <- cor(corr_df, method = "pearson", use = "pairwise.complete.obs")
+
+corr_long <- as.data.frame(as.table(corr_mat), stringsAsFactors = FALSE) %>%
+  rename(Trait1 = Var1, Trait2 = Var2, r = Freq)
+
+trait_order <- colnames(corr_mat)
+
+corr_long$Trait1 <- factor(corr_long$Trait1, levels = trait_order)
+corr_long$Trait2 <- factor(corr_long$Trait2, levels = trait_order)
+
+corr_long <- corr_long %>%
+  mutate(
+    i = as.integer(Trait1),
+    j = as.integer(Trait2)
+  ) %>%
+  filter(i >= j)
+
+p_b <- ggplot(corr_long, aes(x = Trait1, y = Trait2, fill = r)) +
+  geom_tile(colour = "white", linewidth = 0.6) +
+  geom_text(aes(label = sprintf("%.2f", r)), size = 3.2) +
+  scale_fill_gradient2(
+    low = "grey80",
+    mid = "white",
+    high = "black",
+    midpoint = 0,
+    limits = c(-1, 1)
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "r",
+    title = "b"
+  ) +
+  theme_nat +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.y = element_text(hjust = 1),
+    legend.position = "right",
+    plot.title.position = "plot"
+  )
+
+# -----------------------------------------------------------------------------
+# Panel c — PCA biplot with taxonomy labels
+# -----------------------------------------------------------------------------
+pca_input <- train_plot %>%
+  transmute(
+    Genome_size    = Genome_Mbp,
+    Coding_density = CODING_DENSITY,
+    tRNA_count     = TOTAL_TRNA,
+    Sigma_factors  = NUM_SIGMA
+  )
+
+pca_fit <- prcomp(pca_input, center = TRUE, scale. = TRUE)
+
+scores <- as.data.frame(pca_fit$x[, 1:2])
+scores$Classification <- train_plot$Classification
+scores$Taxonomy <- train_plot$Taxonomy
+scores$Size_Class <- train_plot$Size_Class
+
+loadings <- as.data.frame(pca_fit$rotation[, 1:2])
+loadings$Trait <- rownames(loadings)
+
+loadings <- loadings %>%
+  mutate(
+    Trait = recode(
+      Trait,
+      Genome_size    = "Genome size",
+      Coding_density = "Coding density",
+      tRNA_count     = "tRNA",
+      Sigma_factors  = "Sigma factors"
+    )
+  )
+
+var_exp <- round(100 * summary(pca_fit)$importance[2, 1:2], 1)
+
+arrow_scale <- 2.3
+loadings$PC1 <- loadings$PC1 * arrow_scale
+loadings$PC2 <- loadings$PC2 * arrow_scale
+
+# optional: shorten long taxonomy strings a bit if needed
+# scores$Taxonomy <- gsub("^.*;s__", "", scores$Taxonomy)
+
+p_c <- ggplot(
+  scores,
+  aes(x = PC1, y = PC2, colour = Classification, shape = Size_Class)
+) +
+  geom_hline(yintercept = 0, linewidth = 0.3, colour = "grey75") +
+  geom_vline(xintercept = 0, linewidth = 0.3, colour = "grey75") +
+  geom_point(size = 2.8, alpha = 0.95) +
+  geom_text_repel(
+    aes(label = Taxonomy),
+    size = 1,
+    max.overlaps = Inf,
+    box.padding = 0.25,
+    point.padding = 0.18,
+    segment.size = 0.2,
+    min.segment.length = 0,
+    show.legend = FALSE
+  ) +
+  geom_segment(
+    data = loadings,
+    aes(x = 0, y = 0, xend = PC1, yend = PC2),
+    inherit.aes = FALSE,
+    arrow = arrow(length = unit(0.18, "cm")),
+    linewidth = 0.5,
+    colour = "black"
+  ) +
+  geom_text_repel(
+    data = loadings,
+    aes(x = PC1, y = PC2, label = Trait),
+    inherit.aes = FALSE,
+    size = 3.2,
+    colour = "black",
+    box.padding = 0.35,
+    point.padding = 0.2,
+    segment.colour = NA
+  ) +
+  scale_colour_manual(values = trophic_cols) +
+  scale_shape_manual(values = c(16, 17)) +
+  labs(
+    x = paste0("PC1 (", var_exp[1], "%)"),
+    y = paste0("PC2 (", var_exp[2], "%)"),
+    colour = "Classification",
+    shape = "Size class",
+    title = "c"
+  ) +
+  coord_cartesian(clip = "off") +
+  theme_nat +
+  theme(
+    legend.position = "right",
+    plot.title.position = "plot",
+    plot.margin = margin(8, 30, 8, 8)
+  )
+
+# -----------------------------------------------------------------------------
+# Assemble figure
+# Give the PCA row clearly more height
+# -----------------------------------------------------------------------------
+final_fig <- (p_a | p_b) / p_c +
+  plot_layout(
+    heights = c(0.85, 1.55),
+    widths = c(1.05, 1.0)
+  )
+
+print(final_fig)
+
+# -----------------------------------------------------------------------------
+# Save
+# -----------------------------------------------------------------------------
+ggsave(
+  filename = "Supplementary_TrophicIndex_OpeningFigure.png",
+  plot = final_fig,
+  width = 12,
+  height = 8.5,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+```
+
+# Highlight from discrete genome size based cutoff towards continuous trophic axis
+```{r}
+# ============================================================
+# Supplementary figure:
+# Continuous trophic index vs genome size
+#
+# Panels:
+#   a) Trophic index by trophic class
+#      - raw genomes (points)
+#      - class IQR (horizontal bars)
+#      - class median (point)
+#      - global Q1 / Q3
+#
+#   b) Genome size vs trophic index
+#      - points colored by class
+#      - regression line
+#      - 2.1 Mbp cutoff (vertical)
+#      - TI Q1 / Q3 (horizontal)
+# ============================================================
+
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+
+# ------------------------------------------------------------
+# Theme
+# ------------------------------------------------------------
+theme_set(
+  theme_classic(base_size = 10) +
+    theme(
+      axis.text = element_text(color = "black"),
+      axis.title = element_text(color = "black"),
+      legend.title = element_text(size = 9),
+      legend.text = element_text(size = 8),
+      plot.title = element_text(face = "bold", hjust = 0)
+    )
+)
+
+# ------------------------------------------------------------
+# Prepare data
+# ------------------------------------------------------------
+train_plot <- train_dat %>%
+  mutate(
+    Classification = case_when(
+      Classification %in% c("Oligotroph","Oligotrophic") ~ "Oligotroph",
+      Classification %in% c("Mesotroph","Mesotrophic","Intermediate") ~ "Intermediate",
+      Classification %in% c("Copiotroph","Copiotrophic") ~ "Copiotroph"
+    )
+  ) %>%
+  filter(Classification %in% c("Oligotroph","Intermediate","Copiotroph")) %>%
+  filter(if_all(c(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), ~ !is.na(.))) %>%
+  mutate(
+    Classification = factor(Classification,
+      levels = c("Oligotroph","Intermediate","Copiotroph")),
+    GenomeSize_Mbp = GENOME_LENGTH / 1e6
+  )
+
+# ------------------------------------------------------------
+# Colors
+# ------------------------------------------------------------
+cols <- c(
+  "Oligotroph"   = ColorPalette[2],
+  "Intermediate" = "grey65",
+  "Copiotroph"   = ColorPalette[7]
+)
+
+# ------------------------------------------------------------
+# Trophic index (PCA)
+# ------------------------------------------------------------
+pca_fit <- prcomp(
+  train_plot %>% select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA),
+  center = TRUE, scale. = TRUE
+)
+
+ti <- predict(pca_fit)[,1]
+if (cor(train_plot$GENOME_LENGTH, ti) < 0) ti <- -ti
+
+train_plot$TrophicIndex <- ti
+
+# ------------------------------------------------------------
+# Stats
+# ------------------------------------------------------------
+stats_df <- train_plot %>%
+  group_by(Classification) %>%
+  summarise(
+    q1 = quantile(TrophicIndex, 0.25),
+    med = median(TrophicIndex),
+    q3 = quantile(TrophicIndex, 0.75),
+    .groups = "drop"
+  )
+
+ti_q1 <- quantile(train_plot$TrophicIndex, 0.25)
+ti_q3 <- quantile(train_plot$TrophicIndex, 0.75)
+
+r_val <- cor(train_plot$GenomeSize_Mbp, train_plot$TrophicIndex)
+
+# ------------------------------------------------------------
+# Panel a — clean distribution (NO violins)
+# ------------------------------------------------------------
+p_a <- ggplot(train_plot,
+              aes(x = TrophicIndex, y = Classification, color = Classification)) +
+  
+  # global quartiles
+  geom_vline(xintercept = ti_q1, linetype = "dashed", color = "grey40") +
+  geom_vline(xintercept = ti_q3, linetype = "dashed", color = "grey40") +
+  
+   # IQR bars
+  geom_segment(data = stats_df,
+               aes(x = q1, xend = q3,
+                   y = Classification, yend = Classification),
+               linewidth = 1,
+               inherit.aes = FALSE,
+               color = "black") +
+  
+  # median
+  geom_point(data = stats_df,
+             aes(x = med, y = Classification),
+             size = 3.2,
+             shape = 21,
+             fill = "white",
+             color = "black",
+             stroke = 0.5,
+             inherit.aes = FALSE) +
+  
+  # raw points
+  geom_jitter(height = 0.08, size = 2.4, alpha = 0.95) +
+  
+
+  scale_color_manual(values = cols) +
+  
+  annotate("text", x = ti_q1, y = 3.4,
+           label = paste0("Q1=", round(ti_q1,2)),
+           angle = 90, vjust = -0.3, size = 3) +
+  
+  annotate("text", x = ti_q3, y = 3.4,
+           label = paste0("Q3=", round(ti_q3,2)),
+           angle = 90, vjust = -0.3, size = 3) +
+  
+  labs(x = "Trophic index", y = NULL, title = "a") +
+  
+  theme(legend.position = "none")
+
+# ------------------------------------------------------------
+# Panel b — relationship
+# ------------------------------------------------------------
+p_b <- ggplot(train_plot,
+              aes(x = GenomeSize_Mbp, y = TrophicIndex, color = Classification)) +
+  
+  geom_vline(xintercept = 2.1, color = "grey40", linewidth = 0.6) +
+  
+  geom_hline(yintercept = ti_q1, linetype = "dashed", color = "grey40") +
+  geom_hline(yintercept = ti_q3, linetype = "dashed", color = "grey40") +
+  
+  geom_point(size = 2.8, alpha = 0.95) +
+  
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.6) +
+  
+  scale_color_manual(values = cols) +
+  
+  annotate("text", x = 2.1, y = max(train_plot$TrophicIndex),
+           label = "2.1 Mbp", angle = 90, vjust = -0.3, size = 3) +
+  
+  annotate("text",
+           x = min(train_plot$GenomeSize_Mbp),
+           y = ti_q1,
+           label = paste0("Q1=", round(ti_q1,2)),
+           hjust = 0, vjust = -0.4, size = 3) +
+  
+  annotate("text",
+           x = min(train_plot$GenomeSize_Mbp),
+           y = ti_q3,
+           label = paste0("Q3=", round(ti_q3,2)),
+           hjust = 0, vjust = -0.4, size = 3) +
+  
+  annotate("text",
+           x = min(train_plot$GenomeSize_Mbp),
+           y = max(train_plot$TrophicIndex),
+           label = paste0("r = ", round(r_val,2)),
+           hjust = 0, vjust = 1, size = 3.2) +
+  
+  labs(x = "Genome size (Mbp)", y = "Trophic index", title = "b") +
+  
+  theme(legend.position = "right")
+
+# ------------------------------------------------------------
+# Combine
+# ------------------------------------------------------------
+final_fig <- p_a | p_b
+
+ggsave("TrophicIndex_Final_Clean.png", final_fig,
+       width = 12, height = 7, dpi = 600)
+
+final_fig
+```
+
+# show how LZ-BTIS taxa >80% complete, parasites, cyanobacteria and archea removed were estimated to 100% for trophic index fitting only
+```{r}
+# ============================================================
+# Supplementary figure:
+# completion-corrected trophic-index traits and changed taxa
+#
+# Assumptions:
+#   - train_dat is already loaded
+#   - lake_dat is already loaded
+#   - ColorPalette is already loaded
+#
+# Output:
+#   - One multi-panel figure with:
+#       a) observed vs estimated genome size
+#       b) observed vs estimated total tRNA count
+#       c) observed vs estimated sigma factor count
+#       d) dumbbell plot of taxa whose trophic-group assignment
+#          changed after completion correction
+# ============================================================
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(patchwork)
+library(scales)
+library(forcats)
+library(stringr)
+
+# ------------------------------------------------------------
+# Minimal plotting theme
+# ------------------------------------------------------------
+theme_set(
+  theme_classic(base_size = 10) +
+    theme(
+      axis.text = element_text(color = "black"),
+      axis.title = element_text(color = "black"),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      legend.title = element_text(size = 9),
+      legend.text = element_text(size = 8),
+      plot.title = element_text(face = "bold", hjust = 0)
+    )
+)
+
+# ------------------------------------------------------------
+# Check required columns
+# ------------------------------------------------------------
+req_train <- c(
+  "Species_ID",
+  "GENOME_LENGTH",
+  "CODING_DENSITY",
+  "TOTAL_TRNA",
+  "NUM_SIGMA"
+)
+
+req_lake <- c(
+  "Species_ID",
+  "Phylum",
+  "Genus",
+  "Completeness",
+  "CODING_DENSITY",
+  "GENOME_LENGTH",
+  "Estimated_Genome_Size",
+  "Obs_TOTAL_TRNA",
+  "Est_TOTAL_TRNA",
+  "Obs_NUM_SIGMA",
+  "Est_NUM_SIGMA"
+)
+
+missing_train <- setdiff(req_train, colnames(train_dat))
+missing_lake  <- setdiff(req_lake, colnames(lake_dat))
+
+if (length(missing_train) > 0) {
+  stop("train_dat is missing required columns: ",
+       paste(missing_train, collapse = ", "))
+}
+
+if (length(missing_lake) > 0) {
+  stop("lake_dat is missing required columns: ",
+       paste(missing_lake, collapse = ", "))
+}
+
+# ------------------------------------------------------------
+# Completeness classes and colors
+# Adjust indices if you want slightly different palette entries
+# ------------------------------------------------------------
+lake_comp_cols <- c(
+  "80-85%"  = ColorPalette[7],
+  "85-90%"  = ColorPalette[5],
+  "90-95%"  = ColorPalette[14],
+  "95-100%" = ColorPalette[10]
+)
+
+bin_completeness <- function(x) {
+  cut(
+    x,
+    breaks = c(80, 85, 90, 95, 100),
+    include.lowest = TRUE,
+    right = TRUE,
+    labels = c("80-85%", "85-90%", "90-95%", "95-100%")
+  )
+}
+
+# ------------------------------------------------------------
+# Build trophic axis from the training genomes
+# Uses the 4 trophic-index traits:
+#   - genome size
+#   - coding density
+#   - total tRNA count
+#   - sigma factor count
+# ------------------------------------------------------------
+train_traits <- train_dat %>%
+  select(
+    Species_ID,
+    GENOME_LENGTH,
+    CODING_DENSITY,
+    TOTAL_TRNA,
+    NUM_SIGMA
+  ) %>%
+  filter(
+    if_all(c(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), ~ !is.na(.))
+  )
+
+pca_fit <- prcomp(
+  train_traits %>% select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA),
+  center = TRUE,
+  scale. = TRUE
+)
+
+train_scores <- predict(
+  pca_fit,
+  newdata = train_traits %>% select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA)
+)[, 1]
+
+# ------------------------------------------------------------
+# Reverse PC1 if needed so that:
+#   small-genome oligotroph-like taxa = lower trophic index
+#   large-genome copiotroph-like taxa = higher trophic index
+# ------------------------------------------------------------
+if (cor(train_traits$GENOME_LENGTH, train_scores, use = "complete.obs") < 0) {
+  pca_fit$rotation[, 1] <- -pca_fit$rotation[, 1]
+  train_scores <- -train_scores
+}
+
+train_traits <- train_traits %>%
+  mutate(TI_train = train_scores)
+
+# ------------------------------------------------------------
+# Define trophic-group cutoffs from the training distribution
+# ------------------------------------------------------------
+ti_q25 <- quantile(train_traits$TI_train, 0.25, na.rm = TRUE)
+ti_q75 <- quantile(train_traits$TI_train, 0.75, na.rm = TRUE)
+
+classify_trophic_group <- function(x, q25, q75) {
+  case_when(
+    x <= q25 ~ "Oligotroph",
+    x >= q75 ~ "Copiotroph",
+    TRUE ~ "Intermediate"
+  )
+}
+
+# ------------------------------------------------------------
+# Prepare lake data
+# Only MAGs with >=80% completeness are considered
+# ------------------------------------------------------------
+lake_proj <- lake_dat %>%
+  mutate(Species_ID = as.character(Species_ID)) %>%
+  filter(!is.na(Completeness), Completeness >= 80) %>%
+  mutate(
+    GS_obs = GENOME_LENGTH,
+    GS_est = Estimated_Genome_Size,
+    TRNA_obs = Obs_TOTAL_TRNA,
+    TRNA_est = Est_TOTAL_TRNA,
+    SIGMA_obs = Obs_NUM_SIGMA,
+    SIGMA_est = Est_NUM_SIGMA,
+    completeness_bin = bin_completeness(Completeness)
+  ) %>%
+  filter(
+    if_all(c(
+      GS_obs, GS_est,
+      TRNA_obs, TRNA_est,
+      SIGMA_obs, SIGMA_est,
+      CODING_DENSITY
+    ), ~ !is.na(.))
+  )
+
+# ------------------------------------------------------------
+# Project observed lake trait values onto the training PCA axis
+# Coding density is retained as observed in both projections
+# ------------------------------------------------------------
+obs_mat <- lake_proj %>%
+  transmute(
+    GENOME_LENGTH = GS_obs,
+    CODING_DENSITY = CODING_DENSITY,
+    TOTAL_TRNA = TRNA_obs,
+    NUM_SIGMA = SIGMA_obs
+  )
+
+# ------------------------------------------------------------
+# Project completion-corrected lake trait values onto the same
+# training PCA axis
+# ------------------------------------------------------------
+est_mat <- lake_proj %>%
+  transmute(
+    GENOME_LENGTH = GS_est,
+    CODING_DENSITY = CODING_DENSITY,
+    TOTAL_TRNA = TRNA_est,
+    NUM_SIGMA = SIGMA_est
+  )
+
+# ------------------------------------------------------------
+# Calculate observed and estimated trophic index for each lake
+# taxon, then assign trophic groups using training cutoffs
+# ------------------------------------------------------------
+lake_proj <- lake_proj %>%
+  mutate(
+    TI_obs = predict(pca_fit, newdata = obs_mat)[, 1],
+    TI_est = predict(pca_fit, newdata = est_mat)[, 1]
+  ) %>%
+  mutate(
+    Group_obs = classify_trophic_group(TI_obs, ti_q25, ti_q75),
+    Group_est = classify_trophic_group(TI_est, ti_q25, ti_q75),
+    Changed   = if_else(Group_obs != Group_est, "Changed", "Unchanged"),
+    delta_TI  = TI_est - TI_obs
+  )
+
+plot_dat <- lake_proj
+
+# ------------------------------------------------------------
+# Create labels for taxa whose trophic group changed
+# y-axis label format:
+#   Phylum | Genus | Species_ID
+# ------------------------------------------------------------
+changed_dat <- plot_dat %>%
+  filter(Changed == "Changed") %>%
+  mutate(
+    y_label = paste(
+      if_else(is.na(Phylum) | Phylum == "", "NA", Phylum),
+      if_else(is.na(Genus)  | Genus  == "", "NA", Genus),
+      if_else(is.na(Species_ID) | Species_ID == "", "NA", Species_ID),
+      sep = " | "
+    ),
+    y_label = fct_reorder(y_label, TI_est)
+  )
+
+# ------------------------------------------------------------
+# Helper function for observed-vs-estimated trait panels
+# Uses discrete completeness colors
+# ------------------------------------------------------------
+obs_est_panel_discrete <- function(df, xvar, yvar, xlab, ylab, mbp = FALSE) {
+  xr <- range(c(df[[xvar]], df[[yvar]]), na.rm = TRUE)
+
+  p <- ggplot(df, aes(x = .data[[xvar]], y = .data[[yvar]], color = completeness_bin)) +
+    geom_abline(
+      intercept = 0,
+      slope = 1,
+      linetype = "dashed",
+      linewidth = 0.4,
+      color = "grey55"
+    ) +
+    geom_point(size = 1.7, alpha = 0.9) +
+    scale_color_manual(
+      values = lake_comp_cols,
+      drop = FALSE,
+      name = "Completeness"
+    ) +
+    coord_cartesian(xlim = xr, ylim = xr, expand = TRUE) +
+    labs(x = xlab, y = ylab) +
+    theme(aspect.ratio = 1)
+
+  if (mbp) {
+    p <- p +
+      scale_x_continuous(labels = label_number(scale = 1e-6, accuracy = 0.1)) +
+      scale_y_continuous(labels = label_number(scale = 1e-6, accuracy = 0.1))
+  }
+
+  p
+}
+
+# ------------------------------------------------------------
+# Top row:
+# completion-corrected trophic-index traits
+# ------------------------------------------------------------
+p_genome <- obs_est_panel_discrete(
+  plot_dat,
+  xvar = "GS_obs",
+  yvar = "GS_est",
+  xlab = "Observed genome size (Mbp)",
+  ylab = "Estimated genome size (Mbp)",
+  mbp = TRUE
+) + ggtitle("a")
+
+p_trna <- obs_est_panel_discrete(
+  plot_dat,
+  xvar = "TRNA_obs",
+  yvar = "TRNA_est",
+  xlab = "Observed tRNA count",
+  ylab = "Estimated tRNA count"
+) + ggtitle("b")
+
+p_sigma <- obs_est_panel_discrete(
+  plot_dat,
+  xvar = "SIGMA_obs",
+  yvar = "SIGMA_est",
+  xlab = "Observed sigma factors",
+  ylab = "Estimated sigma factors"
+) + ggtitle("c")
+
+top_row <- (p_genome + p_trna + p_sigma) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+# ------------------------------------------------------------
+# Bottom panel:
+# taxa whose trophic-group assignment changed after correction
+#
+# open circles  = TI based on observed incomplete MAG values
+# filled points = TI based on completion-corrected values
+# dashed lines  = training-set Q25 and Q75 thresholds
+# ------------------------------------------------------------
+if (nrow(changed_dat) > 0) {
+
+  p_changed <- ggplot(changed_dat) +
+    geom_segment(
+      aes(
+        y = y_label,
+        yend = y_label,
+        x = TI_obs,
+        xend = TI_est,
+        color = completeness_bin
+      ),
+      linewidth = 0.7,
+      alpha = 0.9
+    ) +
+    geom_point(
+      aes(
+        x = TI_obs,
+        y = y_label,
+        fill = completeness_bin
+      ),
+      size = 2.0,
+      shape = 21,
+      color = "black",
+      stroke = 0.35
+    ) +
+    geom_point(
+      aes(
+        x = TI_est,
+        y = y_label,
+        color = completeness_bin
+      ),
+      size = 2.0,
+      shape = 16
+    ) +
+    geom_vline(
+      xintercept = ti_q25,
+      linetype = "dashed",
+      linewidth = 0.4,
+      color = "grey45"
+    ) +
+    geom_vline(
+      xintercept = ti_q75,
+      linetype = "dashed",
+      linewidth = 0.4,
+      color = "grey45"
+    ) +
+    scale_color_manual(
+      values = lake_comp_cols,
+      drop = FALSE,
+      name = "Completeness"
+    ) +
+    scale_fill_manual(
+      values = lake_comp_cols,
+      drop = FALSE,
+      guide = "none"
+    ) +
+    labs(
+      x = "Trophic index",
+      y = NULL
+    ) +
+    ggtitle("d") +
+    theme(
+      axis.text.y = element_text(size = 6.8),
+      legend.position = "right"
+    )
+
+} else {
+
+  p_changed <- ggplot() +
+    annotate(
+      "text",
+      x = 0.5,
+      y = 0.5,
+      label = "No taxa changed group",
+      size = 3
+    ) +
+    xlim(0, 1) +
+    ylim(0, 1) +
+    ggtitle("d") +
+    theme_void()
+}
+
+# ------------------------------------------------------------
+# Combine final figure
+# ------------------------------------------------------------
+final_fig <- top_row / p_changed +
+  plot_layout(heights = c(1, 1.15), guides = "collect") &
+  theme(legend.position = "right")
+
+# ------------------------------------------------------------
+# Save figure
+# Bottom panel height scales with number of changed taxa
+# ------------------------------------------------------------
+fig_height <- if (nrow(changed_dat) > 0) {
+  max(6.8, 3.4 + 0.16 * nrow(changed_dat))
+} else {
+  6.8
+}
+
+ggsave(
+  filename = "Supplement_TrophicIndex_CompletionAndChangedTaxa_Multipanel.png",
+  plot = final_fig,
+  width = 10.5,
+  height = fig_height,
+  dpi = 600,
+  bg = "white"
+)
+
+# ------------------------------------------------------------
+# Optional summary output
+# ------------------------------------------------------------
+summary_tbl <- plot_dat %>%
+  summarise(
+    n_taxa = n(),
+    n_changed = sum(Changed == "Changed", na.rm = TRUE),
+    frac_changed = n_changed / n_taxa,
+    median_delta_ti = median(delta_TI, na.rm = TRUE)
+  )
+
+print(summary_tbl)
+
+# ------------------------------------------------------------
+# Preview figure
+# ------------------------------------------------------------
+final_fig
+```
+
+# fit the lz-bits estimated to 100% complentess on trophic index axis based on estimated genome traits
+```{r}
+# =============================================================================
+# Final summary plot:
+# Lake Zurich taxa fitted onto the training-defined trophic index
+# - lake taxa: estimated traits, colored by phylum
+# - training taxa: larger points, colored by trophic class, labeled
+# - horizontal dashed lines: training-based Q1 / Q3 cutoffs
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(ggrepel)
+  library(scales)
+})
+
+# -----------------------------------------------------------------------------
+# 1) Define consistent trophic class colors for training taxa
+# -----------------------------------------------------------------------------
+trophic_cols <- c(
+  Oligotroph  = "#2166AC",
+  Intermediate = "grey60",
+  Copiotroph  = "#B2182B"
+)
+
+# -----------------------------------------------------------------------------
+# 2) Prepare training data and rebuild trophic index from PCA
+# -----------------------------------------------------------------------------
+train_scored <- train_dat %>%
+  mutate(
+    Classification = case_when(
+      Classification %in% c("Oligotroph", "Oligotrophic") ~ "Oligotroph",
+      Classification %in% c("Mesotroph", "Mesotrophic", "Intermediate") ~ "Intermediate",
+      Classification %in% c("Copiotroph", "Copiotrophic") ~ "Copiotroph",
+      TRUE ~ as.character(Classification)
+    )
+  ) %>%
+  filter(Classification %in% c("Oligotroph", "Intermediate", "Copiotroph")) %>%
+  filter(if_all(c(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), ~ !is.na(.))) %>%
+  mutate(
+    Classification = factor(
+      Classification,
+      levels = c("Oligotroph", "Intermediate", "Copiotroph")
+    ),
+    Label = coalesce(Taxonomy, Species_ID)
+  )
+
+# PCA on training traits
+pca_fit <- prcomp(
+  train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA),
+  center = TRUE,
+  scale. = TRUE
+)
+
+# PC1 scores for training species
+train_pc1 <- predict(
+  pca_fit,
+  newdata = train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA)
+)[, 1]
+
+# orient axis so small genomes = lower TI, large genomes = higher TI
+if (cor(train_scored$GENOME_LENGTH, train_pc1, use = "complete.obs") < 0) {
+  train_pc1 <- -train_pc1
+  pca_fit$rotation[, 1] <- -pca_fit$rotation[, 1]
+}
+
+train_scored <- train_scored %>%
+  mutate(TrophicIndex = train_pc1)
+
+# -----------------------------------------------------------------------------
+# 3) Define training-based cutoffs
+# -----------------------------------------------------------------------------
+ti_q25 <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+ti_q75 <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+# -----------------------------------------------------------------------------
+# 4) Prepare lake data using ESTIMATED trait values only
+#    Exclude taxa you said should not be considered for this fitting plot
+# -----------------------------------------------------------------------------
+lake_scored_est <- lake_dat %>%
+  mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = ifelse(is.na(Phylum) | Phylum == "", "Unclassified", as.character(Phylum))
+  ) %>%
+  
+  # completeness filter
+  filter(!is.na(Completeness), Completeness >= 80) %>%
+  
+  # keep only rows with full estimated trait set
+  filter(
+    if_all(
+      c(Estimated_Genome_Size, CODING_DENSITY, Est_TOTAL_TRNA, Est_NUM_SIGMA),
+      ~ !is.na(.)
+    )
+  )
+
+# project estimated lake traits onto training PCA
+lake_pc1_est <- predict(
+  pca_fit,
+  newdata = lake_scored_est %>%
+    transmute(
+      GENOME_LENGTH   = Estimated_Genome_Size,
+      CODING_DENSITY  = CODING_DENSITY,
+      TOTAL_TRNA      = Est_TOTAL_TRNA,
+      NUM_SIGMA       = Est_NUM_SIGMA
+    )
+)[, 1]
+
+lake_scored_est <- lake_scored_est %>%
+  mutate(TrophicIndex = lake_pc1_est)
+
+# -----------------------------------------------------------------------------
+# 5) Build one shared ranked axis across lake + training taxa
+# -----------------------------------------------------------------------------
+combined_rank_df <- bind_rows(
+  lake_scored_est %>%
+    transmute(
+      Species_ID,
+      Label = Species_ID,
+      Phylum,
+      Classification = NA_character_,
+      TrophicIndex,
+      Source = "Lake"
+    ),
+  train_scored %>%
+    transmute(
+      Species_ID,
+      Label,
+      Phylum = NA_character_,
+      Classification = as.character(Classification),
+      TrophicIndex,
+      Source = "Training"
+    )
+) %>%
+  arrange(TrophicIndex, Source) %>%
+  mutate(Rank = row_number())
+
+lake_ranked <- combined_rank_df %>% filter(Source == "Lake")
+train_ranked <- combined_rank_df %>% filter(Source == "Training")
+
+# -----------------------------------------------------------------------------
+# 6) Phylum colors from ColorPalette
+# -----------------------------------------------------------------------------
+phylum_levels <- sort(unique(lake_ranked$Phylum))
+
+phylum_cols <- setNames(
+  colorRampPalette(ColorPalette)(length(phylum_levels)),
+  phylum_levels
+)
+
+# optional: keep Unclassified at end
+if ("Unclassified" %in% names(phylum_cols)) {
+  phylum_cols <- c(
+    phylum_cols[names(phylum_cols) != "Unclassified"],
+    Unclassified = phylum_cols["Unclassified"]
+  )
+}
+
+# -----------------------------------------------------------------------------
+# 7) Final plot
+# -----------------------------------------------------------------------------
+p_final_trophic <- ggplot() +
+  
+  # light background bands for operational trophic zones
+  annotate(
+    "rect",
+    xmin = -Inf, xmax = Inf,
+    ymin = -Inf, ymax = ti_q25,
+    fill = alpha("#2166AC", 0.05), color = NA
+  ) +
+  annotate(
+    "rect",
+    xmin = -Inf, xmax = Inf,
+    ymin = ti_q25, ymax = ti_q75,
+    fill = alpha("grey70", 0.06), color = NA
+  ) +
+  annotate(
+    "rect",
+    xmin = -Inf, xmax = Inf,
+    ymin = ti_q75, ymax = Inf,
+    fill = alpha("#B2182B", 0.05), color = NA
+  ) +
+  
+  # lake taxa by phylum
+  geom_point(
+    data = lake_ranked,
+    aes(x = Rank, y = TrophicIndex, color = Phylum),
+    size = 2.0,
+    alpha = 0.9
+  ) +
+  
+  # training cutoffs
+  geom_hline(
+    yintercept = ti_q25,
+    linetype = "dashed",
+    linewidth = 0.5,
+    color = "#2166AC"
+  ) +
+  geom_hline(
+    yintercept = ti_q75,
+    linetype = "dashed",
+    linewidth = 0.5,
+    color = "#B2182B"
+  ) +
+  
+  # training species, larger and on top
+  geom_point(
+    data = train_ranked,
+    aes(x = Rank, y = TrophicIndex, fill = Classification),
+    size = 4.2,
+    shape = 21,
+    color = "black",
+    stroke = 0.35
+  ) +
+  
+  # geom_text_repel(
+  #   data = train_ranked,
+  #   aes(x = Rank, y = TrophicIndex, label = Label, color = Classification),
+  #   size = 3.8,
+  #   max.overlaps = Inf,
+  #   box.padding = 0.3,
+  #   point.padding = 0.2,
+  #   segment.size = 0.35,
+  #   min.segment.length = 0
+  # ) +
+  
+  scale_fill_manual(
+    values = trophic_cols,
+    name = "Training class"
+  ) +
+  scale_color_manual(
+    values = c(phylum_cols, trophic_cols),
+    breaks = names(phylum_cols),
+    name = "Lake phylum"
+  ) +
+  
+  labs(
+    title = "Lake Zurich taxa fitted onto the training-defined trophic index",
+    subtitle = "Lake taxa are projected using estimated genomic traits; labeled larger points indicate training indicator species",
+    x = "Rank along combined trophic index (low to high)",
+    y = "Trophic index (training PC1 score)"
+  ) +
+  
+  theme_bw(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey90", linewidth = 0.3),
+    panel.border = element_rect(color = "black", linewidth = 0.5),
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 11),
+    axis.title = element_text(size = 13),
+    axis.text = element_text(size = 10, color = "black"),
+    legend.position = "right",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 8)
+  )
+
+print(p_final_trophic)
+
+# -----------------------------------------------------------------------------
+# 8) Save
+# -----------------------------------------------------------------------------
+ggsave(
+  filename = "LakeZurich_TrophicIndex_Estimated_FinalSummary.png",
+  plot = p_final_trophic,
+  width = 14,
+  height = 8,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+```
+# where did all the species end up according to the phylum ? 
+```{r}
+# =============================================================================
+# Stacked barplot of trophic classes across LZ-BITS phyla
+# - final plot contains ONLY lake MAGs
+# - training data are used only to define PCA axis + thresholds
+# - x axis: Phylum
+# - y axis: absolute number of MAGs
+# - fill: Oligotroph / Intermediate / Copiotroph
+# - labels: within-phylum percentages
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(scales)
+})
+
+# -----------------------------------------------------------------------------
+# 1) Colors
+# -----------------------------------------------------------------------------
+trophic_cols <- c(
+  "Oligotroph"   = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copiotroph"   = "#BA5205"
+)
+
+# -----------------------------------------------------------------------------
+# 2) Build trophic index from TRAINING data
+# -----------------------------------------------------------------------------
+train_scored <- train_dat %>%
+  mutate(
+    Classification = case_when(
+      Classification %in% c("Oligotroph", "Oligotrophic") ~ "Oligotroph",
+      Classification %in% c("Mesotroph", "Mesotrophic", "Intermediate") ~ "Intermediate",
+      Classification %in% c("Copiotroph", "Copiotrophic") ~ "Copiotroph",
+      TRUE ~ as.character(Classification)
+    )
+  ) %>%
+  filter(Classification %in% c("Oligotroph", "Intermediate", "Copiotroph")) %>%
+  filter(if_all(c(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), ~ !is.na(.)))
+
+pca_fit <- prcomp(
+  train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA),
+  center = TRUE,
+  scale. = TRUE
+)
+
+train_pc1 <- predict(
+  pca_fit,
+  newdata = train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA)
+)[, 1]
+
+# orient axis once and reuse that orientation everywhere
+flip_axis <- cor(train_scored$GENOME_LENGTH, train_pc1, use = "complete.obs") < 0
+
+if (flip_axis) {
+  train_pc1 <- -train_pc1
+}
+
+train_scored <- train_scored %>%
+  mutate(TrophicIndex = train_pc1)
+
+# -----------------------------------------------------------------------------
+# 3) Define cutoffs from training distribution
+# -----------------------------------------------------------------------------
+ti_q25 <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+ti_q75 <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+classify_trophic_group <- function(x, q25, q75) {
+  case_when(
+    x <= q25 ~ "Oligotroph",
+    x >= q75 ~ "Copiotroph",
+    TRUE     ~ "Intermediate"
+  )
+}
+
+# -----------------------------------------------------------------------------
+# 4) Project ESTIMATED LZ-BITS traits onto the training-defined PCA axis
+# -----------------------------------------------------------------------------
+lake_scored <- lake_dat %>%
+  mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = ifelse(is.na(Phylum) | Phylum == "", "Unclassified", as.character(Phylum))
+  ) %>%
+  filter(!is.na(Completeness), Completeness >= 80) %>%
+  filter(
+    if_all(
+      c(Estimated_Genome_Size, CODING_DENSITY, Est_TOTAL_TRNA, Est_NUM_SIGMA),
+      ~ !is.na(.)
+    )
+  )
+
+lake_pc1 <- predict(
+  pca_fit,
+  newdata = lake_scored %>%
+    transmute(
+      GENOME_LENGTH  = Estimated_Genome_Size,
+      CODING_DENSITY = CODING_DENSITY,
+      TOTAL_TRNA     = Est_TOTAL_TRNA,
+      NUM_SIGMA      = Est_NUM_SIGMA
+    )
+)[, 1]
+
+# apply the SAME orientation as for the training axis
+if (flip_axis) {
+  lake_pc1 <- -lake_pc1
+}
+
+lake_scored <- lake_scored %>%
+  mutate(
+    TrophicIndex = lake_pc1,
+    TrophicClass = classify_trophic_group(TrophicIndex, ti_q25, ti_q75),
+    TrophicClass = factor(
+      TrophicClass,
+      levels = c("Oligotroph", "Intermediate", "Copiotroph")
+    )
+  )
+
+# -----------------------------------------------------------------------------
+# 5) Summarize ONLY LZ-BITS MAGs by phylum
+# -----------------------------------------------------------------------------
+plot_df <- lake_scored %>%
+  count(Phylum, TrophicClass, name = "n") %>%
+  group_by(Phylum) %>%
+  mutate(
+    phylum_total = sum(n),
+    pct = 100 * n / phylum_total,
+    pct_label = ifelse(pct >= 6, paste0(round(pct), "%"), NA_character_)
+  ) %>%
+  ungroup()
+
+# add missing class combinations so stacks are consistent
+plot_df <- plot_df %>%
+  tidyr::complete(
+    Phylum,
+    TrophicClass = factor(c("Oligotroph", "Intermediate", "Copiotroph"),
+                          levels = c("Oligotroph", "Intermediate", "Copiotroph")),
+    fill = list(n = 0)
+  ) %>%
+  group_by(Phylum) %>%
+  mutate(
+    phylum_total = max(phylum_total, na.rm = TRUE),
+    pct = ifelse(phylum_total > 0, 100 * n / phylum_total, 0),
+    pct_label = ifelse(pct >= 6 & n > 0, paste0(round(pct), "%"), NA_character_)
+  ) %>%
+  ungroup()
+
+# order phyla by total abundance
+phylum_order <- plot_df %>%
+  distinct(Phylum, phylum_total) %>%
+  arrange(desc(phylum_total)) %>%
+  pull(Phylum)
+
+plot_df <- plot_df %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+# -----------------------------------------------------------------------------
+# 6) Plot
+# -----------------------------------------------------------------------------
+
+# dataframe for totals per phylum
+totals_df <- plot_df %>%
+  distinct(Phylum, phylum_total)
+
+p_phylum_stack <- ggplot(plot_df, aes(x = Phylum, y = n, fill = TrophicClass)) +
+  
+  geom_col(width = 0.8, color = "black", linewidth = 0.25) +
+  
+  # percentage labels inside bars
+  geom_text(
+    aes(label = pct_label),
+    position = position_stack(vjust = 0.5),
+    size = 2.2,
+    color = "black",
+    na.rm = TRUE
+  ) +
+  
+  # total counts ABOVE bars
+  geom_text(
+    data = totals_df,
+    aes(x = Phylum, y = phylum_total, label = phylum_total),
+    inherit.aes = FALSE,
+    vjust = -0.4,
+    size = 3.2,
+    fontface = "bold"
+  ) +
+  
+  scale_fill_manual(
+    values = trophic_cols,
+    breaks = c("Oligotroph", "Intermediate", "Copiotroph"),
+    name = NULL
+  ) +
+  
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.1)),  # extra space for labels on top
+    breaks = pretty_breaks(n = 8)
+  ) +
+  
+  labs(
+    x = "Phylum",
+    y = "LZ-BITS MAGs [n]"
+  ) +
+  
+  theme_bw(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey90", linewidth = 0.3),
+    panel.border = element_rect(color = "black", linewidth = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, color = "black"),
+    axis.text.y = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    legend.position = "top",
+    legend.text = element_text(size = 9)
+  )
+
+print(p_phylum_stack)
+# -----------------------------------------------------------------------------
+# 7) Save
+# -----------------------------------------------------------------------------
+ggsave(
+  filename = "LZBITS_Phylum_TrophicClass_StackedBarplot.png",
+  plot = p_phylum_stack,
+  width = 10.5,
+  height = 6.5,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+```
+
+```{r}
+# =============================================================================
+# Stacked barplot of trophic classes across LZ-BITS phyla
+# - final plot contains ONLY retained lake MAGs
+# - training data are used only to define PCA axis + thresholds
+# - x axis: Phylum
+# - y axis: absolute number of retained MAGs
+# - fill: Oligotroph / Intermediate / Copiotroph
+# - labels inside bars: within-phylum percentages among retained MAGs
+# - labels above bars: retained / total per phylum, where total comes from species_dat
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(scales)
+  library(tidyr)
+})
+
+# -----------------------------------------------------------------------------
+# 1) Colors
+# -----------------------------------------------------------------------------
+trophic_cols <- c(
+  "Oligotroph"   = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copiotroph"   = "#BA5205"
+)
+
+# -----------------------------------------------------------------------------
+# 2) Build trophic index from TRAINING data
+# -----------------------------------------------------------------------------
+train_scored <- train_dat %>%
+  mutate(
+    Classification = case_when(
+      Classification %in% c("Oligotroph", "Oligotrophic") ~ "Oligotroph",
+      Classification %in% c("Mesotroph", "Mesotrophic", "Intermediate") ~ "Intermediate",
+      Classification %in% c("Copiotroph", "Copiotrophic") ~ "Copiotroph",
+      TRUE ~ as.character(Classification)
+    )
+  ) %>%
+  filter(Classification %in% c("Oligotroph", "Intermediate", "Copiotroph")) %>%
+  filter(if_all(c(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), ~ !is.na(.)))
+
+pca_fit <- prcomp(
+  train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA),
+  center = TRUE,
+  scale. = TRUE
+)
+
+train_pc1 <- predict(
+  pca_fit,
+  newdata = train_scored %>%
+    select(GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA)
+)[, 1]
+
+# orient axis once and reuse that orientation everywhere
+flip_axis <- cor(train_scored$GENOME_LENGTH, train_pc1, use = "complete.obs") < 0
+
+if (flip_axis) {
+  train_pc1 <- -train_pc1
+}
+
+train_scored <- train_scored %>%
+  mutate(TrophicIndex = train_pc1)
+
+# -----------------------------------------------------------------------------
+# 3) Define cutoffs from training distribution
+# -----------------------------------------------------------------------------
+ti_q25 <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+ti_q75 <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+classify_trophic_group <- function(x, q25, q75) {
+  case_when(
+    x <= q25 ~ "Oligotroph",
+    x >= q75 ~ "Copiotroph",
+    TRUE     ~ "Intermediate"
+  )
+}
+
+# -----------------------------------------------------------------------------
+# 4) Project ESTIMATED LZ-BITS traits onto the training-defined PCA axis
+# -----------------------------------------------------------------------------
+lake_scored <- lake_dat %>%
+  mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = ifelse(is.na(Phylum) | Phylum == "", "Unclassified", as.character(Phylum))
+  ) %>%
+  filter(!is.na(Completeness), Completeness >= 80) %>%
+  filter(
+    if_all(
+      c(Estimated_Genome_Size, CODING_DENSITY, Est_TOTAL_TRNA, Est_NUM_SIGMA),
+      ~ !is.na(.)
+    )
+  )
+
+lake_pc1 <- predict(
+  pca_fit,
+  newdata = lake_scored %>%
+    transmute(
+      GENOME_LENGTH  = Estimated_Genome_Size,
+      CODING_DENSITY = CODING_DENSITY,
+      TOTAL_TRNA     = Est_TOTAL_TRNA,
+      NUM_SIGMA      = Est_NUM_SIGMA
+    )
+)[, 1]
+
+# apply the SAME orientation as for the training axis
+if (flip_axis) {
+  lake_pc1 <- -lake_pc1
+}
+
+lake_scored <- lake_scored %>%
+  mutate(
+    TrophicIndex = lake_pc1,
+    TrophicClass = classify_trophic_group(TrophicIndex, ti_q25, ti_q75),
+    TrophicClass = factor(
+      TrophicClass,
+      levels = c("Oligotroph", "Intermediate", "Copiotroph")
+    )
+  )
+
+# -----------------------------------------------------------------------------
+# 5) Build denominator table from ALL species_dat taxa
+#    and numerator table from retained lake_scored taxa
+# -----------------------------------------------------------------------------
+species_totals <- species_dat %>%
+  mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = ifelse(is.na(Phylum) | Phylum == "", "Unclassified", as.character(Phylum))
+  ) %>%
+  distinct(Species_ID, Phylum) %>%
+  count(Phylum, name = "total_species")
+
+retained_totals <- lake_scored %>%
+  distinct(Species_ID, Phylum) %>%
+  count(Phylum, name = "retained_species")
+
+retention_df <- species_totals %>%
+  full_join(retained_totals, by = "Phylum") %>%
+  mutate(
+    total_species = replace_na(total_species, 0L),
+    retained_species = replace_na(retained_species, 0L),
+    retain_label = paste0(retained_species, "/", total_species)
+  )
+
+# -----------------------------------------------------------------------------
+# 6) Summarize retained LZ-BITS MAGs by phylum and trophic class
+# -----------------------------------------------------------------------------
+plot_df <- lake_scored %>%
+  count(Phylum, TrophicClass, name = "n") %>%
+  left_join(retention_df, by = "Phylum") %>%
+  group_by(Phylum) %>%
+  mutate(
+    phylum_total_retained = sum(n),
+    pct = 100 * n / phylum_total_retained,
+    pct_label = ifelse(pct >= 6, paste0(round(pct), "%"), NA_character_)
+  ) %>%
+  ungroup()
+
+# add missing class combinations so stacks are consistent
+plot_df <- lake_scored %>%
+  count(Phylum, TrophicClass, name = "n") %>%
+  complete(
+    Phylum,
+    TrophicClass = factor(
+      c("Oligotroph", "Intermediate", "Copiotroph"),
+      levels = c("Oligotroph", "Intermediate", "Copiotroph")
+    ),
+    fill = list(n = 0)
+  ) %>%
+  left_join(retention_df, by = "Phylum") %>%
+  group_by(Phylum) %>%
+  mutate(
+    phylum_total_retained = sum(n),
+    total_species = max(total_species, na.rm = TRUE),
+    retained_species = max(retained_species, na.rm = TRUE),
+    retain_label = paste0(retained_species, "/", total_species),
+    pct = ifelse(phylum_total_retained > 0, 100 * n / phylum_total_retained, 0),
+    pct_label = ifelse(pct >= 6 & n > 0, paste0(round(pct), "%"), NA_character_)
+  ) %>%
+  ungroup()
+
+# -----------------------------------------------------------------------------
+# 7) Order phyla by retained abundance
+# -----------------------------------------------------------------------------
+phylum_order <- plot_df %>%
+  distinct(Phylum, phylum_total_retained) %>%
+  arrange(desc(phylum_total_retained)) %>%
+  pull(Phylum)
+
+plot_df <- plot_df %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+totals_df <- plot_df %>%
+  distinct(Phylum, phylum_total_retained, total_species, retained_species, retain_label)
+
+# -----------------------------------------------------------------------------
+# 8) Plot
+# -----------------------------------------------------------------------------
+p_phylum_stack <- ggplot(plot_df, aes(x = Phylum, y = n, fill = TrophicClass)) +
+  
+  geom_col(width = 0.8, color = "black", linewidth = 0.25) +
+  
+  # percentage labels inside bars
+  geom_text(
+    aes(label = pct_label),
+    position = position_stack(vjust = 0.5),
+    size = 2.2,
+    color = "black",
+    na.rm = TRUE
+  ) +
+  
+  # retained / total labels above bars
+  geom_text(
+    data = totals_df,
+    aes(x = Phylum, y = phylum_total_retained, label = retain_label),
+    inherit.aes = FALSE,
+    vjust = -0.4,
+    size = 3.0,
+    fontface = "bold"
+  ) +
+  
+  scale_fill_manual(
+    values = trophic_cols,
+    breaks = c("Oligotroph", "Intermediate", "Copiotroph"),
+    name = NULL
+  ) +
+  
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.12)),
+    breaks = pretty_breaks(n = 8)
+  ) +
+  
+  labs(
+    x = "Phylum",
+    y = "Retained LZ-BITS MAGs [n]"
+  ) +
+  
+  theme_bw(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey90", linewidth = 0.3),
+    panel.border = element_rect(color = "black", linewidth = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, color = "black"),
+    axis.text.y = element_text(color = "black"),
+    axis.title = element_text(color = "black"),
+    legend.position = "top",
+    legend.text = element_text(size = 9)
+  )
+
+print(p_phylum_stack)
+
+# -----------------------------------------------------------------------------
+# 9) Save
+# -----------------------------------------------------------------------------
+ggsave(
+  filename = "LZBITS_Phylum_TrophicClass_StackedBarplot.png",
+  plot = p_phylum_stack,
+  width = 10.5,
+  height = 6.5,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+```
+

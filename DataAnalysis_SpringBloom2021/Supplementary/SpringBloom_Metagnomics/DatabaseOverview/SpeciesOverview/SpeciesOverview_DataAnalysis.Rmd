@@ -1,0 +1,387 @@
+---
+title: Species Overview
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/Method_Paper_Analysis/FinalAnalysis/Figure_02/SpeciesOverview/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(scales)   
+library(ggh4x)
+library(lubridate)
+library(ggforce)
+
+# Load the color palette
+source("ColorPalette.R")
+
+#─── 0) Read in your data ─────────────────────────────────────────────────────
+dat_time <- read_csv("SpeciesOverview_PerDate.csv")
+dat <- read_csv("../../../../Data/Species_Data/Final_Data/Species_Table.csv")
+
+# force phylum specific color
+# figure out the phylum‐order you actually want:
+phylum_levels <- dat_time %>%
+  count(Phylum) %>%
+  arrange(desc(n)) %>%
+  pull(Phylum) %>%
+  as.character()
+
+# if your ColorPalette is currently an unnamed vector of the right length,
+#    give it those names:
+if (length(ColorPalette) == length(phylum_levels) && is.null(names(ColorPalette))) {
+  names(ColorPalette) <- phylum_levels
+}
+
+# now force your data to use that factor:
+dat <- dat %>% mutate(Phylum = factor(Phylum, levels = phylum_levels)) %>%
+  select(-c("Date", "Species_Abundance", "Total_Species_Abundance_Per_Date", "Relative_Species_Abundance_Per_Date")) %>%
+  distinct()
+```
+
+```{r}
+#─── 1) Build %-abundance dataframe ─────────────────────────────────────────
+phylum_pct_df <- dat_time %>%
+  group_by(Date, Phylum) %>%
+  summarize(total_abund = sum(Species_Abundance, na.rm = TRUE),
+            .groups = "drop") %>%
+  group_by(Date) %>%
+  mutate(pct_abund = total_abund / sum(total_abund, na.rm = TRUE)) %>%
+  ungroup()
+
+#─── 2) Determine phylum order by peak %-abundance ────────────────────────────
+phylum_order <- phylum_pct_df %>%
+  group_by(Phylum) %>%
+  summarize(max_p = max(pct_abund), .groups = "drop") %>%
+  arrange(desc(max_p)) %>%
+  pull(Phylum)
+
+#─── 3) Compute per‐phylum min & max for custom y‐scales ───────────────────────
+phylum_limits <- phylum_pct_df %>%
+  group_by(Phylum) %>%
+  summarize(min_p = min(pct_abund), max_p = max(pct_abund),
+            .groups = "drop") %>%
+  arrange(match(Phylum, phylum_order))
+
+#─── 4) Build named list of y‐scales WITH TICKS & LABELS ON THE LEFT ─────────
+y_scales <- phylum_limits %>%
+  mutate(
+    scale = map2(min_p, max_p, ~{
+      dec <- ifelse(.y > 0.10, 0, 2)
+      br  <- c(.x, .y)
+      lbl <- function(x) paste0(sprintf(paste0("%.", dec, "f"), x*100), "%")
+      scale_y_continuous(
+        breaks   = br,
+        labels   = lbl,
+        expand   = expansion(mult = c(0.05, 0.05)),
+        position = "left"
+      )
+    })
+  ) %>%
+  { set_names(.$scale, .$Phylum) }
+
+#─── 5) Build facet labels “Phylum (n species)” ───────────────────────────────
+facet_labels <- dat_time %>%
+  group_by(Phylum) %>%
+  summarize(n = n_distinct(Species_ID), .groups = "drop") %>%
+  arrange(match(Phylum, phylum_order)) %>%
+  { set_names(paste0(.$Phylum, " (", .$n, ")"), .$Phylum) }
+
+#─── 6) Compute “02” of each month for x‐axis breaks ──────────────────────────
+start_month <- floor_date(min(dat_time$Date), "month") + days(1)
+end_month   <- floor_date(max(dat_time$Date), "month") + days(1)
+month_breaks <- seq(start_month, end_month, by = "1 month")
+
+#─── Panel 1: %-abundance over time ──────────────────────────────────────────
+p1 <- ggplot(
+    phylum_pct_df %>% mutate(Phylum = factor(Phylum, levels = phylum_order)),
+    aes(x = Date, y = pct_abund, fill = Phylum)
+  ) +
+  geom_area(color = "black", size = 0.2) +
+  geom_point(size = 0.6, shape = 16, color = "black") +
+  facet_wrap2(~Phylum, ncol = 1, scales = "free_y",
+              strip.position = "left",
+              labeller = labeller(Phylum = facet_labels)) +
+  facetted_pos_scales(y = y_scales) +
+  scale_fill_manual(values = ColorPalette, guide = "none") +
+  scale_x_date(limits      = c(min(dat_time$Date), max(dat_time$Date)),
+               breaks      = month_breaks,
+               date_labels = "%d %b",
+               expand      = expansion(add = 0)) +
+  theme_minimal(base_size = 16) +
+  theme(
+    # strip labels off in p1
+    strip.text.y.left = element_blank(),
+    strip.background  = element_blank(),
+    strip.placement   = "outside",
+
+    # no titles or legend
+    axis.title      = element_blank(),
+    legend.position = "none",
+    plot.title      = element_blank(),
+
+    # x‐axis labels
+    axis.text.x     = element_text(size = 14, angle = 45, hjust = 1),
+
+    # show y labels (percentages) on left
+    axis.text.y     = element_text(size = 8, margin = margin(l = 6)),
+    axis.ticks.y    = element_line(),
+
+    # grids, spacing, margins
+    panel.grid.major.x  = element_blank(),
+    panel.grid.minor.x  = element_blank(),
+    panel.spacing.y     = unit(1.2, "lines"),
+    plot.margin         = unit(c(1,0.5,1,1), "lines")
+  )
+
+#─── Middle: phylum names/counts ───────────────────────────────────────────────
+label_df <- tibble(
+  Phylum = names(facet_labels),
+  label  = unname(facet_labels)
+) %>%
+  # reverse the ordering here
+  mutate(Phylum = factor(Phylum, levels = rev(phylum_order)))
+
+label_plot <- ggplot(label_df, aes(x = 1, y = Phylum, label = label)) +
+  geom_text(hjust = 0.5, size = 5, fontface = "bold") +
+  # and reverse the scale here
+  scale_y_discrete(limits = rev(phylum_order)) +
+  theme_void() +
+  theme(plot.margin = unit(c(1, 0, 1, 0), "lines"))
+
+#─── Panel 2: genome‐size boxplots ────────────────────────────────────────────
+p2 <- ggplot(
+    dat %>% mutate(Phylum = factor(Phylum, levels = phylum_order)),
+    aes(x = Estimated_Genome_Size, y = Phylum, fill = Phylum)
+  ) +
+   geom_jitter(shape = 21, color = "black",
+              width = 0, height = 0.3, size = 1.8, alpha = 0.4) +
+  geom_boxplot(color = "black", outlier.shape = NA, width = 0.8, alpha = 0.2) +
+  geom_vline(xintercept = 2.1e6, linetype = "dashed", linewidth = 0.5) +
+  scale_x_continuous(limits = c(0, 8.2e6),
+                     breaks = seq(0, 8e6, by = 2e6),
+                     labels = function(x) paste0(x/1e6, " Mbp"),
+                     expand = c(0,0)) +
+  scale_y_discrete(limits = rev(phylum_order),
+                   position = "right",
+                   expand = expansion(add = 0)) +
+  scale_fill_manual(values = ColorPalette, guide = "none") +
+  theme_minimal(base_size = 16) +
+  theme(
+    # remove y labels & ticks in p2
+    axis.text.y     = element_blank(),
+    axis.ticks.y    = element_blank(),
+
+    # remove titles/strips
+    axis.title      = element_blank(),
+    strip.text      = element_blank(),
+    plot.title      = element_blank(),
+
+    # x‐axis labels
+    axis.text.x     = element_text(size = 14, angle = 45, hjust = 1, vjust = 2.5),
+
+    # clean up & spacing
+    panel.grid.major.y = element_blank(),
+    panel.spacing.y     = unit(1.2, "lines"),
+    plot.margin         = unit(c(1,0.5,1,1), "lines")
+  )
+
+#─── Combine and render ──────────────────────────────────────────────────────
+combined <- p1 + label_plot + p2 +
+  plot_layout(ncol = 3, widths = c(3,2,3))
+
+print(combined)
+
+ggsave(
+  "Plot_SpeciesAndGenomeSizeOverview.pdf",
+  combined,
+  height  = 10.27,
+  width = 8.27,
+  units  = "in",
+  device = pdf
+)
+
+```
+```{r}
+Big_Actinos <- dat %>%
+  filter(Phylum == "Actinomycetota" & Estimated_Genome_Size > 2100000)
+
+Small_Bacteroidota <- dat %>%
+  filter(Phylum == "Bacteroidota" & Estimated_Genome_Size <= 2100000)
+
+Small_Pseudomonatoda <- dat %>%
+  filter(Phylum == "Pseudomonadota" & Estimated_Genome_Size <= 2100000)
+```
+
+
+
+```{r}
+# ── Small vs Big genomes: presentation-ready area plot ─────────────────────────
+library(dplyr)
+library(ggplot2)
+library(scales)
+
+# 1) Threshold & size class mapping
+genome_thresh <- 2.1e6
+
+size_key <- dat %>%
+  select(Species_ID, Estimated_Genome_Size) %>%
+  mutate(
+    SizeClass = case_when(
+      is.na(Estimated_Genome_Size) ~ NA_character_,
+      Estimated_Genome_Size <= genome_thresh ~ "Small (≤2.1 Mbp)",
+      TRUE ~ "Big (>2.1 Mbp)"
+    )
+  )
+
+# 2) Aggregate to relative contribution per date
+contrib_time <- dat_time %>%
+  select(Date, Species_ID, Species_Abundance) %>%
+  left_join(size_key, by = "Species_ID") %>%
+  filter(!is.na(SizeClass)) %>%
+  group_by(Date, SizeClass) %>%
+  summarise(Total_Abund = sum(Species_Abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Date) %>%
+  mutate(Relative = Total_Abund / sum(Total_Abund, na.rm = TRUE)) %>%
+  ungroup()
+
+# Ensure ordering: Big on bottom, Small on top
+contrib_time <- contrib_time %>%
+  mutate(SizeClass = factor(SizeClass, levels = c("Big (>2.1 Mbp)", "Small (≤2.1 Mbp)")))
+
+# 3) Palette
+SizePalette <- c(
+  "Small (≤2.1 Mbp)" = "#4281A4",  # deep lake blue
+  "Big (>2.1 Mbp)"   = "#EAD2AC"   # warm contrast
+)
+
+# 4) Plot
+p_size_area <- ggplot(contrib_time, aes(x = Date, y = Relative, fill = SizeClass)) +
+  geom_area(color = "black", linewidth = 0.25) +
+  scale_fill_manual(values = SizePalette, name = NULL) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    limits = c(0, 1),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  scale_x_date(
+    breaks = month_breaks,
+    date_labels = "%d %b",
+    expand = expansion(add = 0)
+  ) +
+  labs(
+    title = "Relative contribution of small vs. big genomes over time",
+    x = NULL, y = "Relative abundance"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(face = "bold", margin = margin(b = 6)),
+    legend.position = "top",
+    axis.text.x = element_text(size = 13, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 12),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3),
+    plot.margin = margin(10, 14, 10, 10)
+  )
+
+# 5) Export as PDF
+ggsave("Plot_SmallVsBig_RelativeContribution_Area.pdf",
+       p_size_area, width = 20, height = 10, units = "in", device = pdf)
+
+# Print to viewer
+print(p_size_area)
+
+```
+
+```{r}
+# Filter only the selected phyla
+top_genera <- dat %>%
+  filter(Phylum %in% c("Actinomycetota", "Bacteroidota", "Pseudomonadota")) %>%
+  
+  # Count number of species per genus within each phylum
+  group_by(Phylum, Genus) %>%
+  summarise(Nr_Species = n_distinct(Species_ID), .groups = "drop_last") %>%
+  
+  # Rank and take top 3 genera per phylum
+  arrange(Phylum, desc(Nr_Species)) %>%
+  slice_max(order_by = Nr_Species, n = 3, with_ties = FALSE) %>%
+  ungroup()
+
+top_genera
+```
+
+```{r}
+library(dplyr)
+
+# Step 1: merge taxonomy and abundance tables
+merged_dat <- dat_time %>%
+  left_join(dat %>% select(Species_ID, Phylum, Genus),
+            by = c("Species_ID","Phylum"))
+
+# Step 2: filter phyla of interest
+filtered_dat <- merged_dat %>%
+  filter(Phylum %in% c("Actinomycetota", "Bacteroidota", "Pseudomonadota"))
+
+# Step 3: compute total abundance per genus (summing across species and time)
+genus_abundance <- filtered_dat %>%
+  group_by(Phylum, Genus) %>%
+  summarise(
+    Nr_Species = n_distinct(Species_ID),
+    Total_Abundance = sum(Species_Abundance, na.rm = TRUE),
+    .groups = "drop_last"
+  ) %>%
+  ungroup()
+
+# Step 4: calculate overall and per-phylum relative abundance
+genus_abundance <- genus_abundance %>%
+  group_by(Phylum) %>%
+  mutate(
+    Phylum_Total = sum(Total_Abundance),
+    Perc_of_Phylum = 100 * Total_Abundance / Phylum_Total
+  ) %>%
+  ungroup() %>%
+  mutate(
+    Perc_of_Community = 100 * Total_Abundance / sum(Total_Abundance)
+  )
+
+# Step 5: take top 3 most abundant genera per phylum
+top3_abundant_genera <- genus_abundance %>%
+  group_by(Phylum) %>%
+  arrange(desc(Total_Abundance)) %>%
+  slice_head(n = 3) %>%
+  ungroup()
+
+top3_abundant_genera
+
+```
+

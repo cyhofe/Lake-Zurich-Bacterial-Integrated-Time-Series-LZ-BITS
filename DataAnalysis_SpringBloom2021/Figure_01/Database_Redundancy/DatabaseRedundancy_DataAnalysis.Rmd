@@ -1,0 +1,780 @@
+---
+title: Database Redundancy
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data loading
+```{r}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_01/Database_Redundancy/")
+
+# Libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(scales)
+library(patchwork)
+
+# Color palette (optional; keep if you use it elsewhere)
+source("ColorPalette.R")
+
+# Load redundancy tables
+species_dat <- read_delim("SpeciesLevelDatabaseRedundancy.tsv")
+mag_dat     <- read_delim("MagLevelDatabaseRedundancy.tsv")
+
+# Load gene annotation table (species-level)
+gene_dat <- read.csv("../../../Data/Gene_Data/Final_Data/Gene_Table.csv")
+
+# Load peptide inference reports
+species_report_file <- "FGCZ_SpringBloom2021_95MagSpeciesDB_15JUL24.Reformated.ProteinInferenceReport.txt"
+mag_report_file     <- "Springbloom2021_AllMags.ProteinInferenceReport.txt"
+```
+
+# Data manipulation
+```{r}
+# ---- Redundancy data (protein clustering) ----
+
+species_dat <- species_dat %>% mutate(Database = "Species-level DB")
+mag_dat     <- mag_dat %>% mutate(Database = "MAG-level DB")
+
+final_dat <- bind_rows(mag_dat, species_dat) %>%
+mutate(
+Redundancy = DatabaseSize / N_Clusters,
+PercentRedundant = 100 * (DatabaseSize - N_Clusters) / DatabaseSize,
+RedundantProteins = DatabaseSize - N_Clusters
+)
+
+# ---- Gene-level annotation status (species-level only) ----
+
+# "Unclassified" (and NA / "") treated as NOT annotated
+
+kegg_pct <- gene_dat %>%
+mutate(KEGG_status = ifelse(
+is.na(KEGG_ID) | KEGG_ID == "" | KEGG_ID == "Unclassified",
+"Not annotated", "Annotated"
+)) %>%
+count(KEGG_status, name = "N") %>%
+mutate(Percent = 100 * N / sum(N))
+
+# ---- Peptide inference reports (MAG vs Species) ----
+
+species_rep <- read.table(
+species_report_file,
+sep = "\t", header = FALSE, comment.char = "#", stringsAsFactors = FALSE
+)
+colnames(species_rep) <- c("Metric", "Value")
+species_rep$Value <- as.numeric(species_rep$Value)
+
+mag_rep <- read.table(
+mag_report_file,
+sep = "\t", header = FALSE, comment.char = "#", stringsAsFactors = FALSE
+)
+colnames(mag_rep) <- c("Metric", "Value")
+mag_rep$Value <- as.numeric(mag_rep$Value)
+
+pep_metrics <- bind_rows(
+mag_rep %>%
+filter(Metric %in% c("mean_proteins_per_peptide", "pct_shared_peptides")) %>%
+mutate(Database = "MAG-level DB"),
+species_rep %>%
+filter(Metric %in% c("mean_proteins_per_peptide", "pct_shared_peptides")) %>%
+mutate(Database = "Species-level DB")
+)
+```
+
+# Protein redundancy
+```{r}
+p_redundancy <- ggplot(final_dat,
+aes(x = ClusteringThreshold,
+y = Redundancy,
+group = Database)) +
+geom_line(aes(color = Database), linewidth = 0.8) +
+geom_point(aes(fill = Database),
+shape = 21, size = 3,
+color = "black", stroke = 0.4) +
+scale_x_reverse(breaks = c(100, 99, 95, 90, 85)) +
+labs(
+x = "Clustering threshold (% amino-acid identity)",
+y = "Redundancy (Database size / clusters)",
+title = "Protein database redundancy"
+) +
+theme_minimal(base_size = 12) +
+theme(
+legend.position = "top",
+panel.grid.minor = element_blank(),
+plot.title = element_text(face = "bold", hjust = 0.5),
+axis.text.x = element_text(size = 14),
+axis.text.y = element_text(size = 14)
+)
+
+p_redundancy
+```
+# peptide redundancy
+```{r}
+p_mean_ppp <- ggplot(pep_metrics %>% filter(Metric == "mean_proteins_per_peptide"),
+aes(x = Database, y = Value, fill = Database)) +
+geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+scale_y_continuous(labels = scales::number_format(accuracy = 0.01)) +
+scale_fill_manual(values = c(
+"MAG-level DB" = "#d95f02",
+"Species-level DB" = "#1b9e77"
+)) +
+labs(
+x = NULL,
+y = "Proteins per peptide (mean)",
+title = "Proteins per peptide"
+) +
+theme_minimal(base_size = 12) +
+theme(
+legend.position = "none",
+panel.grid.minor = element_blank(),
+plot.title = element_text(face = "bold", hjust = 0.5),
+axis.text.x = element_text(size = 14),
+axis.text.y = element_text(size = 14)
+)
+
+p_mean_ppp
+
+```
+# annotated
+```{r}
+p_kegg <- ggplot(kegg_pct, aes(x = "Species-level DB", y = Percent, fill = KEGG_status)) +
+geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+scale_y_continuous(
+limits = c(0, 100),
+breaks = seq(0, 100, by = 10),
+labels = percent_format(scale = 1)
+) +
+scale_fill_manual(values = c(
+"Annotated" = "#1b9e77",
+"Not annotated" = "grey80"
+)) +
+labs(
+x = NULL,
+y = "Proteins (%)",
+title = "KEGG annotation coverage"
+) +
+theme_minimal(base_size = 12) +
+theme(
+legend.position = "top",
+panel.grid.minor = element_blank(),
+plot.title = element_text(face = "bold", hjust = 0.5),
+axis.text.x = element_text(size = 14),
+axis.text.y = element_text(size = 14)
+)
+
+p_kegg
+
+
+```
+
+
+```{r}
+# ============================================================
+# 2) Data manipulation and treatment  (UPDATED)
+#   - Protein redundancy: % redundant
+#   - Add peptide sharing: % peptides mapping to >1 protein (from reports)
+#   - Annotation: Annotated if KEGG OR COG OR TIGR (PFAM ignored)
+# ============================================================
+
+# ---- Redundancy data (protein clustering) ----
+species_dat <- species_dat %>% mutate(Database = "Species-level DB")
+mag_dat     <- mag_dat %>% mutate(Database = "MAG-level DB")
+
+final_dat <- bind_rows(mag_dat, species_dat) %>%
+  mutate(
+    Redundancy = DatabaseSize / N_Clusters,
+    PercentRedundant = 100 * (DatabaseSize - N_Clusters) / DatabaseSize
+  )
+
+# ---- Annotation coverage (species-level only): KEGG/COG/TIGR (PFAM ignored) ----
+ann_any <- gene_dat %>%
+  mutate(
+    KEGG_OK = !is.na(KEGG_ID) & KEGG_ID != "" & KEGG_ID != "Unclassified",
+    COG_OK  = !is.na(COG_ID)  & COG_ID  != "" & COG_ID  != "Unclassified",
+    TIGR_OK = !is.na(TIGR_ID) & TIGR_ID != "" & TIGR_ID != "Unclassified",
+    AnnotStatus = ifelse(KEGG_OK | COG_OK | TIGR_OK, "Annotated (KEGG/COG/TIGR)", "Not annotated")
+  ) %>%
+  count(AnnotStatus, name = "N") %>%
+  mutate(Percent = 100 * N / sum(N))
+
+# ---- Peptide inference reports (MAG vs Species) ----
+species_rep <- read.table(
+  species_report_file,
+  sep = "\t", header = FALSE, comment.char = "#", stringsAsFactors = FALSE
+)
+colnames(species_rep) <- c("Metric", "Value")
+species_rep$Value <- as.numeric(species_rep$Value)
+
+mag_rep <- read.table(
+  mag_report_file,
+  sep = "\t", header = FALSE, comment.char = "#", stringsAsFactors = FALSE
+)
+colnames(mag_rep) <- c("Metric", "Value")
+mag_rep$Value <- as.numeric(mag_rep$Value)
+
+pep_metrics <- bind_rows(
+  mag_rep %>%
+    filter(Metric %in% c("mean_proteins_per_peptide", "pct_shared_peptides")) %>%
+    mutate(Database = "MAG-level DB"),
+  species_rep %>%
+    filter(Metric %in% c("mean_proteins_per_peptide", "pct_shared_peptides")) %>%
+    mutate(Database = "Species-level DB")
+)
+
+# Pull the % shared peptides into a small table for adding to the redundancy plot
+pep_shared <- pep_metrics %>%
+  filter(Metric == "pct_shared_peptides") %>%
+  transmute(Database, PercentSharedPeptides = Value)
+
+```
+
+
+```{r}
+# ============================================================
+# 3) Figure: Protein redundancy as % redundant
+#    + overlay % shared peptides as dashed horizontal lines
+#    (both on 0–100% scale)
+# ============================================================
+
+p_redundancy <- ggplot(final_dat,
+                       aes(x = ClusteringThreshold,
+                           y = PercentRedundant,
+                           group = Database)) +
+  geom_line(aes(color = Database), linewidth = 0.9) +
+  geom_point(aes(fill = Database),
+             shape = 21, size = 3,
+             color = "black", stroke = 0.4) +
+  scale_x_reverse(breaks = c(100, 99, 95, 90, 85)) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 10),
+    labels = scales::percent_format(scale = 1)
+  ) +
+  labs(
+    x = "Clustering threshold (% amino-acid identity)",
+    y = "Redundant proteins (%)",
+    title = "Fraction of redundant proteins"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
+  )
+
+p_redundancy
+
+
+```
+
+
+```{r}
+# ============================================================
+# 4) Figure: Proteins per peptide (mean)
+# ============================================================
+
+p_mean_ppp <- ggplot(pep_metrics %>% filter(Metric == "mean_proteins_per_peptide"),
+                     aes(x = Database, y = Value, fill = Database)) +
+  geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01)) +
+  scale_fill_manual(values = c("MAG-level DB" = "#d95f02", "Species-level DB" = "#1b9e77")) +
+  labs(
+    x = NULL,
+    y = "Proteins per peptide (mean)",
+    title = "Proteins per peptide"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
+  )
+
+p_mean_ppp
+
+```
+
+
+```{r}
+# ============================================================
+# 5) Figure: Shared peptides (%)
+# ============================================================
+
+p_shared_pep <- ggplot(pep_metrics %>% filter(Metric == "pct_shared_peptides"),
+                       aes(x = Database, y = Value, fill = Database)) +
+  geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 10),
+    labels = scales::percent_format(scale = 1)
+  ) +
+  scale_fill_manual(values = c("MAG-level DB" = "#d95f02", "Species-level DB" = "#1b9e77")) +
+  labs(
+    x = NULL,
+    y = "Shared peptides (%)",
+    title = "Shared peptides"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
+  )
+
+p_shared_pep
+
+```
+
+
+
+```{r}
+# ============================================================
+# 6) Figure: Annotated vs not annotated (KEGG/COG/TIGR; PFAM ignored)
+# ============================================================
+
+p_ann_any <- ggplot(ann_any, aes(x = "Species-level DB", y = Percent, fill = AnnotStatus)) +
+  geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 10),
+    labels = scales::percent_format(scale = 1)
+  ) +
+  scale_fill_manual(values = c(
+    "Annotated (KEGG/COG/TIGR)" = "#1b9e77",
+    "Not annotated" = "grey80"
+  )) +
+  labs(
+    x = NULL,
+    y = "Proteins (%)",
+    title = "Functional annotation coverage"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
+  )
+
+p_ann_any
+
+```
+
+
+# money figure for publication
+
+```{r}
+# ============================================================
+# One clean 1-row figure (3 panels side-by-side) with ONE shared Y axis style
+# Panels (left -> right):
+#   1) Fraction of redundant proteins (%) vs clustering threshold (NO legend, NO y-axis title)
+#   2) Shared peptides (%) with mean proteins/peptide shown above bars (NO legend, NO y-axis title)
+#   3) Annotated proteins (%) (KEGG/COG/TIGR; PFAM ignored) (NO legend, NO y-axis title)
+#
+# Notes:
+# - Panel 1 has its own x/y scales (threshold on x). Panels 2–3 are bars.
+# - All panels show y tick labels as 0–100 WITHOUT % sign.
+# ============================================================
+
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(scales)
+
+# -----------------------------
+# Ensure PercentRedundant exists
+# -----------------------------
+final_dat <- final_dat %>%
+  mutate(PercentRedundant = 100 * (DatabaseSize - N_Clusters) / DatabaseSize)
+
+# -----------------------------
+# Peptide metrics: % shared peptides + mean proteins/peptide label
+# -----------------------------
+pep_shared <- pep_metrics %>%
+  filter(Metric == "pct_shared_peptides") %>%
+  transmute(Database, Percent = as.numeric(Value))
+
+pep_mean <- pep_metrics %>%
+  filter(Metric == "mean_proteins_per_peptide") %>%
+  transmute(Database, MeanPPP = as.numeric(Value))
+
+pep_dat <- pep_shared %>% left_join(pep_mean, by = "Database")
+
+# -----------------------------
+# Annotation: % annotated proteins (KEGG/COG/TIGR; PFAM ignored)
+# If gene_dat has no Database column, this will show species-only.
+# -----------------------------
+if ("Database" %in% colnames(gene_dat)) {
+  ann_dat <- gene_dat %>%
+    mutate(
+      KEGG_OK = !is.na(KEGG_ID) & KEGG_ID != "" & KEGG_ID != "Unclassified",
+      COG_OK  = !is.na(COG_ID)  & COG_ID  != "" & COG_ID  != "Unclassified",
+      TIGR_OK = !is.na(TIGR_ID) & TIGR_ID != "" & TIGR_ID != "Unclassified",
+      Annotated = KEGG_OK | COG_OK | TIGR_OK
+    ) %>%
+    group_by(Database) %>%
+    summarise(Percent = 100 * mean(Annotated), .groups = "drop")
+} else {
+  ann_dat <- gene_dat %>%
+    mutate(
+      KEGG_OK = !is.na(KEGG_ID) & KEGG_ID != "" & KEGG_ID != "Unclassified",
+      COG_OK  = !is.na(COG_ID)  & COG_ID  != "" & COG_ID  != "Unclassified",
+      TIGR_OK = !is.na(TIGR_ID) & TIGR_ID != "" & TIGR_ID != "Unclassified",
+      Annotated = KEGG_OK | COG_OK | TIGR_OK
+    ) %>%
+    summarise(Percent = 100 * mean(Annotated)) %>%
+    mutate(Database = "Species-level DB") %>%
+    select(Database, Percent)
+}
+
+# -----------------------------
+# Shared formatting
+# - y ticks shown 0..100 with NO % sign
+# - no legend
+# - no y-axis title (use plot titles only)
+# -----------------------------
+y_pct_no_sign <- scale_y_continuous(
+  limits = c(0, 100),
+  breaks = seq(0, 100, by = 20),
+  labels = number_format(accuracy = 1)   # <- NO percent sign
+)
+
+fill_cols <- c(
+  "MAG-level DB" = "#d95f02",
+  "Species-level DB" = "#1b9e77",
+  "MagLevel" = "#d95f02",
+  "SpeciesLevel" = "#1b9e77"
+)
+
+theme_clean <- theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
+
+# ============================================================
+# Panel 1: % redundant proteins vs clustering threshold
+# (NO legend, NO y-axis title, y tick labels without %)
+# ============================================================
+p1 <- ggplot(final_dat,
+             aes(x = ClusteringThreshold,
+                 y = PercentRedundant,
+                 group = Database)) +
+  geom_line(aes(color = Database), linewidth = 0.9) +
+  geom_point(aes(fill = Database),
+             shape = 21, size = 3,
+             color = "black", stroke = 0.4) +
+  scale_x_reverse(breaks = c(100, 99, 95, 90, 85)) +
+  y_pct_no_sign +
+  scale_color_manual(values = fill_cols) +
+  scale_fill_manual(values  = fill_cols) +
+  labs(
+    x = "Clustering threshold (% amino-acid identity)",
+    title = "Fraction of redundant proteins"
+  ) +
+  theme_clean
+
+# ============================================================
+# Panel 2: % shared peptides + mean proteins/peptide label
+# (NO legend, NO y-axis title, y tick labels without %)
+# ============================================================
+p2 <- ggplot(pep_dat, aes(x = Database, y = Percent, fill = Database)) +
+  geom_col(width = 0.62, color = "black", linewidth = 0.3) +
+  geom_text(
+    aes(label = paste0("mean=", number(MeanPPP, accuracy = 0.01))),
+    vjust = -0.6, size = 3.6
+  ) +
+  y_pct_no_sign +
+  scale_fill_manual(values = fill_cols) +
+  labs(
+    x = NULL,
+    title = "Shared peptides"
+  ) +
+  theme_clean +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+# ============================================================
+# Panel 3: % annotated proteins (KEGG/COG/TIGR; PFAM ignored)
+# (NO legend, NO y-axis title, y tick labels without %)
+# ============================================================
+p3 <- ggplot(ann_dat, aes(x = Database, y = Percent, fill = Database)) +
+  geom_col(width = 0.62, color = "black", linewidth = 0.3) +
+  y_pct_no_sign +
+  scale_fill_manual(values = fill_cols) +
+  labs(
+    x = NULL,
+    title = "Annotated proteins"
+  ) +
+  theme_clean +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+# -----------------------------
+# Combine side-by-side
+# -----------------------------
+(p1 | p2 | p3) + plot_layout(widths = c(4, 1, 1))
+```
+
+```{r}
+# ============================================================
+# Side-by-side figure:
+#   p1) Fraction of redundant proteins (dodged bars) + legend
+#   p2) Peptide non-uniqueness (no mean labels; print means)
+# Scales:
+#   p1 y-axis: 0–90 by 10
+#   p2 y-axis: 0–60 by 10
+# ============================================================
+
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(scales)
+
+# -----------------------------
+# Shared settings
+# -----------------------------
+bar_w   <- 0.6
+dodge_w <- 0.75
+
+legend_labels <- c(
+  "MAG-level DB"     = "Mags (3150)",
+  "Species-level DB" = "Species (495)"
+)
+
+fill_cols <- c(
+  "MAG-level DB"     = "#d95f02",
+  "Species-level DB" = "#1b9e77"
+)
+
+theme_clean <- theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title       = element_text(face = "bold", hjust = 0.5),
+    axis.text        = element_text(size = 11),
+    axis.title       = element_text(size = 12)
+  )
+
+# -----------------------------
+# Print mean proteins/peptide to terminal (MeanPPP)
+# -----------------------------
+cat("\nMean proteins per peptide (MeanPPP):\n")
+pep_dat %>%
+  distinct(Database, MeanPPP) %>%
+  mutate(Database = legend_labels[Database]) %>%  # safe mapping
+  arrange(Database) %>%
+  print(row.names = FALSE)
+
+# ============================================================
+# Panel 1: Fraction of redundant proteins (dodged bars) + legend
+# ============================================================
+p1 <- ggplot(
+  final_dat,
+  aes(
+    x    = factor(ClusteringThreshold),
+    y    = PercentRedundant,
+    fill = Database
+  )
+) +
+  geom_col(
+    position  = position_dodge2(width = dodge_w, padding = 0.15),
+    width     = bar_w,
+    color     = "black",
+    linewidth = 0.3
+  ) +
+  scale_fill_manual(
+    values = fill_cols,
+    breaks = names(legend_labels),
+    labels = legend_labels,
+    name   = NULL
+  ) +
+  scale_y_continuous(
+    limits = c(0, 90),
+    breaks = seq(0, 90, 10)
+  ) +
+  labs(
+    x     = "Clustering threshold (% amino-acid identity)",
+    y     = "Redundant proteins (%)",
+    title = "Fraction of redundant proteins"
+  ) +
+  theme_clean +
+  theme(
+    # ggplot2 >= 3.5.0 way (no warning)
+    legend.position        = "inside",
+    legend.position.inside = c(0.98, 0.98),
+    legend.justification   = c(0, 1),
+    legend.background      = element_rect(fill = alpha("white", 0.7), color = NA),
+    legend.key             = element_rect(fill = NA, color = NA)
+  )
+
+# ============================================================
+# Panel 2: Peptide non-uniqueness (no mean label)
+# ============================================================
+p2 <- ggplot(
+  pep_dat,
+  aes(
+    x     = Database,
+    y     = Percent,
+    fill  = Database,
+    group = Database
+  )
+) +
+  geom_col(
+    position  = position_dodge2(width = dodge_w, padding = 0.15),
+    width     = bar_w,  # keep as-is; you can change later
+    color     = "black",
+    linewidth = 0.3
+  ) +
+  scale_fill_manual(
+    values = fill_cols,
+    breaks = names(legend_labels),
+    labels = legend_labels,
+    name   = NULL
+  ) +
+  scale_y_continuous(
+    limits = c(0, 60),
+    breaks = seq(0, 60, 10)
+  ) +
+  labs(
+    x     = NULL,
+    y     = "Shared peptides (% mapping to \u22652 proteins)",
+    title = "Peptide non-uniqueness"
+  ) +
+  theme_clean +
+  theme(legend.position = "none")  # legend only in p1
+
+# -----------------------------
+# Combine and save
+# -----------------------------
+(p1 | p2) + plot_layout(widths = c(2.2, 1))
+
+ggsave(
+  filename = "PeptideLevel_Inference_Complexity_A4.pdf",
+  plot     = last_plot(),
+  device   = pdf,
+  height   = 11.69,
+  width    = 9,
+  units    = "in",
+  dpi      = 300
+)
+
+```
+
+```{r}
+############################################################
+## Annotation coverage summary (KEGG/COG/TIGR)
+## - "Annotated" if ANY of KEGG_ID / COG_ID / TIGR_ID has a hit
+## - "Not annotated" only if NO hit in all three
+## - Treat NA / "" / "Unclassified" as no hit for each DB
+## - Makes the same single-bar plot as your KEGG plot
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- helpers ----
+is_hit <- function(x) !(is.na(x) | x == "" | x == "Unclassified")
+
+# ---- build summary (counts + percent) ----
+ann_cov <- gene_dat %>%
+  mutate(
+    KEGG_hit = is_hit(KEGG_ID),
+    COG_hit  = is_hit(COG_ID),
+    TIGR_hit = is_hit(TIGR_ID),
+    Any_hit  = KEGG_hit | COG_hit | TIGR_hit,
+    Ann_status = ifelse(Any_hit, "Annotated", "Not annotated")
+  ) %>%
+  count(Ann_status, name = "N") %>%
+  mutate(
+    Percent = 100 * N / sum(N),
+    Ann_status = factor(Ann_status, levels = c("Annotated", "Not annotated"))
+  )
+
+# ---- annotation text for the plot ----
+n_total <- sum(ann_cov$N)
+n_ann   <- ann_cov$N[ann_cov$Ann_status == "Annotated"]
+n_not   <- ann_cov$N[ann_cov$Ann_status == "Not annotated"]
+p_ann   <- ann_cov$Percent[ann_cov$Ann_status == "Annotated"]
+p_not   <- ann_cov$Percent[ann_cov$Ann_status == "Not annotated"]
+
+annot_text <- paste0(
+  "Total: ", n_total,
+  "\nAnnotated (≥1 of KEGG/COG/TIGR): ", n_ann, " (", sprintf("%.1f", p_ann), "%)",
+  "\nNot annotated: ", n_not, " (", sprintf("%.1f", p_not), "%)"
+)
+
+# ---- plot (same style as your KEGG plot) ----
+p_kegg <- ggplot(ann_cov, aes(x = "Species-level DB", y = Percent, fill = Ann_status)) +
+  geom_col(width = 0.6, color = "black", linewidth = 0.3) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 10),
+    labels = percent_format(scale = 1)
+  ) +
+  scale_fill_manual(values = c(
+    "Annotated" = "#1b9e77",
+    "Not annotated" = "grey80"
+  )) +
+  labs(
+    x = NULL,
+    y = "Proteins (%)",
+    title = "Annotation coverage (KEGG / COG / TIGR)"
+  ) +
+  annotate(
+    "label",
+    x = 1, y = 98,
+    label = annot_text,
+    hjust = 0.5, vjust = 1,
+    size = 3.8,
+    label.size = 0.25
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
+  )
+
+p_kegg
+```
+
+

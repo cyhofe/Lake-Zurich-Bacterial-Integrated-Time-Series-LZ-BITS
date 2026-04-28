@@ -1,0 +1,1300 @@
+---
+title: "ABC Transporters Analysis Script"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+############################################################
+# 0) CLEAN START + LOAD PACKAGES + LOAD DATA
+#    (copy/paste as the first cell in your R notebook)
+############################################################
+
+rm(list = ls())
+
+# Avoid legacy plyr masking tidyverse verbs
+if ("package:dplyr" %in% search()) {
+  detach("package:dplyr", unload = TRUE, character.only = TRUE)
+}
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- Working directory (project root for this analysis) ----
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_04/ABC_Transporters/")
+
+# ---- Data inputs (one line each) ----
+protein_final          <- read_csv("../Data_Filtration/retained_protein_table.csv", show_col_types = FALSE)
+retained_species       <- read_csv("../Data_Filtration/retained_species.csv", show_col_types = FALSE)
+retained_species_dates <- read_csv("../Data_Filtration/retained_species_dates.csv", show_col_types = FALSE)
+
+gene_dat <- read_csv("../../../Data/Gene_Data/Final_Data/Gene_Table.csv", show_col_types = FALSE)
+
+transporter_table_raw <- read_csv(
+  "../../../Data/KEGG_Category_Data/Final_Data/KEGG_Transporter_Categories_Curated.csv",
+  show_col_types = FALSE
+)
+
+# ---- (Optional) quick sanity prints ----
+glimpse(protein_final)
+glimpse(retained_species)
+glimpse(retained_species_dates)
+glimpse(gene_dat)
+glimpse(transporter_table_raw)
+
+```
+
+
+```{r}
+############################################################
+# 1) DATA MANIPULATION + CONSTRUCTION OF THE TWO MAIN TABLES
+#
+# OUTPUT TABLES:
+#   (A) gene_retained_annot
+#       - genes from retained species only
+#       - transporter ontology added by KEGG_ID (KO)
+#       - Group_For_Plots added
+#       - KEGG_Subcategory added (mapped from proteomics annotations)
+#
+#   (B) protein_retained_annot
+#       - proteins restricted to the retained species×date universe
+#       - transporter ontology added by KEGG_ID (KO)
+#       - already contains Group_For_Plots + KEGG_Subcategory from protein_final
+#
+#   - strict enforcement of retained species×date universe for proteomics
+#   - one-row-per-KO transporter ontology to prevent double counting
+#   - explicit joins by Species_ID / Date / Protein_ID / KEGG_ID
+############################################################
+
+# ------------------------------------------------------------
+# A) Collapse transporter ontology to ONE ROW PER KO (KEGG_ID)
+#
+# Rationale:
+#   Some KOs appear multiple times in the curated transporter table
+#   (e.g. due to alternative hierarchical placements).
+#   To avoid double counting, we collapse to one row per KO and
+#   merge duplicated annotations by concatenating unique values
+#   with ";" for each annotation category.
+# ------------------------------------------------------------
+
+transporter_table_final <- transporter_table_raw %>%
+  mutate(across(everything(), as.character)) %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    Transporter_Family = paste(sort(unique(na.omit(Transporter_Family))), collapse = ";"),
+    major_group        = paste(sort(unique(na.omit(major_group))), collapse = ";"),
+    brite_id           = paste(sort(unique(na.omit(brite_id))), collapse = ";"),
+    brite_name         = paste(sort(unique(na.omit(brite_name))), collapse = ";"),
+    Path_L1            = paste(sort(unique(na.omit(Path_L1))), collapse = ";"),
+    Path_L2            = paste(sort(unique(na.omit(Path_L2))), collapse = ";"),
+    Path_L3            = paste(sort(unique(na.omit(Path_L3))), collapse = ";"),
+    Path_L4            = paste(sort(unique(na.omit(Path_L4))), collapse = ";"),
+    Substrate_Group   = paste(sort(unique(na.omit(Substrate_Group))), collapse = ";"),
+    Substrate_Category = paste(sort(unique(na.omit(Substrate_Category))), collapse = ";"),
+    Path_L5            = paste(sort(unique(na.omit(Path_L5))), collapse = ";"),
+    path               = paste(sort(unique(na.omit(path))), collapse = ";"),
+    .groups = "drop"
+  )
+
+# ------------------------------------------------------------
+# B) Build the *retained* proteomics table (species×date enforced)
+# ------------------------------------------------------------
+protein_retained_annot <- protein_final %>%
+  semi_join(retained_species_dates %>% select(Species_ID, Date), by = c("Species_ID", "Date")) %>%
+  left_join(gene_dat %>% select(Protein_ID, KEGG_ID) %>% distinct()) %>%
+  left_join(transporter_table_final, by = c("KEGG_ID","Substrate_Category","Transporter_Family"))
+
+# ------------------------------------------------------------
+# C) Build the *retained* gene table (species enforced)
+# ------------------------------------------------------------
+gene_retained_annot <- gene_dat %>%
+  semi_join(retained_species %>% select(Species_ID), by = "Species_ID") %>%
+  left_join(transporter_table_final, by = "KEGG_ID") %>%
+  left_join(retained_species %>% select(Species_ID, Group_For_Plots), by = c("Species_ID"))
+
+# ------------------------------------------------------------
+# D) Add KEGG_Subcategory to genes using a KEGG_ID -> KEGG_Subcategory map
+#    Source-of-truth: protein_retained_annot (observed, retained, annotated proteome)
+#    If a KEGG_ID maps to multiple KEGG_Subcategory strings, collapse with ";"
+# ------------------------------------------------------------
+kegg_subcat_map <- protein_retained_annot %>%
+  select(KEGG_ID, KEGG_Subcategory) %>%
+  filter(!is.na(KEGG_ID), !is.na(KEGG_Subcategory), KEGG_ID != "Unclassified") %>%
+  distinct() %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    KEGG_Subcategory = paste(sort(unique(KEGG_Subcategory)), collapse = ";"),
+    .groups = "drop"
+  )
+
+gene_retained_annot <- gene_retained_annot %>%
+  left_join(kegg_subcat_map, by = "KEGG_ID")
+
+# ------------------------------------------------------------
+# E) Minimal sanity checks (recommended)
+# ------------------------------------------------------------
+
+# 1) Proteomics: every row must be within retained species×date universe
+stopifnot(
+  nrow(anti_join(
+    protein_retained_annot %>% distinct(Species_ID, Date),
+    retained_species_dates %>% distinct(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  )) == 0
+)
+
+# 2) Genes: every species must be in retained_species
+stopifnot(
+  nrow(anti_join(
+    gene_retained_annot %>% distinct(Species_ID),
+    retained_species %>% distinct(Species_ID),
+    by = "Species_ID"
+  )) == 0
+)
+
+# 3) Quick coverage diagnostics
+message("Proteins retained: ", nrow(protein_retained_annot))
+message("Species in proteomics retained: ", n_distinct(protein_retained_annot$Species_ID))
+message("Genes retained: ", nrow(gene_retained_annot))
+message("Species in genes retained: ", n_distinct(gene_retained_annot$Species_ID))
+
+# 4) Confirm KEGG_Subcategory was added to genes (not necessarily complete)
+gene_retained_annot %>%
+  summarise(
+    n_genes = n(),
+    n_with_kegg_id = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    n_with_subcat  = sum(!is.na(KEGG_Subcategory)),
+    prop_subcat_among_kegg = n_with_subcat / n_with_kegg_id
+  )
+
+# Optional: inspect final tables
+glimpse(protein_retained_annot)
+glimpse(gene_retained_annot)
+
+```
+
+```{r}
+############################################################
+# NESTED OVERVIEW (3 BARS PER GROUP): TOTAL vs ABC GENES vs ABC PROTEINS
+#
+# What this shows (per Group_For_Plots):
+#   1) Total species with proteome coverage (baseline universe)
+#   2) Species with ≥1 ABC gene in the genome (genomic potential)
+#   3) Species with ≥1 detected ABC protein (expression)
+#
+# Labels: n (percent of Total species in that group)
+#
+# Inputs needed:
+#   - gene_retained_annot
+#   - protein_retained_annot
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- group order requested ----
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+
+# ------------------------------------------------------------
+# 1) Total species per group (proteome-covered universe)
+# ------------------------------------------------------------
+total_species <- protein_retained_annot %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(layer = "Total species")
+
+# ------------------------------------------------------------
+# 2) Species with ≥1 ABC gene (genome)
+# ------------------------------------------------------------
+abc_species_genes <- gene_retained_annot %>%
+  semi_join(protein_retained_annot %>% distinct(Species_ID), by = "Species_ID") %>% # ensure same universe
+  filter(Transporter_Family == "ABC") %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(layer = "Genome (ABC genes)")
+
+# ------------------------------------------------------------
+# 3) Species with ≥1 detected ABC protein (proteome)
+# ------------------------------------------------------------
+abc_species_proteins <- protein_retained_annot %>%
+  filter(Transporter_Family == "ABC") %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(layer = "Proteome (ABC proteins)")
+
+# ------------------------------------------------------------
+# Combine + add percent relative to "Total species" in each group
+# ------------------------------------------------------------
+nested_overview <- bind_rows(total_species, abc_species_genes, abc_species_proteins) %>%
+  group_by(Group_For_Plots) %>%
+  mutate(
+    n_total = n_species[layer == "Total species"],
+    percent = n_species / n_total,
+    label = paste0(n_species, " (", percent(percent, accuracy = 1), ")")
+  ) %>%
+  ungroup() %>%
+  mutate(
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    layer = factor(layer, levels = c("Total species", "Genome (ABC genes)", "Proteome (ABC proteins)"))
+  )
+
+# ------------------------------------------------------------
+# Plot: 3 bars per group, with labels
+# ------------------------------------------------------------
+ggplot(nested_overview, aes(x = Group_For_Plots, y = n_species, fill = layer)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_text(
+    aes(label = label),
+    position = position_dodge(width = 0.8),
+    vjust = -0.3,
+    size = 3
+  ) +
+  labs(
+    x = NULL,
+    y = "Number of species",
+    fill = NULL,
+    title = "ABC transporters: genomic potential vs detected expression",
+    subtitle = "Per group: total species vs species encoding ABC genes vs species with detected ABC proteins"
+  ) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold")
+  )
+```
+
+
+
+```{r}
+# ============================================================
+# ONE SUMMARY TABLE (Value + Percent + n_species) + ABS/REL PLOTS
+#
+# Output: summary_tbl_final
+#   One row per Panel × Group_For_Plots × Class containing:
+#     - Value    : genes count / protein count / summed mean abundance
+#     - Total    : total per Panel×Group (sums across classes)
+#     - Percent  : Value / Total
+#     - n_species: number of species contributing ≥1 item to that class
+#
+# Exclusive classes (no double counting; stacked bars are valid):
+#   1) ABC transporters        (Transporter_Family == "ABC")
+#   2) Other transporters      (KEGG_Subcategory contains "Transporters" but NOT ABC)
+#   3) Non-transporters        (everything else)
+#
+# Species universe:
+#   Genes are restricted to species present in protein_retained_annot (proteome-covered taxa),
+#   ensuring fair comparison across panels.
+#
+# Proteomics duplication:
+#   protein_retained_annot can have multiple rows per Protein_ID (KEGG_ID splitting).
+#   We collapse per Species×Protein_ID for protein counts and per Species×Date×Protein_ID for abundance.
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- ordering requested ----
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+class_levels <- c("Non-transporters", "Other transporters", "ABC transporters")
+panel_levels <- c("Genes", "Detected proteins", "Protein abundance")
+
+# ---- helper: KEGG_Subcategory membership flag ----
+is_transporter_subcat <- function(x) !is.na(x) & grepl("Transporters", x, fixed = TRUE)
+
+# ---- species universe: proteome-covered taxa ----
+species_with_proteome <- protein_retained_annot %>% distinct(Species_ID)
+
+# ============================================================
+# PANEL 1: GENES (counts)
+# ============================================================
+genes_items <- gene_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  mutate(
+    Panel = "Genes",
+    Class = case_when(
+      Transporter_Family == "ABC" ~ "ABC transporters",
+      is_transporter_subcat(KEGG_Subcategory) ~ "Other transporters",
+      TRUE ~ "Non-transporters"
+    )
+  )
+
+genes_totals <- genes_items %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+genes_species <- genes_items %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+# ============================================================
+# PANEL 2: DETECTED PROTEINS (counts of distinct Protein_ID)
+#   Collapse KEGG-split rows: one record per Species×Protein_ID
+# ============================================================
+proteins_items <- protein_retained_annot %>%
+  distinct(Species_ID, Group_For_Plots, Protein_ID, KEGG_Subcategory, Transporter_Family) %>%
+  group_by(Species_ID, Group_For_Plots, Protein_ID) %>%
+  summarise(
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_trans = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Detected proteins",
+    Class = case_when(
+      is_abc ~ "ABC transporters",
+      is_trans ~ "Other transporters",
+      TRUE ~ "Non-transporters"
+    )
+  )
+
+proteins_totals <- proteins_items %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+proteins_species <- proteins_items %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+# ============================================================
+# PANEL 3: PROTEIN ABUNDANCE
+#   Collapse KEGG-split rows: one record per Species×Date×Protein_ID
+#   Aggregate abundance as:
+#     Species×Date×Class sum -> Species×Class mean across dates -> Group×Class sum across species
+# ============================================================
+abund_items <- protein_retained_annot %>%
+  group_by(Species_ID, Group_For_Plots, Date, Protein_ID) %>%
+  summarise(
+    abundance = first(Protein_Abundance_IBAQ_Norm),
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_trans = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Protein abundance",
+    Class = case_when(
+      is_abc ~ "ABC transporters",
+      is_trans ~ "Other transporters",
+      TRUE ~ "Non-transporters"
+    )
+  )
+
+abundance_totals <- abund_items %>%
+  group_by(Panel, Group_For_Plots, Class, Species_ID, Date) %>%
+  summarise(Value = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Panel, Group_For_Plots, Class, Species_ID) %>%
+  summarise(Value = mean(Value, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Panel, Group_For_Plots, Class) %>%
+  summarise(Value = sum(Value, na.rm = TRUE), .groups = "drop")
+
+abundance_species <- abund_items %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+# ============================================================
+# FINAL: One summary table (Value + Percent + n_species)
+# ============================================================
+totals_tbl <- bind_rows(genes_totals, proteins_totals, abundance_totals) %>%
+  mutate(
+    Panel = factor(Panel, levels = panel_levels),
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    Class = factor(Class, levels = class_levels)
+  ) %>%
+  group_by(Panel, Group_For_Plots) %>%
+  mutate(
+    Total = sum(Value, na.rm = TRUE),
+    Percent = Value / Total
+  ) %>%
+  ungroup()
+
+species_tbl <- bind_rows(genes_species, proteins_species, abundance_species) %>%
+  mutate(
+    Panel = factor(Panel, levels = panel_levels),
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    Class = factor(Class, levels = class_levels)
+  )
+
+summary_tbl_final <- totals_tbl %>%
+  left_join(species_tbl, by = c("Panel", "Group_For_Plots", "Class")) %>%
+  arrange(Panel, Group_For_Plots, Class)
+
+# ---- Optional: absolute + relative stacked plots from the same table ----
+p_abs <- ggplot(summary_tbl_final, aes(x = Group_For_Plots, y = Value, fill = Class)) +
+  geom_col() +
+  facet_wrap(~ Panel, scales = "free_y", ncol = 1) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Transporter classes across groups (absolute)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"))
+
+p_rel <- ggplot(summary_tbl_final, aes(x = Group_For_Plots, y = Percent, fill = Class)) +
+  geom_col() +
+  facet_wrap(~ Panel, scales = "free_y", ncol = 1) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Transporter classes across groups (relative; 100%)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold"))
+
+p_abs
+p_rel
+
+# ---- Print table (optional) ----
+summary_tbl_final
+```
+
+### What is shown
+The figure summarizes **genomic potential (genes)**, **detected expression (proteins)**, and **investment (protein abundance)** of transporter classes across trophic strategies (oligo-like, intermediate, copio-like).  
+Each panel uses **exclusive functional classes** (Non-transporters, Other transporters, ABC transporters), ensuring that absolute counts and relative proportions are directly comparable and free of double counting despite multi-annotated KEGG categories.
+
+---
+
+### Key observations
+
+1. **Genomic potential (Genes)**  
+   Across all trophic groups, **non-transporters dominate gene content**, as expected for complete bacterial genomes.  
+   ABC transporters represent a **small but consistent fraction** of the gene repertoire in all groups, with only modest differences among oligo-like, intermediate, and copio-like taxa.  
+   → This indicates that **ABC transport capacity is broadly encoded**, but not strongly differentiated at the genomic level.
+
+2. **Detected proteins (Expression)**  
+   In contrast to gene counts, the **relative contribution of transporters increases markedly at the protein level**, especially in oligo-like taxa.  
+   ABC transporters form a **substantial fraction of detected proteins** in oligotrophs, while copio-like taxa show comparatively fewer detected ABC proteins.  
+   → This suggests **selective expression** of transporter machinery rather than simple reflection of genome content.
+
+3. **Protein abundance (Investment)**  
+   The strongest signal emerges at the abundance level:  
+   oligo-like taxa allocate a **disproportionately large share of proteomic investment to ABC transporters**, far exceeding their genomic representation.  
+   Intermediate taxa show mixed investment across transporter classes, while copio-like taxa invest relatively little in ABC systems.  
+   → This pattern is consistent with **high-affinity uptake strategies in oligotrophs**, where energetic investment in ABC transporters is favored under nutrient limitation.
+
+---
+
+### Critical interpretation
+
+- The **decoupling between genomic potential and proteomic investment** indicates that transporter strategies are primarily regulated at the level of expression and allocation, not gene presence.
+- The progressive enrichment of ABC transporters from genes → proteins → abundance in oligo-like taxa provides strong evidence for **functional specialization**, rather than annotation or detection bias.
+- Because all summaries are restricted to **species with proteome coverage** and use **exclusive classification rules**, the observed trends cannot be explained by differential genome sizes, multi-category KEGG annotations, or uneven sampling across dates.
+
+---
+
+### Conclusion
+Together, these data support a model in which **ABC transporters are a key functional axis distinguishing trophic strategies**, with oligotrophic bacteria investing heavily in high-affinity uptake systems at the proteomic level despite similar genomic repertoires across groups.
+
+
+```{r}
+############################################################
+# Left: absolute transporter pool per group (ABC + Other) + ABC% label
+# Right: group contribution to ABC and to Other (100% bars)
+#
+# Uses: gene_retained_annot, protein_retained_annot
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(forcats)
+  library(ggplot2)
+  library(scales)
+})
+
+# -----------------------------
+# Settings
+# -----------------------------
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+panel_levels <- c("Genes", "Detected proteins", "Protein abundance")
+class_levels <- c("Other", "ABC")
+
+is_transporter_subcat <- function(x) !is.na(x) & grepl("Transporters", x, fixed = TRUE)
+
+# "transporter pool" = ABC OR transporter subcategory
+is_any_transporter <- function(tf, subcat) (tf == "ABC") | is_transporter_subcat(subcat)
+
+# Species universe: proteome-covered taxa (reviewer-safe comparison)
+species_with_proteome <- protein_retained_annot %>% distinct(Species_ID)
+
+# ============================================================
+# Build transporter-only totals for each panel
+# ============================================================
+
+# --- Genes (counts) ---
+genes_totals_trans <- gene_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  mutate(
+    is_abc = Transporter_Family == "ABC",
+    is_trans = is_transporter_subcat(KEGG_Subcategory),
+    is_transporter = is_any_transporter(Transporter_Family, KEGG_Subcategory),
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_trans ~ "Other",
+      TRUE ~ NA_character_
+    ),
+    Panel = "Genes"
+  ) %>%
+  filter(is_transporter) %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+# --- Detected proteins (distinct Protein_ID counts; collapse KEGG splits) ---
+proteins_totals_trans <- protein_retained_annot %>%
+  distinct(Species_ID, Group_For_Plots, Protein_ID, KEGG_Subcategory, Transporter_Family) %>%
+  group_by(Species_ID, Group_For_Plots, Protein_ID) %>%
+  summarise(
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_trans = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    is_transporter = is_abc | is_trans,
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_trans ~ "Other",
+      TRUE ~ NA_character_
+    ),
+    Panel = "Detected proteins"
+  ) %>%
+  filter(is_transporter) %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+# --- Protein abundance (species mean across dates; then sum across species) ---
+abund_totals_trans <- protein_retained_annot %>%
+  group_by(Species_ID, Group_For_Plots, Date, Protein_ID) %>%
+  summarise(
+    abundance = first(Protein_Abundance_IBAQ_Norm),
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_trans = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    is_transporter = is_abc | is_trans,
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_trans ~ "Other",
+      TRUE ~ NA_character_
+    ),
+    Panel = "Protein abundance"
+  ) %>%
+  filter(is_transporter) %>%
+  # Species×Date×Class sum
+  group_by(Panel, Group_For_Plots, Species_ID, Date, Class) %>%
+  summarise(Value = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  # Species×Class mean across dates
+  group_by(Panel, Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value = mean(Value, na.rm = TRUE), .groups = "drop") %>%
+  # Group×Class sum across species
+  group_by(Panel, Group_For_Plots, Class) %>%
+  summarise(Value = sum(Value, na.rm = TRUE), .groups = "drop")
+
+# Combine
+trans_totals_all <- bind_rows(genes_totals_trans, proteins_totals_trans, abund_totals_trans) %>%
+  mutate(
+    Panel = factor(Panel, levels = panel_levels),
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    Class = factor(Class, levels = class_levels)
+  )
+
+# ============================================================
+# Derive labels: "ABC = xx%" within transporter pool per group
+# ============================================================
+abc_labels <- trans_totals_all %>%
+  group_by(Panel, Group_For_Plots) %>%
+  summarise(
+    TotalTransporters = sum(Value, na.rm = TRUE),
+    ABCValue = sum(Value[Class == "ABC"], na.rm = TRUE),
+    ABCFrac = ifelse(TotalTransporters > 0, ABCValue / TotalTransporters, NA_real_),
+    .groups = "drop"
+  ) %>%
+  mutate(label = paste0("ABC ", percent(ABCFrac, accuracy = 1)))
+
+# ============================================================
+# COLUMN 1: Absolute stacked bars (ABC + Other) per group
+# + ABC% label above bar
+# ============================================================
+# total per bar for label placement
+bar_tops <- trans_totals_all %>%
+  group_by(Panel, Group_For_Plots) %>%
+  summarise(y_top = sum(Value, na.rm = TRUE), .groups = "drop") %>%
+  left_join(abc_labels, by = c("Panel", "Group_For_Plots"))
+
+p_abs <- ggplot(trans_totals_all, aes(x = Group_For_Plots, y = Value, fill = Class)) +
+  geom_col(width = 0.75) +
+  facet_wrap(~ Panel, ncol = 1, scales = "free_y") +
+  geom_text(
+    data = bar_tops,
+    aes(x = Group_For_Plots, y = y_top, label = label),
+    inherit.aes = FALSE,
+    vjust = -0.4,
+    size = 3
+  ) +
+  labs(
+    x = NULL, y = NULL, fill = NULL,
+    title = "Absolute transporter signal by trophic group",
+    subtitle = "Bars: transporter pool (ABC + other). Labels: ABC fraction within transporters."
+  ) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold")
+  )
+
+p_abs
+```
+
+```{r}
+############################################################
+# Alluvial transporter-pool figure (3 panels) + summary table
+# ----------------------------------------------------------
+# Goal:
+#   Visualize how the "transporter pool" is partitioned between
+#   trophic groups (Oligo / Intermediate / Copio) and transporter
+#   classes (ABC vs Other transporters), using three complementary
+#   measures:
+#
+#   A) Genes                = counts of transporter genes
+#   B) Detected proteins    = counts of distinct transporter proteins
+#                             (collapsed per Protein_ID to avoid double-
+#                             counting from multiple annotations)
+#   C) Protein abundance    = quantitative transporter signal:
+#                             for each species, compute mean (over dates)
+#                             of total transporter abundance, then sum
+#                             species means within each trophic group
+#
+# Transporter pool definition:
+#   A gene/protein belongs to transporter pool if:
+#     - Transporter_Family == "ABC"
+#       OR
+#     - KEGG_Subcategory contains the exact string "Transporters"
+#
+# Class assignment (mutually exclusive):
+#   - "ABC"   if Transporter_Family == "ABC"
+#   - "Other" if NOT ABC but KEGG_Subcategory contains "Transporters"
+#
+# Species universe harmonization:
+#   All three panels are restricted to species that are present in
+#   the proteomics table (protein_retained_annot), ensuring that gene
+#   and protein comparisons are made across the same species set.
+#
+# Outputs:
+#   - FIG_alluvial_transporter_pool_proportions.pdf
+#   - TABLE_alluvial_transporter_pool_summary_with_species.csv
+#
+# Required input data frames:
+#   gene_retained_annot:
+#     Species_ID, Group_For_Plots, Transporter_Family, KEGG_Subcategory, ...
+#   protein_retained_annot:
+#     Species_ID, Group_For_Plots, Protein_ID, Date,
+#     Protein_Abundance_IBAQ_Norm, Transporter_Family, KEGG_Subcategory, ...
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(ggalluvial)
+  library(scales)
+  library(gridExtra)
+  library(grid)
+})
+
+# -----------------------------
+# 0) Settings and aesthetics
+# -----------------------------
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+class_levels <- c("ABC", "Other")
+panel_levels <- c("Genes", "Detected proteins", "Protein abundance")
+
+grp_cols <- c(
+  Oligo_like   = "#2C7FB8",  # blue
+  Intermediate = "grey60",   # grey
+  Copio_like   = "#D7301F"   # red
+)
+
+# -----------------------------
+# 1) Helper functions (core definitions)
+# -----------------------------
+
+# Transporter-like subcategory: KEGG_Subcategory contains the string "Transporters"
+is_transporter_subcat <- function(x) !is.na(x) & grepl("Transporters", x, fixed = TRUE)
+
+# Transporter pool membership: ABC OR KEGG transporter subcategory
+is_any_transporter <- function(tf, subcat) (tf == "ABC") | is_transporter_subcat(subcat)
+
+# Mutually exclusive class assignment (ABC has priority)
+assign_transporter_class <- function(tf, subcat) {
+  is_abc  <- tf == "ABC"
+  is_tr   <- is_transporter_subcat(subcat)
+  case_when(
+    is_abc ~ "ABC",
+    is_tr  ~ "Other",
+    TRUE   ~ NA_character_
+  )
+}
+
+# -----------------------------
+# 2) Define the harmonized species universe
+# -----------------------------
+# We restrict all panels to species covered by proteomics so that gene/protein
+# panels are directly comparable across the same taxa.
+species_with_proteome <- protein_retained_annot %>% distinct(Species_ID)
+
+# -----------------------------
+# 3) Panel A: transporter genes (counts)
+# -----------------------------
+# Count transporter genes per trophic group and class within the harmonized species set.
+genes_totals_trans <- gene_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  mutate(
+    Panel = "Genes",
+    is_transporter = is_any_transporter(Transporter_Family, KEGG_Subcategory),
+    Class = assign_transporter_class(Transporter_Family, KEGG_Subcategory)
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+# -----------------------------
+# 4) Panel B: detected transporter proteins (distinct Protein_ID counts)
+# -----------------------------
+# Proteomics annotations can appear multiple times per protein (e.g. multiple KEGG hits).
+# To avoid double-counting, we collapse to one record per Species × Protein_ID and
+# then classify the protein as transporter if ANY annotation indicates ABC or transporter subcategory.
+proteins_totals_trans <- protein_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  distinct(Species_ID, Group_For_Plots, Protein_ID, KEGG_Subcategory, Transporter_Family) %>%
+  group_by(Species_ID, Group_For_Plots, Protein_ID) %>%
+  summarise(
+    is_abc  = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_tr   = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Detected proteins",
+    is_transporter = is_abc | is_tr,
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_tr  ~ "Other",
+      TRUE   ~ NA_character_
+    )
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  count(Panel, Group_For_Plots, Class, name = "Value")
+
+# -----------------------------
+# 5) Panel C: transporter protein abundance (species-mean over time, summed within group)
+# -----------------------------
+# Rationale: We want abundance to reflect a typical (mean-over-time) species signal,
+# and then ask how trophic groups differ in the summed contribution of their species.
+#
+# Steps:
+#   (i)  Species × Date × Protein_ID: take one abundance value per protein (first()),
+#        classify transporter class based on ANY annotation for that protein instance.
+#   (ii) Species × Date × Class: sum abundance across proteins (total transporter abundance per date)
+#   (iii)Species × Class: mean across dates (typical species abundance)
+#   (iv) Group × Class: sum species means (group-level total)
+abund_totals_trans <- protein_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  group_by(Species_ID, Group_For_Plots, Date, Protein_ID) %>%
+  summarise(
+    abundance = first(Protein_Abundance_IBAQ_Norm),
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_tr  = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Protein abundance",
+    is_transporter = is_abc | is_tr,
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_tr  ~ "Other",
+      TRUE   ~ NA_character_
+    )
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  group_by(Panel, Group_For_Plots, Species_ID, Date, Class) %>%
+  summarise(Value = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Panel, Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value = mean(Value, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Panel, Group_For_Plots, Class) %>%
+  summarise(Value = sum(Value, na.rm = TRUE), .groups = "drop")
+
+# -----------------------------
+# 6) Combine panels + compute panel-normalized proportions
+# -----------------------------
+totals_all <- bind_rows(genes_totals_trans, proteins_totals_trans, abund_totals_trans) %>%
+  mutate(
+    Panel = factor(Panel, levels = panel_levels),
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels),
+    Class = factor(Class, levels = class_levels)
+  )
+
+# Each panel is normalized independently to sum to 1.0 (100% of transporter pool in that panel).
+totals_prop <- totals_all %>%
+  group_by(Panel) %>%
+  mutate(Value_prop = Value / sum(Value, na.rm = TRUE)) %>%
+  ungroup()
+
+# -----------------------------
+# 7) Plotting (alluvial panels + shared legend)
+# -----------------------------
+make_alluvial_panel <- function(df_prop, panel_name, panel_letter) {
+  d <- df_prop %>% filter(Panel == panel_name)
+
+  ggplot(d, aes(axis1 = Group_For_Plots, axis2 = Class, y = Value_prop)) +
+    geom_alluvium(aes(fill = Group_For_Plots),
+                  alpha = 0.90, color = "grey25", linewidth = 0.25) +
+    geom_stratum(fill = "grey92", color = "black", linewidth = 0.35) +
+    geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 3.0) +
+    scale_fill_manual(values = grp_cols, drop = FALSE) +
+    scale_y_continuous(labels = percent_format(accuracy = 1),
+                       expand = expansion(mult = c(0, 0.03))) +
+    labs(
+      title = paste0(panel_letter, "  ", panel_name),
+      x = NULL,
+      y = "Proportion of transporter pool",
+      fill = NULL
+    ) +
+    theme_bw(base_size = 10) +
+    theme(
+      plot.title = element_text(face = "bold", size = 11),
+      axis.text.x = element_text(size = 9),
+      axis.title.y = element_text(size = 9),
+      legend.position = "none",
+      plot.margin = margin(4, 6, 4, 6)
+    )
+}
+
+get_legend_grob <- function(p) {
+  g <- ggplotGrob(p + theme(legend.position = "right"))
+  idx <- which(sapply(g$grobs, function(x) x$name) == "guide-box")
+  if (length(idx) != 1) stop("Legend extraction failed.")
+  g$grobs[[idx]]
+}
+
+pA <- make_alluvial_panel(totals_prop, "Genes", "A")
+pB <- make_alluvial_panel(totals_prop, "Detected proteins", "B")
+pC <- make_alluvial_panel(totals_prop, "Protein abundance", "C")
+
+p_leg_src <- ggplot(totals_prop, aes(x = Group_For_Plots, y = Value_prop, fill = Group_For_Plots)) +
+  geom_col() +
+  scale_fill_manual(values = grp_cols, drop = FALSE) +
+  theme_void(base_size = 10) +
+  theme(legend.position = "right")
+
+gLEG <- get_legend_grob(p_leg_src)
+
+FIG <- arrangeGrob(
+  arrangeGrob(pA, pB, pC, ncol = 3),
+  gLEG,
+  ncol = 2,
+  widths = c(4.6, 1.1)
+)
+
+# -----------------------------
+# 8) Summary table (absolute + fractions + contributing species)
+# -----------------------------
+# n_species counts how many unique Species_IDs contributed to each Panel × Group × Class.
+# For abundance, we count species with a strictly positive mean transporter abundance in that class.
+genes_species <- gene_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  mutate(
+    Panel = "Genes",
+    is_transporter = is_any_transporter(Transporter_Family, KEGG_Subcategory),
+    Class = assign_transporter_class(Transporter_Family, KEGG_Subcategory)
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+proteins_species <- protein_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  distinct(Species_ID, Group_For_Plots, Protein_ID, KEGG_Subcategory, Transporter_Family) %>%
+  group_by(Species_ID, Group_For_Plots, Protein_ID) %>%
+  summarise(
+    is_abc  = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_tr   = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Detected proteins",
+    is_transporter = is_abc | is_tr,
+    Class = case_when(is_abc ~ "ABC", is_tr ~ "Other", TRUE ~ NA_character_)
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+abund_species <- protein_retained_annot %>%
+  semi_join(species_with_proteome, by = "Species_ID") %>%
+  group_by(Species_ID, Group_For_Plots, Date, Protein_ID) %>%
+  summarise(
+    abundance = first(Protein_Abundance_IBAQ_Norm),
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_tr  = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "Protein abundance",
+    is_transporter = is_abc | is_tr,
+    Class = case_when(is_abc ~ "ABC", is_tr ~ "Other", TRUE ~ NA_character_)
+  ) %>%
+  filter(is_transporter, !is.na(Class)) %>%
+  group_by(Panel, Group_For_Plots, Species_ID, Date, Class) %>%
+  summarise(Value_tmp = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Panel, Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_tmp = mean(Value_tmp, na.rm = TRUE), .groups = "drop") %>%
+  filter(!is.na(Value_tmp) & Value_tmp > 0) %>%
+  distinct(Panel, Group_For_Plots, Class, Species_ID) %>%
+  count(Panel, Group_For_Plots, Class, name = "n_species")
+
+species_counts_all <- bind_rows(genes_species, proteins_species, abund_species)
+
+summary_table_final <- totals_all %>%
+  rename(Value_abs = Value) %>%
+  group_by(Panel) %>%
+  mutate(
+    Value_prop = Value_abs / sum(Value_abs, na.rm = TRUE),
+    Value_pct  = 100 * Value_prop
+  ) %>%
+  ungroup() %>%
+  left_join(species_counts_all, by = c("Panel", "Group_For_Plots", "Class")) %>%
+  mutate(n_species = replace_na(n_species, 0L)) %>%
+  rename(
+    Trophic_group = Group_For_Plots,
+    Transporter_class = Class
+  ) %>%
+  arrange(Panel, Trophic_group, Transporter_class)
+
+# Optional sanity check: each panel should sum to ~1.0
+# summary_table_final %>% group_by(Panel) %>% summarise(sum_fraction = sum(Value_prop))
+
+# -----------------------------
+# 9) Export (table + PDF figure)
+# -----------------------------
+write.csv(
+  summary_table_final,
+  file = "TABLE_alluvial_transporter_pool_summary_with_species.csv",
+  row.names = FALSE
+)
+
+ggsave(
+  filename = "FIG_alluvial_transporter_pool_proportions.pdf",
+  plot     = FIG,
+  width    = 190,
+  height   = 75,
+  units    = "mm",
+  device   = cairo_pdf,
+  bg       = "white"
+)
+
+# Display in viewer
+grid.newpage(); grid.draw(FIG)
+
+
+# ============================================================
+# Absolute (not proportion) version of the same alluvial figure
+# Uses totals_all (absolute Value) instead of totals_prop
+# ============================================================
+# Panel-specific y-axis breaks (absolute scale)
+y_breaks_abs <- function(panel) {
+  switch(panel,
+    "Genes"             = scales::breaks_width(5000),
+    "Detected proteins" = scales::breaks_width(500),
+    "Protein abundance" = scales::breaks_width(2e8)   # 200,000,000
+  )
+}
+
+y_labels_abs <- function(panel) {
+  if (panel == "Protein abundance") {
+    scales::label_scientific(digits = 2)
+  } else {
+    scales::label_number(big.mark = "'")
+  }
+}
+
+make_alluvial_panel_abs <- function(df_abs, panel_name, panel_letter) {
+
+  d <- df_abs %>% filter(Panel == panel_name)
+
+  ggplot(
+    d,
+    aes(
+      axis1 = Group_For_Plots,
+      axis2 = Class,
+      y = Value
+    )
+  ) +
+    geom_alluvium(
+      aes(fill = Group_For_Plots),
+      alpha = 0.90,
+      color = "grey25",
+      linewidth = 0.25
+    ) +
+    geom_stratum(
+      fill = "grey92",
+      color = "black",
+      linewidth = 0.35
+    ) +
+    geom_text(
+      stat = "stratum",
+      aes(label = after_stat(stratum)),
+      size = 3.0
+    ) +
+    scale_fill_manual(values = grp_cols, drop = FALSE) +
+    scale_y_continuous(
+      breaks = y_breaks_abs(panel_name),
+      labels = y_labels_abs(panel_name),
+      expand = expansion(mult = c(0, 0.03))
+    ) +
+    labs(
+      title = paste0(panel_letter, "  ", panel_name),
+      x = NULL,
+      y = "Absolute transporter pool",
+      fill = NULL
+    ) +
+    theme_bw(base_size = 10) +
+    theme(
+      plot.title = element_text(face = "bold", size = 11),
+      axis.text.x = element_text(size = 9),
+      axis.title.y = element_text(size = 9),
+      legend.position = "none",
+      plot.margin = margin(4, 6, 4, 6)
+    )
+}
+
+
+pA_abs <- make_alluvial_panel_abs(totals_all, "Genes", "A")
+pB_abs <- make_alluvial_panel_abs(totals_all, "Detected proteins", "B")
+pC_abs <- make_alluvial_panel_abs(totals_all, "Protein abundance", "C")
+
+FIG_abs <- arrangeGrob(
+  arrangeGrob(pA_abs, pB_abs, pC_abs, ncol = 3),
+  gLEG,
+  ncol = 2,
+  widths = c(4.6, 1.1)
+)
+
+ggsave(
+  "FIG_alluvial_transporter_pool_absolute.pdf",
+  plot   = FIG_abs,
+  width  = 180,
+  height = 60,
+  units  = "mm",
+  device = pdf)
+
+# Display in viewer
+grid.newpage(); grid.draw(FIG_abs)
+```
+
+
+```{r}
+############################################################
+# Alluvial plots: transporter abundance → substrate bins
+# + Summary table (absolute, proportion, percent, n_species)
+# ----------------------------------------------------------
+# Two panels:
+#   A) ABC transporters
+#   B) Other transporters
+#
+# Left stratum: trophic group (Oligo / Intermediate / Copio)
+# Right stratum: substrate bin (reduced categories)
+# Flow height: summed species-mean protein abundance (iBAQ_norm)
+#
+# Summary table reports, for each Class × Trophic group × Substrate bin:
+#   - Value_abs  : summed species-mean abundance (iBAQ_norm)
+#   - Value_prop : within-Class proportion (sums to 1 within ABC, within Other)
+#   - Value_pct  : 100 * Value_prop
+#   - n_species  : number of unique species contributing (>0 mean signal) to that cell
+#
+# Proteins annotated to multiple substrate groups (e.g. "Sugars;Alcohols")
+# are split and contribute to multiple bins.
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(ggalluvial)
+  library(scales)
+  library(gridExtra)
+  library(grid)
+})
+
+# -----------------------------
+# 1) Settings and helpers
+# -----------------------------
+group_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+
+grp_cols <- c(
+  Oligo_like   = "#2C7FB8",
+  Intermediate = "grey60",
+  Copio_like   = "#D7301F"
+)
+
+is_transporter_subcat <- function(x) {
+  !is.na(x) & grepl("Transporters", x, fixed = TRUE)
+}
+
+# -----------------------------
+# 2) Protein-level table: Class + Substrate + abundance (iBAQ_norm)
+# -----------------------------
+prot_abund_substrate <- protein_retained_annot %>%
+  group_by(Species_ID, Group_For_Plots, Date, Protein_ID) %>%
+  summarise(
+    abundance = first(Protein_Abundance_IBAQ_Norm),
+    is_abc = any(Transporter_Family == "ABC", na.rm = TRUE),
+    is_tr  = any(is_transporter_subcat(KEGG_Subcategory), na.rm = TRUE),
+    Substrate_Group = paste(unique(na.omit(Substrate_Group)), collapse = ";"),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Class = case_when(
+      is_abc ~ "ABC",
+      is_tr  ~ "Other",
+      TRUE   ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(Class)) %>%
+  separate_rows(Substrate_Group, sep = ";") %>%
+  mutate(
+    Substrate_Bin = case_when(
+      Substrate_Group %in% c("Sugars", "Alcohols_Polyols") ~ "Sugars / polyols",
+      Substrate_Group %in% c("AminoAcids_Peptides", "Polyamines") ~ "Amino acids / peptides",
+      Substrate_Group == "Metals_TraceElements" ~ "Metals / trace elements",
+      Substrate_Group == "Inorganic_Nutrients" ~ "Inorganic nutrients",
+      Substrate_Group == "Diverse_Substrates" ~ "Diverse substrates",
+      TRUE ~ "Rest / other"
+    ),
+    Substrate_Bin = factor(
+      Substrate_Bin,
+      levels = c(
+        "Sugars / polyols",
+        "Amino acids / peptides",
+        "Metals / trace elements",
+        "Inorganic nutrients",
+        "Diverse substrates",
+        "Rest / other"
+      )
+    ),
+    Group_For_Plots = factor(Group_For_Plots, levels = group_levels)
+  )
+
+# -----------------------------
+# 3) Aggregate: summed species-mean abundance (iBAQ_norm)
+# -----------------------------
+# (i) Species × Date × (Class, Bin): sum proteins
+# (ii) Species × (Class, Bin): mean across dates
+# (iii) Group × (Class, Bin): sum species means
+flow_abund_bin <- prot_abund_substrate %>%
+  group_by(Group_For_Plots, Species_ID, Date, Class, Substrate_Bin) %>%
+  summarise(Value_abs = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Group_For_Plots, Species_ID, Class, Substrate_Bin) %>%
+  summarise(Value_abs = mean(Value_abs, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Group_For_Plots, Class, Substrate_Bin) %>%
+  summarise(Value_abs = sum(Value_abs, na.rm = TRUE), .groups = "drop")
+
+# -----------------------------
+# 4) Summary table: n_species + proportions within Class
+# -----------------------------
+# Species contributors: species with >0 mean signal in that Class × Bin
+species_counts <- prot_abund_substrate %>%
+  group_by(Group_For_Plots, Species_ID, Date, Class, Substrate_Bin) %>%
+  summarise(Value_tmp = sum(abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Group_For_Plots, Species_ID, Class, Substrate_Bin) %>%
+  summarise(Value_tmp = mean(Value_tmp, na.rm = TRUE), .groups = "drop") %>%
+  filter(!is.na(Value_tmp) & Value_tmp > 0) %>%
+  distinct(Group_For_Plots, Class, Substrate_Bin, Species_ID) %>%
+  count(Group_For_Plots, Class, Substrate_Bin, name = "n_species")
+
+summary_table_substrate_abund <- flow_abund_bin %>%
+  left_join(species_counts, by = c("Group_For_Plots", "Class", "Substrate_Bin")) %>%
+  mutate(n_species = replace_na(n_species, 0L)) %>%
+  group_by(Class) %>%
+  mutate(
+    Value_prop = Value_abs / sum(Value_abs, na.rm = TRUE),
+    Value_pct  = 100 * Value_prop
+  ) %>%
+  ungroup() %>%
+  rename(Trophic_group = Group_For_Plots) %>%
+  arrange(Class, Trophic_group, Substrate_Bin)
+
+# Export summary table
+write.csv(
+  summary_table_substrate_abund,
+  file = "TABLE_transporter_abundance_substrate_bins_summary.csv",
+  row.names = FALSE
+)
+
+# -----------------------------
+# 5) Plotting function
+# -----------------------------
+make_substrate_alluvial_abund <- function(df, class_name, panel_letter) {
+
+  d <- df %>% filter(Class == class_name)
+
+  ggplot(d, aes(axis1 = Group_For_Plots, axis2 = Substrate_Bin, y = Value_abs)) +
+    geom_alluvium(
+      aes(fill = Group_For_Plots),
+      alpha = 0.90, color = "grey25", linewidth = 0.25
+    ) +
+    geom_stratum(
+      fill = "grey92", color = "black", linewidth = 0.35
+    ) +
+    geom_text(
+      stat = "stratum",
+      aes(label = after_stat(stratum)),
+      size = 3
+    ) +
+    scale_fill_manual(values = grp_cols, drop = FALSE) +
+    scale_y_continuous(
+      labels = label_scientific(digits = 2),
+      expand = expansion(mult = c(0, 0.03))
+    ) +
+    labs(
+      title = paste0(panel_letter, "  ", class_name, " transporters"),
+      x = NULL,
+      y = "Summed species-mean abundance (iBAQ_norm)",
+      fill = NULL
+    ) +
+    theme_bw(base_size = 10) +
+    theme(
+      plot.title = element_text(face = "bold", size = 11),
+      axis.text.x = element_text(size = 9),
+      axis.title.y = element_text(size = 9),
+      legend.position = "none",
+      plot.margin = margin(4, 6, 4, 6)
+    )
+}
+
+# -----------------------------
+# 6) Build figure (ABC vs Other) + export PDF
+# -----------------------------
+p_ABC   <- make_substrate_alluvial_abund(flow_abund_bin, "ABC", "A")
+p_Other <- make_substrate_alluvial_abund(flow_abund_bin, "Other", "B")
+
+FIG_substrate_abund <- arrangeGrob(p_ABC, p_Other, ncol = 1)
+
+ggsave(
+  "FIG_alluvial_transporter_abundance_substrate_bins_ABC_vs_Other.pdf",
+  plot   = FIG_substrate_abund,
+  width  = 60,
+  height = 60,
+  units  = "mm",
+  device = pdf
+)
+
+# Optional display:
+grid.newpage(); grid.draw(FIG_substrate_abund)
+```
+
+

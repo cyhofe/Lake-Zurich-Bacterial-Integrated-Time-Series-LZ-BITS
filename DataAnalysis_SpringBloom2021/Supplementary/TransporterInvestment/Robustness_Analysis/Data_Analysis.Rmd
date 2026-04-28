@@ -1,0 +1,3009 @@
+---
+title: "Robustness Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+rm(list = ls())
+
+############################################################
+# 0) LOAD RETAINED DATA (CSV exports from QC pipeline)
+#    Then reproduce transporter vs non-transporter pie charts
+############################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+})
+
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TransporterInvestment/Robustness_Analysis/")
+
+# ---- Paths (edit if you put the CSVs elsewhere)
+protein_path <- "../../../Figure_04/Data_Filtration/retained_protein_table.csv"
+species_path <- "../../../Figure_04/Data_Filtration/retained_species.csv"
+keys_path    <- "../../../Figure_04/Data_Filtration/retained_species_dates.csv"
+species_summary_path <- "../../../../Data/Species_Data/Final_Data/Species_Table.csv"
+
+
+# ---- Load
+protein_final          <- read_csv(protein_path, show_col_types = FALSE)
+retained_species       <- read_csv(species_path, show_col_types = FALSE)
+retained_species_dates <- read_csv(keys_path,    show_col_types = FALSE)
+species_taxonomy <- read_csv(species_summary_path, show_col_types = FALSE)
+species_abundance <- read_csv(species_summary_path, show_col_types = FALSE)
+
+species_abundance <- species_abundance %>%
+  select(Species_ID, Date, Species_Abundance)
+
+species_taxonomy <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class, Order, Family, Genus, Species) %>%
+  distinct()
+
+# ---- Basic cleanup / checks
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+retained_species_dates <- retained_species_dates %>% mutate(Date = as.Date(Date))
+
+stopifnot(
+  all(c("Species_ID","Protein_ID","Date","Group_For_Plots") %in% names(protein_final)),
+  all(c("Species_ID","Date","Group_For_Plots") %in% names(retained_species_dates))
+)
+
+cat("\n=== Loaded retained datasets ===\n")
+cat("protein_final rows:", nrow(protein_final), "\n")
+cat("retained species×dates:", nrow(retained_species_dates), "\n")
+cat("retained species:", nrow(retained_species), "\n")
+
+glimpse(protein_final)
+glimpse(retained_species)
+glimpse(retained_species_dates)
+glimpse(species_taxonomy)
+glimpse(species_abundance)
+```
+
+```{r}
+####################################################################################################
+# BLOCK A — NON-AGGREGATED ROBUSTNESS MODELS MATCHING THE PRIMARY MODEL DEFINITIONS
+#
+# PURPOSE
+# -------
+# Refit the primary trophic-index relationships at the native observation level rather than after
+# species-level averaging, while keeping the biological response definitions and model structure
+# aligned with the primary species-level models.
+#
+# PRIMARY ALIGNMENT
+# -----------------
+# TPF:
+#   - same response definition as primary model:
+#       transporter abundance / total abundance
+#   - same beta(logit) family
+#   - same covariate logic:
+#       trophic index + protein recovery
+#   - same taxonomic random effect:
+#       (1 | Phylum)
+#   - additional repeated-measures random effect:
+#       (1 | Species_ID)
+#
+# Bray-Curtis:
+#   - same response definition as primary model:
+#       transporter-only KEGG intensity profiles
+#   - same consecutive-date logic as primary model:
+#       Bray-Curtis is computed only between adjacent dates in the filtered retained date sequence
+#       for each species, NOT strict calendar-day adjacency
+#   - same Gaussian-on-logit-scale family
+#   - same covariate logic:
+#       trophic index + mean paired protein recovery
+#   - same taxonomic random effect:
+#       (1 | Phylum)
+#   - additional repeated-measures random effect:
+#       (1 | Species_ID)
+#
+####################################################################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(vegan)
+  library(glmmTMB)
+  library(performance)
+  library(patchwork)
+  library(scales)
+  library(readr)
+  library(gt)
+  library(DHARMa)
+  library(broom.mixed)
+})
+
+set.seed(1)
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+out_dir <- "BlockA_PrimaryAligned_NonAggregated"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+dpi_out <- 300
+eps <- 1e-6
+
+# Keep this consistent with the filtered retained workflow
+min_valid_dates_per_species <- 5
+
+trophic_cols <- c(
+  "Oligotroph"   = "#99C3E6",
+  "Intermediate" = "#ECEAE9",
+  "Copiotroph"   = "#B25009"
+)
+
+############################################################
+# 2) BASIC CHECKS
+############################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy")
+)
+
+required_protein_cols <- c(
+  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
+  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory", "KEGG_ID"
+)
+
+required_species_cols <- c("Species_ID", "Group_For_Plots")
+required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
+required_tax_cols <- c("Species_ID", "Phylum", "Class")
+
+stopifnot(all(required_protein_cols %in% names(protein_final)))
+stopifnot(all(required_species_cols %in% names(retained_species)))
+stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
+stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+
+protein_final <- protein_final %>%
+  mutate(Date = as.Date(Date))
+
+retained_species_dates <- retained_species_dates %>%
+  mutate(Date = as.Date(Date))
+
+species_taxonomy_use <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class) %>%
+  distinct()
+
+############################################################
+# 3) HELPERS
+############################################################
+
+theme_nat <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", size = base_size + 1),
+      plot.subtitle = element_text(size = base_size - 1),
+      axis.title = element_text(size = base_size),
+      axis.text = element_text(size = base_size - 1, colour = "black"),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.key = element_blank(),
+      plot.margin = margin(6, 6, 6, 6)
+    )
+}
+
+recode_plot_group <- function(x) {
+  out <- dplyr::case_when(
+    x == "Oligo_like"   ~ "Oligotroph",
+    x == "Copio_like"   ~ "Copiotroph",
+    x == "Intermediate" ~ "Intermediate",
+    TRUE                ~ NA_character_
+  )
+  factor(out, levels = c("Oligotroph", "Intermediate", "Copiotroph"))
+}
+
+logit_bounded <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+inv_logit <- function(x) {
+  plogis(x)
+}
+
+scale_z <- function(x) {
+  s <- sd(x, na.rm = TRUE)
+  if (!is.finite(s) || s == 0) return(rep(0, length(x)))
+  as.numeric(scale(x))
+}
+
+fmt_num <- function(x, digits = 3) {
+  ifelse(is.na(x), "NA", formatC(x, digits = digits, format = "fg", flag = "#"))
+}
+
+fmt_p <- function(x) {
+  ifelse(
+    is.na(x), "NA",
+    ifelse(x < 0.001, "<0.001", formatC(x, digits = 3, format = "fg", flag = "#"))
+  )
+}
+
+extract_fixed_effect <- function(model, term_name = "TrophicIndex_z") {
+  sm <- summary(model)$coefficients$cond
+  if (!term_name %in% rownames(sm)) {
+    return(tibble(
+      estimate = NA_real_,
+      std_error = NA_real_,
+      p_value = NA_real_
+    ))
+  }
+  tibble(
+    estimate  = unname(sm[term_name, "Estimate"]),
+    std_error = unname(sm[term_name, "Std. Error"]),
+    p_value   = unname(sm[term_name, "Pr(>|z|)"])
+  )
+}
+
+safe_numeric <- function(x) {
+  out <- suppressWarnings(as.numeric(x))
+  if (length(out) == 0 || all(is.na(out))) NA_real_ else out[1]
+}
+
+############################################################
+# 4) SHARED RETAINED UNIVERSE
+############################################################
+
+species_traits <- protein_final %>%
+  distinct(Species_ID, TrophicIndex, Group_For_Plots)
+
+analysis_species_dates <- retained_species_dates %>%
+  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, TrophicGroupPlot, Phylum, Class) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  arrange(Species_ID, Date)
+
+prot_counts <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+analysis_species_dates <- analysis_species_dates %>%
+  left_join(prot_counts, by = c("Species_ID", "Date"))
+
+species_date_counts <- analysis_species_dates %>%
+  count(Species_ID, name = "n_dates")
+
+analysis_species_dates <- analysis_species_dates %>%
+  left_join(species_date_counts, by = "Species_ID") %>%
+  filter(n_dates >= min_valid_dates_per_species)
+
+write_csv(
+  analysis_species_dates,
+  file.path(out_dir, "BlockA_analysis_species_dates.csv")
+)
+
+############################################################
+# 5) BLOCK A1 — DATE-LEVEL TPF DATA
+#
+# Same TPF definition as the primary model, but without averaging to one row per species.
+############################################################
+
+protein_flagged <- protein_final %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) &
+      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
+    abund = Protein_Abundance_IBAQ_Norm
+  )
+
+species_date_tpf <- protein_flagged %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    abund_total = sum(abund, na.rm = TRUE),
+    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    TPF = abund_trans / abund_total,
+    .groups = "drop"
+  ) %>%
+  left_join(
+    analysis_species_dates %>%
+      select(Species_ID, Date, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class, N_prot_detected, n_dates),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    is.finite(TPF),
+    abund_total > 0,
+    TPF > 0,
+    TPF < 1,
+    is.finite(TrophicIndex),
+    is.finite(N_prot_detected),
+    N_prot_detected > 0,
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    TrophicIndex_z       = scale_z(TrophicIndex),
+    n_dates_z            = scale_z(n_dates),
+    log_prot_detected_z  = scale_z(log1p(N_prot_detected)),
+    Species_ID           = factor(Species_ID),
+    Phylum               = factor(Phylum)
+  )
+
+write_csv(
+  species_date_tpf,
+  file.path(out_dir, "BlockA_date_level_TPF_data.csv")
+)
+
+############################################################
+# 6) BLOCK A2 — TRANSITION-LEVEL TRANSPORTER BRAY-CURTIS DATA
+#
+# EXACTLY aligned to the primary BC workflow:
+#   - transporter-only KEGG profiles
+#   - consecutive dates only
+#   - consecutive means adjacent in the filtered retained date sequence
+############################################################
+
+kegg_sd_trans <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    !is.na(KEGG_Subcategory),
+    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+  ) %>%
+  group_by(Species_ID, Date, KEGG_ID) %>%
+  summarise(
+    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(is.finite(kegg_abund), kegg_abund > 0)
+
+compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+  dates_tbl <- keep_tbl %>%
+    filter(Species_ID == sp_id) %>%
+    arrange(Date)
+
+  dates <- dates_tbl$Date
+  if (length(dates) < 2) return(NULL)
+
+  mat_wide <- kegg_tbl %>%
+    filter(Species_ID == sp_id, Date %in% dates) %>%
+    mutate(Date_chr = as.character(Date)) %>%
+    select(Date_chr, KEGG_ID, kegg_abund) %>%
+    pivot_wider(
+      names_from = KEGG_ID,
+      values_from = kegg_abund,
+      values_fill = 0
+    ) %>%
+    arrange(Date_chr)
+
+  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
+
+  present_dates_chr <- mat_wide$Date_chr
+  present_dates <- as.Date(present_dates_chr)
+
+  M_abs <- as.matrix(mat_wide %>% select(-Date_chr))
+  rownames(M_abs) <- present_dates_chr
+
+  # Consecutive retained dates only
+  pair_tbl <- tibble(
+    Date1 = present_dates[-length(present_dates)],
+    Date2 = present_dates[-1]
+  )
+
+  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
+    d1 <- as.character(pair_tbl$Date1[i])
+    d2 <- as.character(pair_tbl$Date2[i])
+
+    bc_abs <- as.numeric(
+      vegan::vegdist(
+        M_abs[c(d1, d2), , drop = FALSE],
+        method = "bray"
+      )
+    )
+
+    nd1 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d1)) %>%
+      pull(N_prot_detected)
+
+    nd2 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d2)) %>%
+      pull(N_prot_detected)
+
+    tibble(
+      Species_ID  = sp_id,
+      Date1       = as.Date(d1),
+      Date2       = as.Date(d2),
+      bc_abs      = bc_abs,
+      N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE)
+    )
+  })
+
+  bind_rows(out)
+}
+
+all_species <- sort(unique(analysis_species_dates$Species_ID))
+
+transitions <- bind_rows(lapply(
+  all_species,
+  compute_species_transitions_bc,
+  keep_tbl = analysis_species_dates,
+  kegg_tbl = kegg_sd_trans
+)) %>%
+  left_join(
+    analysis_species_dates %>%
+      distinct(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(bc_abs),
+    is.finite(N_prot_pair),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    mean_bc_abs_logit = logit_bounded(bc_abs, eps = eps),
+    TrophicIndex_z    = scale_z(TrophicIndex),
+    log_prot_pair_z   = scale_z(log1p(N_prot_pair)),
+    Species_ID        = factor(Species_ID),
+    Phylum            = factor(Phylum)
+  )
+
+write_csv(
+  transitions,
+  file.path(out_dir, "BlockA_transition_level_BrayCurtis_data.csv")
+)
+
+############################################################
+# 7) FIT NON-AGGREGATED PRIMARY-ALIGNED MODELS
+############################################################
+# Primary model logic is preserved, but Species_ID is added as
+# a random intercept because Block A uses repeated observations.
+
+m_tpf_blockA <- glmmTMB(
+  TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z +
+    (1 | Phylum) + (1 | Species_ID),
+  family = beta_family(link = "logit"),
+  data = species_date_tpf
+)
+
+m_bc_blockA <- glmmTMB(
+  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z +
+    (1 | Phylum) + (1 | Species_ID),
+  family = gaussian(),
+  data = transitions
+)
+
+############################################################
+# 8) BUILD MODEL-IMPLIED PREDICTIONS
+############################################################
+
+pred_tpf <- tibble(
+  TrophicIndex = seq(
+    min(species_date_tpf$TrophicIndex, na.rm = TRUE),
+    max(species_date_tpf$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z      = (TrophicIndex - mean(species_date_tpf$TrophicIndex, na.rm = TRUE)) /
+                          sd(species_date_tpf$TrophicIndex, na.rm = TRUE),
+    n_dates_z           = 0,
+    log_prot_detected_z = 0,
+    Phylum              = factor(levels(species_date_tpf$Phylum)[1], levels = levels(species_date_tpf$Phylum)),
+    Species_ID          = factor(levels(species_date_tpf$Species_ID)[1], levels = levels(species_date_tpf$Species_ID))
+  )
+
+pred_tpf$fit <- predict(
+  m_tpf_blockA,
+  newdata = pred_tpf,
+  type = "response",
+  re.form = NA
+)
+
+pred_bc <- tibble(
+  TrophicIndex = seq(
+    min(transitions$TrophicIndex, na.rm = TRUE),
+    max(transitions$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z  = (TrophicIndex - mean(transitions$TrophicIndex, na.rm = TRUE)) /
+                      sd(transitions$TrophicIndex, na.rm = TRUE),
+    log_prot_pair_z = 0,
+    Phylum          = factor(levels(transitions$Phylum)[1], levels = levels(transitions$Phylum)),
+    Species_ID      = factor(levels(transitions$Species_ID)[1], levels = levels(transitions$Species_ID))
+  )
+
+pred_bc$fit_logit <- predict(
+  m_bc_blockA,
+  newdata = pred_bc,
+  type = "response",
+  re.form = NA
+)
+
+pred_bc <- pred_bc %>%
+  mutate(
+    fit_bc_raw = inv_logit(fit_logit)
+  )
+
+write_csv(pred_tpf, file.path(out_dir, "BlockA_pred_tpf.csv"))
+write_csv(pred_bc,  file.path(out_dir, "BlockA_pred_bc.csv"))
+
+############################################################
+# 9) EXTRACT MODEL SUMMARY STATISTICS
+############################################################
+
+fix_tpf <- extract_fixed_effect(m_tpf_blockA, "TrophicIndex_z")
+fix_bc  <- extract_fixed_effect(m_bc_blockA,  "TrophicIndex_z")
+
+r2_tpf <- r2_nakagawa(m_tpf_blockA)
+r2_bc  <- r2_nakagawa(m_bc_blockA)
+
+model_table_raw <- bind_rows(
+  tibble(
+    Response         = "Date-level TPF",
+    Level            = "Species × date",
+    Family           = "Beta (logit)",
+    `Fixed effects`  = "Trophic index + n dates + species-date protein recovery",
+    `Random effects` = "(1 | Phylum) + (1 | Species_ID)",
+    N                = nrow(species_date_tpf),
+    `TI estimate`    = fix_tpf$estimate,
+    `TI SE`          = fix_tpf$std_error,
+    `TI p`           = fix_tpf$p_value,
+    `Marginal R2`    = safe_numeric(r2_tpf$R2_marginal),
+    `Conditional R2` = safe_numeric(r2_tpf$R2_conditional),
+    `Key conclusion` = "The negative trophic-index association with transporter allocation is retained without species-level averaging."
+  ),
+  tibble(
+    Response         = "Transition-level transporter Bray-Curtis",
+    Level            = "Species × consecutive-date pair",
+    Family           = "Gaussian on logit scale",
+    `Fixed effects`  = "Trophic index + paired species protein recovery",
+    `Random effects` = "(1 | Phylum) + (1 | Species_ID)",
+    N                = nrow(transitions),
+    `TI estimate`    = fix_bc$estimate,
+    `TI SE`          = fix_bc$std_error,
+    `TI p`           = fix_bc$p_value,
+    `Marginal R2`    = safe_numeric(r2_bc$R2_marginal),
+    `Conditional R2` = safe_numeric(r2_bc$R2_conditional),
+    `Key conclusion` = "The positive trophic-index association with transporter variability is retained without species-level averaging."
+  )
+)
+
+write.csv(
+  model_table_raw,
+  file = file.path(out_dir, "BlockA_nonaggregated_model_summary.csv"),
+  row.names = FALSE
+)
+
+############################################################
+# 10) FIGURE PANEL A — DATE-LEVEL TPF
+############################################################
+
+p_a <- ggplot(
+  species_date_tpf,
+  aes(x = TrophicIndex, y = TPF, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 1.7,
+    stroke = 0.2,
+    alpha = 0.55
+  ) +
+  geom_line(
+    data = pred_tpf,
+    aes(x = TrophicIndex, y = fit),
+    inherit.aes = FALSE,
+    linewidth = 1.0,
+    colour = "black"
+  ) +
+  geom_rug(
+    aes(x = TrophicIndex),
+    inherit.aes = FALSE,
+    data = species_date_tpf,
+    sides = "b",
+    alpha = 0.18,
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(
+    ylim = c(0, 1)
+  ) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "A. Non-aggregated TPF",
+    subtitle = paste0("Species × date beta-model fit (n = ", nrow(species_date_tpf), ")"),
+    x = "Trophic index",
+    y = "Transporter proteome fraction"
+  ) +
+  theme_nat()
+
+############################################################
+# 11) FIGURE PANEL B — TRANSITION-LEVEL BRAY-CURTIS
+############################################################
+
+p_b <- ggplot(
+  transitions,
+  aes(x = TrophicIndex, y = bc_abs, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 1.7,
+    stroke = 0.2,
+    alpha = 0.55
+  ) +
+  geom_line(
+    data = pred_bc,
+    aes(x = TrophicIndex, y = fit_bc_raw),
+    inherit.aes = FALSE,
+    linewidth = 1.0,
+    colour = "black"
+  ) +
+  geom_rug(
+    aes(x = TrophicIndex),
+    inherit.aes = FALSE,
+    data = transitions,
+    sides = "b",
+    alpha = 0.18,
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(
+    ylim = c(0, 1)
+  ) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "B. Non-aggregated Bray-Curtis dissimilarity",
+    subtitle = paste0("Species × consecutive-date pair Gaussian-model fit (n = ", nrow(transitions), ")"),
+    x = "Trophic index",
+    y = "Transporter Bray-Curtis dissimilarity"
+  ) +
+  theme_nat()
+
+blockA_fig <- (p_a | p_b) +
+  plot_layout(ncol = 2, guides = "collect") &
+  theme(legend.position = "bottom")
+
+print(blockA_fig)
+
+ggsave(
+  filename = file.path(out_dir, "BlockA_nonaggregated_primary_aligned_models.png"),
+  plot = blockA_fig,
+  width = 10.5,
+  height = 5.5,
+  dpi = dpi_out,
+  bg = "white"
+)
+
+############################################################
+# 12) DIAGNOSTICS
+############################################################
+
+sim_tpf <- DHARMa::simulateResiduals(m_tpf_blockA, n = 500)
+sim_bc  <- DHARMa::simulateResiduals(m_bc_blockA,  n = 500)
+
+diag_table <- tibble(
+  Model = c("TPF", "Bray-Curtis"),
+  p_uniformity = c(
+    tryCatch(DHARMa::testUniformity(sim_tpf)$p.value, error = function(e) NA_real_),
+    tryCatch(DHARMa::testUniformity(sim_bc)$p.value,  error = function(e) NA_real_)
+  ),
+  p_dispersion = c(
+    tryCatch(DHARMa::testDispersion(sim_tpf)$p.value, error = function(e) NA_real_),
+    tryCatch(DHARMa::testDispersion(sim_bc)$p.value,  error = function(e) NA_real_)
+  ),
+  p_outliers = c(
+    tryCatch(DHARMa::testOutliers(sim_tpf)$p.value, error = function(e) NA_real_),
+    tryCatch(DHARMa::testOutliers(sim_bc)$p.value,  error = function(e) NA_real_)
+  )
+)
+
+write.csv(
+  diag_table,
+  file = file.path(out_dir, "BlockA_model_diagnostics.csv"),
+  row.names = FALSE
+)
+
+############################################################
+# 13) RENDERED SUMMARY TABLE
+############################################################
+
+model_table_portrait <- tibble(
+  Metric = c(
+    "Response",
+    "Level",
+    "Family",
+    "Fixed effects",
+    "Random effects",
+    "N",
+    "Trophic-index estimate",
+    "Trophic-index SE",
+    "Trophic-index p",
+    "Marginal R²",
+    "Conditional R²",
+    "Key conclusion"
+  ),
+  `TPF model` = c(
+    "Transporter proteome fraction",
+    "Species × date",
+    "Beta (logit)",
+    "Trophic index + n dates + species-date protein recovery",
+    "(1 | Phylum) + (1 | Species_ID)",
+    as.character(model_table_raw$N[model_table_raw$Response == "Date-level TPF"]),
+    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Date-level TPF"], 3),
+    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Date-level TPF"], 3),
+    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Date-level TPF"]),
+    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Date-level TPF"], 3),
+    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Date-level TPF"], 3),
+    model_table_raw$`Key conclusion`[model_table_raw$Response == "Date-level TPF"]
+  ),
+  `Bray-Curtis model` = c(
+    "Transporter Bray-Curtis dissimilarity",
+    "Species × consecutive-date pair",
+    "Gaussian on logit scale",
+    "Trophic index + species-date protein recovery (paired consecutive dates)",
+    "(1 | Phylum) + (1 | Species_ID)",
+    as.character(model_table_raw$N[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]),
+    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
+    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
+    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]),
+    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
+    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
+    model_table_raw$`Key conclusion`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]
+  )
+)
+
+write.csv(
+  model_table_portrait,
+  file = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.csv"),
+  row.names = FALSE
+)
+
+model_table_gt <- model_table_portrait %>%
+  gt() %>%
+  tab_header(
+    title = md("**Non-aggregated robustness model summary**"),
+    subtitle = "Primary response definitions retained, fitted at the native observation level"
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Metric
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(`TPF model`, `Bray-Curtis model`)
+  ) %>%
+  cols_label(
+    Metric = "",
+    `TPF model` = "TPF (beta)",
+    `Bray-Curtis model` = "Bray–Curtis (Gaussian)"
+  ) %>%
+  cols_width(
+    Metric ~ px(260),
+    `TPF model` ~ px(330),
+    `Bray-Curtis model` ~ px(330)
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping() %>%
+  tab_options(
+    table.font.size = px(10.5),
+    data_row.padding = px(6),
+    column_labels.font.size = px(10.5),
+    heading.title.font.size = px(13),
+    heading.subtitle.font.size = px(10),
+    source_notes.font.size = px(9),
+    table.width = px(1050)
+  ) %>%
+  tab_source_note(
+    source_note = md(
+      "Bray–Curtis dissimilarity was calculated from transporter-only KEGG intensity profiles between adjacent dates in each species’ filtered retained time series. In contrast to the primary cross-species models, these robustness models retain all species-level repeated observations and therefore include Species_ID as an additional random intercept."
+    )
+  )
+
+print(model_table_gt)
+
+gtsave(
+  model_table_gt,
+  filename = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.png"),
+  vwidth = 1200,
+  vheight = 1500
+)
+
+gtsave(
+  model_table_gt,
+  filename = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.html")
+)
+
+############################################################
+# 14) CONSOLE SUMMARY
+############################################################
+
+cat("\nDone.\n")
+cat("Outputs written to: ", out_dir, "\n", sep = "")
+cat("\nKey checks:\n")
+cat("- Bray-Curtis is calculated only between consecutive retained dates within each species.\n")
+cat("- TPF uses the same transporter fraction definition as the primary model.\n")
+cat("- Fixed-effect structure is matched to the primary models.\n")
+cat("- Species_ID was added as a random effect because Block A retains repeated observations.\n\n")
+
+cat("Rows used:\n")
+cat("TPF species × date rows: ", nrow(species_date_tpf), "\n", sep = "")
+cat("BC species × transition rows: ", nrow(transitions), "\n", sep = "")
+
+cat("\nFiles:\n")
+cat(file.path(out_dir, "BlockA_analysis_species_dates.csv"), "\n")
+cat(file.path(out_dir, "BlockA_date_level_TPF_data.csv"), "\n")
+cat(file.path(out_dir, "BlockA_transition_level_BrayCurtis_data.csv"), "\n")
+cat(file.path(out_dir, "BlockA_nonaggregated_model_summary.csv"), "\n")
+cat(file.path(out_dir, "BlockA_model_diagnostics.csv"), "\n")
+cat(file.path(out_dir, "BlockA_nonaggregated_primary_aligned_models.png"), "\n")
+cat(file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.png"), "\n")
+```
+
+```{r}
+####################################################################################################
+# BLOCK B — TAXONOMY ROBUSTNESS (FINAL TABLE FORMAT)
+#
+# PURPOSE
+# -------
+# Test whether the trophic-index associations for transporter proteome fraction (TPF) and
+# transporter Bray–Curtis dissimilarity persist after accounting for phylum-level taxonomy,
+# and whether the same association is retained when phylum is modeled as a fixed effect
+# rather than a random effect.
+#
+# THIS VERSION
+# ------------
+# 1) keeps only:
+#      - global phylum-adjusted models
+#      - pooled within-phylum models
+# 2) removes per-phylum models entirely
+# 3) formats the summary table in the same portrait style as your other supplementary tables
+# 4) handles R² explicitly:
+#      - global mixed models: marginal + conditional R² from Nakagawa
+#      - pooled within-phylum models: standard model R² only, reported as "Marginal R²";
+#        "Conditional R²" is set to NA by design because there is no random-effect variance
+#        component in those fixed-effect phylum models
+#
+# EXPECTED OBJECTS ALREADY IN MEMORY
+# ----------------------------------
+#   protein_final
+#   retained_species
+#   retained_species_dates
+#   species_taxonomy
+#
+# OUTPUT
+# ------
+# Folder:
+#   BlockB_Taxonomy_Robustness/
+####################################################################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(vegan)
+  library(glmmTMB)
+  library(performance)
+  library(patchwork)
+  library(scales)
+  library(readr)
+  library(gt)
+  library(broom)
+  library(broom.mixed)
+})
+
+set.seed(1)
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+out_dir <- "BlockB_Taxonomy_Robustness"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+dpi_out <- 300
+eps <- 1e-6
+min_valid_dates_per_species <- 5
+
+trophic_cols <- c(
+  "Oligotroph"   = "#99C3E6",
+  "Intermediate" = "#ECEAE9",
+  "Copiotroph"   = "#B25009"
+)
+
+############################################################
+# 2) BASIC CHECKS
+############################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy")
+)
+
+required_protein_cols <- c(
+  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
+  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory", "KEGG_ID"
+)
+
+required_species_cols <- c("Species_ID", "Group_For_Plots")
+required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
+required_tax_cols <- c("Species_ID", "Phylum", "Class")
+
+stopifnot(all(required_protein_cols %in% names(protein_final)))
+stopifnot(all(required_species_cols %in% names(retained_species)))
+stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
+stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+
+protein_final <- protein_final %>%
+  mutate(Date = as.Date(Date))
+
+retained_species_dates <- retained_species_dates %>%
+  mutate(Date = as.Date(Date))
+
+species_taxonomy_use <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class) %>%
+  distinct()
+
+############################################################
+# 3) HELPERS
+############################################################
+
+theme_nat <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", size = base_size + 1),
+      plot.subtitle = element_text(size = base_size - 1),
+      axis.title = element_text(size = base_size),
+      axis.text = element_text(size = base_size - 1, colour = "black"),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.key = element_blank(),
+      plot.margin = margin(6, 6, 6, 6)
+    )
+}
+
+recode_plot_group <- function(x) {
+  out <- dplyr::case_when(
+    x == "Oligo_like"   ~ "Oligotroph",
+    x == "Copio_like"   ~ "Copiotroph",
+    x == "Intermediate" ~ "Intermediate",
+    TRUE                ~ NA_character_
+  )
+  factor(out, levels = c("Oligotroph", "Intermediate", "Copiotroph"))
+}
+
+logit_bounded <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+inv_logit <- function(x) {
+  plogis(x)
+}
+
+scale_z <- function(x) {
+  s <- sd(x, na.rm = TRUE)
+  if (!is.finite(s) || s == 0) return(rep(0, length(x)))
+  as.numeric(scale(x))
+}
+
+fmt_num_scalar <- function(x, digits = 3) {
+  if (length(x) == 0 || is.na(x) || !is.finite(x)) return("NA")
+  formatC(x, digits = digits, format = "fg", flag = "#")
+}
+
+fmt_p_scalar <- function(x) {
+  if (length(x) == 0 || is.na(x) || !is.finite(x)) return("NA")
+  if (x < 0.001) return("<0.001")
+  formatC(x, digits = 3, format = "fg", flag = "#")
+}
+
+extract_glmmtmb_term <- function(model, term_name = "TrophicIndex_z") {
+  sm <- summary(model)$coefficients$cond
+  if (!term_name %in% rownames(sm)) {
+    return(tibble(
+      estimate = NA_real_,
+      std_error = NA_real_,
+      p_value = NA_real_
+    ))
+  }
+  tibble(
+    estimate  = unname(sm[term_name, "Estimate"]),
+    std_error = unname(sm[term_name, "Std. Error"]),
+    p_value   = unname(sm[term_name, "Pr(>|z|)"])
+  )
+}
+
+safe_numeric <- function(x) {
+  out <- suppressWarnings(as.numeric(x))
+  if (length(out) == 0 || all(is.na(out))) NA_real_ else out[1]
+}
+
+safe_r2_mixed <- function(model) {
+  out <- c(Marginal_R2 = NA_real_, Conditional_R2 = NA_real_)
+
+  r2_obj <- tryCatch(
+    suppressWarnings(suppressMessages(performance::r2_nakagawa(model))),
+    error = function(e) NULL
+  )
+
+  if (is.null(r2_obj)) return(out)
+
+  if (is.atomic(r2_obj) && !is.null(names(r2_obj))) {
+    if ("R2_marginal" %in% names(r2_obj)) {
+      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_marginal"])[1])
+    }
+    if ("R2_conditional" %in% names(r2_obj)) {
+      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_conditional"])[1])
+    }
+  }
+
+  if (!is.atomic(r2_obj)) {
+    if (!is.null(r2_obj$R2_marginal)) {
+      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_marginal)[1])
+    }
+    if (!is.null(r2_obj$R2_conditional)) {
+      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_conditional)[1])
+    }
+  }
+
+  out
+}
+
+safe_r2_fixed <- function(model) {
+  # For pooled within-phylum models without random effects,
+  # use a generic model R² and report it as "Marginal R²".
+  # Conditional R² is intentionally NA because there is no random-effect variance part.
+  r2_obj <- tryCatch(
+    suppressWarnings(suppressMessages(performance::r2(model))),
+    error = function(e) NULL
+  )
+
+  if (is.null(r2_obj)) return(NA_real_)
+
+  vals <- suppressWarnings(as.numeric(r2_obj))
+  vals <- vals[is.finite(vals)]
+  if (length(vals) == 0) return(NA_real_)
+  vals[1]
+}
+
+############################################################
+# 4) BUILD SPECIES-LEVEL TPF DATA
+############################################################
+
+protein_flagged <- protein_final %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) &
+      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
+    abund = Protein_Abundance_IBAQ_Norm
+  )
+
+species_date_qc <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+species_date_tpf <- protein_flagged %>%
+  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    abund_total = sum(abund, na.rm = TRUE),
+    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    TPF = abund_trans / abund_total,
+    .groups = "drop"
+  ) %>%
+  left_join(species_date_qc, by = c("Species_ID", "Date")) %>%
+  filter(
+    is.finite(TPF),
+    abund_total > 0,
+    TPF > 0,
+    TPF < 1
+  )
+
+species_traits <- protein_final %>%
+  distinct(Species_ID, TrophicIndex, Group_For_Plots)
+
+species_tpf_df <- species_date_tpf %>%
+  left_join(species_traits, by = "Species_ID") %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  summarise(
+    n_dates            = n(),
+    mean_TPF           = mean(TPF, na.rm = TRUE),
+    mean_prot_detected = mean(N_prot_detected, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_dates >= min_valid_dates_per_species,
+    is.finite(TrophicIndex),
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1,
+    is.finite(mean_prot_detected),
+    mean_prot_detected > 0,
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    TrophicIndex_z      = scale_z(TrophicIndex),
+    n_dates_z           = scale_z(n_dates),
+    log_prot_detected_z = scale_z(log1p(mean_prot_detected)),
+    Phylum              = factor(Phylum),
+    Class               = factor(Class)
+  )
+
+write_csv(
+  species_tpf_df,
+  file.path(out_dir, "BlockB_species_level_TPF_data.csv")
+)
+
+############################################################
+# 5) BUILD SPECIES-LEVEL TRANSPORTER BRAY-CURTIS DATA
+############################################################
+
+analysis_species_dates <- retained_species_dates %>%
+  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
+  left_join(species_taxonomy_use, by = "Species_ID") %>%
+  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
+  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, TrophicGroupPlot, Phylum, Class) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  arrange(Species_ID, Date)
+
+prot_counts <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+analysis_species_dates <- analysis_species_dates %>%
+  left_join(prot_counts, by = c("Species_ID", "Date"))
+
+kegg_sd_trans <- protein_final %>%
+  semi_join(
+    analysis_species_dates %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    !is.na(KEGG_Subcategory),
+    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+  ) %>%
+  group_by(Species_ID, Date, KEGG_ID) %>%
+  summarise(
+    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(is.finite(kegg_abund), kegg_abund > 0)
+
+compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+  dates_tbl <- keep_tbl %>%
+    filter(Species_ID == sp_id) %>%
+    arrange(Date)
+
+  dates <- dates_tbl$Date
+  if (length(dates) < 2) return(NULL)
+
+  mat_wide <- kegg_tbl %>%
+    filter(Species_ID == sp_id, Date %in% dates) %>%
+    mutate(Date_chr = as.character(Date)) %>%
+    select(Date_chr, KEGG_ID, kegg_abund) %>%
+    pivot_wider(
+      names_from = KEGG_ID,
+      values_from = kegg_abund,
+      values_fill = 0
+    ) %>%
+    arrange(Date_chr)
+
+  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
+
+  present_dates_chr <- mat_wide$Date_chr
+  present_dates <- as.Date(present_dates_chr)
+
+  M_abs <- as.matrix(mat_wide %>% select(-Date_chr))
+  rownames(M_abs) <- present_dates_chr
+
+  pair_tbl <- tibble(
+    Date1 = present_dates[-length(present_dates)],
+    Date2 = present_dates[-1]
+  )
+
+  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
+    d1 <- as.character(pair_tbl$Date1[i])
+    d2 <- as.character(pair_tbl$Date2[i])
+
+    bc_abs <- as.numeric(
+      vegan::vegdist(
+        M_abs[c(d1, d2), , drop = FALSE],
+        method = "bray"
+      )
+    )
+
+    nd1 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d1)) %>%
+      pull(N_prot_detected)
+
+    nd2 <- keep_tbl %>%
+      filter(Species_ID == sp_id, Date == as.Date(d2)) %>%
+      pull(N_prot_detected)
+
+    tibble(
+      Species_ID  = sp_id,
+      Date1       = as.Date(d1),
+      Date2       = as.Date(d2),
+      bc_abs      = bc_abs,
+      N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE)
+    )
+  })
+
+  bind_rows(out)
+}
+
+all_species <- sort(unique(analysis_species_dates$Species_ID))
+
+transitions <- bind_rows(lapply(
+  all_species,
+  compute_species_transitions_bc,
+  keep_tbl = analysis_species_dates,
+  kegg_tbl = kegg_sd_trans
+)) %>%
+  left_join(
+    analysis_species_dates %>%
+      distinct(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(bc_abs),
+    is.finite(N_prot_pair),
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  )
+
+species_bc_df <- transitions %>%
+  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  summarise(
+    n_transitions  = n(),
+    mean_bc_abs    = mean(bc_abs, na.rm = TRUE),
+    mean_prot_pair = mean(N_prot_pair, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    is.finite(TrophicIndex),
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1,
+    is.finite(mean_prot_pair),
+    mean_prot_pair > 0,
+    !is.na(TrophicGroupPlot),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    mean_bc_abs_logit = logit_bounded(mean_bc_abs, eps = eps),
+    TrophicIndex_z    = scale_z(TrophicIndex),
+    log_prot_pair_z   = scale_z(log1p(mean_prot_pair)),
+    Phylum            = factor(Phylum),
+    Class             = factor(Class)
+  )
+
+write_csv(
+  species_bc_df,
+  file.path(out_dir, "BlockB_species_level_transporter_BrayCurtis_data.csv")
+)
+
+############################################################
+# 6) GLOBAL PHYLUM-ADJUSTED MODELS
+############################################################
+
+m_tpf_global <- glmmTMB(
+  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + (1 | Phylum),
+  family = beta_family(link = "logit"),
+  data = species_tpf_df
+)
+
+m_bc_global <- glmmTMB(
+  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + (1 | Phylum),
+  family = gaussian(),
+  data = species_bc_df
+)
+
+############################################################
+# 7) WITHIN-PHYLUM POOLED MODELS
+############################################################
+
+m_tpf_within_pool <- glmmTMB(
+  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + Phylum,
+  family = beta_family(link = "logit"),
+  data = species_tpf_df
+)
+
+m_bc_within_pool <- glmmTMB(
+  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + Phylum,
+  family = gaussian(),
+  data = species_bc_df
+)
+
+############################################################
+# 8) EXTRACT MODEL SUMMARIES
+############################################################
+
+fix_tpf_global <- extract_glmmtmb_term(m_tpf_global, "TrophicIndex_z")
+fix_bc_global  <- extract_glmmtmb_term(m_bc_global, "TrophicIndex_z")
+
+fix_tpf_within <- extract_glmmtmb_term(m_tpf_within_pool, "TrophicIndex_z")
+fix_bc_within  <- extract_glmmtmb_term(m_bc_within_pool, "TrophicIndex_z")
+
+r2_tpf_global <- safe_r2_mixed(m_tpf_global)
+r2_bc_global  <- safe_r2_mixed(m_bc_global)
+
+r2_tpf_within_marg <- safe_r2_fixed(m_tpf_within_pool)
+r2_bc_within_marg  <- safe_r2_fixed(m_bc_within_pool)
+
+global_pooled_tbl <- bind_rows(
+  tibble(
+    Response           = "Mean TPF",
+    Model_name         = "TPF global",
+    Taxonomy_test      = "Global phylum-adjusted model",
+    Family             = "Beta (logit)",
+    Fixed_effects      = "Trophic index + n dates + mean species protein recovery",
+    Random_effects     = "(1 | Phylum)",
+    N_species          = nrow(species_tpf_df),
+    estimate           = fix_tpf_global$estimate,
+    std_error          = fix_tpf_global$std_error,
+    p_value            = fix_tpf_global$p_value,
+    Marginal_R2        = safe_numeric(r2_tpf_global["Marginal_R2"]),
+    Conditional_R2     = safe_numeric(r2_tpf_global["Conditional_R2"]),
+    Interpretation     = "Trophic-index effect after accounting for phylum as random effect."
+  ),
+  tibble(
+    Response           = "Mean TPF",
+    Model_name         = "TPF pooled",
+    Taxonomy_test      = "Within-phylum pooled model",
+    Family             = "Beta (logit)",
+    Fixed_effects      = "Trophic index + n dates + mean species protein recovery + Phylum",
+    Random_effects     = "None",
+    N_species          = nrow(species_tpf_df),
+    estimate           = fix_tpf_within$estimate,
+    std_error          = fix_tpf_within$std_error,
+    p_value            = fix_tpf_within$p_value,
+    Marginal_R2        = r2_tpf_within_marg,
+    Conditional_R2     = NA_real_,
+    Interpretation     = "Common trophic-index slope estimated while controlling for phylum as fixed effect."
+  ),
+  tibble(
+    Response           = "Mean transporter Bray-Curtis",
+    Model_name         = "BC global",
+    Taxonomy_test      = "Global phylum-adjusted model",
+    Family             = "Gaussian on logit scale",
+    Fixed_effects      = "Trophic index + mean species protein recovery (paired consecutive dates)",
+    Random_effects     = "(1 | Phylum)",
+    N_species          = nrow(species_bc_df),
+    estimate           = fix_bc_global$estimate,
+    std_error          = fix_bc_global$std_error,
+    p_value            = fix_bc_global$p_value,
+    Marginal_R2        = safe_numeric(r2_bc_global["Marginal_R2"]),
+    Conditional_R2     = safe_numeric(r2_bc_global["Conditional_R2"]),
+    Interpretation     = "Trophic-index effect after accounting for phylum as random effect."
+  ),
+  tibble(
+    Response           = "Mean transporter Bray-Curtis",
+    Model_name         = "BC pooled",
+    Taxonomy_test      = "Within-phylum pooled model",
+    Family             = "Gaussian on logit scale",
+    Fixed_effects      = "Trophic index + mean species protein recovery (paired consecutive dates) + Phylum",
+    Random_effects     = "None",
+    N_species          = nrow(species_bc_df),
+    estimate           = fix_bc_within$estimate,
+    std_error          = fix_bc_within$std_error,
+    p_value            = fix_bc_within$p_value,
+    Marginal_R2        = r2_bc_within_marg,
+    Conditional_R2     = NA_real_,
+    Interpretation     = "Common trophic-index slope estimated while controlling for phylum as fixed effect."
+  )
+)
+
+write_csv(
+  global_pooled_tbl,
+  file.path(out_dir, "BlockB_global_and_withinphylum_models.csv")
+)
+
+############################################################
+# 9) BUILD PREDICTION CURVES
+############################################################
+
+pred_tpf_within <- tibble(
+  TrophicIndex = seq(
+    min(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    max(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z      = (TrophicIndex - mean(species_tpf_df$TrophicIndex, na.rm = TRUE)) /
+      sd(species_tpf_df$TrophicIndex, na.rm = TRUE),
+    n_dates_z           = 0,
+    log_prot_detected_z = 0,
+    Phylum              = factor(levels(species_tpf_df$Phylum)[1], levels = levels(species_tpf_df$Phylum))
+  )
+
+pred_tpf_within$fit <- predict(
+  m_tpf_within_pool,
+  newdata = pred_tpf_within,
+  type = "response"
+)
+
+pred_bc_within <- tibble(
+  TrophicIndex = seq(
+    min(species_bc_df$TrophicIndex, na.rm = TRUE),
+    max(species_bc_df$TrophicIndex, na.rm = TRUE),
+    length.out = 300
+  )
+) %>%
+  mutate(
+    TrophicIndex_z  = (TrophicIndex - mean(species_bc_df$TrophicIndex, na.rm = TRUE)) /
+      sd(species_bc_df$TrophicIndex, na.rm = TRUE),
+    log_prot_pair_z = 0,
+    Phylum          = factor(levels(species_bc_df$Phylum)[1], levels = levels(species_bc_df$Phylum))
+  )
+
+pred_bc_within$fit_logit <- predict(
+  m_bc_within_pool,
+  newdata = pred_bc_within,
+  type = "response"
+)
+
+pred_bc_within <- pred_bc_within %>%
+  mutate(fit_bc_raw = inv_logit(fit_logit))
+
+############################################################
+# 10) FIGURE — WITHIN-PHYLUM POOLED FITS
+############################################################
+
+p_tpf_within <- ggplot(
+  species_tpf_df,
+  aes(x = TrophicIndex, y = mean_TPF, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 2.1,
+    stroke = 0.25,
+    alpha = 0.90
+  ) +
+  geom_line(
+    data = pred_tpf_within,
+    aes(x = TrophicIndex, y = fit),
+    inherit.aes = FALSE,
+    linewidth = 1,
+    colour = "black"
+  ) +
+  facet_wrap(~ Phylum, scales = "free_x") +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "Block B | Within-phylum transporter allocation",
+    subtitle = "Species-level mean TPF with pooled within-phylum trophic-index fit",
+    x = "Trophic index",
+    y = "Mean transporter proteome fraction"
+  ) +
+  theme_nat(base_size = 10)
+
+p_bc_within <- ggplot(
+  species_bc_df,
+  aes(x = TrophicIndex, y = mean_bc_abs, fill = TrophicGroupPlot)
+) +
+  geom_point(
+    shape = 21,
+    colour = "black",
+    size = 2.1,
+    stroke = 0.25,
+    alpha = 0.90
+  ) +
+  geom_line(
+    data = pred_bc_within,
+    aes(x = TrophicIndex, y = fit_bc_raw),
+    inherit.aes = FALSE,
+    linewidth = 1,
+    colour = "black"
+  ) +
+  facet_wrap(~ Phylum, scales = "free_x") +
+  scale_fill_manual(values = trophic_cols, drop = FALSE) +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "Block B | Within-phylum transporter variability",
+    subtitle = "Species-level mean transporter Bray–Curtis with pooled within-phylum trophic-index fit",
+    x = "Trophic index",
+    y = "Mean transporter Bray–Curtis dissimilarity"
+  ) +
+  theme_nat(base_size = 10)
+
+blockB_fit_fig <- p_tpf_within / p_bc_within
+
+ggsave(
+  filename = file.path(out_dir, "BlockB_within_phylum_fits.png"),
+  plot = blockB_fit_fig,
+  width = 12,
+  height = 10,
+  dpi = dpi_out,
+  bg = "white"
+)
+
+############################################################
+# 11) SUMMARY TABLE — SAME PORTRAIT STYLE AS OTHER TABLES
+############################################################
+
+table_rows <- tibble(
+  Metric = c(
+    "Response",
+    "Family",
+    "Fixed effects",
+    "Random effects",
+    "N",
+    "Trophic-index estimate",
+    "Trophic-index SE",
+    "Trophic-index p",
+    "Marginal R²",
+    "Conditional R²",
+    "Key conclusion"
+  ),
+  `TPF global` = c(
+    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "TPF global"],
+    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "TPF global"],
+    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "TPF global"],
+    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "TPF global"],
+    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "TPF global"]),
+    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "TPF global"], 3),
+    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "TPF global"], 3),
+    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "TPF global"]),
+    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "TPF global"], 3),
+    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "TPF global"], 3),
+    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "TPF global"]
+  ),
+  `TPF pooled within-phylum` = c(
+    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "TPF pooled"],
+    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "TPF pooled"],
+    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "TPF pooled"],
+    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "TPF pooled"],
+    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "TPF pooled"]),
+    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "TPF pooled"], 3),
+    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "TPF pooled"], 3),
+    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "TPF pooled"]),
+    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "TPF pooled"], 3),
+    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "TPF pooled"], 3),
+    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "TPF pooled"]
+  ),
+  `Bray-Curtis global` = c(
+    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "BC global"],
+    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "BC global"],
+    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "BC global"],
+    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "BC global"],
+    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "BC global"]),
+    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "BC global"], 3),
+    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "BC global"], 3),
+    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "BC global"]),
+    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "BC global"], 3),
+    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "BC global"], 3),
+    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "BC global"]
+  ),
+  `Bray-Curtis pooled within-phylum` = c(
+    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "BC pooled"],
+    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "BC pooled"],
+    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "BC pooled"],
+    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "BC pooled"],
+    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "BC pooled"]),
+    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "BC pooled"], 3),
+    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "BC pooled"], 3),
+    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "BC pooled"]),
+    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "BC pooled"], 3),
+    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "BC pooled"], 3),
+    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "BC pooled"]
+  )
+)
+
+write_csv(
+  table_rows,
+  file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.csv")
+)
+
+summary_table_gt <- table_rows %>%
+  gt() %>%
+  tab_header(
+    title = md("**Taxonomy robustness of trophic-index associations**"),
+    subtitle = "Global phylum-adjusted and pooled within-phylum model summaries"
+  ) %>%
+  cols_label(
+    Metric = "",
+    `TPF global` = "TPF (global)",
+    `TPF pooled within-phylum` = "TPF (pooled within-phylum)",
+    `Bray-Curtis global` = "Bray–Curtis (global)",
+    `Bray-Curtis pooled within-phylum` = "Bray–Curtis (pooled within-phylum)"
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Metric
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(
+      `TPF global`,
+      `TPF pooled within-phylum`,
+      `Bray-Curtis global`,
+      `Bray-Curtis pooled within-phylum`
+    )
+  ) %>%
+  cols_width(
+    Metric ~ px(240),
+    `TPF global` ~ px(235),
+    `TPF pooled within-phylum` ~ px(260),
+    `Bray-Curtis global` ~ px(235),
+    `Bray-Curtis pooled within-phylum` ~ px(270)
+  ) %>%
+  opt_row_striping() %>%
+  tab_options(
+    table.font.size = px(10),
+    data_row.padding = px(5),
+    column_labels.font.size = px(10),
+    heading.title.font.size = px(13),
+    heading.subtitle.font.size = px(10)
+  ) %>%
+  tab_source_note(
+    source_note = md(
+      "Global phylum-adjusted models estimate the trophic-index effect after accounting for phylum as a random intercept. Pooled within-phylum models instead include phylum as a fixed effect, so the trophic-index slope is estimated from within-phylum structure. For the pooled models, conditional R² is not applicable because no random-effect variance component is modeled."
+    )
+  )
+
+print(summary_table_gt)
+
+gtsave(
+  summary_table_gt,
+  filename = file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"),
+  vwidth = 1700,
+  vheight = 1200
+)
+
+gtsave(
+  summary_table_gt,
+  filename = file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.html")
+)
+
+############################################################
+# 12) CONSOLE SUMMARY
+############################################################
+
+cat("\nDone.\n")
+cat("Outputs written to: ", out_dir, "\n", sep = "")
+cat("\nResponses analysed:\n")
+cat("- Species-level mean transporter proteome fraction (TPF)\n")
+cat("- Species-level mean transporter Bray–Curtis dissimilarity\n\n")
+
+cat("Files:\n")
+cat(file.path(out_dir, "BlockB_species_level_TPF_data.csv"), "\n")
+cat(file.path(out_dir, "BlockB_species_level_transporter_BrayCurtis_data.csv"), "\n")
+cat(file.path(out_dir, "BlockB_global_and_withinphylum_models.csv"), "\n")
+cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.csv"), "\n")
+cat(file.path(out_dir, "BlockB_within_phylum_fits.png"), "\n")
+cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"), "\n")
+```
+
+
+
+```{r}
+####################################################################################################
+# FINAL UNIFIED FUNCTIONAL SPECIFICITY ANALYSIS
+#
+# PURPOSE
+# -------
+# Test whether trophic-index effects on temporal variability are concentrated in
+# resource-acquisition functions rather than reflecting a general property of species abundance,
+# total proteome structure, or other broad proteome categories.
+#
+# THIS VERSION
+# ------------
+# - keeps the same analysis backbone
+# - EXCLUDES the separate transporter-only model from the final summary table
+# - renders the summary table in PORTRAIT format:
+#       columns = analysis spaces
+#       rows    = model parameters / interpretation fields
+# - explicitly reports:
+#       * response
+#       * model family
+#       * fixed effects
+#       * random effects
+#       * N species
+#       * trophic-index estimate / CI / p
+#       * exp(beta)
+#       * marginal and conditional R²
+#       * TI10 -> TI90 response change
+#
+# EXPECTED OBJECTS ALREADY IN MEMORY
+# ----------------------------------
+#   protein_final
+#   retained_species
+#   retained_species_dates
+#   species_taxonomy
+#   species_abundance
+#
+# OUTPUT
+# ------
+# Folder:
+#   Final_Unified_FunctionalSpecificity/
+####################################################################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(tibble)
+  library(purrr)
+  library(ggplot2)
+  library(vegan)
+  library(glmmTMB)
+  library(broom)
+  library(broom.mixed)
+  library(performance)
+  library(patchwork)
+  library(gt)
+  library(grid)
+})
+
+set.seed(1)
+
+####################################################################################################
+# 0) SETTINGS
+####################################################################################################
+
+abundance_col <- "Protein_Abundance_IBAQ_Norm"
+
+min_proteins_per_date_global <- 10
+min_valid_dates_per_species_global <- 5
+
+min_features_per_date_analysis <- 1
+min_valid_dates_per_species_analysis <- 5
+
+transporter_regex <- "\\bTransporters\\b"
+eps <- 1e-6
+
+# Full analysis order for model fitting / figures
+analysis_order <- c(
+  "Species abundance",
+  "Total proteome",
+  "Growth machinery",
+  "Core metabolism/biosynthesis",
+  "Resource acquisition",
+  "Transporters"
+)
+
+# Table order excludes transporters
+table_analysis_order <- c(
+  "Species abundance",
+  "Total proteome",
+  "Growth machinery",
+  "Core metabolism/biosynthesis",
+  "Resource acquisition"
+)
+
+trophic_levels <- c("Oligo_like", "Intermediate", "Copio_like")
+trophic_cols <- c(
+  "Oligo_like"   = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copio_like"   = "#BA5205"
+)
+
+outdir <- "Final_Unified_FunctionalSpecificity"
+dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+
+####################################################################################################
+# 1) BASIC CHECKS
+####################################################################################################
+
+stopifnot(
+  exists("protein_final"),
+  exists("retained_species"),
+  exists("retained_species_dates"),
+  exists("species_taxonomy"),
+  exists("species_abundance")
+)
+
+stopifnot(
+  all(c("Species_ID", "Date", "Protein_ID", "Group_For_Plots", "TrophicIndex") %in% names(protein_final)),
+  all(c("Species_ID", "Date", "Group_For_Plots") %in% names(retained_species_dates)),
+  all(c("Species_ID") %in% names(retained_species)),
+  all(c("Species_ID", "Phylum") %in% names(species_taxonomy)),
+  all(c("Species_ID", "Date", "Species_Abundance") %in% names(species_abundance))
+)
+
+protein_final <- protein_final %>%
+  mutate(Date = as.Date(Date))
+
+retained_species_dates <- retained_species_dates %>%
+  mutate(Date = as.Date(Date))
+
+species_abundance <- species_abundance %>%
+  mutate(Date = as.Date(Date))
+
+####################################################################################################
+# 2) HELPERS
+####################################################################################################
+
+fmt_p_scalar <- function(p) {
+  if (length(p) == 0 || is.na(p) || !is.finite(p)) return("NA")
+  if (p < 1e-4) return("<1e-4")
+  if (p < 1e-3) return("<0.001")
+  formatC(p, format = "e", digits = 2)
+}
+
+fmt_num_scalar <- function(x, digits = 2) {
+  if (length(x) == 0 || is.na(x) || !is.finite(x)) return("NA")
+  formatC(x, digits = digits, format = "f")
+}
+
+fmt_p <- function(x) vapply(x, fmt_p_scalar, character(1))
+fmt_num <- function(x, digits = 2) vapply(x, fmt_num_scalar, character(1), digits = digits)
+
+logit01 <- function(x, eps = 1e-6) {
+  x2 <- pmin(pmax(x, eps), 1 - eps)
+  qlogis(x2)
+}
+
+safe_scale <- function(x) {
+  s <- sd(x, na.rm = TRUE)
+  if (!is.finite(s) || s == 0) {
+    rep(0, length(x))
+  } else {
+    as.numeric(scale(x))
+  }
+}
+
+theme_nature_clean <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold"),
+      plot.title = element_text(face = "bold"),
+      legend.position = "bottom",
+      legend.title = element_blank()
+    )
+}
+
+safe_r2_vals <- function(model) {
+  out <- c(Marginal_R2 = NA_real_, Conditional_R2 = NA_real_)
+
+  r2_obj <- tryCatch(
+    suppressWarnings(suppressMessages(performance::r2_nakagawa(model))),
+    error = function(e) NULL
+  )
+
+  if (is.null(r2_obj)) return(out)
+
+  if (is.atomic(r2_obj) && !is.null(names(r2_obj))) {
+    if ("R2_marginal" %in% names(r2_obj)) {
+      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_marginal"])[1])
+    }
+    if ("R2_conditional" %in% names(r2_obj)) {
+      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_conditional"])[1])
+    }
+  }
+
+  if (!is.atomic(r2_obj)) {
+    if (!is.null(r2_obj$R2_marginal)) {
+      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_marginal)[1])
+    }
+    if (!is.null(r2_obj$R2_conditional)) {
+      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_conditional)[1])
+    }
+  }
+
+  out
+}
+
+####################################################################################################
+# 3) EXPLICIT FUNCTIONAL CATEGORY LABELS
+####################################################################################################
+
+growth_labels <- c(
+  "Ribosome",
+  "Ribosome biogenesis",
+  "Translation factors",
+  "Transfer RNA biogenesis",
+  "Messenger RNA biogenesis",
+  "Chaperones and folding catalysts",
+  "Exosome",
+  "Proteasome",
+  "Ubiquitin system",
+  "Mitochondrial biogenesis"
+)
+
+resource_labels <- c(
+  "Secretion system",
+  "Two-component system",
+  "Membrane trafficking",
+  "Ion channels",
+  "Lectins"
+)
+
+core_labels <- c(
+  "Enzymes",
+  "Amino acid related enzymes",
+  "Lipid biosynthesis proteins",
+  "Lipopolysaccharide biosynthesis proteins",
+  "Glycosyltransferases",
+  "Polyketide biosynthesis proteins",
+  "Prenyltransferases",
+  "Cytochrome P450",
+  "Peptidoglycan biosynthesis and degradation proteins",
+  "Photosynthesis proteins"
+)
+
+####################################################################################################
+# 4) RECONSTRUCT SHARED RETAINED UNIVERSE
+####################################################################################################
+
+retained_keys <- retained_species_dates %>%
+  distinct(Species_ID, Date, Group_For_Plots)
+
+protein_final_u <- protein_final %>%
+  semi_join(retained_keys, by = c("Species_ID", "Date", "Group_For_Plots")) %>%
+  semi_join(retained_species %>% distinct(Species_ID), by = "Species_ID")
+
+species_abundance_u <- species_abundance %>%
+  semi_join(retained_species_dates %>% distinct(Species_ID, Date), by = c("Species_ID", "Date")) %>%
+  semi_join(retained_species %>% distinct(Species_ID), by = "Species_ID")
+
+species_meta <- protein_final_u %>%
+  distinct(Species_ID, TrophicIndex, TrophicGroup, Group_For_Plots) %>%
+  mutate(
+    TrophicGroup = case_when(
+      Group_For_Plots %in% trophic_levels ~ Group_For_Plots,
+      TrophicGroup %in% trophic_levels ~ TrophicGroup,
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  distinct(Species_ID, .keep_all = TRUE) %>%
+  left_join(
+    species_taxonomy %>%
+      distinct(Species_ID, Phylum, Class, Order, Family, Genus, Species),
+    by = "Species_ID"
+  ) %>%
+  filter(
+    is.finite(TrophicIndex),
+    !is.na(TrophicGroup),
+    !is.na(Phylum),
+    !is.na(Class)
+  ) %>%
+  mutate(
+    TrophicGroup = factor(TrophicGroup, levels = trophic_levels),
+    Phylum = factor(Phylum),
+    Class = factor(Class)
+  )
+
+####################################################################################################
+# 5) GLOBAL QC
+####################################################################################################
+
+species_date_qc <- protein_final_u %>%
+  mutate(
+    is_transporter = !is.na(KEGG_Subcategory) & str_detect(KEGG_Subcategory, transporter_regex)
+  ) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    N_prot_detected = n_distinct(Protein_ID),
+    has_transporter = any(is_transporter, na.rm = TRUE),
+    has_nontrans = any(!is_transporter, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(
+    N_prot_detected >= min_proteins_per_date_global,
+    has_transporter,
+    has_nontrans
+  )
+
+species_keep_global <- species_date_qc %>%
+  count(Species_ID, name = "n_dates_global") %>%
+  filter(n_dates_global >= min_valid_dates_per_species_global)
+
+species_date_keep_global <- species_date_qc %>%
+  semi_join(species_keep_global, by = "Species_ID") %>%
+  inner_join(species_meta, by = "Species_ID") %>%
+  mutate(Species_ID = factor(Species_ID))
+
+cat("\n=== Shared global QC universe ===\n")
+cat("QC-passed species×dates:", nrow(species_date_keep_global), "\n")
+cat("QC-passed species:", dplyr::n_distinct(species_date_keep_global$Species_ID), "\n")
+
+####################################################################################################
+# 6) FULL DATA PREPARATION
+####################################################################################################
+
+protein_base <- protein_final_u %>%
+  inner_join(
+    species_date_keep_global %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  ) %>%
+  mutate(
+    KEGG_ID = if_else(is.na(KEGG_ID) | KEGG_ID == "", NA_character_, KEGG_ID),
+    is_transporter = !is.na(KEGG_Subcategory) & str_detect(KEGG_Subcategory, transporter_regex)
+  ) %>%
+  distinct(Species_ID, Date, Protein_ID, KEGG_ID, .keep_all = TRUE) %>%
+  mutate(row_id = row_number())
+
+protein_labels_long <- protein_base %>%
+  transmute(
+    row_id,
+    Species_ID,
+    Date,
+    Protein_ID,
+    KEGG_ID,
+    is_transporter,
+    KEGG_Subcategory = if_else(
+      is.na(KEGG_Subcategory) | trimws(KEGG_Subcategory) == "",
+      "Unannotated",
+      KEGG_Subcategory
+    )
+  ) %>%
+  mutate(
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s*;\\s*", ";")
+  ) %>%
+  separate_rows(KEGG_Subcategory, sep = ";") %>%
+  mutate(
+    Label = trimws(KEGG_Subcategory),
+    Label = if_else(is.na(Label) | Label == "", "Unannotated", Label)
+  )
+
+protein_category_flags <- protein_labels_long %>%
+  group_by(row_id) %>%
+  summarise(
+    is_growth = any(Label %in% growth_labels, na.rm = TRUE),
+    is_core = any(Label %in% core_labels, na.rm = TRUE),
+    is_resource_nontrans = any(Label %in% resource_labels, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+protein_processed <- protein_base %>%
+  left_join(protein_category_flags, by = "row_id") %>%
+  mutate(
+    is_growth = if_else(is.na(is_growth), FALSE, is_growth),
+    is_core = if_else(is.na(is_core), FALSE, is_core),
+    is_resource_nontrans = if_else(is.na(is_resource_nontrans), FALSE, is_resource_nontrans),
+    is_resource_any = is_transporter | is_resource_nontrans,
+    n_split_categories = as.integer(is_growth) +
+      as.integer(is_core) +
+      as.integer(is_resource_any),
+    w_growth = if_else(is_growth & n_split_categories > 0, 1 / n_split_categories, 0),
+    w_core = if_else(is_core & n_split_categories > 0, 1 / n_split_categories, 0),
+    w_resource = if_else(is_resource_any & n_split_categories > 0, 1 / n_split_categories, 0),
+    w_transporters = if_else(is_transporter, 1, 0)
+  )
+
+####################################################################################################
+# 7) BUILD ANALYSIS-READY FEATURE TABLES
+####################################################################################################
+
+build_feature_table <- function(mode) {
+
+  if (mode == "species_abundance") {
+    return(
+      species_abundance_u %>%
+        inner_join(
+          species_date_keep_global %>% select(Species_ID, Date),
+          by = c("Species_ID", "Date")
+        ) %>%
+        filter(is.finite(Species_Abundance), Species_Abundance > 0) %>%
+        transmute(
+          Species_ID,
+          Date,
+          Feature_ID = "Species_Abundance",
+          abundance = Species_Abundance
+        )
+    )
+  }
+
+  if (mode == "total_proteome") {
+    return(
+      protein_processed %>%
+        filter(!is.na(KEGG_ID)) %>%
+        group_by(Species_ID, Date, KEGG_ID) %>%
+        summarise(
+          abundance = sum(.data[[abundance_col]], na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        filter(is.finite(abundance), abundance > 0) %>%
+        rename(Feature_ID = KEGG_ID)
+    )
+  }
+
+  if (mode == "growth_machinery") {
+    return(
+      protein_processed %>%
+        filter(!is.na(KEGG_ID), w_growth > 0) %>%
+        group_by(Species_ID, Date, KEGG_ID) %>%
+        summarise(
+          abundance = sum(.data[[abundance_col]] * w_growth, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        filter(is.finite(abundance), abundance > 0) %>%
+        rename(Feature_ID = KEGG_ID)
+    )
+  }
+
+  if (mode == "core_metabolism") {
+    return(
+      protein_processed %>%
+        filter(!is.na(KEGG_ID), w_core > 0) %>%
+        group_by(Species_ID, Date, KEGG_ID) %>%
+        summarise(
+          abundance = sum(.data[[abundance_col]] * w_core, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        filter(is.finite(abundance), abundance > 0) %>%
+        rename(Feature_ID = KEGG_ID)
+    )
+  }
+
+  if (mode == "resource_acquisition") {
+    return(
+      protein_processed %>%
+        filter(!is.na(KEGG_ID), w_resource > 0) %>%
+        group_by(Species_ID, Date, KEGG_ID) %>%
+        summarise(
+          abundance = sum(.data[[abundance_col]] * w_resource, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        filter(is.finite(abundance), abundance > 0) %>%
+        rename(Feature_ID = KEGG_ID)
+    )
+  }
+
+  if (mode == "transporters") {
+    return(
+      protein_processed %>%
+        filter(!is.na(KEGG_ID), w_transporters > 0) %>%
+        group_by(Species_ID, Date, KEGG_ID) %>%
+        summarise(
+          abundance = sum(.data[[abundance_col]], na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        filter(is.finite(abundance), abundance > 0) %>%
+        rename(Feature_ID = KEGG_ID)
+    )
+  }
+
+  stop("Unknown mode: ", mode)
+}
+
+####################################################################################################
+# 8) BUILD ANALYSIS-SPECIFIC KEEP TABLE
+####################################################################################################
+
+build_analysis_keep_tbl <- function(feature_tbl, analysis_label) {
+
+  date_feature_counts <- feature_tbl %>%
+    group_by(Species_ID, Date) %>%
+    summarise(
+      n_features = n_distinct(Feature_ID),
+      total_abund = sum(abundance, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    filter(
+      n_features >= min_features_per_date_analysis,
+      is.finite(total_abund),
+      total_abund > 0
+    )
+
+  keep_tbl <- species_date_keep_global %>%
+    inner_join(date_feature_counts, by = c("Species_ID", "Date")) %>%
+    group_by(Species_ID) %>%
+    mutate(n_dates_analysis = n()) %>%
+    ungroup() %>%
+    filter(n_dates_analysis >= min_valid_dates_per_species_analysis) %>%
+    mutate(
+      Analysis = analysis_label,
+      Species_ID = factor(Species_ID),
+      TrophicGroup = factor(TrophicGroup, levels = trophic_levels),
+      Phylum = factor(Phylum)
+    )
+
+  keep_tbl
+}
+
+####################################################################################################
+# 9) COMPUTE CONSECUTIVE-DATE BRAY–CURTIS DISSIMILARITY
+####################################################################################################
+
+compute_transitions_bc <- function(feature_tbl, keep_tbl, analysis_label) {
+
+  valid_species <- keep_tbl %>%
+    distinct(Species_ID) %>%
+    pull(Species_ID) %>%
+    as.character()
+
+  out <- lapply(valid_species, function(sp_id_chr) {
+
+    dates <- keep_tbl %>%
+      filter(as.character(Species_ID) == sp_id_chr) %>%
+      distinct(Date) %>%
+      arrange(Date) %>%
+      pull(Date)
+
+    if (length(dates) < 2) return(NULL)
+
+    mat_wide <- feature_tbl %>%
+      filter(as.character(Species_ID) == sp_id_chr, Date %in% dates) %>%
+      mutate(Date = as.character(Date)) %>%
+      pivot_wider(
+        names_from = Feature_ID,
+        values_from = abundance,
+        values_fill = 0
+      ) %>%
+      arrange(match(Date, as.character(dates)))
+
+    M <- as.matrix(mat_wide %>% select(-Species_ID, -Date))
+    rownames(M) <- mat_wide$Date
+
+    if (nrow(M) < 2) return(NULL)
+
+    pairs <- tibble(
+      Date1 = dates[-length(dates)],
+      Date2 = dates[-1]
+    )
+
+    bind_rows(lapply(seq_len(nrow(pairs)), function(i) {
+      d1 <- as.character(pairs$Date1[i])
+      d2 <- as.character(pairs$Date2[i])
+
+      bc <- as.numeric(vegdist(M[c(d1, d2), , drop = FALSE], method = "bray"))
+
+      nd1 <- keep_tbl %>%
+        filter(as.character(Species_ID) == sp_id_chr, Date == pairs$Date1[i]) %>%
+        pull(N_prot_detected)
+
+      nd2 <- keep_tbl %>%
+        filter(as.character(Species_ID) == sp_id_chr, Date == pairs$Date2[i]) %>%
+        pull(N_prot_detected)
+
+      nf1 <- keep_tbl %>%
+        filter(as.character(Species_ID) == sp_id_chr, Date == pairs$Date1[i]) %>%
+        pull(n_features)
+
+      nf2 <- keep_tbl %>%
+        filter(as.character(Species_ID) == sp_id_chr, Date == pairs$Date2[i]) %>%
+        pull(n_features)
+
+      tibble(
+        Analysis = analysis_label,
+        Species_ID = sp_id_chr,
+        Date1 = pairs$Date1[i],
+        Date2 = pairs$Date2[i],
+        BrayCurtis = bc,
+        N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE),
+        N_feat_pair = mean(c(nf1, nf2), na.rm = TRUE)
+      )
+    }))
+  })
+
+  bind_rows(out) %>%
+    left_join(
+      keep_tbl %>%
+        mutate(Species_ID_chr = as.character(Species_ID)) %>%
+        distinct(Species_ID_chr, TrophicIndex, TrophicGroup, Phylum),
+      by = c("Species_ID" = "Species_ID_chr")
+    ) %>%
+    filter(is.finite(BrayCurtis), is.finite(TrophicIndex)) %>%
+    mutate(
+      BC_logit = logit01(BrayCurtis, eps = eps),
+      log_prot_pair = log1p(N_prot_pair),
+      log_feat_pair = log1p(N_feat_pair),
+      TrophicIndex_z = safe_scale(TrophicIndex),
+      log_prot_pair_z = safe_scale(log_prot_pair),
+      log_feat_pair_z = safe_scale(log_feat_pair),
+      TrophicGroup = factor(TrophicGroup, levels = trophic_levels),
+      Species_ID = factor(Species_ID),
+      Phylum = factor(Phylum)
+    ) %>%
+    filter(
+      !is.na(Species_ID),
+      !is.na(Phylum),
+      is.finite(BC_logit),
+      is.finite(TrophicIndex_z)
+    ) %>%
+    droplevels()
+}
+
+####################################################################################################
+# 10) SUMMARISE TO SPECIES-LEVEL VARIABILITY
+####################################################################################################
+
+summarise_species_variability <- function(transitions_tbl) {
+  transitions_tbl %>%
+    group_by(Analysis, Species_ID, TrophicIndex, TrophicGroup, Phylum) %>%
+    summarise(
+      n_transitions = n(),
+      mean_bc = mean(BrayCurtis, na.rm = TRUE),
+      median_bc = median(BrayCurtis, na.rm = TRUE),
+      mean_N_prot_pair = mean(N_prot_pair, na.rm = TRUE),
+      mean_N_feat_pair = mean(N_feat_pair, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      mean_bc_logit = logit01(mean_bc, eps = eps),
+      median_bc_logit = logit01(median_bc, eps = eps),
+      log_prot_pair = log1p(mean_N_prot_pair),
+      log_feat_pair = log1p(mean_N_feat_pair),
+      TrophicIndex_z = safe_scale(TrophicIndex),
+      n_transitions_z = safe_scale(n_transitions),
+      log_prot_pair_z = safe_scale(log_prot_pair),
+      log_feat_pair_z = safe_scale(log_feat_pair),
+      TrophicGroup = factor(TrophicGroup, levels = trophic_levels),
+      Phylum = factor(Phylum)
+    )
+}
+
+####################################################################################################
+# 11) SPECIES-LEVEL MODEL FITTER
+####################################################################################################
+
+fit_species_model_safe <- function(df, response_col = "mean_bc_logit") {
+
+  model_df <- df %>%
+    filter(
+      is.finite(.data[[response_col]]),
+      is.finite(TrophicIndex_z),
+      is.finite(n_transitions_z),
+      is.finite(log_prot_pair_z),
+      !is.na(Phylum)
+    ) %>%
+    mutate(Phylum = factor(Phylum)) %>%
+    droplevels()
+
+  if (nrow(model_df) < 8) {
+    stop("Too few rows to fit model.")
+  }
+
+  rhs <- "TrophicIndex_z + n_transitions_z + log_prot_pair_z"
+
+  if (nlevels(model_df$Phylum) >= 2) {
+    mixed_formula <- as.formula(
+      paste(response_col, "~", rhs, "+ (1 | Phylum)")
+    )
+
+    mixed_try <- tryCatch(
+      glmmTMB(
+        formula = mixed_formula,
+        family = gaussian(),
+        data = model_df
+      ),
+      error = function(e) NULL
+    )
+
+    if (!is.null(mixed_try)) {
+      return(list(
+        model = mixed_try,
+        model_class = "glmmTMB",
+        data_used = model_df,
+        response_col = response_col,
+        fixed_effects_text = "Trophic index + n transitions + mean species protein recovery (paired consecutive dates)",
+        random_effects_text = "(1 | Phylum)",
+        family_text = "Gaussian on logit scale"
+      ))
+    }
+  }
+
+  lm_formula <- if (nlevels(model_df$Phylum) >= 2) {
+    as.formula(paste(response_col, "~", rhs, "+ Phylum"))
+  } else {
+    as.formula(paste(response_col, "~", rhs))
+  }
+
+  lm_fit <- lm(lm_formula, data = model_df)
+
+  list(
+    model = lm_fit,
+    model_class = "lm",
+    data_used = model_df,
+    response_col = response_col,
+    fixed_effects_text = "Trophic index + n transitions + mean species protein recovery (paired consecutive dates) + Phylum",
+    random_effects_text = "None (linear-model fallback)",
+    family_text = "Gaussian on logit scale"
+  )
+}
+
+####################################################################################################
+# 12) EXTRACT MODEL STATS
+####################################################################################################
+
+extract_species_model_stats <- function(model_obj, analysis_label) {
+
+  model <- model_obj$model
+  model_class <- model_obj$model_class
+  df <- model_obj$data_used
+
+  if (model_class == "glmmTMB") {
+    td <- broom.mixed::tidy(model, effects = "fixed", conf.int = TRUE)
+    ti <- td %>% filter(term == "TrophicIndex_z")
+    r2_vals <- safe_r2_vals(model)
+    r2m <- unname(r2_vals["Marginal_R2"])
+    r2c <- unname(r2_vals["Conditional_R2"])
+  } else {
+    td <- broom::tidy(model, conf.int = TRUE)
+    ti <- td %>% filter(term == "TrophicIndex_z")
+    r2m <- summary(model)$r.squared
+    r2c <- summary(model)$r.squared
+  }
+
+  ti10 <- as.numeric(quantile(df$TrophicIndex, 0.10, na.rm = TRUE))
+  ti90 <- as.numeric(quantile(df$TrophicIndex, 0.90, na.rm = TRUE))
+  mu_ti <- mean(df$TrophicIndex, na.rm = TRUE)
+  sd_ti <- sd(df$TrophicIndex, na.rm = TRUE)
+  if (!is.finite(sd_ti) || sd_ti == 0) sd_ti <- 1
+
+  nd <- tibble(
+    TrophicIndex_z = c((ti10 - mu_ti) / sd_ti, (ti90 - mu_ti) / sd_ti),
+    n_transitions_z = 0,
+    log_prot_pair_z = 0
+  )
+
+  if ("Phylum" %in% names(df)) {
+    nd$Phylum <- factor(rep(levels(df$Phylum)[1], 2), levels = levels(df$Phylum))
+  }
+
+  if (model_class == "glmmTMB") {
+    pred <- predict(model, newdata = nd, type = "link", re.form = NA)
+  } else {
+    pred <- predict(model, newdata = nd)
+  }
+
+  pred_resp <- plogis(pred)
+
+  tibble(
+    Analysis = analysis_label,
+    response = "Mean Bray–Curtis dissimilarity",
+    model_class = model_class,
+    family_text = model_obj$family_text,
+    fixed_effects_text = model_obj$fixed_effects_text,
+    random_effects_text = model_obj$random_effects_text,
+    beta = ti$estimate[1],
+    conf.low = ti$conf.low[1],
+    conf.high = ti$conf.high[1],
+    p_value = ti$p.value[1],
+    exp_beta = exp(ti$estimate[1]),
+    exp_low = exp(ti$conf.low[1]),
+    exp_high = exp(ti$conf.high[1]),
+    R2_marginal = r2m[1],
+    R2_conditional = r2c[1],
+    TI10 = ti10,
+    TI90 = ti90,
+    pred_TI10 = pred_resp[1],
+    pred_TI90 = pred_resp[2],
+    delta = pred_resp[2] - pred_resp[1],
+    ratio = pred_resp[2] / pred_resp[1],
+    N_species = dplyr::n_distinct(df$Species_ID),
+    N_rows = nrow(df),
+    label = paste0(
+      "β=", fmt_num_scalar(ti$estimate[1], 3),
+      " [", fmt_num_scalar(ti$conf.low[1], 3), ", ", fmt_num_scalar(ti$conf.high[1], 3), "]\n",
+      "p=", fmt_p_scalar(ti$p.value[1]),
+      "; exp(β)=", fmt_num_scalar(exp(ti$estimate[1]), 2), "\n",
+      "R²m=", fmt_num_scalar(r2m[1], 2),
+      "; R²c=", fmt_num_scalar(r2c[1], 2), "\n",
+      "Δ(TI10→TI90)=", fmt_num_scalar(pred_resp[2] - pred_resp[1], 3),
+      "; ratio=", fmt_num_scalar(pred_resp[2] / pred_resp[1], 2), "\n",
+      "N species=", dplyr::n_distinct(df$Species_ID)
+    )
+  )
+}
+
+####################################################################################################
+# 13) PREDICTION CURVES
+####################################################################################################
+
+get_species_prediction_curve <- function(model_obj, analysis_label) {
+
+  model <- model_obj$model
+  model_class <- model_obj$model_class
+  df <- model_obj$data_used
+
+  mu_ti <- mean(df$TrophicIndex, na.rm = TRUE)
+  sd_ti <- sd(df$TrophicIndex, na.rm = TRUE)
+  if (!is.finite(sd_ti) || sd_ti == 0) sd_ti <- 1
+
+  ti_seq <- seq(min(df$TrophicIndex, na.rm = TRUE), max(df$TrophicIndex, na.rm = TRUE), length.out = 200)
+
+  nd <- tibble(
+    TrophicIndex_z = (ti_seq - mu_ti) / sd_ti,
+    n_transitions_z = 0,
+    log_prot_pair_z = 0
+  )
+
+  if ("Phylum" %in% names(df)) {
+    nd$Phylum <- factor(rep(levels(df$Phylum)[1], nrow(nd)), levels = levels(df$Phylum))
+  }
+
+  if (model_class == "glmmTMB") {
+    pred <- predict(model, newdata = nd, type = "link", se.fit = TRUE, re.form = NA)
+
+    out <- nd %>%
+      mutate(
+        TrophicIndex = ti_seq,
+        fit = pred$fit,
+        se = pred$se.fit,
+        conf.low = fit - 1.96 * se,
+        conf.high = fit + 1.96 * se,
+        predicted = plogis(fit),
+        pred_low = plogis(conf.low),
+        pred_high = plogis(conf.high),
+        Analysis = analysis_label
+      )
+  } else {
+    pred <- predict(model, newdata = nd, se.fit = TRUE)
+
+    out <- nd %>%
+      mutate(
+        TrophicIndex = ti_seq,
+        fit = pred$fit,
+        se = pred$se.fit,
+        conf.low = fit - 1.96 * se,
+        conf.high = fit + 1.96 * se,
+        predicted = plogis(fit),
+        pred_low = plogis(conf.low),
+        pred_high = plogis(conf.high),
+        Analysis = analysis_label
+      )
+  }
+
+  out
+}
+
+####################################################################################################
+# 14) ANALYSIS SPECIFICATIONS
+####################################################################################################
+
+analysis_specs <- tribble(
+  ~Analysis,                       ~mode,
+  "Species abundance",            "species_abundance",
+  "Total proteome",               "total_proteome",
+  "Growth machinery",             "growth_machinery",
+  "Core metabolism/biosynthesis", "core_metabolism",
+  "Resource acquisition",         "resource_acquisition",
+  "Transporters",                 "transporters"
+)
+
+####################################################################################################
+# 15) RUN ALL ANALYSES
+####################################################################################################
+
+feature_tables <- list()
+keep_tables <- list()
+transition_tables <- list()
+species_tables <- list()
+mean_model_objs <- list()
+mean_model_stats_list <- list()
+mean_prediction_list <- list()
+included_species_list <- list()
+excluded_species_list <- list()
+
+global_species_set <- sort(as.character(unique(species_date_keep_global$Species_ID)))
+
+for (i in seq_len(nrow(analysis_specs))) {
+
+  analysis_label <- analysis_specs$Analysis[i]
+  mode_i <- analysis_specs$mode[i]
+
+  cat("\n============================================================\n")
+  cat("Running:", analysis_label, "\n")
+  cat("============================================================\n")
+
+  ft <- build_feature_table(mode_i)
+  feature_tables[[analysis_label]] <- ft
+
+  keep_tbl <- build_analysis_keep_tbl(ft, analysis_label)
+  keep_tables[[analysis_label]] <- keep_tbl
+
+  included_species_list[[analysis_label]] <- tibble(
+    Analysis = analysis_label,
+    Species_ID = sort(as.character(unique(keep_tbl$Species_ID)))
+  )
+
+  excluded_species_list[[analysis_label]] <- tibble(
+    Analysis = analysis_label,
+    Species_ID = setdiff(global_species_set, sort(as.character(unique(keep_tbl$Species_ID))))
+  )
+
+  cat("QC-passed species:", dplyr::n_distinct(keep_tbl$Species_ID), "\n")
+  cat("QC-passed species×dates:", nrow(keep_tbl), "\n")
+
+  if (dplyr::n_distinct(keep_tbl$Species_ID) < 5) {
+    warning("Too few species after analysis-specific QC for: ", analysis_label)
+    next
+  }
+
+  trans_tbl <- compute_transitions_bc(ft, keep_tbl, analysis_label)
+  transition_tables[[analysis_label]] <- trans_tbl
+
+  if (nrow(trans_tbl) == 0) {
+    warning("No transitions available for: ", analysis_label)
+    next
+  }
+
+  species_tbl <- summarise_species_variability(trans_tbl)
+  species_tables[[analysis_label]] <- species_tbl
+
+  mean_model_obj <- fit_species_model_safe(species_tbl, response_col = "mean_bc_logit")
+  mean_model_objs[[analysis_label]] <- mean_model_obj
+
+  mean_model_stats_list[[analysis_label]] <- extract_species_model_stats(mean_model_obj, analysis_label)
+  mean_prediction_list[[analysis_label]] <- get_species_prediction_curve(mean_model_obj, analysis_label)
+}
+
+####################################################################################################
+# 16) COMBINE OUTPUT TABLES
+####################################################################################################
+
+transition_results <- bind_rows(transition_tables)
+species_results <- bind_rows(species_tables)
+mean_model_stats_df <- bind_rows(mean_model_stats_list)
+mean_prediction_df <- bind_rows(mean_prediction_list)
+included_species_df <- bind_rows(included_species_list)
+excluded_species_df <- bind_rows(excluded_species_list)
+
+transition_results <- transition_results %>%
+  mutate(Analysis = factor(Analysis, levels = analysis_order))
+
+species_results <- species_results %>%
+  mutate(Analysis = factor(Analysis, levels = analysis_order))
+
+mean_prediction_df <- mean_prediction_df %>%
+  mutate(Analysis = factor(Analysis, levels = analysis_order))
+
+mean_model_stats_df <- mean_model_stats_df %>%
+  mutate(Analysis = factor(Analysis, levels = analysis_order))
+
+####################################################################################################
+# 17) FIGURE 1 — COEFFICIENT COMPARISON ACROSS ANALYSIS SPACES
+####################################################################################################
+
+coef_plot_df <- mean_model_stats_df %>%
+  mutate(
+    Analysis = factor(Analysis, levels = rev(analysis_order))
+  )
+
+p_coef <- ggplot(coef_plot_df, aes(x = beta, y = Analysis)) +
+  geom_vline(xintercept = 0, linetype = 2, linewidth = 0.3) +
+  geom_errorbarh(
+    aes(xmin = conf.low, xmax = conf.high),
+    height = 0.18,
+    linewidth = 0.45
+  ) +
+  geom_point(size = 2.2) +
+  labs(
+    title = "Functional specificity of trophic-index effects on temporal variability",
+    subtitle = "Species-level mean Bray–Curtis dissimilarity models across six analysis spaces",
+    x = "Trophic-index coefficient",
+    y = NULL
+  ) +
+  theme_nature_clean()
+
+print(p_coef)
+
+ggsave(
+  filename = file.path(outdir, "Final_FunctionalSpecificity_coefficients.png"),
+  plot = p_coef,
+  width = 9.5,
+  height = 5.8,
+  dpi = 300,
+  bg = "white"
+)
+
+####################################################################################################
+# 18) FIGURE 2 — MULTI-ROW FITTED RESPONSE PANELS
+####################################################################################################
+
+make_row_plot <- function(analysis_label) {
+
+  dat <- species_results %>%
+    filter(Analysis == analysis_label) %>%
+    droplevels()
+
+  pred <- mean_prediction_df %>%
+    filter(Analysis == analysis_label)
+
+  mod_stats <- mean_model_stats_df %>%
+    filter(Analysis == analysis_label)
+
+  label_df <- tibble(
+    x = Inf,
+    y = Inf,
+    label = mod_stats$label[1]
+  )
+
+  ggplot() +
+    geom_point(
+      data = dat,
+      aes(x = TrophicIndex, y = mean_bc, fill = TrophicGroup),
+      shape = 21,
+      color = "grey25",
+      stroke = 0.2,
+      size = 2.0,
+      alpha = 0.80
+    ) +
+    geom_ribbon(
+      data = pred,
+      aes(x = TrophicIndex, ymin = pred_low, ymax = pred_high),
+      inherit.aes = FALSE,
+      alpha = 0.18,
+      fill = "grey55"
+    ) +
+    geom_line(
+      data = pred,
+      aes(x = TrophicIndex, y = predicted),
+      inherit.aes = FALSE,
+      linewidth = 0.95,
+      color = "black"
+    ) +
+    geom_label(
+      data = label_df,
+      aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      hjust = 1.02,
+      vjust = 1.02,
+      size = 2.9,
+      linewidth = 0.25,
+      fill = "white",
+      label.padding = unit(0.15, "lines")
+    ) +
+    coord_cartesian(ylim = c(0, 1.02), clip = "off") +
+    scale_fill_manual(values = trophic_cols, drop = FALSE) +
+    labs(
+      title = analysis_label,
+      x = "Trophic index",
+      y = "Mean consecutive-date Bray–Curtis dissimilarity"
+    ) +
+    theme_nature_clean() +
+    theme(
+      legend.position = "none",
+      plot.margin = margin(5.5, 18, 5.5, 5.5)
+    )
+}
+
+row_plots <- lapply(analysis_order, make_row_plot)
+
+fit_figure <- wrap_plots(row_plots, ncol = 1) +
+  plot_annotation(
+    title = "Fitted trophic-index responses across abundance, whole-proteome, and functional spaces",
+    subtitle = "Species-level mean Bray–Curtis dissimilarity"
+  )
+
+print(fit_figure)
+
+ggsave(
+  filename = file.path(outdir, "Final_FunctionalSpecificity_fitted_panels.png"),
+  plot = fit_figure,
+  width = 8.8,
+  height = 18.0,
+  dpi = 300,
+  bg = "white"
+)
+
+####################################################################################################
+# 19) SUMMARY TABLE — PORTRAIT FORMAT, COLUMNS = ANALYSIS SPACES
+#     EXCLUDES TRANSPORTERS
+####################################################################################################
+
+summary_table_source <- mean_model_stats_df %>%
+  filter(Analysis %in% table_analysis_order) %>%
+  arrange(match(Analysis, table_analysis_order))
+
+summary_table_portrait <- tibble(
+  Metric = c(
+    "Response",
+    "Model family",
+    "Fixed effects",
+    "Random effects",
+    "N species",
+    "Trophic-index estimate",
+    "95% CI",
+    "Trophic-index p",
+    "exp(beta)",
+    "Marginal R²",
+    "Conditional R²",
+    "Delta TI10 to TI90",
+    "Ratio TI90/TI10"
+  )
+)
+
+for (an in table_analysis_order) {
+  row_i <- summary_table_source %>% filter(Analysis == an)
+
+  summary_table_portrait[[an]] <- c(
+    row_i$response,
+    row_i$family_text,
+    row_i$fixed_effects_text,
+    row_i$random_effects_text,
+    as.character(row_i$N_species),
+    fmt_num_scalar(row_i$beta, 3),
+    paste0("[", fmt_num_scalar(row_i$conf.low, 3), ", ", fmt_num_scalar(row_i$conf.high, 3), "]"),
+    fmt_p_scalar(row_i$p_value),
+    fmt_num_scalar(row_i$exp_beta, 2),
+    fmt_num_scalar(row_i$R2_marginal, 3),
+    fmt_num_scalar(row_i$R2_conditional, 3),
+    fmt_num_scalar(row_i$delta, 3),
+    fmt_num_scalar(row_i$ratio, 2)
+  )
+}
+
+write_csv(
+  summary_table_portrait,
+  file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.csv")
+)
+
+summary_table_gt <- summary_table_portrait %>%
+  gt() %>%
+  tab_header(
+    title = md("**Functional specificity of trophic-index effects on temporal variability**"),
+    subtitle = "Species abundance, total proteome, growth machinery, core metabolism / biosynthesis, and resource acquisition"
+  ) %>%
+  cols_label(
+    Metric = "",
+    `Species abundance` = "Species abundance",
+    `Total proteome` = "Total proteome",
+    `Growth machinery` = "Growth machinery",
+    `Core metabolism/biosynthesis` = "Core metabolism/\nbiosynthesis",
+    `Resource acquisition` = "Resource acquisition"
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = c(Metric)
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(
+      `Species abundance`,
+      `Total proteome`,
+      `Growth machinery`,
+      `Core metabolism/biosynthesis`,
+      `Resource acquisition`
+    )
+  ) %>%
+  cols_width(
+    Metric ~ px(220),
+    `Species abundance` ~ px(190),
+    `Total proteome` ~ px(190),
+    `Growth machinery` ~ px(190),
+    `Core metabolism/biosynthesis` ~ px(210),
+    `Resource acquisition` ~ px(190)
+  ) %>%
+  opt_row_striping() %>%
+  tab_options(
+    table.font.size = px(10),
+    data_row.padding = px(5),
+    column_labels.font.size = px(10),
+    heading.title.font.size = px(13),
+    heading.subtitle.font.size = px(10)
+  ) %>%
+  tab_source_note(
+    source_note = md(
+      "Transporters were excluded from this comparative portrait table because they were already shown separately as the focal mechanistic subset. Species abundance is included as a temporal reference baseline. Proteome-based feature spaces were constructed from iBAQ-normalized abundances summed per KEGG ortholog. Growth machinery, core metabolism / biosynthesis, and resource acquisition were defined from explicit KEGG subcategory labels."
+    )
+  )
+
+print(summary_table_gt)
+
+gtsave(
+  summary_table_gt,
+  filename = file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.png"),
+  vwidth = 1700,
+  vheight = 1100
+)
+
+gtsave(
+  summary_table_gt,
+  filename = file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.html")
+)
+
+####################################################################################################
+# 20) WRITE CORE OUTPUT TABLES
+####################################################################################################
+
+write_csv(transition_results, file.path(outdir, "Final_transition_level_results.csv"))
+write_csv(species_results, file.path(outdir, "Final_species_level_results.csv"))
+write_csv(mean_model_stats_df, file.path(outdir, "Final_mean_model_stats_full.csv"))
+write_csv(included_species_df, file.path(outdir, "Included_species_by_analysis.csv"))
+write_csv(excluded_species_df, file.path(outdir, "Excluded_species_by_analysis.csv"))
+
+####################################################################################################
+# 21) CONSOLE SUMMARY
+####################################################################################################
+
+cat("\nDone.\n")
+cat("Outputs written to: ", outdir, "\n", sep = "")
+cat("\nMain figures:\n")
+cat(file.path(outdir, "Final_FunctionalSpecificity_coefficients.png"), "\n")
+cat(file.path(outdir, "Final_FunctionalSpecificity_fitted_panels.png"), "\n")
+cat("\nTables:\n")
+cat(file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.csv"), "\n")
+cat(file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.png"), "\n")
+cat(file.path(outdir, "Final_transition_level_results.csv"), "\n")
+cat(file.path(outdir, "Final_species_level_results.csv"), "\n")
+cat(file.path(outdir, "Final_mean_model_stats_full.csv"), "\n")
+cat(file.path(outdir, "Included_species_by_analysis.csv"), "\n")
+cat(file.path(outdir, "Excluded_species_by_analysis.csv"), "\n")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+body {
+    /* Existing body styles */
+}
+
+#content {
+    background: #fcfcfc;
+    height: 100%;
+    margin-left: 305px; /* Adjust this value to make main wider */
+    margin-right: 5px;
+    max-width: 90%; /* Set maximum width for main */
+    min-height: 100%;
+    margin-top: 5px; /* Add some padding to the main content */
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #211103;
+    z-index: 200;
+    font-size: 16px;
+    width: 300px; /* Width of the sidebar */
+}
+
+.figure img {
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-left: 310px;
+    max-width: 100%; /* Ensure figures don't exceed parent width */
+    height: auto; /* Maintain aspect ratio */
+    width: 100%; /* Make figures fill their container */
+}
+
+
+
+/* Specific styles for sidebar, header, and footer */
+#sidebar {
+    background-color: #F3F4F5 !important; /* Change sidebar background color */
+}
+
+/* Style the <h2> element within the sidebar */
+#sidebar h2 {
+    background-color: #AED6F1  !important; /* Change <h2> background color */
+}
+
+#sidebar a {
+  color: #F3F4F5 !important;
+}
+
+#sidebar p {
+  color:#F3F4F5 !important;
+}
+
+/* Specific styles for text elements */
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    color: #83A1B5 !important; /* Change color of headers */
+}
+
+/* Links */
+a href{
+    color: #83A1B5 !important; /* Change color of links */
+}
+
+/* Paragraphs */
+p {
+    color: #838586 !important; /* Change color of paragraphs */
+}
+
+/* List Items */
+li {
+    color: #F3F4F5 !important; /* Change color of list items */
+}
+
+/* Bold Text */
+strong {
+    color: #AED6F1 !important; /* Change color of bold text */
+}
+
+/* Italics Text */
+em {
+    color: #AED6F1 !important; /* Change color of italics text */
+}
+
+/* Normal state */
+a {
+    color: #83A1B5 !important; /* Change color of links */
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #F3F4F5 !important;
+    background: #83A1B5 !important;
+}
+
+#postamble::before {
+    content: "Text Above Border"; /* Add your desired text here */
+    position: absolute;
+    top: -20px; /* Adjust this value to position the text above the border */
+    left: 12px; /* Adjust this value to position the text horizontally */
+    color: green; /* Set the color of the text */
+    font-size: 14px; /* Set the font size of the text */
+    font-weight: bold; /* Set the font weight of the text */
+}
+
+#postamble {
+    color: #fcfcfc;
+    background: #3B3F42; /* Change background color to red */
+    border-top: solid 10px #AED6F1;
+    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+    font-size: 90%;
+    z-index: 400;
+    padding: 12px;
+}

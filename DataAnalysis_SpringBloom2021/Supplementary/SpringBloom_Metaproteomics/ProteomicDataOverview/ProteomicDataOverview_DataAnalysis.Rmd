@@ -1,0 +1,1065 @@
+---
+title: Proteomic Data Overview
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/SpringBloom_Metaproteomics/ProteomicDataOverview/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(forcats)
+library(scales)
+library(patchwork)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "Proteomic_Data_Overview.csv")
+
+n_distinct(dat$Protein_ID)
+min(dat$Peptide_Abundance)
+min(dat$Protein_Abundance_IBAQ)
+```
+
+```{r}
+# --------------------------------------------------
+# SETTINGS
+# --------------------------------------------------
+
+base_theme <- theme_minimal(base_size = 16) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 12),
+    plot.title = element_text(size = 13, face = "plain"),
+    plot.subtitle = element_text(size = 10),
+    legend.text = element_text(size = 11, face = "plain"),
+    legend.title = element_blank()
+  )
+
+# fixed phylum order
+phylum_order <- c(
+  "Actinomycetota",   "Bacteroidota",     "Pseudomonadota",
+  "Verrucomicrobiota","Planctomycetota",  "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota",  "Armatimonadota",
+  "Myxococcota",      "Nitrospirota",     "Thermoproteota",
+  "Patescibacteria",  "Gemmatimonadota",  "Cyanobacteriota",
+  "Deinococcota",     "Chlamydiota"
+)
+
+# safer color mapping
+phylum_cols <- setNames(ColorPalette[seq_along(phylum_order)], phylum_order)
+
+# --------------------------------------------------
+# TOP 8 PHYLA
+# choose by proteins, as in your previous logic
+# excluding contaminants from ranking only
+# --------------------------------------------------
+
+Top8_Phyla <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0, Phylum != "Y-FGCZCont") %>%
+  group_by(Phylum) %>%
+  summarise(UniqueCount = n_distinct(Protein_ID), .groups = "drop") %>%
+  arrange(desc(UniqueCount)) %>%
+  slice_head(n = 8) %>%
+  pull(Phylum)
+
+ordered_phyla <- phylum_order[phylum_order %in% Top8_Phyla]
+
+# final plotting order
+plot_levels <- c(ordered_phyla, "Rest", "Contaminants")
+
+fill_cols <- c(
+  phylum_cols[ordered_phyla],
+  Rest = "red",
+  Contaminants = "grey70"
+)
+
+# --------------------------------------------------
+# HELPER: collapse phyla into Top8 / Rest / Contaminants
+# --------------------------------------------------
+
+add_phylum_group <- function(df) {
+  df %>%
+    mutate(
+      Phylum_Group = case_when(
+        Phylum == "Y-FGCZCont" ~ "Contaminants",
+        Phylum %in% ordered_phyla ~ Phylum,
+        TRUE ~ "Rest"
+      ),
+      Phylum_Group = factor(Phylum_Group, levels = plot_levels),
+      Date = factor(Date, levels = unique(Date))
+    )
+}
+
+# ==================================================
+# PEPTIDES: 2 x 2 MULTIPANEL
+# ==================================================
+
+pep_dat <- dat %>%
+  filter(Peptide_Abundance > 0) %>%
+  add_phylum_group()
+
+# 1. peptide count
+pep_count <- pep_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = n_distinct(Peptide_ID), .groups = "drop")
+
+p_pep_1 <- ggplot(pep_count, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8), expand = expansion(mult = c(0, 0.03))) +
+  labs(y = "Peptides [n]", title = "A. Peptide count") +
+  base_theme
+
+# 2. peptide count proportion
+pep_count_prop <- pep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_2 <- ggplot(pep_count_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptides [%]", title = "B. Peptide count proportion") +
+  base_theme
+
+# 3. peptide abundance
+pep_abund <- pep_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = sum(Peptide_Abundance, na.rm = TRUE), .groups = "drop")
+
+p_pep_3 <- ggplot(pep_abund, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8), expand = expansion(mult = c(0, 0.03))) +
+  labs(y = "Peptide abundance", title = "C. Peptide abundance") +
+  base_theme
+
+# 4. peptide abundance proportion
+pep_abund_prop <- pep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_4 <- ggplot(pep_abund_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptide abundance [%]", title = "D. Peptide abundance proportion") +
+  base_theme
+
+Figure_Peptides_Taxonomy <- (p_pep_1 + p_pep_2) / (p_pep_3 + p_pep_4) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+Figure_Peptides_Taxonomy
+
+# ==================================================
+# PROTEINS: 2 x 2 MULTIPANEL
+# ==================================================
+
+prot_dat <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0) %>%
+  add_phylum_group()
+
+# 1. protein count
+prot_count <- prot_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = n_distinct(Protein_ID), .groups = "drop")
+
+p_prot_1 <- ggplot(prot_count, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8), expand = expansion(mult = c(0, 0.03))) +
+  labs(y = "Proteins [n]", title = "A. Protein count") +
+  base_theme
+
+# 2. protein count proportion
+prot_count_prop <- prot_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_2 <- ggplot(prot_count_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Proteins [%]", title = "B. Protein count proportion") +
+  base_theme
+
+# 3. protein abundance
+prot_abund <- prot_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = sum(Protein_Abundance_IBAQ, na.rm = TRUE), .groups = "drop")
+
+p_prot_3 <- ggplot(prot_abund, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(breaks = pretty_breaks(n = 8), expand = expansion(mult = c(0, 0.03))) +
+  labs(y = "Protein abundance [IBAQ]", title = "C. Protein abundance") +
+  base_theme
+
+# 4. protein abundance proportion
+prot_abund_prop <- prot_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_4 <- ggplot(prot_abund_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Protein abundance [%]", title = "D. Protein abundance proportion") +
+  base_theme
+
+Figure_Proteins_Taxonomy <- (p_prot_1 + p_prot_2) / (p_prot_3 + p_prot_4) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+Figure_Proteins_Taxonomy
+
+ggsave(
+  filename = "Figure_Peptides_Taxonomy_2x2.png",
+  plot = Figure_Peptides_Taxonomy,
+  width = 30,
+  height = 18,
+  units = "cm",
+  dpi = 300
+)
+
+ggsave(
+  filename = "Figure_Proteins_Taxonomy_2x2.png",
+  plot = Figure_Proteins_Taxonomy,
+  width = 30,
+  height = 18,
+  units = "cm",
+  dpi = 300
+)
+
+```
+```{r}
+# ==================================================
+# PHYLUM-RESOLVED TAXONOMY OVERVIEW: 4 x 2 MULTIPANEL
+# column 1 = absolute values
+# column 2 = proportions
+# row 1 = a (peptide count)
+# row 2 = b (peptide abundance)
+# row 3 = c (protein count)
+# row 4 = d (protein abundance)
+# one global legend on top
+# x-axis labels only on bottom row
+# ==================================================
+
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(patchwork)
+
+# --------------------------------------------------
+# SETTINGS
+# --------------------------------------------------
+
+base_theme <- theme_minimal(base_size = 16) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 12),
+    plot.title = element_text(size = 13, face = "plain"),
+    plot.subtitle = element_text(size = 10),
+    legend.text = element_text(size = 11, face = "plain"),
+    legend.title = element_blank()
+  )
+
+theme_no_x <- theme(
+  axis.title.x = element_blank(),
+  axis.text.x  = element_blank(),
+  axis.ticks.x = element_blank()
+)
+
+theme_bottom_x <- theme(
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10)
+)
+
+# fixed phylum order
+phylum_order <- c(
+  "Actinomycetota",   "Bacteroidota",     "Pseudomonadota",
+  "Verrucomicrobiota","Planctomycetota",  "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota",  "Armatimonadota",
+  "Myxococcota",      "Nitrospirota",     "Thermoproteota",
+  "Patescibacteria",  "Gemmatimonadota",  "Cyanobacteriota",
+  "Deinococcota",     "Chlamydiota"
+)
+
+# safer color mapping
+phylum_cols <- setNames(ColorPalette[seq_along(phylum_order)], phylum_order)
+
+# --------------------------------------------------
+# TOP 8 PHYLA
+# choose by proteins, excluding contaminants from ranking only
+# --------------------------------------------------
+
+Top8_Phyla <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0, Phylum != "Y-FGCZCont") %>%
+  group_by(Phylum) %>%
+  summarise(UniqueCount = n_distinct(Protein_ID), .groups = "drop") %>%
+  arrange(desc(UniqueCount)) %>%
+  slice_head(n = 8) %>%
+  pull(Phylum)
+
+ordered_phyla <- phylum_order[phylum_order %in% Top8_Phyla]
+
+# final plotting order
+plot_levels <- c(ordered_phyla, "Rest", "Contaminants")
+
+fill_cols <- c(
+  phylum_cols[ordered_phyla],
+  Rest = "red",
+  Contaminants = "grey70"
+)
+
+# --------------------------------------------------
+# HELPER: collapse phyla into Top8 / Rest / Contaminants
+# --------------------------------------------------
+
+add_phylum_group <- function(df) {
+  df %>%
+    mutate(
+      Phylum_Group = case_when(
+        Phylum == "Y-FGCZCont" ~ "Contaminants",
+        Phylum %in% ordered_phyla ~ Phylum,
+        TRUE ~ "Rest"
+      ),
+      Phylum_Group = factor(Phylum_Group, levels = plot_levels),
+      Date = factor(Date, levels = unique(Date))
+    )
+}
+
+# ==================================================
+# PEPTIDES
+# ==================================================
+
+pep_dat <- dat %>%
+  filter(Peptide_Abundance > 0) %>%
+  add_phylum_group()
+
+# row a: peptide count
+pep_count <- pep_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = n_distinct(Peptide_ID), .groups = "drop")
+
+p_pep_1 <- ggplot(pep_count, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptides [n]", title = "a") +
+  base_theme +
+  theme_no_x
+
+pep_count_prop <- pep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_2 <- ggplot(pep_count_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptides [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# row b: peptide abundance
+pep_abund <- pep_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = sum(Peptide_Abundance, na.rm = TRUE), .groups = "drop")
+
+p_pep_3 <- ggplot(pep_abund, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptide abundance", title = "b") +
+  base_theme +
+  theme_no_x
+
+pep_abund_prop <- pep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_4 <- ggplot(pep_abund_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptide abundance [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# ==================================================
+# PROTEINS
+# ==================================================
+
+prot_dat <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0) %>%
+  add_phylum_group()
+
+# row c: protein count
+prot_count <- prot_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = n_distinct(Protein_ID), .groups = "drop")
+
+p_prot_1 <- ggplot(prot_count, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Proteins [n]", title = "c") +
+  base_theme +
+  theme_no_x
+
+prot_count_prop <- prot_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_2 <- ggplot(prot_count_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Proteins [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# row d: protein abundance
+prot_abund <- prot_dat %>%
+  group_by(Date, Phylum_Group) %>%
+  summarise(Value = sum(Protein_Abundance_IBAQ, na.rm = TRUE), .groups = "drop")
+
+p_prot_3 <- ggplot(prot_abund, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Protein abundance [IBAQ]", title = "d") +
+  base_theme +
+  theme_bottom_x
+
+prot_abund_prop <- prot_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_4 <- ggplot(prot_abund_prop, aes(Date, Value, fill = Phylum_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Protein abundance [%]", title = "") +
+  base_theme +
+  theme_bottom_x
+
+# ==================================================
+# COMBINED 4 x 2 FIGURE
+# ==================================================
+
+Figure_Taxonomy_Combined <-
+  (p_pep_1 | p_pep_2) /
+  (p_pep_3 | p_pep_4) /
+  (p_prot_1 | p_prot_2) /
+  (p_prot_3 | p_prot_4) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "top",
+    legend.justification = "center"
+  )
+
+Figure_Taxonomy_Combined
+
+# ==================================================
+# SAVE
+# ==================================================
+
+ggsave(
+  filename = "Figure_Taxonomy_Combined_4x2.png",
+  plot = Figure_Taxonomy_Combined,
+  width = 30,
+  height = 36,
+  units = "cm",
+  dpi = 300
+)
+```
+
+
+```{r}
+# ==================================================
+# REPLICATE STATUS: 2 x 2 MULTIPANEL
+# One Replicate vs Both Replicates
+# ==================================================
+
+# Common settings
+rep_fill_cols <- c(
+  "One Replicate"  = ColorPalette[4],
+  "Both Replicates" = ColorPalette[2]
+)
+
+# ---------------------------
+# helper
+# ---------------------------
+
+add_replicate_group <- function(df, presence_col) {
+  df %>%
+    mutate(
+      Replicate_Group = case_when(
+        .data[[presence_col]] == "one"  ~ "One Replicate",
+        .data[[presence_col]] == "both" ~ "Both Replicates",
+        TRUE ~ NA_character_
+      ),
+      Replicate_Group = factor(
+        Replicate_Group,
+        levels = c("One Replicate", "Both Replicates")
+      ),
+      Date = factor(Date, levels = unique(Date))
+    ) %>%
+    filter(!is.na(Replicate_Group))
+}
+
+# ==================================================
+# PEPTIDES: 2 x 2 MULTIPANEL
+# ==================================================
+
+pep_rep_dat <- dat %>%
+  filter(Peptide_Abundance > 0) %>%
+  add_replicate_group("Peptide_Presence")
+
+# 1. peptide count
+pep_rep_count <- pep_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = n_distinct(Peptide_ID), .groups = "drop")
+
+p_pep_rep_1 <- ggplot(pep_rep_count, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptides [n]", title = "A. Peptide count") +
+  base_theme
+
+# 2. peptide count proportion
+pep_rep_count_prop <- pep_rep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_rep_2 <- ggplot(pep_rep_count_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptides [%]", title = "B. Peptide count proportion") +
+  base_theme
+
+# 3. peptide abundance
+pep_rep_abund <- pep_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = sum(Peptide_Abundance, na.rm = TRUE), .groups = "drop")
+
+p_pep_rep_3 <- ggplot(pep_rep_abund, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptide abundance", title = "C. Peptide abundance") +
+  base_theme
+
+# 4. peptide abundance proportion
+pep_rep_abund_prop <- pep_rep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_rep_4 <- ggplot(pep_rep_abund_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptide abundance [%]", title = "D. Peptide abundance proportion") +
+  base_theme
+
+Figure_Peptides_Replicates_2x2 <- (p_pep_rep_1 + p_pep_rep_2) / (p_pep_rep_3 + p_pep_rep_4) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+Figure_Peptides_Replicates_2x2
+
+# ==================================================
+# PROTEINS: 2 x 2 MULTIPANEL
+# ==================================================
+
+prot_rep_dat <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0) %>%
+  add_replicate_group("Protein_Presence")
+
+# 1. protein count
+prot_rep_count <- prot_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = n_distinct(Protein_ID), .groups = "drop")
+
+p_prot_rep_1 <- ggplot(prot_rep_count, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Proteins [n]", title = "A. Protein count") +
+  base_theme
+
+# 2. protein count proportion
+prot_rep_count_prop <- prot_rep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_rep_2 <- ggplot(prot_rep_count_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Proteins [%]", title = "B. Protein count proportion") +
+  base_theme
+
+# 3. protein abundance
+prot_rep_abund <- prot_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = sum(Protein_Abundance_IBAQ, na.rm = TRUE), .groups = "drop")
+
+p_prot_rep_3 <- ggplot(prot_rep_abund, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Protein abundance [IBAQ]", title = "C. Protein abundance") +
+  base_theme
+
+# 4. protein abundance proportion
+prot_rep_abund_prop <- prot_rep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_rep_4 <- ggplot(prot_rep_abund_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Protein abundance [%]", title = "D. Protein abundance proportion") +
+  base_theme
+
+Figure_Proteins_Replicates_2x2 <- (p_prot_rep_1 + p_prot_rep_2) / (p_prot_rep_3 + p_prot_rep_4) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+Figure_Proteins_Replicates_2x2
+
+# ==================================================
+# SAVE
+# ==================================================
+
+ggsave(
+  filename = "Figure_Peptides_Replicates_2x2.png",
+  plot = Figure_Peptides_Replicates_2x2,
+  width = 30,
+  height = 18,
+  units = "cm",
+  dpi = 300
+)
+
+ggsave(
+  filename = "Figure_Proteins_Replicates_2x2.png",
+  plot = Figure_Proteins_Replicates_2x2,
+  width = 30,
+  height = 18,
+  units = "cm",
+  dpi = 300
+)
+```
+```{r}
+# ==================================================
+# REPLICATE STATUS: 4 x 2 MULTIPANEL
+# column 1 = absolute values
+# column 2 = proportions
+# row 1 = a (peptide count)
+# row 2 = b (peptide abundance)
+# row 3 = c (protein count)
+# row 4 = d (protein abundance)
+# one global legend on top
+# x-axis labels only on bottom row
+# ==================================================
+
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(patchwork)
+
+# ==================================================
+# COMMON SETTINGS
+# ==================================================
+
+rep_fill_cols <- c(
+  "One Replicate"   = ColorPalette[4],
+  "Both Replicates" = ColorPalette[2]
+)
+
+# ---------------------------
+# helper
+# ---------------------------
+
+add_replicate_group <- function(df, presence_col) {
+  df %>%
+    mutate(
+      Replicate_Group = case_when(
+        .data[[presence_col]] == "one"  ~ "One Replicate",
+        .data[[presence_col]] == "both" ~ "Both Replicates",
+        TRUE ~ NA_character_
+      ),
+      Replicate_Group = factor(
+        Replicate_Group,
+        levels = c("One Replicate", "Both Replicates")
+      ),
+      Date = factor(Date, levels = unique(Date))
+    ) %>%
+    filter(!is.na(Replicate_Group))
+}
+
+theme_no_x <- theme(
+  axis.title.x = element_blank(),
+  axis.text.x  = element_blank(),
+  axis.ticks.x = element_blank()
+)
+
+theme_bottom_x <- theme(
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+)
+
+# ==================================================
+# PEPTIDES
+# ==================================================
+
+pep_rep_dat <- dat %>%
+  filter(Peptide_Abundance > 0) %>%
+  add_replicate_group("Peptide_Presence")
+
+# peptide count
+pep_rep_count <- pep_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = n_distinct(Peptide_ID), .groups = "drop")
+
+p_pep_rep_1 <- ggplot(pep_rep_count, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptides [n]", title = "a") +
+  base_theme +
+  theme_no_x
+
+pep_rep_count_prop <- pep_rep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_rep_2 <- ggplot(pep_rep_count_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptides [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# peptide abundance
+pep_rep_abund <- pep_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = sum(Peptide_Abundance, na.rm = TRUE), .groups = "drop")
+
+p_pep_rep_3 <- ggplot(pep_rep_abund, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Peptide abundance", title = "b") +
+  base_theme +
+  theme_no_x
+
+pep_rep_abund_prop <- pep_rep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_pep_rep_4 <- ggplot(pep_rep_abund_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Peptide abundance [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# ==================================================
+# PROTEINS
+# ==================================================
+
+prot_rep_dat <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0) %>%
+  add_replicate_group("Protein_Presence")
+
+# protein count
+prot_rep_count <- prot_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = n_distinct(Protein_ID), .groups = "drop")
+
+p_prot_rep_1 <- ggplot(prot_rep_count, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Proteins [n]", title = "c") +
+  base_theme +
+  theme_no_x
+
+prot_rep_count_prop <- prot_rep_count %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_rep_2 <- ggplot(prot_rep_count_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Proteins [%]", title = "") +
+  base_theme +
+  theme_no_x
+
+# protein abundance
+prot_rep_abund <- prot_rep_dat %>%
+  group_by(Date, Replicate_Group) %>%
+  summarise(Value = sum(Protein_Abundance_IBAQ, na.rm = TRUE), .groups = "drop")
+
+p_prot_rep_3 <- ggplot(prot_rep_abund, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 8),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  labs(y = "Protein abundance [IBAQ]", title = "d") +
+  base_theme +
+  theme_bottom_x
+
+prot_rep_abund_prop <- prot_rep_abund %>%
+  group_by(Date) %>%
+  mutate(Value = Value / sum(Value) * 100) %>%
+  ungroup()
+
+p_prot_rep_4 <- ggplot(prot_rep_abund_prop, aes(Date, Value, fill = Replicate_Group)) +
+  geom_col(width = 0.8, color = ColorPalette[16], linewidth = 0.05) +
+  scale_fill_manual(values = rep_fill_cols, drop = FALSE) +
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.03))
+  ) +
+  coord_cartesian(ylim = c(0, 100)) +
+  labs(y = "Protein abundance [%]", title = "") +
+  base_theme +
+  theme_bottom_x
+
+# ==================================================
+# COMBINED 4 x 2 FIGURE
+# ==================================================
+
+Figure_Replicates_Combined <-
+  (p_pep_rep_1 | p_pep_rep_2) /
+  (p_pep_rep_3 | p_pep_rep_4) /
+  (p_prot_rep_1 | p_prot_rep_2) /
+  (p_prot_rep_3 | p_prot_rep_4) +
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "top",
+    legend.justification = "center"
+  )
+
+Figure_Replicates_Combined
+
+# ==================================================
+# SAVE
+# ==================================================
+
+ggsave(
+  filename = "Figure_Replicates_Combined_4x2.png",
+  plot = Figure_Replicates_Combined,
+  width = 30,
+  height = 36,
+  units = "cm",
+  dpi = 300
+)
+```
+
+
+
+
+# Number of peptides per protein ?
+```{r}
+# Prepare the plotting data for Number of Peptides per Protein
+plot_dat <- dat %>%
+  filter(Protein_Abundance_IBAQ > 0) %>% 
+   mutate(Overall_Unique_Proteins_Detected = n_distinct(Protein_ID)) %>%
+  select(Nr_Peptides, Protein_ID, Overall_Unique_Proteins_Detected) %>%
+  distinct()
+
+# Create the histogram plot
+Plot_Number_Of_Peptides_Per_Protein <- ggplot(plot_dat, aes(x = factor(Nr_Peptides))) +
+  geom_bar(fill = ColorPalette[2], color = "black") +
+  scale_y_continuous(limits = c(0, 8000), breaks = seq(0, 8000, by = 1000)) +
+  labs(y = "Proteins [n]", x = "Peptides [n]", title = "Distribution of Number of Peptides per Protein", subtitle = paste("Total Unique Proteins Detected:", unique(plot_dat$Overall_Unique_Proteins_Detected)), x = "Number of Peptides", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        plot.title  = element_text(size = 14, face = "bold"))
+
+
+# display the plots
+Plot_Number_Of_Peptides_Per_Protein
+
+ggsave(
+  filename = "Figure_PeptidesPerProtein.png",
+  plot = Plot_Number_Of_Peptides_Per_Protein,
+  width = 12,
+  height = 9,
+  units = "in",
+  dpi = 300
+)
+```

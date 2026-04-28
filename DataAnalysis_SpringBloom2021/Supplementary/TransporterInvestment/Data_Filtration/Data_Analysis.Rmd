@@ -1,0 +1,1003 @@
+---
+title: "Data Filtration Overview"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+# Global chunk options
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  cache.path = "cache/",
+  fig.retina = 2
+)
+
+# Reproducibility
+set.seed(1)
+
+############################################################
+# 0) Clear R "brain" + libraries
+############################################################
+rm(list = ls())
+gc()
+
+suppressPackageStartupMessages({
+  library(tidyr)
+  library(lubridate)
+  library(readr)
+  library(stringr)
+  library(ggplot2)
+  library(dplyr)
+})
+
+############################################################
+# 1) Set working directory (analysis folder)
+############################################################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TransporterInvestment/Data_Filtration/")
+
+############################################################
+# 2) Load exported tables
+#    (these should be created by your preprocessing script)
+############################################################
+abundance_table <- read_csv("../../../Figure_03/LakeOverview/Species_Abundance_Table.csv")
+gene_table <- read_csv("../../../Figure_03/LakeOverview/Species_Gene_Table.csv")
+protein_table <- read_csv("../../../Figure_03/LakeOverview/Species_Protein_Table.csv")
+meta_table <- read_csv("../../../Figure_03/LakeOverview/Species_Meta_Table.csv")
+
+############################################################
+# 3) Quick inspection
+############################################################
+cat("=== Dimensions ===\n")
+cat("species_abundance:", paste(dim(abundance_table), collapse = " x "), "\n")
+cat("species_meta     :", paste(dim(meta_table), collapse = " x "), "\n")
+cat("gene_table       :", paste(dim(gene_table), collapse = " x "), "\n")
+cat("protein_table    :", paste(dim(protein_table), collapse = " x "), "\n\n")
+
+cat("=== Glimpse ===\n")
+glimpse(abundance_table)
+glimpse(gene_table)
+glimpse(protein_table)
+glimpse(meta_table)
+
+############################################################
+# 4) Minimal key checks (optional but recommended)
+############################################################
+cat("\n=== Key checks ===\n")
+cat("Unique species (abundance):", n_distinct(abundance_table$Species_ID), "\n")
+cat("Unique species (meta):     ", n_distinct(meta_table$Species_ID), "\n")
+cat("Unique species (protein):  ", n_distinct(protein_table$Species_ID), "\n")
+cat("Unique dates (abundance):  ", n_distinct(abundance_table$Date), "\n")
+cat("Unique dates (protein):    ", n_distinct(protein_table$Date), "\n")
+
+############################################################
+# 5) Keep only annotated proteins
+############################################################
+gene_table <- gene_table %>%
+  filter(KEGG_ID != "Unclassified")
+
+protein_table <- protein_table %>%
+  filter(Protein_ID %in% gene_table$Protein_ID)
+```
+
+# highlight proteme and species filtering for analysis!
+```{r}
+############################################################
+# Supplementary figure — retention of analysed trophic groups
+# across downstream filtration steps
+#
+# Goal
+#   Show how much of the original full dataset is retained after
+#   successive downstream filtering steps used for transporter
+#   investment analyses, separately for:
+#     1) species
+#     2) distinct proteins
+#     3) total protein signal (summed IBAQ_Norm)
+#
+# What is shown
+#   - Only the 3 downstream analysed steps are displayed:
+#       1) Analysed species:
+#          trophic index + species-specific, KEGG-annotated proteome
+#       2) Valid observations:
+#          >=10 proteins + transporter & non-transporter
+#       3) Final dataset:
+#          >=5 valid sampling dates
+#
+#   - Bar heights are percentages retained relative to the hidden
+#     full reference dataset (= not plotted), allowing direct
+#     comparison among species, proteins, and signal.
+#
+#   - Numbers above bars show absolute totals only.
+#
+# Grouping
+#   - Only the three analysed trophic groups are shown:
+#       Copiotroph, Intermediate, Oligotroph
+#   - Stack order is fixed as:
+#       bottom = Copiotroph
+#       middle = Intermediate
+#       top    = Oligotroph
+#
+# Important interpretation
+#   - Species percentages are relative to the full species
+#     universe in meta_table (e.g. 495 species).
+#   - Protein percentages are relative to the hidden full
+#     species-specific, KEGG-annotated detected proteome.
+#   - Signal percentages are relative to the hidden full total
+#     protein signal of that same full proteome reference.
+#   - The hidden full reference is not plotted as a bar.
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(stringr)
+  library(scales)
+  library(patchwork)
+})
+
+############################################################
+# 1) Plot settings
+############################################################
+
+# Stacking order: bottom -> top
+plot_group_levels <- c("Copiotroph", "Intermediate", "Oligotroph")
+
+plot_group_cols <- c(
+  "Copiotroph"   = "#BA5205",
+  "Intermediate" = "#EDEAE9",
+  "Oligotroph"   = "#93C2E6"
+)
+
+theme_nat <- theme_bw(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+    panel.border = element_rect(colour = "black", linewidth = 0.5),
+    axis.title = element_text(size = 10, colour = "black"),
+    axis.text = element_text(size = 9, colour = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 9),
+    legend.position = "top"
+  )
+
+min_proteins_per_date <- 10
+min_dates_per_species <- 5
+groups_to_analyze <- c("Oligo_like", "Intermediate", "Copio_like")
+
+############################################################
+# 2) Helper to recode only the plotted trophic groups
+############################################################
+recode_plot_groups <- function(x) {
+  x <- str_trim(as.character(x))
+  x[x == "Oligo_like"]   <- "Oligotroph"
+  x[x == "Copio_like"]   <- "Copiotroph"
+  x[x == "Intermediate"] <- "Intermediate"
+  x
+}
+
+############################################################
+# 3) Clean species metadata
+#
+# IMPORTANT:
+#   Keep original grouping structure for computation.
+#   Do NOT remove Filtered here.
+############################################################
+species_meta <- meta_table %>%
+  distinct(Species_ID, .keep_all = TRUE) %>%
+  mutate(
+    Group_For_Plots = str_trim(as.character(Group_For_Plots)),
+    Group_For_Plots = if_else(
+      is.na(Group_For_Plots) | Group_For_Plots == "",
+      "Filtered",
+      Group_For_Plots
+    ),
+    Phylum = str_trim(as.character(Phylum)),
+    Phylum = na_if(Phylum, "")
+  )
+
+############################################################
+# 4) Define analysed species pool
+############################################################
+species_with_trophic <- species_meta %>%
+  filter(
+    TrophicInfo_Available %in% TRUE,
+    Group_For_Plots %in% groups_to_analyze
+  )
+
+############################################################
+# 5) Restrict gene table to KEGG-annotated proteins
+############################################################
+gene_table_kegg <- gene_table %>%
+  filter(KEGG_ID != "Unclassified")
+
+############################################################
+# 6) Standardize grouping in protein_table
+#
+# IMPORTANT:
+#   Keep original grouping structure for computation.
+#   Do NOT remove Filtered here.
+############################################################
+protein_annotated <- protein_table %>%
+  mutate(
+    Group_For_Plots = str_trim(as.character(Group_For_Plots)),
+    Group_For_Plots = if_else(
+      is.na(Group_For_Plots) | Group_For_Plots == "",
+      "Filtered",
+      Group_For_Plots
+    )
+  )
+
+############################################################
+# 7) Build protein-level filtration objects
+############################################################
+prot_step0 <- protein_annotated
+
+if ("Species_Specific_ProteinGroup" %in% names(prot_step0)) {
+  prot_step0 <- prot_step0 %>%
+    filter(Species_Specific_ProteinGroup %in% TRUE)
+}
+
+if ("any_missing_taxonomy" %in% names(prot_step0)) {
+  prot_step0 <- prot_step0 %>%
+    filter(!any_missing_taxonomy)
+}
+
+prot_step0 <- prot_step0 %>%
+  filter(Protein_ID %in% gene_table_kegg$Protein_ID)
+
+prot_step1 <- prot_step0 %>%
+  filter(Species_ID %in% species_with_trophic$Species_ID)
+
+############################################################
+# 8) Transporter vs non-transporter classification
+############################################################
+protein_annotation <- gene_table_kegg %>%
+  distinct(Protein_ID, KEGG_Subcategory) %>%
+  mutate(
+    Protein_Class = case_when(
+      KEGG_Subcategory == "Transporters" ~ "Transporter",
+      TRUE                               ~ "Non-transporter"
+    )
+  )
+
+prot_step1_classified <- prot_step1 %>%
+  left_join(protein_annotation, by = "Protein_ID") %>%
+  mutate(
+    Protein_Class = replace_na(Protein_Class, "Non-transporter")
+  )
+
+############################################################
+# 9) Species-date validity filter
+############################################################
+sd_summary <- prot_step1_classified %>%
+  distinct(Species_ID, Date, Protein_ID, Protein_Class) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    n_proteins = n_distinct(Protein_ID),
+    transporter_n = n_distinct(Protein_ID[Protein_Class == "Transporter"]),
+    nontransporter_n = n_distinct(Protein_ID[Protein_Class == "Non-transporter"]),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    pass_valid_date = n_proteins >= min_proteins_per_date &
+      transporter_n >= 1 &
+      nontransporter_n >= 1
+  )
+
+keep_sd <- sd_summary %>%
+  filter(pass_valid_date)
+
+prot_step2 <- prot_step1_classified %>%
+  semi_join(
+    keep_sd %>% select(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  )
+
+############################################################
+# 10) Species with >= 5 valid dates
+############################################################
+keep_species <- keep_sd %>%
+  count(Species_ID, name = "n_valid_dates") %>%
+  filter(n_valid_dates >= min_dates_per_species)
+
+retained_species <- species_with_trophic %>%
+  filter(Species_ID %in% keep_species$Species_ID)
+
+prot_step3 <- prot_step2 %>%
+  filter(Species_ID %in% retained_species$Species_ID)
+
+############################################################
+# 11) Step names
+############################################################
+step_names_all <- c(
+  "Full dataset:\nKEGG-annotated, species-specific proteins",
+  "Analysed species:\ntrophic index + species-specific\nKEGG-annotated proteome",
+  "Valid observations:\n≥10 proteins + transporter & non-transporter",
+  "Final dataset:\n≥5 valid sampling dates"
+)
+
+step_names_display <- step_names_all[2:4]
+
+############################################################
+# 12) Species counts across all 4 steps
+#
+# First compute EXACTLY as in the original 4-step figure.
+############################################################
+species_step0 <- species_meta %>%
+  transmute(Species_ID, Group_For_Plots, step = step_names_all[1])
+
+species_step1 <- species_with_trophic %>%
+  transmute(Species_ID, Group_For_Plots, step = step_names_all[2])
+
+species_step2 <- species_with_trophic %>%
+  filter(Species_ID %in% keep_sd$Species_ID) %>%
+  transmute(Species_ID, Group_For_Plots, step = step_names_all[3])
+
+species_step3 <- retained_species %>%
+  transmute(Species_ID, Group_For_Plots, step = step_names_all[4])
+
+species_long_all <- bind_rows(
+  species_step0, species_step1, species_step2, species_step3
+)
+
+species_counts_all <- species_long_all %>%
+  count(step, Group_For_Plots, name = "value") %>%
+  complete(
+    step = step_names_all,
+    Group_For_Plots = c("Intermediate", "Filtered", "Oligo_like", "Copio_like"),
+    fill = list(value = 0)
+  )
+
+species_total_ref <- species_counts_all %>%
+  filter(step == step_names_all[1]) %>%
+  summarise(total = sum(value)) %>%
+  pull(total)
+
+species_totals <- species_counts_all %>%
+  group_by(step) %>%
+  summarise(total = sum(value), .groups = "drop") %>%
+  filter(step %in% step_names_display)
+
+# Plotting data only: remove Filtered, recode labels, keep denominator
+species_plot_df <- species_counts_all %>%
+  filter(step %in% step_names_display, Group_For_Plots != "Filtered") %>%
+  mutate(
+    Group_For_Plots = recode_plot_groups(Group_For_Plots),
+    Group_For_Plots = factor(Group_For_Plots, levels = plot_group_levels),
+    step = factor(step, levels = step_names_display),
+    value_pct = 100 * value / species_total_ref
+  )
+
+############################################################
+# 13) Protein-level step list
+############################################################
+protein_steps_list <- list(
+  prot_step0,
+  prot_step1,
+  prot_step2,
+  prot_step3
+)
+names(protein_steps_list) <- step_names_all
+
+############################################################
+# 14) Distinct protein counts across all 4 steps
+#
+# Again compute EXACTLY as in the original figure first.
+############################################################
+protein_count_all <- bind_rows(lapply(names(protein_steps_list), function(s) {
+  protein_steps_list[[s]] %>%
+    distinct(Protein_ID, Group_For_Plots) %>%
+    mutate(step = s) %>%
+    count(step, Group_For_Plots, name = "value")
+})) %>%
+  complete(
+    step = step_names_all,
+    Group_For_Plots = c("Intermediate", "Filtered", "Oligo_like", "Copio_like"),
+    fill = list(value = 0)
+  )
+
+protein_total_ref <- protein_count_all %>%
+  filter(step == step_names_all[1]) %>%
+  summarise(total = sum(value)) %>%
+  pull(total)
+
+protein_count_totals <- protein_count_all %>%
+  group_by(step) %>%
+  summarise(total = sum(value), .groups = "drop") %>%
+  filter(step %in% step_names_display)
+
+# Plotting data only
+protein_count_plot_df <- protein_count_all %>%
+  filter(step %in% step_names_display, Group_For_Plots != "Filtered") %>%
+  mutate(
+    Group_For_Plots = recode_plot_groups(Group_For_Plots),
+    Group_For_Plots = factor(Group_For_Plots, levels = plot_group_levels),
+    step = factor(step, levels = step_names_display),
+    value_pct = 100 * value / protein_total_ref
+  )
+
+############################################################
+# 15) Total IBAQ signal across all 4 steps
+#
+# Again compute EXACTLY as in the original figure first.
+############################################################
+signal_all <- bind_rows(lapply(names(protein_steps_list), function(s) {
+  protein_steps_list[[s]] %>%
+    mutate(step = s) %>%
+    group_by(step, Group_For_Plots) %>%
+    summarise(
+      value = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+      .groups = "drop"
+    )
+})) %>%
+  complete(
+    step = step_names_all,
+    Group_For_Plots = c("Intermediate", "Filtered", "Oligo_like", "Copio_like"),
+    fill = list(value = 0)
+  )
+
+signal_total_ref <- signal_all %>%
+  filter(step == step_names_all[1]) %>%
+  summarise(total = sum(value)) %>%
+  pull(total)
+
+signal_totals <- signal_all %>%
+  group_by(step) %>%
+  summarise(total = sum(value), .groups = "drop") %>%
+  filter(step %in% step_names_display)
+
+# Plotting data only
+signal_plot_df <- signal_all %>%
+  filter(step %in% step_names_display, Group_For_Plots != "Filtered") %>%
+  mutate(
+    Group_For_Plots = recode_plot_groups(Group_For_Plots),
+    Group_For_Plots = factor(Group_For_Plots, levels = plot_group_levels),
+    step = factor(step, levels = step_names_display),
+    value_pct = 100 * value / signal_total_ref
+  )
+
+############################################################
+# 16) Species plot
+############################################################
+p_species <- ggplot(
+  species_plot_df,
+  aes(x = step, y = value_pct, fill = Group_For_Plots)
+) +
+  geom_col(colour = "black", linewidth = 0.3, width = 0.78) +
+  geom_text(
+    data = species_totals,
+    aes(
+      x = factor(step, levels = step_names_display),
+      y = 100 * total / species_total_ref + 3,
+      label = total
+    ),
+    inherit.aes = FALSE,
+    size = 3.0,
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = plot_group_cols,
+    limits = plot_group_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Species retained [%]"
+  ) +
+  theme_nat
+
+############################################################
+# 17) Protein plot
+############################################################
+p_proteins <- ggplot(
+  protein_count_plot_df,
+  aes(x = step, y = value_pct, fill = Group_For_Plots)
+) +
+  geom_col(colour = "black", linewidth = 0.3, width = 0.78) +
+  geom_text(
+    data = protein_count_totals,
+    aes(
+      x = factor(step, levels = step_names_display),
+      y = 100 * total / protein_total_ref + 3,
+      label = comma(total)
+    ),
+    inherit.aes = FALSE,
+    size = 3.0,
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = plot_group_cols,
+    limits = plot_group_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Proteins retained [%]"
+  ) +
+  theme_nat +
+  theme(legend.position = "none")
+
+############################################################
+# 18) Signal plot
+############################################################
+p_signal <- ggplot(
+  signal_plot_df,
+  aes(x = step, y = value_pct, fill = Group_For_Plots)
+) +
+  geom_col(colour = "black", linewidth = 0.3, width = 0.78) +
+  geom_text(
+    data = signal_totals,
+    aes(
+      x = factor(step, levels = step_names_display),
+      y = 100 * total / signal_total_ref + 3,
+      label = label_number(scale_cut = cut_short_scale())(total)
+    ),
+    inherit.aes = FALSE,
+    size = 3.0,
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = plot_group_cols,
+    limits = plot_group_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Protein signal retained [%]"
+  ) +
+  theme_nat +
+  theme(legend.position = "none")
+
+############################################################
+# 19) Assemble final figure
+############################################################
+final_filtration_overview <- p_species + p_proteins + p_signal +
+  plot_layout(ncol = 3, guides = "collect") &
+  theme(legend.position = "top")
+
+print(final_filtration_overview)
+
+############################################################
+# 20) Save figure
+############################################################
+ggsave(
+  filename = "Supplementary_Filtration_Overview_Percent_3steps_row.png",
+  plot = final_filtration_overview,
+  width = 15,
+  height = 5.6,
+  dpi = 600,
+  bg = "white"
+)
+```
+
+
+
+
+
+
+
+
+# temporal coverage reateind after filtering used for tpf and bc calculations
+```{r}
+############################################################
+# Supplementary figure — temporal coverage after filtration
+#
+# What this figure shows
+#   a) Distribution of valid dates per species in the analysed
+#      trophic-index-defined pool. A valid date is one where a
+#      species has at least 10 detected proteins, including at
+#      least one transporter and one non-transporter.
+#
+#   b) Longest run of consecutive valid sampling dates per final
+#      retained species, coloured by trophic group. Consecutive
+#      refers to adjacent sampling occasions in the ordered
+#      proteomics time series, not uninterrupted calendar days.
+#
+# Figure layout
+#   - Two panels in one row
+#   - Left: valid dates per species
+#   - Right: longest consecutive valid-date runs
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(stringr)
+  library(scales)
+  library(patchwork)
+})
+
+############################################################
+# 1) User-defined thresholds and plotting settings
+############################################################
+min_proteins_per_date <- 10
+min_dates_per_species <- 5
+min_consecutive_dates <- 4
+groups_to_analyze <- c("Oligo_like", "Intermediate", "Copio_like")
+
+trophic_levels <- c("Oligotroph", "Intermediate", "Copiotroph")
+
+trophic_cols <- c(
+  "Oligotroph"   = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copiotroph"   = "#BA5205"
+)
+
+theme_nat <- theme_bw(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+    panel.border = element_rect(colour = "black", linewidth = 0.5),
+    axis.title = element_text(size = 10, colour = "black"),
+    axis.text = element_text(size = 9, colour = "black"),
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 9),
+    legend.position = "top"
+  )
+
+############################################################
+# 2) Canonical species metadata
+#
+# Restrict to one row per species and define the three analysed
+# trophic groups used downstream.
+############################################################
+species_meta <- meta_table %>%
+  distinct(Species_ID, .keep_all = TRUE) %>%
+  mutate(
+    Group_For_Plots = str_trim(as.character(Group_For_Plots)),
+    Group_For_Plots = na_if(Group_For_Plots, ""),
+    TrophicGroup_clean = case_when(
+      Group_For_Plots == "Oligo_like"   ~ "Oligotroph",
+      Group_For_Plots == "Intermediate" ~ "Intermediate",
+      Group_For_Plots == "Copio_like"   ~ "Copiotroph",
+      TRUE                              ~ NA_character_
+    ),
+    TrophicGroup_clean = factor(TrophicGroup_clean, levels = trophic_levels)
+  )
+
+############################################################
+# 3) Define the analysed starting pool
+#
+# These are species with trophic information and assignment to
+# one of the three downstream trophic groups.
+############################################################
+species_with_trophic <- species_meta %>%
+  filter(
+    TrophicInfo_Available %in% TRUE,
+    Group_For_Plots %in% groups_to_analyze,
+    !is.na(TrophicGroup_clean)
+  )
+
+############################################################
+# 4) Reproduce the protein-level prefiltering used before
+#    date-level structural filtering
+############################################################
+prot_base <- protein_table %>%
+  filter(Group_For_Plots %in% groups_to_analyze)
+
+if ("Species_Specific_ProteinGroup" %in% names(prot_base)) {
+  prot_base <- prot_base %>%
+    filter(Species_Specific_ProteinGroup %in% TRUE)
+}
+
+if ("any_missing_taxonomy" %in% names(prot_base)) {
+  prot_base <- prot_base %>%
+    filter(!any_missing_taxonomy)
+}
+
+prot_base <- prot_base %>%
+  filter(Species_ID %in% species_with_trophic$Species_ID)
+
+############################################################
+# 5) Annotate proteins as transporter or non-transporter
+############################################################
+protein_annotation <- gene_table %>%
+  filter(KEGG_ID != "Unclassified") %>%
+  distinct(Protein_ID, KEGG_Subcategory) %>%
+  mutate(
+    Protein_Class = case_when(
+      KEGG_Subcategory == "Transporters" ~ "Transporter",
+      TRUE                               ~ "Non-transporter"
+    )
+  )
+
+prot_base <- prot_base %>%
+  left_join(protein_annotation, by = "Protein_ID") %>%
+  mutate(
+    Protein_Class = replace_na(Protein_Class, "Non-transporter")
+  )
+
+############################################################
+# 6) Summarise each species-date and define valid dates
+#
+# A valid date requires:
+#   - >= 10 detected proteins
+#   - >= 1 transporter
+#   - >= 1 non-transporter
+############################################################
+sd_summary <- prot_base %>%
+  distinct(Species_ID, Date, Protein_ID, Protein_Class) %>%
+  group_by(Species_ID, Date) %>%
+  summarise(
+    n_proteins = n_distinct(Protein_ID),
+    transporter_equiv = n_distinct(Protein_ID[Protein_Class == "Transporter"]),
+    nontransporter_equiv = n_distinct(Protein_ID[Protein_Class == "Non-transporter"]),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Pass_Structural = transporter_equiv >= 1 & nontransporter_equiv >= 1,
+    Pass_Coverage10 = Pass_Structural & (n_proteins >= min_proteins_per_date)
+  )
+
+keep_sd <- sd_summary %>%
+  filter(Pass_Coverage10)
+
+############################################################
+# 7) Final retained species: >= 5 valid dates
+############################################################
+keep_species <- keep_sd %>%
+  count(Species_ID, name = "n_dates") %>%
+  filter(n_dates >= min_dates_per_species)
+
+retained_species <- species_with_trophic %>%
+  filter(Species_ID %in% keep_species$Species_ID) %>%
+  left_join(keep_species, by = "Species_ID")
+
+############################################################
+# 8) Panel a data — distribution of valid dates per species
+#
+# Species with zero valid dates remain represented at zero.
+############################################################
+dates_distribution <- species_with_trophic %>%
+  select(Species_ID, TrophicGroup_clean) %>%
+  left_join(
+    keep_sd %>% count(Species_ID, name = "n_qualifying_dates"),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    n_qualifying_dates = replace_na(n_qualifying_dates, 0L),
+    TrophicGroup_clean = factor(as.character(TrophicGroup_clean), levels = trophic_levels)
+  ) %>%
+  count(n_qualifying_dates, TrophicGroup_clean, name = "n") %>%
+  complete(
+    n_qualifying_dates = 0:max(36, max(n_qualifying_dates, na.rm = TRUE)),
+    TrophicGroup_clean = factor(trophic_levels, levels = trophic_levels),
+    fill = list(n = 0)
+  ) %>%
+  mutate(
+    TrophicGroup_clean = factor(as.character(TrophicGroup_clean), levels = trophic_levels)
+  )
+
+############################################################
+# 9) Panel b data — longest run of consecutive valid dates
+#
+# Consecutive means adjacent sampling occasions in the ordered
+# proteomics date series.
+############################################################
+sampling_dates <- sort(unique(as.Date(protein_table$Date)))
+
+valid_dates_retained <- keep_sd %>%
+  filter(Species_ID %in% retained_species$Species_ID) %>%
+  mutate(Date = as.Date(Date)) %>%
+  distinct(Species_ID, Date) %>%
+  mutate(date_index = match(Date, sampling_dates)) %>%
+  arrange(Species_ID, date_index)
+
+consecutive_summary <- valid_dates_retained %>%
+  group_by(Species_ID) %>%
+  arrange(date_index, .by_group = TRUE) %>%
+  mutate(
+    new_run = c(TRUE, diff(date_index) != 1),
+    run_id  = cumsum(new_run)
+  ) %>%
+  group_by(Species_ID, run_id) %>%
+  summarise(
+    run_length = n(),
+    start_date = min(Date),
+    end_date   = max(Date),
+    .groups = "drop"
+  ) %>%
+  group_by(Species_ID) %>%
+  summarise(
+    longest_consecutive_run = max(run_length),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    retained_species %>%
+      distinct(Species_ID, TrophicGroup_clean),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    TrophicGroup_clean = factor(as.character(TrophicGroup_clean), levels = trophic_levels)
+  )
+
+############################################################
+# 10) Console summaries
+############################################################
+cat("\n====================================================\n")
+cat("VALID DATES PER SPECIES — ANALYSED STARTING POOL\n")
+cat("====================================================\n")
+print(
+  species_with_trophic %>%
+    left_join(
+      keep_sd %>% count(Species_ID, name = "n_valid_dates"),
+      by = "Species_ID"
+    ) %>%
+    mutate(n_valid_dates = replace_na(n_valid_dates, 0L)) %>%
+    summarise(
+      n_species = n(),
+      min_valid_dates = min(n_valid_dates),
+      median_valid_dates = median(n_valid_dates),
+      mean_valid_dates = mean(n_valid_dates),
+      max_valid_dates = max(n_valid_dates)
+    )
+)
+
+cat("\n====================================================\n")
+cat("LONGEST CONSECUTIVE VALID-DATE RUN PER RETAINED SPECIES\n")
+cat("====================================================\n")
+print(
+  consecutive_summary %>%
+    group_by(TrophicGroup_clean) %>%
+    summarise(
+      n_species = n(),
+      min_run = min(longest_consecutive_run),
+      median_run = median(longest_consecutive_run),
+      mean_run = mean(longest_consecutive_run),
+      max_run = max(longest_consecutive_run),
+      .groups = "drop"
+    )
+)
+
+############################################################
+# 11) Panel a — distribution of valid dates per species
+############################################################
+dates_totals <- dates_distribution %>%
+  group_by(n_qualifying_dates) %>%
+  summarise(total = sum(n), .groups = "drop")
+
+p_a <- ggplot(
+  dates_distribution,
+  aes(x = n_qualifying_dates, y = n, fill = TrophicGroup_clean)
+) +
+  geom_col(colour = "black", linewidth = 0.3, width = 0.9) +
+  geom_vline(
+    xintercept = min_dates_per_species - 0.5,
+    linetype = "dashed",
+    linewidth = 0.6
+  ) +
+  annotate(
+    "text",
+    x = min_dates_per_species + 1.1,
+    y = max(dates_totals$total) * 0.95,
+    label = paste0("cutoff = ", min_dates_per_species, " dates"),
+    hjust = 0,
+    vjust = 1,
+    size = 3
+  ) +
+  scale_fill_manual(
+    values = trophic_cols,
+    limits = trophic_levels,
+    drop = FALSE
+  ) +
+  scale_x_continuous(
+    breaks = pretty_breaks(n = 10),
+    expand = expansion(mult = c(0, 0.01))
+  ) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 6),
+    expand = expansion(mult = c(0, 0.08))
+  ) +
+  labs(
+    x = paste0("Dates with >= ", min_proteins_per_date, " detected proteins"),
+    y = "Species [n]",
+    title = "a"
+  ) +
+  theme_nat +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5)
+  )
+
+############################################################
+# 12) Panel b — longest consecutive valid-date runs
+#
+# A dashed line marks the cutoff of 4 consecutive valid dates.
+############################################################
+run_totals <- consecutive_summary %>%
+  count(longest_consecutive_run, name = "total")
+
+p_b <- ggplot(
+  consecutive_summary,
+  aes(x = longest_consecutive_run, fill = TrophicGroup_clean)
+) +
+  geom_histogram(
+    binwidth = 1,
+    boundary = 0.5,
+    colour = "black",
+    position = "stack"
+  ) +
+  geom_vline(
+    xintercept = min_consecutive_dates - 0.5,
+    linetype = "dashed",
+    linewidth = 0.6
+  ) +
+  annotate(
+    "text",
+    x = min_consecutive_dates + 1.1,
+    y = max(run_totals$total) * 0.95,
+    label = paste0("cutoff = ", min_consecutive_dates, " dates"),
+    hjust = 0,
+    vjust = 1,
+    size = 3
+  ) +
+  scale_fill_manual(
+    values = trophic_cols,
+    limits = trophic_levels,
+    drop = FALSE
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      2,
+      max(consecutive_summary$longest_consecutive_run, na.rm = TRUE),
+      by = 2
+    ),
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+  scale_y_continuous(
+    breaks = pretty_breaks(n = 6),
+    expand = expansion(mult = c(0, 0.08))
+  ) +
+  labs(
+    x = "Longest run of consecutive valid dates",
+    y = "Species [n]",
+    title = "b"
+  ) +
+  theme_nat +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5)
+  )
+
+############################################################
+# 13) Assemble final 2-panel figure
+#
+# One row:
+#   a, b
+############################################################
+final_temporal_coverage_figure <- p_a | p_b
+
+print(final_temporal_coverage_figure)
+
+############################################################
+# 14) Save final figure
+############################################################
+ggsave(
+  filename = "Supplementary_ValidDates_and_ConsecutiveRuns_AB.png",
+  plot = final_temporal_coverage_figure,
+  width = 12,
+  height = 5.5,
+  dpi = 600,
+  bg = "white"
+)
+```
+

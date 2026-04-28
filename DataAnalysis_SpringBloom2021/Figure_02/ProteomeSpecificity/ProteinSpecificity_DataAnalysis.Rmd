@@ -1,0 +1,174 @@
+---
+title: Proteomic Data Overview
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_02/ProteomeSpecificity/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "ProteinGroupResolution.csv")
+```
+
+# publication
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(patchwork)
+
+# -----------------------------
+# Settings
+# -----------------------------
+desired_order <- c(
+  "Species_Resolution", 
+  "Genus_Resolution", 
+  "Family_Resolution", 
+  "Order_Resolution", 
+  "Class_Resolution", 
+  "Phylum_Resolution"
+)
+
+fill_cols_3 <- c(
+  Species = ColorPalette[1],
+  Genus   = ColorPalette[3],
+  Rest    = "grey80"
+)
+
+collapse_resolution <- function(x) {
+  dplyr::case_when(
+    x == "Species_Resolution" ~ "Species",
+    x == "Genus_Resolution"   ~ "Genus",
+    TRUE                      ~ "Rest"
+  )
+}
+
+# -----------------------------
+# 1) PIE 1: Unique proteins (counts)
+# -----------------------------
+plot_dat_counts <- dat %>%
+  mutate(
+    ProteinGroup_Resolution = factor(ProteinGroup_Resolution, levels = desired_order),
+    Category = collapse_resolution(ProteinGroup_Resolution)
+  ) %>%
+  count(Category, name = "Value") %>%
+  mutate(Percent = Value / sum(Value) * 100)
+
+legend_counts <- setNames(
+  paste0(plot_dat_counts$Category, " (",
+         plot_dat_counts$Value, ", ",
+         sprintf("%.1f%%", plot_dat_counts$Percent), ")"),
+  plot_dat_counts$Category
+)
+
+p_counts <- ggplot(plot_dat_counts, aes(x = "", y = Value, fill = Category)) +
+  geom_col(width = 1, color = "black") +
+  coord_polar(theta = "y", start = 0) +
+  scale_fill_manual(values = fill_cols_3, labels = legend_counts) +
+  theme_minimal(base_size = 16) +
+  theme(
+    axis.text       = element_blank(),
+    axis.title      = element_blank(),
+    panel.grid      = element_blank(),
+    legend.text     = element_text(size = 13),
+    legend.position = "right",
+    plot.title      = element_text(face = "bold", size = 16)
+  ) +
+  ggtitle("A) Protein groups (counts)")
+
+# -----------------------------
+# 2) PIE 2: Normalized abundance (sum)
+#    Uses the normalized total abundance column:
+#    Total_Abundance_Per_Protein = sum(Protein_Abundance_IBAQ_Norm) per protein
+# -----------------------------
+stopifnot("Total_Abundance_Per_Protein" %in% colnames(dat))
+
+plot_dat_abund_norm <- dat %>%
+  mutate(
+    ProteinGroup_Resolution = factor(ProteinGroup_Resolution, levels = desired_order),
+    Category = collapse_resolution(ProteinGroup_Resolution)
+  ) %>%
+  group_by(Category) %>%
+  summarise(Value = sum(Total_Abundance_Per_Protein, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Percent = Value / sum(Value) * 100)
+
+legend_abund_norm <- setNames(
+  paste0(plot_dat_abund_norm$Category, " (",
+         format(plot_dat_abund_norm$Value, scientific = TRUE, digits = 3), ", ",
+         sprintf("%.1f%%", plot_dat_abund_norm$Percent), ")"),
+  plot_dat_abund_norm$Category
+)
+
+p_abund_norm <- ggplot(plot_dat_abund_norm, aes(x = "", y = Value, fill = Category)) +
+  geom_col(width = 1, color = "black") +
+  coord_polar(theta = "y", start = 0) +
+  scale_fill_manual(values = fill_cols_3, labels = legend_abund_norm) +
+  theme_minimal(base_size = 16) +
+  theme(
+    axis.text       = element_blank(),
+    axis.title      = element_blank(),
+    panel.grid      = element_blank(),
+    legend.text     = element_text(size = 13),
+    legend.position = "right",
+    plot.title      = element_text(face = "bold", size = 16)
+  ) +
+  ggtitle("B) Protein abundance (summed normalized IBAQ)")
+
+# -----------------------------
+# 3) Combine (stacked) + export
+# -----------------------------
+combined_pies <- p_counts / p_abund_norm + plot_layout(guides = "collect")
+
+print(combined_pies)
+
+ggsave(
+  filename = "ProteinGroupResolution_Pies_Counts_and_NormIBAQ.pdf",
+  plot     = combined_pies,
+  width    = 8.27,
+  height   = 11.69,
+  units    = "in",
+  device   = "pdf"
+)
+
+```
+
+
+
+
+
+
+
+

@@ -1,0 +1,207 @@
+---
+title: "Rhodopsin Alignment"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+# Reproducibility
+set.seed(1)
+
+############################################################
+# 0) Clear R "brain" + libraries
+############################################################
+rm(list = ls())
+gc()
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(lubridate)
+  library(tibble)   # for glimpse()
+  library(ggplot2)
+})
+
+############################################################
+# 1) Set working directory (analysis folder)
+############################################################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_05/Rhodopsin_Alignment/")
+
+
+suppressPackageStartupMessages({
+  library(Biostrings)
+  library(ggseqlogo)
+  library(ggplot2)
+})
+
+## -------------------- 1) Input alignment --------------------
+alignment_file <- "CarotenoidAntenna/Oligo_Rhodopsins.fasta.afa.best.fas"
+```
+
+
+# Oligo-like species rhodopsin alignment
+```{r}
+############################################################
+## Monochrome AA frequency logo from an aligned FASTA (.afa)
+## - Window: alignment columns win_start..win_end
+## - y-axis: residue frequency (0..1)
+## - NO chemistry colors, NO legend
+## - Selectively color alignment columns:
+##     blue:  101, 105, 112
+##     green: 109
+##     yellow:167
+############################################################
+library(Biostrings)
+library(ggseqlogo)
+library(ggplot2)
+library(patchwork)
+
+aa  <- readAAStringSet(alignment_file)
+aln <- toupper(as.character(aa))
+
+aln_len <- unique(nchar(aln))
+if (length(aln_len) != 1) stop("Alignment must have identical sequence lengths (aligned FASTA).")
+aln_len <- aln_len[1]
+
+## -------------------- 2) Full window used to compute frequencies --------------------
+win_start <- 153
+win_end   <- 235
+
+if (win_start < 1) stop("win_start must be >= 1.")
+if (win_end > aln_len) stop("Window exceeds alignment length.")
+if (win_end <= win_start) stop("win_end must be > win_start.")
+
+window_seqs <- substr(aln, win_start, win_end)
+win_len <- win_end - win_start + 1L
+
+## -------------------- 3) Frequency matrix (AA x position) --------------------
+AA20 <- c("A","C","D","E","F","G","H","I","K","L",
+          "M","N","P","Q","R","S","T","V","W","Y")
+
+chars_mat <- do.call(rbind, strsplit(window_seqs, "", fixed = TRUE))
+
+freq <- matrix(0, nrow = length(AA20), ncol = win_len,
+               dimnames = list(AA20, paste0("pos", seq_len(win_len))))
+
+for (j in seq_len(win_len)) {
+  col <- chars_mat[, j]
+  col <- col[col != "-"]  # ignore gaps
+  if (length(col) == 0) next
+  counts <- table(factor(col, levels = AA20))
+  freq[, j] <- as.numeric(counts) / sum(counts)
+}
+
+## -------------------- 4) Define selective coloring positions --------------------
+to_window_pos <- function(alignment_pos) alignment_pos - win_start + 1L
+in_window <- function(wpos) wpos >= 1 & wpos <= win_len
+
+blue_align   <- c(157, 161, 168)
+green_align  <- c(231)
+yellow_align <- c(165)
+
+blue_win   <- to_window_pos(blue_align);   blue_win   <- blue_win[in_window(blue_win)]
+green_win  <- to_window_pos(green_align);  green_win  <- green_win[in_window(green_win)]
+yellow_win <- to_window_pos(yellow_align); yellow_win <- yellow_win[in_window(yellow_win)]
+
+## -------------------- 5) Build logo, extract polygons, recolor --------------------
+p_base <- ggseqlogo(freq, method = "custom", seq_type = "aa", col_scheme = NULL)
+pd <- ggplot_build(p_base)$data[[1]]
+
+pd$pos <- as.integer(round(pd$x))
+pd$fill <- "black"
+pd$fill[pd$pos %in% blue_win]   <- "#1f77b4"
+pd$fill[pd$pos %in% green_win]  <- "#2ca02c"
+pd$fill[pd$pos %in% yellow_win] <- "#f1c40f"
+
+## -------------------- 6) Define the two displayed regions --------------------
+left_align_start  <- 153
+left_align_end    <- 170
+
+right_align_start <- 225
+right_align_end   <- 235
+
+left_win  <- to_window_pos(left_align_start:left_align_end)
+right_win <- to_window_pos(right_align_start:right_align_end)
+
+## -------------------- 7) Helper function to make one panel --------------------
+make_logo_panel <- function(pd, keep_positions, axis_labels, show_y = TRUE) {
+  pd_sub <- pd[pd$pos %in% keep_positions, ]
+
+  # remap x positions so each subpanel starts at 1, 2, 3, ...
+  pos_map <- setNames(seq_along(keep_positions), keep_positions)
+  pd_sub$x_panel <- pd_sub$x - pd_sub$pos + unname(pos_map[as.character(pd_sub$pos)])
+  pd_sub$pos_panel <- unname(pos_map[as.character(pd_sub$pos)])
+
+  p <- ggplot(pd_sub) +
+    geom_polygon(
+      aes(x = x_panel, y = y, group = group, fill = fill),
+      color = NA
+    ) +
+    scale_fill_identity() +
+    scale_x_continuous(
+      breaks = seq_along(keep_positions),
+      labels = axis_labels,
+      expand = expansion(mult = c(0.01, 0.01))
+    ) +
+    scale_y_continuous(
+      limits = c(0, 1),
+      breaks = seq(0, 1, by = 0.25),
+      expand = expansion(mult = c(0, 0.02))
+    ) +
+    labs(x = NULL, y = if (show_y) "Residue frequency" else NULL) +
+    theme_bw(base_size = 11) +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(size = 7),
+      axis.title.x = element_text(margin = margin(t = 6)),
+      axis.title.y = element_text(margin = margin(r = 6))
+    )
+
+  if (!show_y) {
+    p <- p +
+      theme(
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+      )
+  }
+
+  p
+}
+
+## -------------------- 8) Build left and right panels --------------------
+p_left <- make_logo_panel(
+  pd = pd,
+  keep_positions = left_win,
+  axis_labels = left_align_start:left_align_end,
+  show_y = TRUE
+)
+
+p_right <- make_logo_panel(
+  pd = pd,
+  keep_positions = right_win,
+  axis_labels = right_align_start:right_align_end,
+  show_y = FALSE
+)
+
+## -------------------- 9) Combine with a gap --------------------
+p_final <- p_left + plot_spacer() + p_right +
+  plot_layout(widths = c(length(left_win), 2.5, length(right_win))) &
+  theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5))
+
+p_final <- p_final +
+  plot_annotation(
+    theme = theme(
+      axis.title.x = element_text()
+    )
+  )
+
+print(p_final)
+
+## -------------------- 10) Export --------------------
+ggsave("AA_logo_broken_axis.pdf", p_final, width = 18, height = 3)
+```

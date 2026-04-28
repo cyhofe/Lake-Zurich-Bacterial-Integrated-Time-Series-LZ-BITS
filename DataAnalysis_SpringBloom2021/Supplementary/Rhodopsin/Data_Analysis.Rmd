@@ -1,0 +1,440 @@
+---
+title: "Rhodopsin full alignment"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+############################
+# RHODOPSIN ALIGNMENT PLOTTING
+# FINAL VERSION WITH:
+# - robust MAG-ID-based label mapping
+# - alphabetical sorting of tested taxa
+# - motif-aware DTE/DTD coloring
+# - reference labels shown in RED using plain ggplot text
+#
+# This version does NOT rely on ggtext or HTML rendering.
+# Instead, labels are drawn manually with geom_text() on the left.
+############################
+
+############################
+# 1. CLEAN R SESSION
+############################
+rm(list = ls())
+graphics.off()
+cat("\014")
+
+############################
+# 2. SET WORKING DIRECTORY
+############################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/Rhodopsin/")
+
+############################
+# 3. LOAD PACKAGES
+############################
+# Install once if needed:
+# install.packages(c("tidyverse", "patchwork"))
+# if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+# BiocManager::install("Biostrings")
+
+library(Biostrings)
+library(tidyverse)
+library(patchwork)
+
+############################
+# 4. INPUT / OUTPUT FILES
+############################
+alignment_file <- "FullDataset.fa.afa.best.fas"
+
+output_pdf <- "Rhodopsin_final_2panel_plot_red_reference_labels.pdf"
+output_png <- "Rhodopsin_final_2panel_plot_red_reference_labels.png"
+
+############################
+# 5. READ THE ALIGNED FASTA
+############################
+aln <- readAAStringSet(alignment_file)
+
+cat("Number of sequences:", length(aln), "\n")
+cat("Alignment width(s):", paste(unique(width(aln)), collapse = ", "), "\n")
+
+if (length(unique(width(aln))) != 1) {
+  stop("Sequences do not all have the same width. This does not look like a final aligned FASTA.")
+}
+
+############################
+# 6. DEFINE CLEAN LABELS FOR TESTED TAXA
+############################
+# We use the stable MAG ID as the key.
+# This avoids problems if the alignment software changed spaces or punctuation
+# in the FASTA headers.
+
+tested_label_map <- c(
+  "NZE03MAY2102.MAG_3038" = "Nanopelagicus unclassified sp26 (NZE03MAY2102.MAG_3038)",
+  "NZE08MAR2102.MAG_497"  = "Fonsibacter sp947497305 (NZE08MAR2102.MAG_497)",
+  "NZE10MAY2102.MAG_2928" = "Planktophila lacus C (NZE10MAY2102.MAG_2928)",
+  "NZE12APR2102.MAG_7894" = "Nanopelagicus limnes (NZE12APR2102.MAG_7894)",
+  "NZE12APR2102.MAG_8760" = "Nanopelagicaceae UBA7398 sp947498205 (NZE12APR2102.MAG_8760)",
+  "NZE12MAR2102.MAG_440"  = "Nanopelagicus sp947486485 (NZE12MAR2102.MAG_440)",
+  "NZE15MAR2102.MAG_4357" = "Nanopelagicaceae UBA3012 sp009701305 (NZE15MAR2102.MAG_4357)",
+  "NZE21MAY2102.MAG_3561" = "Planktophila sp947487595 (NZE21MAY2102.MAG_3561)",
+  "NZE28APR2102.MAG_4534" = "Sediminibacterium unclassified sp436 (NZE28APR2102.MAG_4534)",
+  "NZE31MAY2102.MAG_2275" = "Planktophila unclassified sp485 (NZE31MAY2102.MAG_2275)",
+  "NZE31MAY2102.MAG_3119" = "Rhodoluna sp021741685 (NZE31MAY2102.MAG_3119)",
+  "NZE31MAY2102.MAG_373"  = "Planktophila sp947490625 (NZE31MAY2102.MAG_373)",
+  "NZE21APR2102.MAG_682"  = "ATZT02 sp026393095 (NZE21APR2102.MAG_682)",
+  "NZE09APR2102.MAG_473"  = "Limnocylindrus sp003670475 (NZE09APR2102.MAG_473)",
+  "NZE14APR2102.MAG_3056" = "Schleiferiaceae TMED14 sp002292855 (NZE14APR2102.MAG_3056)",
+  "NZE21APR2102.MAG_149"  = "Actinomycetota UBA5976 unclassified sp358 (NZE21APR2102.MAG_149)",
+  "NZE23APR2102.MAG_5483" = "Planktophila unclassified sp398 (NZE23APR2102.MAG_5483)",
+  "NZE19MAY2102.MAG_493"  = "Rhodoluna sp947489135 (NZE19MAY2102.MAG_493)",
+  "NZE12APR2102.MAG_976"  = "Ilumatobacteraceae UBA2093 sp026393575 (NZE12APR2102.MAG_976)",
+  "NZE02JUN2102.MAG_271"  = "Planktophila dulcis (NZE02JUN2102.MAG_271)"
+)
+
+############################
+# 7. BUILD METADATA TABLE
+############################
+meta <- tibble(
+  seq_id = names(aln)
+) %>%
+  mutate(
+    short_name = case_when(
+      str_detect(seq_id, "KIN_4B8") ~ "KIN_4B8",
+      str_detect(seq_id, "Xanthorhodopsin|XR") ~ "XR",
+      str_detect(seq_id, "AAG10475") ~ "green_PR",
+      str_detect(seq_id, "AAK30179") ~ "blue_PR",
+      str_detect(seq_id, "1S51") ~ "BR_1S51",
+      str_detect(seq_id, "2L6X") ~ "GPR_2L6X",
+      str_detect(seq_id, "8CL7") ~ "NaR_8CL7",
+      TRUE ~ seq_id
+    ),
+    group = case_when(
+      short_name %in% c("KIN_4B8", "XR", "green_PR", "blue_PR", "BR_1S51", "GPR_2L6X", "NaR_8CL7") ~ "reference",
+      TRUE ~ "tested"
+    ),
+    mag_id = str_extract(seq_id, "NZE[0-9A-Z]+\\.MAG_[0-9]+"),
+    plot_label = case_when(
+      short_name == "KIN_4B8"  ~ "KIN_4B8",
+      short_name == "XR"       ~ "Salinibacter ruber Xanthorhodopsin(XR)",
+      short_name == "green_PR" ~ "AAG10475.1 green proteorhodopsin [uncultured marine gamma proteobacterium EBAC31A08]",
+      short_name == "blue_PR"  ~ "AAK30179.1 blue proteorhodopsin, partial [uncultured bacterium]",
+      short_name == "BR_1S51"  ~ "pdb|1S51|A Chain A, bacteriorhodopsin",
+      short_name == "GPR_2L6X" ~ "pdb|2L6X|A Chain A, Green-light absorbing proteorhodopsin",
+      short_name == "NaR_8CL7" ~ "pdb|8CL7|A Chain A, Sodium pumping rhodopsin",
+      !is.na(mag_id) & mag_id %in% names(tested_label_map) ~ unname(tested_label_map[mag_id]),
+      TRUE ~ seq_id
+    )
+  )
+
+############################
+# 8. OPTIONAL CHECK FOR UNMAPPED TESTED TAXA
+############################
+unmapped_tested <- meta %>%
+  filter(group == "tested", plot_label == seq_id)
+
+if (nrow(unmapped_tested) > 0) {
+  cat("\nWARNING: The following tested taxa were not mapped to clean labels:\n")
+  print(unmapped_tested %>% select(seq_id, mag_id), n = nrow(unmapped_tested))
+}
+
+############################
+# 9. SORT TESTED TAXA ALPHABETICALLY BY CLEAN LABEL
+############################
+reference_order <- c("KIN_4B8", "XR", "green_PR", "blue_PR", "BR_1S51", "GPR_2L6X", "NaR_8CL7")
+
+meta_ref <- meta %>%
+  filter(group == "reference") %>%
+  mutate(sort_order = match(short_name, reference_order))
+
+meta_tested <- meta %>%
+  filter(group == "tested") %>%
+  arrange(plot_label) %>%
+  mutate(sort_order = 100 + row_number())
+
+meta <- bind_rows(meta_ref, meta_tested) %>%
+  arrange(sort_order, plot_label, seq_id)
+
+############################
+# 10. REORDER ALIGNMENT
+############################
+aln_sorted <- aln[match(meta$seq_id, names(aln))]
+names(aln_sorted) <- meta$short_name
+
+############################
+# 11. CONVERT ALIGNMENT TO TIDY FORMAT
+############################
+aln_df <- tibble(
+  short_name = names(aln_sorted),
+  aligned_seq = as.character(aln_sorted)
+) %>%
+  mutate(residue = str_split(aligned_seq, "")) %>%
+  unnest(residue) %>%
+  group_by(short_name) %>%
+  mutate(
+    aln_pos = row_number(),
+    ref_pos = ifelse(residue == "-", NA_integer_, cumsum(residue != "-"))
+  ) %>%
+  ungroup() %>%
+  left_join(
+    meta %>% select(seq_id, short_name, group, sort_order, plot_label),
+    by = "short_name"
+  )
+
+############################
+# 12. REFERENCE SITE INFORMATION
+############################
+ref_site_info <- tribble(
+  ~short_name, ~panel_name,       ~site_text,
+  "BR_1S51",   "proteorhodopsin", "DTD at seq 81, 85, 92",
+  "GPR_2L6X",  "proteorhodopsin", "DTE at seq 80, 84, 91",
+  "NaR_8CL7",  "proteorhodopsin", "NDQ at seq 105, 109, 116",
+  "green_PR",  "proteorhodopsin", "L at seq 105",
+  "blue_PR",   "proteorhodopsin", "Q at seq 107",
+  "KIN_4B8",   "carotenoid",      "G at seq 153",
+  "XR",        "carotenoid",      "G at seq 156"
+)
+
+############################
+# 13. DEFINE THE TWO PANELS
+############################
+panel_def <- tribble(
+  ~panel_name,        ~start_col, ~end_col, ~title,
+  "proteorhodopsin",      215,      235,   "Proteorhodopsin motif and spectral tuning (alignment 215-235)",
+  "carotenoid",           292,      302,   "Carotenoid-binding pocket (alignment 292-302)"
+)
+
+############################
+# 14. DEFINE WHICH SEQUENCES TO SHOW IN EACH PANEL
+############################
+get_panel_sequences <- function(panel_name, meta_df) {
+  tested <- meta_df %>%
+    filter(group == "tested") %>%
+    arrange(plot_label) %>%
+    pull(short_name)
+
+  refs <- switch(
+    panel_name,
+    "proteorhodopsin" = c("BR_1S51", "GPR_2L6X", "NaR_8CL7", "green_PR", "blue_PR"),
+    "carotenoid"      = c("KIN_4B8", "XR"),
+    character(0)
+  )
+
+  c(refs, tested)
+}
+
+############################
+# 15. EXTRACT PANEL DATA
+############################
+panel_data <- purrr::map_dfr(seq_len(nrow(panel_def)), function(i) {
+  pn  <- panel_def$panel_name[i]
+  s   <- panel_def$start_col[i]
+  e   <- panel_def$end_col[i]
+  ttl <- panel_def$title[i]
+
+  keep_seq <- get_panel_sequences(pn, meta)
+
+  aln_df %>%
+    filter(short_name %in% keep_seq,
+           aln_pos >= s,
+           aln_pos <= e) %>%
+    mutate(
+      panel_name = pn,
+      panel_title = ttl
+    )
+})
+
+############################
+# 16. ADD LABEL TEXT AND REFERENCE ANNOTATION
+############################
+panel_label_df <- expand_grid(
+  panel_name = unique(panel_data$panel_name),
+  short_name = unique(panel_data$short_name)
+) %>%
+  left_join(meta %>% select(short_name, plot_label, group), by = "short_name") %>%
+  left_join(ref_site_info, by = c("short_name", "panel_name")) %>%
+  mutate(
+    panel_plot_label = ifelse(
+      !is.na(site_text),
+      paste0(plot_label, "  [", site_text, "]"),
+      plot_label
+    ),
+    label_color = ifelse(group == "reference", "red3", "black")
+  )
+
+panel_data <- panel_data %>%
+  left_join(
+    panel_label_df %>% select(panel_name, short_name, panel_plot_label, label_color),
+    by = c("panel_name", "short_name")
+  )
+
+############################
+# 17. DEFINE ROW ORDER PER PANEL
+############################
+row_order <- purrr::map_dfr(unique(panel_data$panel_name), function(pn) {
+  tibble(
+    panel_name = pn,
+    short_name = get_panel_sequences(pn, meta),
+    y_order = seq_along(get_panel_sequences(pn, meta))
+  )
+})
+
+panel_data <- panel_data %>%
+  left_join(row_order, by = c("panel_name", "short_name"))
+
+############################
+# 18. DETECT DTE / DTD MOTIFS PER SEQUENCE
+############################
+motif_df <- panel_data %>%
+  filter(panel_name == "proteorhodopsin",
+         aln_pos %in% c(220, 224, 231)) %>%
+  select(short_name, aln_pos, residue) %>%
+  distinct() %>%
+  pivot_wider(names_from = aln_pos, values_from = residue)
+
+motif_df <- motif_df %>%
+  mutate(
+    motif_string = paste0(`220`, `224`, `231`),
+    is_valid_motif = motif_string %in% c("DTE", "DTD")
+  ) %>%
+  select(short_name, is_valid_motif)
+
+panel_data <- panel_data %>%
+  left_join(motif_df, by = "short_name") %>%
+  mutate(is_valid_motif = ifelse(is.na(is_valid_motif), FALSE, is_valid_motif))
+
+############################
+# 19. DEFINE COLORING RULES
+############################
+panel_data <- panel_data %>%
+  mutate(
+    residue_class = case_when(
+      panel_name == "proteorhodopsin" & !aln_pos %in% c(220, 224, 228, 231) ~ "background",
+      panel_name == "carotenoid"      &  aln_pos != 297 ~ "background",
+
+      panel_name == "proteorhodopsin" &
+        aln_pos %in% c(220, 224, 231) &
+        is_valid_motif &
+        residue %in% c("D", "T", "E") ~ "pump_match",
+
+      panel_name == "proteorhodopsin" &
+        aln_pos %in% c(220, 224, 231) ~ "other_in_site",
+
+      panel_name == "proteorhodopsin" & aln_pos == 228 & residue %in% c("L", "M") ~ "green_absorber",
+      panel_name == "proteorhodopsin" & aln_pos == 228 & residue == "Q" ~ "blue_absorber",
+      panel_name == "proteorhodopsin" & aln_pos == 228 ~ "other_in_site",
+
+      panel_name == "carotenoid" & aln_pos == 297 & residue == "G" ~ "carotenoid_match",
+      panel_name == "carotenoid" & aln_pos == 297 ~ "other_in_site",
+
+      TRUE ~ "background"
+    )
+  )
+
+fill_cols <- c(
+  "background"       = "grey88",
+  "other_in_site"    = "grey35",
+  "pump_match"       = "#7B61FF",
+  "green_absorber"   = "#1B9E77",
+  "blue_absorber"    = "#377EB8",
+  "carotenoid_match" = "#E67E22"
+)
+
+############################
+# 20. PLOTTING FUNCTION
+############################
+# Labels are drawn manually on the left with geom_text().
+# This is robust and avoids HTML/markdown rendering issues.
+
+plot_alignment_panel <- function(df_panel) {
+
+  seq_levels <- df_panel %>%
+    distinct(short_name, y_order) %>%
+    arrange(y_order) %>%
+    pull(short_name)
+
+  df_panel <- df_panel %>%
+    mutate(y_factor = factor(short_name, levels = rev(seq_levels)))
+
+  label_df <- df_panel %>%
+    distinct(short_name, y_factor, panel_plot_label, label_color)
+
+  min_x <- min(df_panel$aln_pos)
+  max_x <- max(df_panel$aln_pos)
+
+  # Put labels to the left of the first alignment column
+  label_x <- min_x - 4
+
+  ggplot(df_panel, aes(x = aln_pos, y = y_factor)) +
+    geom_tile(aes(fill = residue_class), color = "white", linewidth = 0.25) +
+    geom_text(aes(label = residue), size = 3) +
+    geom_text(
+      data = label_df,
+      aes(x = label_x, y = y_factor, label = panel_plot_label, color = label_color),
+      inherit.aes = FALSE,
+      hjust = 1,
+      size = 2.8
+    ) +
+    scale_fill_manual(values = fill_cols, drop = FALSE) +
+    scale_color_identity() +
+    scale_x_continuous(
+      breaks = seq(min_x, max_x, by = 1),
+      limits = c(label_x - 0.5, max_x + 0.5)
+    ) +
+    labs(
+      title = unique(df_panel$panel_title),
+      x = "Alignment position",
+      y = NULL
+    ) +
+    coord_cartesian(clip = "off") +
+    theme_minimal(base_size = 11) +
+    theme(
+      panel.grid = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.x = element_text(size = 8),
+      plot.title = element_text(face = "bold", size = 12),
+      legend.position = "none",
+      plot.margin = margin(10, 220, 10, 320)
+    )
+}
+
+############################
+# 21. BUILD THE TWO PANELS
+############################
+panel_list <- split(panel_data, panel_data$panel_name)
+
+p_prot <- plot_alignment_panel(panel_list$proteorhodopsin)
+p_caro <- plot_alignment_panel(panel_list$carotenoid)
+
+############################
+# 22. STACK PANELS
+############################
+final_plot <- p_prot / p_caro
+
+print(final_plot)
+
+############################
+# 23. SAVE OUTPUT
+############################
+ggsave(output_pdf, final_plot, width = 16, height = 15)
+ggsave(output_png, final_plot, width = 16, height = 15, dpi = 300)
+
+cat("\nSaved:\n")
+cat(output_pdf, "\n")
+cat(output_png, "\n")
+
+############################
+# 24. OPTIONAL CHECK TABLE
+############################
+cat("\nResidues at highlighted columns:\n")
+panel_data %>%
+  filter(
+    (panel_name == "proteorhodopsin" & aln_pos %in% c(220, 224, 228, 231)) |
+      (panel_name == "carotenoid" & aln_pos == 297)
+  ) %>%
+  select(panel_name, short_name, panel_plot_label, aln_pos, residue, ref_pos, is_valid_motif) %>%
+  arrange(panel_name, panel_plot_label, aln_pos) %>%
+  print(n = 500)
+```
+

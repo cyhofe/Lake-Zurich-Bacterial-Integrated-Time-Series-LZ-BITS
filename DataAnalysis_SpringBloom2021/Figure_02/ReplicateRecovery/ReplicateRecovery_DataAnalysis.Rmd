@@ -1,0 +1,717 @@
+---
+title: Proteomic Data Overview Contaminants
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_02/ReplicateRecovery/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "Proteomic_Data_Overview_Level_Long.csv")
+species_dat <- read_csv("../../../Data/Species_Data/Final_Data/Species_Table.csv")
+```
+
+```{r}
+# =============================================================================
+# Script: Proportion & Abundance Distributions for Protein-Level Data
+#          (Linear abundance scale)
+# =============================================================================
+
+# 1) Load libraries (assumes `dat` is already in your environment)
+library(dplyr)
+library(ggplot2)
+library(patchwork)  # to combine plots
+library(scales)     # for comma_format()
+
+# 2) Filter to proteins and recode presence
+protein_df <- dat %>%
+  filter(Level == "Protein",
+         Abundance > 0) %>%
+  mutate(
+    Replicate = factor(
+      Presence,
+      levels = c("one", "both"),
+      labels = c("One Replicate", "Both Replicates")
+    )
+  )
+
+# 3) Compute percent of proteins in each category
+prop_df <- protein_df %>%
+  count(Replicate) %>%
+  mutate(pct = n / sum(n) * 100)
+
+# 4) Bar plot of proportions
+p_prop <- ggplot(prop_df, aes(x = Replicate, y = pct, fill = Replicate)) +
+  geom_col(color = "black", width = 0.6) +
+  scale_fill_manual(values = c(
+    "One Replicate"   = ColorPalette[4],
+    "Both Replicates" = ColorPalette[2]
+  )) +
+  geom_text(aes(label = paste0(round(pct,1), "%")),
+            vjust = -0.5, size = 4) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  labs(
+    x = NULL,
+    y = "Percent of Proteins",
+    title = "Proteins Detected in One vs. Both Replicates"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x     = element_text(size = 12),
+    axis.title.y    = element_text(size = 12),
+    plot.title      = element_text(size = 14, face = "bold")
+  )
+
+# 5) Violin + jitter of abundance by replicate category (linear scale)
+p_dist <- ggplot(protein_df, aes(x = Replicate, y = Abundance, fill = Replicate)) +
+  geom_violin(trim = TRUE, alpha = 0.4, color = "black", width = 0.8) +
+  geom_jitter(
+    shape  = 21,
+    aes(fill = Replicate),
+    color  = "black",
+    size   = 1.5,
+    width  = 0.2,
+    height = 0,
+    alpha  = 0.7
+  ) +
+  scale_fill_manual(values = c(
+    "One Replicate"   = ColorPalette[4],
+    "Both Replicates" = ColorPalette[2]
+  )) +
+  scale_y_continuous(
+    labels = comma_format(),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    x = NULL,
+    y = "IBAQ Abundance",
+    title = "Abundance of Proteins by Detection Replicate"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x     = element_text(size = 12),
+    axis.title.y    = element_text(size = 12),
+    plot.title      = element_text(size = 14, face = "bold")
+  )
+
+# 6) Combine vertically (proportion above, abundance below)
+combined_plot <- p_prop / p_dist + plot_layout(heights = c(1, 2))
+
+# 7) Display
+print(combined_plot)
+
+# 8) Save to A4‐portrait PDF
+ggsave(
+  filename = "Protein_Replicate_Overview_Linear.pdf",
+  plot     = combined_plot,
+  width    = 8.27,
+  height   = 11.69,
+  units    = "in",
+  device   = "pdf"
+)
+# =============================================================================
+
+```
+
+```{r}
+# =============================================================================
+# Script: Sample‐level % Proteins vs. % Signal in One‐ vs. Both‐Replicate
+# =============================================================================
+
+# 1) Load libraries (assumes `dat` is the “long” CSV you loaded at top)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)    # for percent_format()
+library(forcats)
+
+# 2) Summarize at the protein level by sample:
+#    - count of distinct proteins in “one” vs “both”
+#    - summed abundance in “one” vs “both”
+prot_summ <- dat %>%
+  filter(Level == "Protein",
+         Abundance > 0) %>%
+  group_by(Date, Presence) %>%
+  summarise(
+    count     = n_distinct(ID),
+    abundance = sum(Abundance, na.rm = TRUE),
+    .groups   = "drop"
+  ) %>%
+  # 3) compute percentages within each sample
+  group_by(Date) %>%
+  mutate(
+    percent_count     = 100 * count / sum(count),
+    percent_abundance = 100 * abundance / sum(abundance)
+  ) %>%
+  ungroup()
+
+# 4) Pivot into “Metric”-long form for plotting
+plot_df <- prot_summ %>%
+  pivot_longer(
+    cols      = c(percent_count, percent_abundance),
+    names_to  = "Metric",
+    values_to = "Percent"
+  ) %>%
+  mutate(
+    Metric = factor(
+      Metric,
+      levels = c("percent_count", "percent_abundance"),
+      labels = c("% Proteins", "% Abundance")
+    ),
+    Presence = factor(
+      Presence,
+      levels = c("one", "both"),
+      labels = c("One Replicate", "Both Replicates")
+    ),
+    Date = factor(Date, levels = unique(Date))  # preserve original order
+  )
+
+# 5) Plot: stacked bars of % Proteins vs. % Abundance, one facet per Metric
+ggplot(plot_df, aes(x = Date, y = Percent, fill = Presence)) +
+  geom_col(color = "black", width = 0.8, position = "stack") +
+  facet_wrap(~ Metric, ncol = 1, scales = "free_y") +
+  scale_fill_manual(
+    values = c("One Replicate" = ColorPalette[4],
+               "Both Replicates" = ColorPalette[2])
+  ) +
+  scale_y_continuous(labels = percent_format(scale = 1)) +
+  labs(
+    x    = "Sample Date",
+    y    = "Percent",
+    fill = "Detected in:"
+  ) +
+  theme_minimal() +
+  theme(
+    strip.text       = element_text(size = 12, face = "bold"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y      = element_text(size = 10),
+    axis.title       = element_text(size = 12),
+    legend.title     = element_text(size = 11),
+    legend.text      = element_text(size = 10),
+    panel.spacing.y  = unit(1, "lines")
+  )
+
+# 6) (Optional) Save as PDF
+ggsave(
+  "Replicate_Percentage_Comparison.pdf",
+  width  = 12,
+  height = 8,
+  units  = "in"
+)
+# =============================================================================
+
+```
+
+```{r}
+# ================== Per-sample & pooled replicate summaries (with abundance overlap) ==================
+library(dplyr)
+
+# Build a clean protein table (labels normalized), keep >0 abundances
+protein_df <- dat %>%
+  filter(Level == "Protein") %>%
+  mutate(
+    Abundance = as.numeric(Abundance),
+    Presence  = case_when(
+      tolower(Presence) %in% c("both","both replicates","both_replicates") ~ "both",
+      tolower(Presence) %in% c("one","one replicate","one_replicate")      ~ "one",
+      TRUE ~ tolower(Presence)
+    ),
+    Replicate = factor(Presence, levels = c("one","both"),
+                       labels = c("One Replicate","Both Replicates"))
+  ) %>%
+  filter(!is.na(Abundance), Abundance > 0)
+
+# ---- A) Per-sample abundance shares (ONE & BOTH) ----
+per_sample_abund <- protein_df %>%
+  group_by(Date) %>%
+  summarise(
+    total_abund     = sum(Abundance, na.rm = TRUE),
+    one_abund       = sum(Abundance[Replicate == "One Replicate"],  na.rm = TRUE),
+    both_abund      = sum(Abundance[Replicate == "Both Replicates"], na.rm = TRUE),
+    pct_one_abund   = 100 * one_abund  / total_abund,
+    pct_both_abund  = 100 * both_abund / total_abund,
+    .groups = "drop"
+  )
+
+# Medians / ranges for abundance overlap
+median_one_abund  <- median(per_sample_abund$pct_one_abund,  na.rm = TRUE)
+range_one_abund   <- range(per_sample_abund$pct_one_abund,   na.rm = TRUE)
+mean_one_abund    <- mean(per_sample_abund$pct_one_abund,    na.rm = TRUE)
+
+median_both_abund <- median(per_sample_abund$pct_both_abund, na.rm = TRUE)
+range_both_abund  <- range(per_sample_abund$pct_both_abund,  na.rm = TRUE)
+mean_both_abund   <- mean(per_sample_abund$pct_both_abund,   na.rm = TRUE)
+
+# ---- B) Per-sample % of IDs in ONE/BOTH (counts) ----
+per_sample_counts <- protein_df %>%
+  group_by(Date) %>%
+  summarise(
+    total_ids     = n_distinct(ID),
+    both_ids      = n_distinct(ID[Replicate == "Both Replicates"]),
+    one_ids       = total_ids - both_ids,
+    pct_both_ids  = 100 * both_ids / total_ids,  # "overlap for counts"
+    pct_one_ids   = 100 * one_ids  / total_ids,
+    .groups = "drop"
+  )
+
+median_overlap_ct <- median(per_sample_counts$pct_both_ids, na.rm = TRUE)
+range_overlap_ct  <- range(per_sample_counts$pct_both_ids,  na.rm = TRUE)
+median_one_ids    <- median(per_sample_counts$pct_one_ids,  na.rm = TRUE)
+range_one_ids     <- range(per_sample_counts$pct_one_ids,   na.rm = TRUE)
+
+# ---- C) Per-sample median fold (Both / One) ----
+per_sample_fold <- protein_df %>%
+  group_by(Date) %>%
+  summarise(
+    med_both = if (any(Replicate == "Both Replicates"))
+      median(Abundance[Replicate == "Both Replicates"], na.rm = TRUE) else NA_real_,
+    med_one  = if (any(Replicate == "One Replicate"))
+      median(Abundance[Replicate == "One Replicate"], na.rm = TRUE) else NA_real_,
+    fold_both_over_one = ifelse(is.finite(med_both) & is.finite(med_one) & med_one > 0,
+                                med_both / med_one, NA_real_),
+    .groups = "drop"
+  )
+
+valid_folds     <- per_sample_fold$fold_both_over_one[is.finite(per_sample_fold$fold_both_over_one)]
+n_valid_folds   <- length(valid_folds)
+n_total_samples <- nrow(per_sample_fold)
+median_fold_ps  <- median(valid_folds, na.rm = TRUE)
+range_fold_ps   <- range(valid_folds,  na.rm = TRUE)
+mean_fold_ps    <- mean(valid_folds,   na.rm = TRUE)
+
+# ---- D) Pooled medians & shares (dataset-wide) ----
+pooled_median_both <- protein_df %>%
+  filter(Replicate == "Both Replicates") %>%
+  summarise(m = median(Abundance, na.rm = TRUE)) %>% pull(m)
+
+pooled_median_one <- protein_df %>%
+  filter(Replicate == "One Replicate") %>%
+  summarise(m = median(Abundance, na.rm = TRUE)) %>% pull(m)
+
+pooled_fold   <- pooled_median_both / pooled_median_one
+pooled_lower  <- pooled_median_one  / pooled_median_both
+
+total_abund_all <- sum(protein_df$Abundance, na.rm = TRUE)
+one_abund_all   <- sum(protein_df$Abundance[protein_df$Replicate == "One Replicate"],  na.rm = TRUE)
+both_abund_all  <- sum(protein_df$Abundance[protein_df$Replicate == "Both Replicates"], na.rm = TRUE)
+pooled_pct_one_abund  <- 100 * one_abund_all  / total_abund_all
+pooled_pct_both_abund <- 100 * both_abund_all / total_abund_all  # "pooled abundance overlap"
+
+# ---- E) Optional dataset-wide ID context ----
+by_id <- protein_df %>%
+  group_by(ID) %>%
+  summarise(
+    any_one  = any(Replicate == "One Replicate"),
+    any_both = any(Replicate == "Both Replicates"),
+    .groups = "drop"
+  )
+pct_ids_any_one       <- 100 * mean(by_id$any_one)
+pct_ids_only_ever_one <- 100 * mean(by_id$any_one & !by_id$any_both)
+pct_rows_one          <- 100 * mean(protein_df$Replicate == "One Replicate")
+
+# ---- F) Print nicely ----
+cat(sprintf("Counts overlap (BOTH IDs) per sample: median = %.1f%% (range %.1f–%.1f%%)\n",
+            median_overlap_ct, range_overlap_ct[1], range_overlap_ct[2]))
+cat(sprintf("ONE-replicate IDs per sample: median = %.1f%% (range %.1f–%.1f%%)\n",
+            median_one_ids, range_one_ids[1], range_one_ids[2]))
+
+cat(sprintf("Abundance overlap (BOTH) per sample: median = %.1f%% (range %.1f–%.1f%%); mean = %.1f%%\n",
+            median_both_abund, range_both_abund[1], range_both_abund[2], mean_both_abund))
+cat(sprintf("ONE-replicate abundance per sample: median = %.1f%% (range %.1f–%.1f%%); mean = %.1f%%\n",
+            median_one_abund,  range_one_abund[1],  range_one_abund[2],  mean_one_abund))
+
+cat(sprintf("Per-sample median fold (Both/One): median = %.1f× (range %.1f–%.1f×); n = %d/%d samples\n",
+            median_fold_ps, range_fold_ps[1], range_fold_ps[2], n_valid_folds, n_total_samples))
+cat(sprintf("Pooled medians (Both/One): %.1f×; One is %.1fx of Both\n",
+            pooled_fold, pooled_lower))
+
+cat(sprintf("Pooled abundance overlap (BOTH): %.1f%%; pooled ONE-replicate abundance: %.1f%%\n",
+            pooled_pct_both_abund, pooled_pct_one_abund))
+
+# Optional extra context:
+cat(sprintf("Rows detected in ONE replicate (row-level): %.1f%%\n", pct_rows_one))
+cat(sprintf("Unique protein IDs with ≥1 ONE-replicate detection (ANY-ONE): %.1f%%; ONLY-EVER ONE: %.1f%%\n",
+            pct_ids_any_one, pct_ids_only_ever_one))
+# ======================================================================================================
+
+```
+
+
+# check if proteins with less replicate overlap are also less even with a few very dominating proteins
+```{r}
+library(dplyr)
+library(tidyr)
+library(vegan)   
+
+species_eveness_dat <- species_dat %>%
+  select(Date, Species_ID, Species_Abundance) %>%
+  distinct()
+
+# Build abundance matrix
+sp_mat_df <- species_eveness_dat %>%
+  mutate(Species_Abundance = as.numeric(Species_Abundance)) %>%
+  group_by(Date, Species_ID) %>%
+  summarise(Species_Abundance = median(Species_Abundance, na.rm = TRUE),
+            .groups = "drop") %>%
+  pivot_wider(
+    names_from  = Species_ID,
+    values_from = Species_Abundance,
+    values_fill = 0
+  )
+
+date_vec <- sp_mat_df$Date
+sp_mat <- sp_mat_df %>%
+  select(-Date) %>%
+  as.matrix()
+
+# Replace any NA with 0
+sp_mat[is.na(sp_mat)] <- 0
+
+# Calculate richness, Shannon, and Pielou's evenness
+richness <- specnumber(sp_mat)
+shannon  <- diversity(sp_mat, index = "shannon")
+pielou   <- ifelse(richness > 0, shannon / log(richness), NA_real_)
+
+species_eveness_out <- data.frame(
+  Date     = date_vec,
+  Richness = richness,
+  Shannon  = shannon,
+  Pielou   = pielou
+)
+
+# --- Total proteins detected per sample ---
+prot_counts <- dat %>%
+  filter(Level == "Protein", Abundance > 0) %>%
+  group_by(Date) %>%
+  summarise(
+    Total_Proteins = n_distinct(ID),
+    .groups = "drop"
+  )
+
+# --- % proteins found in both replicates (coverage) ---
+overlap_df2 <- dat %>%
+  filter(Level == "Protein", Abundance > 0) %>%
+  group_by(Date) %>%
+  summarise(
+    total_ids   = n_distinct(ID),
+    both_ids    = n_distinct(ID[Presence == "both"]),
+    Percent_Covered = both_ids / total_ids * 100,
+    .groups = "drop"
+  )
+
+# --- Merge with species evenness table ---
+species_eveness_out <- species_eveness_out %>%
+  left_join(prot_counts,   by = "Date") %>%
+  left_join(overlap_df2,   by = "Date")
+
+species_eveness_out
+
+# =============================================================================
+# Correlation tests on combined table
+# =============================================================================
+library(corrr)   # nice correlation matrices (optional)
+
+# Keep only numeric columns for correlation
+cor_dat <- species_eveness_out %>%
+  select(Richness, Shannon, Pielou, Total_Proteins, Percent_Covered)
+
+# Pairwise Spearman correlations
+cor_mat <- cor(cor_dat, method = "spearman", use = "pairwise.complete.obs")
+
+# Print correlation matrix
+print(round(cor_mat, 3))
+
+# Individual correlation tests (with p-values)
+ct_rich_prot   <- cor.test(species_eveness_out$Total_Proteins,
+                           species_eveness_out$Richness,
+                           method = "spearman")
+ct_even_prot   <- cor.test(species_eveness_out$Total_Proteins,
+                           species_eveness_out$Pielou,
+                           method = "spearman")
+ct_cover_prot  <- cor.test(species_eveness_out$Total_Proteins,
+                           species_eveness_out$Percent_Covered,
+                           method = "spearman")
+ct_cover_rich  <- cor.test(species_eveness_out$Percent_Covered,
+                           species_eveness_out$Richness,
+                           method = "spearman")
+ct_cover_even  <- cor.test(species_eveness_out$Percent_Covered,
+                           species_eveness_out$Pielou,
+                           method = "spearman")
+
+# Print results nicely
+cat("Total proteins vs richness: rho =",
+    round(ct_rich_prot$estimate, 3), " p =", signif(ct_rich_prot$p.value, 3), "\n")
+cat("Total proteins vs evenness: rho =",
+    round(ct_even_prot$estimate, 3), " p =", signif(ct_even_prot$p.value, 3), "\n")
+cat("Total proteins vs % covered: rho =",
+    round(ct_cover_prot$estimate, 3), " p =", signif(ct_cover_prot$p.value, 3), "\n")
+cat("% covered vs richness: rho =",
+    round(ct_cover_rich$estimate, 3), " p =", signif(ct_cover_rich$p.value, 3), "\n")
+cat("% covered vs evenness: rho =",
+    round(ct_cover_even$estimate, 3), " p =", signif(ct_cover_even$p.value, 3), "\n")
+```
+
+# publication ready figure
+
+```{r}
+# =============================================================================
+# FINAL: Plot + Summary tables
+# - Plot: % Proteins (LEFT), then % Abundance (RIGHT)
+# - Blue bottom, Yellow top (reverse stacking)
+# - Error bar at blue–yellow interface = mean ± SD of boundary across samples
+# - Hard-coded: ONLY Presence in c("both","one") (ignore "none")
+#
+# Summary outputs:
+# 1) Percent summaries (per-sample %) by Metric x Presence:
+#    mean, median, sd, IQR, min, max
+# 2) Absolute summaries (per-sample) by Metric x Presence:
+#    counts: #proteins per date (n_distinct ID)
+#    abundance: summed abundance per date
+#    mean, median, sd, IQR, min, max
+# 3) Per-date table (wide): counts + abundance + percentages for both/one
+# =============================================================================
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# ---- 1) Hard filter: ONLY BOTH vs ONE ----
+protein_df <- dat %>%
+  filter(
+    Level == "Protein",
+    Abundance > 0,
+    Presence %in% c("both", "one")
+  )
+
+# ---- 2) Per-date (sample) absolute summaries by Presence ----
+# This is what you asked for: how many proteins and summed abundance per date.
+per_date_abs <- protein_df %>%
+  group_by(Date, Presence) %>%
+  summarise(
+    protein_count = n_distinct(ID),
+    abundance_sum = sum(Abundance),
+    .groups = "drop"
+  )
+
+# ---- 3) Per-date percentages derived from the absolute numbers ----
+per_date <- per_date_abs %>%
+  group_by(Date) %>%
+  mutate(
+    percent_count     = 100 * protein_count / sum(protein_count),
+    percent_abundance = 100 * abundance_sum / sum(abundance_sum)
+  ) %>%
+  ungroup()
+
+# ---- 4) Long format for plotting (% only) ----
+plot_df <- per_date %>%
+  pivot_longer(
+    cols      = c(percent_count, percent_abundance),
+    names_to  = "Metric",
+    values_to = "Percent"
+  ) %>%
+  mutate(
+    # Plot order requested: % Proteins first, then % Abundance
+    Metric = factor(
+      Metric,
+      levels = c("percent_count", "percent_abundance"),
+      labels = c("% Proteins", "% Abundance")
+    ),
+    Presence = factor(
+      Presence,
+      levels = c("both", "one"),
+      labels = c("Both Replicates", "One Replicate")
+    )
+  )
+
+# ---- 5) Mean stacked bar segments (mean % across dates) ----
+bar_means <- plot_df %>%
+  group_by(Metric, Presence) %>%
+  summarise(mean_pct = mean(Percent, na.rm = TRUE), .groups = "drop")
+
+# ---- 6) Boundary SD at the interface (TOP of BLUE) ----
+# With reverse stacking, interface height = 100 - (% One Replicate)
+one_sd <- plot_df %>%
+  filter(Presence == "One Replicate") %>%
+  group_by(Metric) %>%
+  summarise(
+    one_mean = mean(Percent, na.rm = TRUE),
+    one_sd   = sd(Percent, na.rm = TRUE),
+    .groups  = "drop"
+  )
+
+boundary_sd <- one_sd %>%
+  transmute(
+    Metric,
+    boundary_mean = 100 - one_mean,
+    ymin = pmax(0, boundary_mean - one_sd),
+    ymax = pmin(100, boundary_mean + one_sd)
+  )
+
+# ---- 7) Plot ----
+p <- ggplot(bar_means, aes(x = Metric, y = mean_pct, fill = Presence)) +
+  # stacked mean bars
+  geom_col(
+    width     = 0.62,
+    color     = "black",
+    linewidth = 0.35,
+    position  = position_stack(reverse = TRUE)  # blue bottom, yellow top
+  ) +
+  # boundary error bars
+  geom_errorbar(
+    data        = boundary_sd,
+    aes(x = Metric, ymin = ymin, ymax = ymax),
+    inherit.aes = FALSE,
+    width       = 0.10,
+    linewidth   = 0.9,
+    color       = "black"
+  ) +
+  # publication-consistent colors (match your style: fixed hex, no legend)
+  scale_fill_manual(
+    values = c(
+      "Both Replicates" = "#7aa5c3",  # <- set your preferred blue here
+      "One Replicate"   = "#f2b705"   # <- set your preferred yellow here
+      # If you want to reuse your existing palette instead, swap to ColorPalette[2]/[4]
+    ),
+    guide = "none"
+  ) +
+  # Y axis like your other plot (explicit limits + breaks)
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 25),
+    expand = c(0, 0)
+  ) +
+  labs(
+    x = "Metric",
+    y = "Percent"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.x     = element_text(size = 12),
+    axis.text.y     = element_text(size = 10),
+    axis.title      = element_text(size = 12),
+    axis.title.x    = element_blank()
+  )
+
+print(p)
+
+ggsave("ReplicateOverlap_TwoBars_BoundarySD_FINAL.pdf",
+       p, width = 4, height = 4.5, units = "in")
+
+# =============================================================================
+# SUMMARY TABLES
+# =============================================================================
+
+# Helper: summary stats for a numeric vector
+summ_stats <- function(x) {
+  c(
+    mean   = mean(x, na.rm = TRUE),
+    median = median(x, na.rm = TRUE),
+    sd     = sd(x, na.rm = TRUE),
+    iqr    = IQR(x, na.rm = TRUE),
+    min    = min(x, na.rm = TRUE),
+    max    = max(x, na.rm = TRUE)
+  )
+}
+
+# ---- A) Percent summary stats (across dates), by Metric x Presence ----
+percent_summary <- plot_df %>%
+  group_by(Metric, Presence) %>%
+  summarise(
+    mean   = mean(Percent, na.rm = TRUE),
+    median = median(Percent, na.rm = TRUE),
+    sd     = sd(Percent, na.rm = TRUE),
+    iqr    = IQR(Percent, na.rm = TRUE),
+    min    = min(Percent, na.rm = TRUE),
+    max    = max(Percent, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(Metric, Presence)
+
+# ---- B) Absolute (count + abundance) summary stats (across dates), by Presence ----
+# Counts = proteins per date; Abundance = summed abundance per date
+abs_summary <- per_date %>%
+  mutate(
+    Presence = factor(Presence,
+                      levels = c("both", "one"),
+                      labels = c("Both Replicates", "One Replicate"))
+  ) %>%
+  group_by(Presence) %>%
+  summarise(
+    # protein counts per date
+    proteins_mean   = mean(protein_count, na.rm = TRUE),
+    proteins_median = median(protein_count, na.rm = TRUE),
+    proteins_sd     = sd(protein_count, na.rm = TRUE),
+    proteins_iqr    = IQR(protein_count, na.rm = TRUE),
+    proteins_min    = min(protein_count, na.rm = TRUE),
+    proteins_max    = max(protein_count, na.rm = TRUE),
+
+    # abundance sums per date
+    abund_mean   = mean(abundance_sum, na.rm = TRUE),
+    abund_median = median(abundance_sum, na.rm = TRUE),
+    abund_sd     = sd(abundance_sum, na.rm = TRUE),
+    abund_iqr    = IQR(abundance_sum, na.rm = TRUE),
+    abund_min    = min(abundance_sum, na.rm = TRUE),
+    abund_max    = max(abundance_sum, na.rm = TRUE),
+
+    .groups = "drop"
+  )
+
+# ---- C) Per-date table (counts + abundance + percentages), wide format ----
+per_date_wide <- per_date %>%
+  mutate(
+    Presence = ifelse(Presence == "both", "Both", "One")
+  ) %>%
+  select(Date, Presence, protein_count, abundance_sum, percent_count, percent_abundance) %>%
+  pivot_wider(
+    names_from = Presence,
+    values_from = c(protein_count, abundance_sum, percent_count, percent_abundance)
+  ) %>%
+  arrange(Date)
+
+# Print tables
+percent_summary
+abs_summary
+per_date_wide
+
+# Optional saves:
+write.csv(percent_summary, "ReplicateOverlap_PercentSummary.csv", row.names = FALSE)
+write.csv(abs_summary,     "ReplicateOverlap_AbsoluteSummary.csv", row.names = FALSE)
+write.csv(per_date_wide,   "ReplicateOverlap_PerDateTable.csv", row.names = FALSE)
+
+```
+

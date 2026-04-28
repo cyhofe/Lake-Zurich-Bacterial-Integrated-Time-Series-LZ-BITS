@@ -1,0 +1,803 @@
+---
+title: Protein Database Description
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/SpringBloom_Metagnomics/DatabaseOverview/DatabaseDescription/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+library(data.table)
+library(stringr)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "ProteinDataAnnotated.csv")
+```
+
+
+```{r}
+# 1) Summarise per species ---------------------------------------------------
+species_summary <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n(),
+    Peptides = sum(Nr_Tryptic_Peptides, na.rm = TRUE),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop")
+
+# 2) Compute per‐phylum totals & global maxima --------------------------------
+phylum_totals <- species_summary %>%
+  group_by(Phylum) %>%
+  summarise(total_proteins = sum(Proteins),
+            total_peptides = sum(Peptides),
+            total_kegg_classified = sum(KEGG_Classified), .groups = "drop")
+
+# global maxima for label placement
+global_max_prot <- max(species_summary$Proteins, na.rm = TRUE)
+global_max_pep  <- max(species_summary$Peptides, na.rm = TRUE)
+global_max_kegg <- max(species_summary$KEGG_Classified, na.rm = TRUE)
+
+# add fixed y‐positions (5% above max)
+phylum_totals <- phylum_totals %>%
+  mutate(y_prot = global_max_prot * 1.05,
+         y_pep  = global_max_pep  * 1.05,
+         y_kegg = global_max_kegg * 1.05)
+
+# overall totals for subtitles
+overall_proteins <- sum(phylum_totals$total_proteins)
+overall_peptides <- sum(phylum_totals$total_peptides)
+overall_kegg <- sum(phylum_totals$total_kegg_classified)
+
+# 3) Order Phyla by median Proteins for consistent x‐axis ---------------------
+phylum_order <- species_summary %>%
+  group_by(Phylum) %>%
+  summarise(med = median(Proteins), .groups = "drop") %>%
+  arrange(desc(med)) %>%
+  pull(Phylum)
+
+species_summary <- species_summary %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+phylum_totals <- phylum_totals %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+# 4) Color mapping ------------------------------------------------------------
+fill_cols <- setNames(ColorPalette[seq_along(phylum_order)], phylum_order)
+
+# 5) Build box+dot plots with fixed‐height totals ----------------------------
+
+# a) Proteins per species
+p_prot <- ggplot(species_summary, aes(Phylum, Proteins)) +
+   geom_jitter(aes(fill = Phylum), width  = 0.35, height = 0, shape  = 21, color  = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, color = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_prot, label = total_proteins), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  labs(title = paste0("Proteins per species  (total=", overall_proteins, ")"), x = NULL, y = "Proteins [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none",
+        plot.margin = margin(5,5,5,5))
+
+# b) Tryptic peptides per species
+p_pep <- ggplot(species_summary, aes(Phylum, Peptides)) +
+  geom_jitter(aes(fill = Phylum), width  = 0.35, height = 0, shape = 21, color = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, color = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_pep, label = total_peptides), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  labs(title = paste0("Tryptic peptides per species  (total=", overall_peptides, ")"), x = NULL,
+    y = "Peptides [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none",
+        plot.margin = margin(5,5,5,5))
+
+# c) KEGG‐classified proteins per species
+p_kegg <- ggplot(species_summary, aes(Phylum, KEGG_Classified)) +
+  geom_jitter(aes(fill = Phylum), width  = 0.35, height = 0, shape  = 21, color = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, color = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_kegg, label = total_kegg_classified), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  labs(title = paste0("KEGG classified proteins per species  (total=", overall_kegg, ")"),
+       x = "Phylum",
+       y = "KEGG IDs [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none",
+        plot.margin = margin(5,5,5,5))
+
+# 6) Combine vertically with overall title -----------------------------------
+final_plot <- (p_pep / p_prot / p_kegg) +
+  plot_layout(heights = c(1, 1, 1.2)) +
+  plot_annotation(title = "LZ-BITS", 
+                  theme = theme(plot.title = element_text(size = 18, face = "bold", hjust = 0.5)))
+
+print(final_plot)
+
+# 7) Export
+ggsave("Per_phylum_database_summary.png",
+       plot   = final_plot,
+       device = png,
+       width  = 12,
+       height = 7,
+       units  = "in",
+       dpi    = 300)
+
+```
+
+```{r}
+# STEP 1: Generate long-format peptide-level data
+pep_long <- dat %>%
+  select(Phylum, Protein_ID, Protein_Length, Tryptic_Peptides, Peptide_Length) %>%
+  mutate(
+    Peptide = str_split(Tryptic_Peptides, ";"), 
+    Peptide_Length = str_split(Peptide_Length, ";") %>% lapply(as.integer)
+  ) %>%
+  unnest(c(Peptide, Peptide_Length)) %>%
+  filter(!is.na(Peptide_Length))
+
+
+# Order Phylum factor by mean protein length
+phylum_order <- pep_long %>%
+  group_by(Phylum) %>%
+  summarise(mean_prot = mean(Protein_Length, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(mean_prot)) %>%
+  pull(Phylum)
+
+pep_long <- pep_long %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+# --- PEPTIDE PLOT ---
+
+# Compute per-phylum counts for labeling
+n_peptides <- nrow(pep_long)
+
+phylum_pep_counts <- pep_long %>%
+  group_by(Phylum) %>%
+  summarise(n_peptides = n(), .groups = "drop") %>%
+  mutate(Facet_Label = paste(Phylum, "(n =", n_peptides, ")"))
+
+pep_long_peptides <- pep_long %>%
+  left_join(phylum_pep_counts, by = "Phylum") %>%
+  mutate(Facet_Label = factor(Facet_Label, levels = phylum_pep_counts$Facet_Label))
+
+# Compute means and label positions
+peptide_means <- pep_long_peptides %>%
+  group_by(Facet_Label) %>%
+  summarise(
+    Peptide_Mean = mean(Peptide_Length, na.rm = TRUE),
+    
+    # Filter out NAs before calling density()
+    Max_Y = max(density(Peptide_Length[!is.na(Peptide_Length)])$y),
+    
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Label_Y = Max_Y * 1.1,         # Position label slightly above the density peak
+    Label_X = Peptide_Mean + 0.3   # Position label slightly to the right of the mean
+  )
+
+
+# Plot
+p_pep_len <- ggplot(pep_long_peptides, aes(x = Peptide_Length, fill = Phylum)) +
+  geom_density(alpha = 0.6, adjust = 1.2) +
+  geom_vline(
+    data = peptide_means,
+    aes(xintercept = Peptide_Mean),
+    linetype = "dashed", color = "black"
+  ) +
+  geom_text(
+    data = peptide_means,
+    aes(x = Label_X, y = Label_Y, label = round(Peptide_Mean, 1)),
+    inherit.aes = FALSE,
+    hjust = -0.5, angle = 0, size = 2.5
+  ) +
+  facet_wrap(~ Facet_Label, scales = "free_y") +
+  scale_x_continuous(limits = c(6, 31), breaks = seq(6, 31, by = 2)) +
+  scale_fill_manual(values = ColorPalette) +
+  labs(
+    title = paste("Peptide length distribution (7–30 aa) — Total N =", n_peptides, "peptides"),
+    x = "Peptide length (aa)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 8) +
+  theme(
+    strip.text = element_text(face = "bold", size = 8),
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  )
+
+print(p_pep_len)
+
+# --- PROTEIN PLOT ---
+
+# Distinct protein-level dataset
+pep_long_proteins <- pep_long %>%
+  distinct(Phylum, Protein_ID, Protein_Length)
+
+# Count proteins per phylum
+n_proteins <- n_distinct(pep_long_proteins$Protein_ID)
+
+phylum_prot_counts <- pep_long_proteins %>%
+  group_by(Phylum) %>%
+  summarise(n_proteins = n(), .groups = "drop") %>%
+  mutate(Facet_Label = paste(Phylum, "(n =", n_proteins, ")"))
+
+pep_long_proteins <- pep_long_proteins %>%
+  left_join(phylum_prot_counts, by = "Phylum") %>%
+  mutate(Facet_Label = factor(Facet_Label, levels = phylum_prot_counts$Facet_Label))
+
+# Compute means and label positions
+protein_means <- pep_long_proteins %>%
+  group_by(Facet_Label) %>%
+  summarise(
+    Protein_Mean = mean(Protein_Length, na.rm = TRUE),
+    Max_Y = max(density(log10(Protein_Length))$y),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Label_Y = Max_Y * 1.1,
+    Label_X = Protein_Mean * 1.03  # shift right by 3%
+  )
+
+# Plot
+p_prot_len <- ggplot(pep_long_proteins, aes(x = Protein_Length, fill = Phylum)) +
+  geom_density(alpha = 0.6, adjust = 1.2) +
+  geom_vline(
+    data = protein_means,
+    aes(xintercept = Protein_Mean),
+    linetype = "dashed", color = "black"
+  ) +
+  geom_text(
+    data = protein_means,
+    aes(x = Label_X, y = Label_Y, label = round(Protein_Mean)),
+    inherit.aes = FALSE,
+    hjust = -0.5, angle = 0, size = 2.5
+  ) +
+  facet_wrap(~ Facet_Label, scales = "free_y") +
+  scale_x_log10(
+    breaks = c(0, 30, 100, 300, 1000, 3000, 10000),
+    labels = comma_format()
+  ) +
+  scale_fill_manual(values = ColorPalette) +
+  labs(
+    title = paste("Protein length distribution (log10) — Total N =", n_proteins, "proteins"),
+    x = "Protein length (aa, log10)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 8) +
+  theme(
+    strip.text = element_text(face = "bold", size = 8),
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  )
+
+print(p_prot_len)
+
+# Export
+ggsave("Plot_Peptide_LengthDistribution_In_Database.png",
+       plot   = p_pep_len,
+       device = png,
+       height = 9,
+       width = 12,
+       units  = "in",
+       dpi    = 300)
+
+ggsave("Plot_Protein_LengthDistribution_In_Database.png",
+       plot   = p_prot_len,
+       device = png,
+       height = 9,
+       width = 12,
+       units  = "in",
+       dpi    = 300)
+```
+
+
+```{r}
+# Summarize data per species
+species_summary <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(cols = c("Proteins", "KEGG_Classified"), names_to = "Metric", values_to = "Count")
+
+# Order Phyla by median protein counts
+phylum_order <- species_summary %>%
+  filter(Metric == "Proteins") %>%
+  group_by(Phylum) %>%
+  summarise(med = median(Count), .groups = "drop") %>%
+  arrange(desc(med)) %>%
+  pull(Phylum)
+
+species_summary$Phylum <- factor(species_summary$Phylum, levels = phylum_order)
+
+# Set color palette
+fill_cols <- setNames(ColorPalette[seq_along(phylum_order)], phylum_order)
+
+# Plot combined boxplot for Proteins and KEGG Classified
+final_plot <- ggplot(species_summary, aes(x = Phylum, y = Count, fill = Metric)) +
+  geom_boxplot(position = position_dodge(width = 0.75), alpha = 0.7, outlier.shape = NA, color = "black") +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), shape = 21, color = "black", size = 2, alpha = 0.6) +
+  scale_fill_manual(values = c("Proteins" = "#1f77b4", "KEGG_Classified" = "#ff7f0e")) +
+  labs(title = "Proteins and KEGG Classified per Species by Phylum",
+       x = "Phylum",
+       y = "Count",
+       fill = "Metric") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12)
+  )
+
+# Render plot
+print(final_plot)
+
+# Export to PDF
+ggsave("Proteins_KEGG_per_Species.png",
+       plot = final_plot,
+       device = png,
+       width = 12, height = 8, units = "in", dpi = 300)
+```
+
+```{r}
+# Summarize data per species
+species_summary <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(cols = c("Proteins", "KEGG_Classified"), names_to = "Metric", values_to = "Count")
+
+# Order Phyla by median protein counts
+phylum_order <- species_summary %>%
+  filter(Metric == "Proteins") %>%
+  group_by(Phylum) %>%
+  summarise(med = median(Count), .groups = "drop") %>%
+  arrange(desc(med)) %>%
+  pull(Phylum)
+
+species_summary$Phylum <- factor(species_summary$Phylum, levels = phylum_order)
+
+# Create shades of colors for each phylum
+fill_cols_proteins <- ColorPalette[seq_along(phylum_order)]
+fill_cols_kegg <- scales::alpha(fill_cols_proteins, 0.4)
+fill_cols <- c(setNames(fill_cols_proteins, paste(phylum_order, "Proteins", sep="_")),
+               setNames(fill_cols_kegg, paste(phylum_order, "KEGG_Classified", sep="_")))
+
+# Combine Phylum and Metric for coloring
+species_summary <- species_summary %>%
+  mutate(Phylum_Metric = paste(Phylum, Metric, sep="_"))
+
+# Plot combined boxplot for Proteins and KEGG Classified with shaded colors
+final_plot <- ggplot(species_summary, aes(x = Phylum, y = Count, fill = Phylum_Metric)) +
+  geom_boxplot(position = position_dodge(width = 0.75), alpha = 0.9, outlier.shape = NA, color = "black") +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), shape = 21, color = "black", size = 2, alpha = 0.6) +
+  scale_fill_manual(values = fill_cols,
+                    labels = rep(c("Proteins", "KEGG Classified"), length(phylum_order)),
+                    guide = guide_legend(title = "Metric")) +
+  labs(title = "Proteins and KEGG Classified per Species by Phylum",
+       x = "Phylum",
+       y = "Count") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12)
+  )
+
+# Render plot
+print(final_plot)
+
+# Export to PDF
+ggsave("Proteins_KEGG_per_Species.png",
+       plot = final_plot,
+       device = png,
+       width = 12, height = 8, units = "in", dpi = 300)
+
+```
+
+```{r}
+# Define your desired order
+phylum_order <- c(
+  "Actinomycetota", "Bacteroidota", "Pseudomonadota",
+  "Verrucomicrobiota", "Planctomycetota", "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota", "Armatimonadota",
+  "Myxococcota", "Nitrospirota", "Thermoproteota",
+  "Patescibacteria", "Gemmatimonadota", "Cyanobacteriota",
+  "Deinococcota", "Chlamydiota"
+)
+
+# Calculate mean proteins and KEGG classified per phylum
+phylum_means <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  group_by(Phylum) %>%
+  summarise(
+    Mean_Proteins = mean(Proteins),
+    Mean_KEGG = mean(KEGG_Classified),
+    KEGG_Percentage = (Mean_KEGG / Mean_Proteins) * 100
+  ) %>%
+  arrange(desc(Mean_Proteins))
+
+phylum_means$Phylum <- factor(phylum_means$Phylum, levels = phylum_means$Phylum)
+
+# Set color palette
+fill_cols <- ColorPalette[seq_along(levels(phylum_means$Phylum))]
+
+# Plot mean proteins per species and percentage KEGG classified
+final_plot <- ggplot(phylum_means, aes(x = Phylum, y = Mean_Proteins, fill = Phylum)) +
+  geom_bar(stat = "identity", color = "black", alpha = 0.5) +
+  geom_bar(aes(y = Mean_KEGG), stat = "identity", color = "black", alpha = 0.9) +
+  scale_fill_manual(values = fill_cols) +
+  labs(
+    title = "Mean Proteins per Species and KEGG Classification by Phylum",
+    x = "Phylum",
+    y = "Mean Number of Proteins"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    legend.position = "none"
+  )
+
+# Render plot
+print(final_plot)
+
+# Export to PDF
+ggsave("Mean_Proteins_KEGG_Percentage.png",
+       plot = final_plot,
+       device = png,
+       width = 12, height = 8, units = "in", dpi = 300)
+```
+
+
+```{r}
+# Calculate mean proteins and KEGG classified per phylum
+phylum_means <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  group_by(Phylum) %>%
+  summarise(
+    Mean_Proteins    = mean(Proteins),
+    Mean_KEGG        = mean(KEGG_Classified),
+    KEGG_Percentage  = (Mean_KEGG / Mean_Proteins) * 100,
+    .groups = "drop"
+  )
+
+# Force the factor levels to your specified order
+phylum_means$Phylum <- factor(phylum_means$Phylum, levels = phylum_order)
+
+# (Re-)order the data frame by that factor so everything plots in order
+phylum_means <- phylum_means %>%
+  arrange(Phylum)
+
+# Set colour palette matching number of phyla
+fill_cols <- ColorPalette[seq_along(phylum_order)]
+
+# Plot mean proteins per species and mean KEGG-classified
+final_plot <- ggplot(phylum_means, aes(x = Phylum)) +
+  geom_col(aes(y = Mean_Proteins, fill = Phylum),
+           color = "black", alpha = 0.5) +
+  geom_col(aes(y = Mean_KEGG,    fill = Phylum),
+           color = "black", alpha = 0.9) +
+  scale_fill_manual(values = fill_cols) +
+  labs(
+    title = "Mean Proteins per Species and KEGG Classification by Phylum",
+    x     = "Phylum",
+    y     = "Mean Number of Proteins"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title        = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.text.x       = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y       = element_text(size = 12),
+    axis.title        = element_text(size = 14),
+    legend.position   = "none"
+  )
+
+# Render the plot
+print(final_plot)
+
+# Export to PDF
+ggsave(
+  filename = "Mean_Proteins_KEGG_Percentage.png",
+  plot     = final_plot,
+  device   = png,
+  width    = 12, height = 8, units = "in", dpi = 300
+)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# 1. Your desired order:
+phylum_order <- c(
+  "Actinomycetota", "Bacteroidota", "Pseudomonadota",
+  "Verrucomicrobiota", "Planctomycetota", "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota", "Armatimonadota",
+  "Myxococcota", "Nitrospirota", "Thermoproteota",
+  "Patescibacteria", "Gemmatimonadota", "Cyanobacteriota",
+  "Deinococcota", "Chlamydiota"
+)
+
+# 2. Compute your stats (no arranging yet):
+phylum_means <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins       = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  group_by(Phylum) %>%
+  summarise(
+    Mean_Proteins   = mean(Proteins),
+    Mean_KEGG       = mean(KEGG_Classified),
+    KEGG_Percentage = Mean_KEGG/Mean_Proteins*100,
+    .groups = "drop"
+  )
+
+# 3. **Enforce** YOUR order:
+phylum_means <- phylum_means %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order)) %>%
+  arrange(Phylum)   # now in exactly phylum_order
+
+# 4. Build the plot (you can also add scale_x_discrete(limits=phylum_order) if you like):
+fill_cols <- ColorPalette[seq_along(phylum_order)]
+
+final_plot <- ggplot(phylum_means, aes(x = Phylum)) +
+  geom_col(aes(y = Mean_Proteins, fill = Phylum),
+           color = "black", alpha = 0.5) +
+  geom_col(aes(y = Mean_KEGG,    fill = Phylum),
+           color = "black", alpha = 0.9) +
+  scale_fill_manual(values = fill_cols) +
+  scale_x_discrete(limits = phylum_order) +  # *extra* guardrail
+  labs(
+    title = "Mean Proteins per Species and KEGG Classification by Phylum",
+    x     = "Phylum",
+    y     = "Mean Number of Proteins"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title      = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.text.x     = element_text(angle = 45, hjust = 1, size = 12),
+    legend.position = "none"
+  )
+
+print(final_plot)
+
+```
+
+
+```{r}
+# 1. Your desired order:
+phylum_order <- c(
+  "Actinomycetota", "Bacteroidota", "Pseudomonadota",
+  "Verrucomicrobiota", "Planctomycetota", "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota", "Armatimonadota",
+  "Myxococcota", "Nitrospirota", "Thermoproteota",
+  "Patescibacteria", "Gemmatimonadota", "Cyanobacteriota",
+  "Deinococcota", "Chlamydiota"
+)
+
+# 2. Compute your stats:
+phylum_means <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins        = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  group_by(Phylum) %>%
+  summarise(
+    Mean_Proteins   = mean(Proteins),
+    Mean_KEGG       = mean(KEGG_Classified),
+    KEGG_Percentage = Mean_KEGG / Mean_Proteins * 100,
+    .groups = "drop"
+  ) %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order)) %>%
+  arrange(Phylum)
+
+# 3. Colour palette
+fill_cols <- ColorPalette[seq_along(phylum_order)]
+
+# 4. Plot with base text size 16, no main title or x-axis label:
+final_plot <- ggplot(phylum_means, aes(x = Phylum)) +
+  geom_col(aes(y = Mean_Proteins, fill = Phylum),
+           color = "black", alpha = 0.5) +
+  geom_col(aes(y = Mean_KEGG,    fill = Phylum),
+           color = "black", alpha = 0.9) +
+  geom_text(
+    aes(
+      y     = Mean_KEGG / 2,
+      label = sprintf("%.1f%%", KEGG_Percentage)
+    ),
+    color    = "white",
+    size     = 4,    # slightly larger for base 16
+    fontface = "bold"
+  ) +
+  scale_fill_manual(values = fill_cols) +
+  scale_x_discrete(limits = phylum_order) +
+  labs(
+    title = NULL,    # remove main title
+    x     = NULL,    # remove x-axis title
+    y     = "Mean Number of Proteins"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title      = element_blank(),            # ensure title is gone
+    axis.title.x    = element_blank(),            # ensure x-title is gone
+    axis.text.x     = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+print(final_plot)
+
+```
+
+```{r}
+# 1. Your desired order:
+phylum_order <- c(
+  "Actinomycetota", "Bacteroidota", "Pseudomonadota",
+  "Verrucomicrobiota", "Planctomycetota", "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota", "Armatimonadota",
+  "Myxococcota", "Nitrospirota", "Thermoproteota",
+  "Patescibacteria", "Gemmatimonadota", "Cyanobacteriota",
+  "Deinococcota", "Chlamydiota"
+)
+
+# 2. Compute your stats:
+phylum_means <- dat %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins        = n(),
+    KEGG_Classified = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    .groups = "drop"
+  ) %>%
+  group_by(Phylum) %>%
+  summarise(
+    Mean_Proteins = mean(Proteins),
+    Mean_KEGG     = mean(KEGG_Classified),
+    .groups       = "drop"
+  ) %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order)) %>%
+  arrange(Phylum)
+
+# 3. Colour palette
+fill_cols <- ColorPalette[seq_along(phylum_order)]
+
+# 4. Plot (base size 16, no titles beyond y-axis):
+final_plot <- ggplot(phylum_means, aes(x = Phylum)) +
+  geom_col(aes(y = Mean_Proteins, fill = Phylum),
+           color = "black", alpha = 0.5) +
+  geom_col(aes(y = Mean_KEGG,    fill = Phylum),
+           color = "black", alpha = 0.9) +
+  scale_fill_manual(values = fill_cols) +
+  scale_x_discrete(limits = phylum_order) +
+  labs(
+    title = NULL,
+    x     = NULL,
+    y     = "Mean Genes Per Species"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title      = element_blank(),
+    axis.title.x    = element_blank(),
+    axis.text.x     = element_blank(),
+    legend.position = "none",
+    panel.grid.minor  = element_blank()
+  )
+
+print(final_plot)
+
+# Export to PDF
+ggsave(
+  filename = "Mean_Proteins_KEGG_Percentage.png",
+  plot     = final_plot,
+  device   = png,
+  width    = 12, height = 2, units = "in", dpi = 300
+)
+```
+
+```{r}
+final_plot <- ggplot(phylum_means, aes(x = Phylum)) +
+  geom_col(aes(y = Mean_Proteins, fill = Phylum),
+           color = "black", alpha = 0.5) +
+  geom_col(aes(y = Mean_KEGG,    fill = Phylum),
+           color = "black", alpha = 0.9) +
+  scale_fill_manual(values = fill_cols) +
+  # reverse the discrete x (which becomes the vertical axis after coord_flip)
+  scale_x_discrete(limits = rev(phylum_order)) +
+
+  coord_flip() +
+
+  labs(
+    x = "Phylum",
+    y = "Mean Genes Per Species"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    axis.text.x     = element_text(),
+    axis.text.y     = element_blank(),
+    axis.title.x    = element_text(),
+    axis.title.y    = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position  = "none"
+  )
+
+print(final_plot)
+
+
+# Export to PDF
+ggsave(
+  filename = "Mean_Proteins_KEGG_Percentage.png",
+  plot     = final_plot,
+  device   = png,
+  width    = 3, height = 10.27, units = "in", dpi = 300
+)
+
+```

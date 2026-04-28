@@ -1,0 +1,94 @@
+---
+title: Proteins Recovered
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/Method_Paper_Analysis/FinalAnalysis/Figure_03/ProteinRecovered/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "ProteinRecovery.csv")
+```
+
+
+```{r}
+p <- ggplot(dat, aes(x = "", y = Protein_Recovery_Percent)) +
+  # Filled circles (shape 21) with a black hairline and semi‐transparent fill
+  geom_jitter(
+    width  = 0.25,
+    shape  = 21,
+    size   = 5,
+    fill   = alpha("#70a0af", 0.6),
+    colour = "black",
+    stroke = 0.3
+  ) +
+  # Box (80% opacity)
+  geom_boxplot(
+    width         = 0.6,
+    outlier.shape = NA,
+    fill          = "#70a0af",
+    alpha         = 0.8,
+    colour        = "black"
+  ) +
+  scale_y_continuous(
+    limits = c(0.5, 1.2),
+    breaks = seq(0.5, 1.2, by = 0.1)
+  ) +
+  labs(
+    x = NULL,
+    y = "Protein Recovery [%]"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x      = element_blank(),
+    axis.ticks.x     = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+
+# And if you want to save it:
+ggsave(
+  filename = "Protein_Recovery_Styled.pdf",
+  plot     = p,
+  width    = 2,
+  height   = 8,
+  units    = "in",
+  dpi      = 300
+)
+```
+

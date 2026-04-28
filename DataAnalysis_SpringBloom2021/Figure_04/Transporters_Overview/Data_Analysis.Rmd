@@ -1,0 +1,1880 @@
+---
+title: "Transporters Overview"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+rm(list = ls())
+
+############################################################
+# 0) LOAD RETAINED DATA (CSV exports from QC pipeline)
+#    Then reproduce transporter vs non-transporter pie charts
+############################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+})
+
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_04/Transporters_Overview/")
+
+# ---- Paths (edit if you put the CSVs elsewhere)
+protein_path <- "../Data_Filtration/retained_protein_table.csv"
+species_path <- "../Data_Filtration/retained_species.csv"
+keys_path    <- "../Data_Filtration/retained_species_dates.csv"
+species_abund_path <- "../../Figure_03/LakeOverview/Species_Abundance_Table.csv"
+
+# ---- Load
+protein_final          <- read_csv(protein_path, show_col_types = FALSE)
+retained_species       <- read_csv(species_path, show_col_types = FALSE)
+retained_species_dates <- read_csv(keys_path,    show_col_types = FALSE)
+species_dat <- read_csv(species_abund_path, show_col_types = FALSE)
+
+# ---- Basic cleanup / checks
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+retained_species_dates <- retained_species_dates %>% mutate(Date = as.Date(Date))
+
+stopifnot(
+  all(c("Species_ID","Protein_ID","Date","Group_For_Plots") %in% names(protein_final)),
+  all(c("Species_ID","Date","Group_For_Plots") %in% names(retained_species_dates))
+)
+
+cat("\n=== Loaded retained datasets ===\n")
+cat("protein_final rows:", nrow(protein_final), "\n")
+cat("retained species×dates:", nrow(retained_species_dates), "\n")
+cat("retained species:", nrow(retained_species), "\n")
+
+# remove not annotated proteins as not sure if they are transporters or non-transporters
+protein_final <- protein_final %>%
+  filter(KEGG_ID != "Unclassified")
+```
+
+# look at transporter expression
+```{r}
+############################################################
+# Transporters vs Non-transporters
+# TOTAL vs MEAN(per species) vs MEDIAN(per species)
+# Uses ONLY protein_final (KEGG_Subcategory already present)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+groups_to_plot   <- c("Oligo_like", "Copio_like", "Intermediate")
+abundance_col    <- "Protein_Abundance_IBAQ_Norm"
+
+# delimiter inside KEGG_Subcategory
+# change to "~" if needed
+kegg_delim_regex <- "\\s*;\\s*"
+
+percent_accuracy <- 0.1
+min_label_frac   <- 0.00
+
+stopifnot("KEGG_Subcategory" %in% colnames(protein_final))
+
+# ----------------------------
+# 1) Annotated retained proteins only
+# ----------------------------
+prot_annot <- protein_final %>%
+  filter(
+    Group_For_Plots %in% groups_to_plot,
+    !is.na(KEGG_Subcategory)
+  ) %>%
+  mutate(
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  )
+
+# ----------------------------
+# 2) Fractional assignment
+# ----------------------------
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Class = if_else(KEGG_token == "Transporters", "Transporters", "Non-transporters"),
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]]
+  )
+
+# ----------------------------
+# 3) Species × date class totals (fundamental unit)
+# ----------------------------
+sd_class <- fractional_long %>%
+  group_by(Group_For_Plots, Species_ID, Date, Class) %>%
+  summarise(
+    Count_sd = sum(Weighted_Count, na.rm = TRUE),
+    Abund_sd = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ----------------------------
+# Helpers
+# ----------------------------
+make_pie_df <- function(df) {
+  df %>%
+    group_by(Group_For_Plots) %>%
+    mutate(
+      Frac = Value / sum(Value),
+      Label = if_else(
+        Frac >= min_label_frac,
+        paste0(comma(round(Value, 0)), "\n(", percent(Frac, accuracy = percent_accuracy), ")"),
+        ""
+      )
+    ) %>%
+    ungroup()
+}
+
+make_pie_plot <- function(df, title) {
+  ggplot(df, aes(x = "", y = Frac, fill = Class)) +
+    geom_col(width = 1, color = "white", linewidth = 0.4) +
+    coord_polar(theta = "y") +
+    facet_wrap(~Group_For_Plots) +
+    geom_text(aes(label = Label), position = position_stack(vjust = 0.5), size = 3) +
+    theme_void(base_size = 12) +
+    labs(title = title, fill = NULL)
+}
+
+# ==========================================================
+# A) TOTAL (species×dates pooled)
+# ==========================================================
+tot_counts <- sd_class %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = sum(Count_sd), .groups = "drop")
+
+tot_abund <- sd_class %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = sum(Abund_sd), .groups = "drop")
+
+# ==========================================================
+# B) MEAN per species (equal species weight)
+# ==========================================================
+mean_counts <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Count_sd), .groups = "drop") %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = mean(Value_sp), .groups = "drop")
+
+mean_abund <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Abund_sd), .groups = "drop") %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = mean(Value_sp), .groups = "drop")
+
+# ==========================================================
+# C) MEDIAN per species (robust)
+# ==========================================================
+med_counts <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Count_sd), .groups = "drop") %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = median(Value_sp), .groups = "drop")
+
+med_abund <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Abund_sd), .groups = "drop") %>%
+  group_by(Group_For_Plots, Class) %>%
+  summarise(Value = median(Value_sp), .groups = "drop")
+
+# ----------------------------
+# 4) Build plots
+# ----------------------------
+p_counts <- make_pie_plot(make_pie_df(tot_counts), "TOTAL: protein counts") |
+            make_pie_plot(make_pie_df(mean_counts), "MEAN per species: protein counts") |
+            make_pie_plot(make_pie_df(med_counts),  "MEDIAN per species: protein counts")
+
+p_abund  <- make_pie_plot(make_pie_df(tot_abund),  "TOTAL: proteome investment") |
+            make_pie_plot(make_pie_df(mean_abund), "MEAN per species: proteome investment") |
+            make_pie_plot(make_pie_df(med_abund),  "MEDIAN per species: proteome investment")
+
+(p_counts / p_abund) +
+  plot_annotation(
+    title = "Transporter vs non-transporter investment across aggregation schemes",
+    subtitle = "TOTAL pools species×dates; MEAN and MEDIAN treat each species equally"
+  )
+
+```
+
+```{r}
+############################################################
+# PIES by CLASS (Transporters vs Non-transporters):
+#   - one pie for Transporters
+#   - one pie for Non-transporters
+# Pie slices = trophic groups (Oligo_like, Intermediate, Copio_like)
+#
+# Three variants side-by-side:
+#   TOTAL  |  MEAN per species  |  MEDIAN per species
+#
+# Uses ONLY protein_final (must contain KEGG_Subcategory)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+# Fixed trophic-group colors (publication consistent)
+trophic_colors <- c(
+  "Oligo_like"    = "#3B6FB6",  # blue
+  "Intermediate" = "#7F7F7F",  # grey
+  "Copio_like"   = "#C0392B"   # red
+)
+
+
+groups_to_plot   <- c("Oligo_like", "Intermediate", "Copio_like")  # order = legend/slices
+abundance_col    <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex <- "\\s*;\\s*"   # change to "~" if needed
+
+percent_accuracy <- 0.1
+min_label_frac   <- 0.00
+
+stopifnot(exists("protein_final"))
+stopifnot("KEGG_Subcategory" %in% names(protein_final))
+stopifnot(abundance_col %in% names(protein_final))
+
+# ----------------------------
+# 1) Annotated retained proteins only
+# ----------------------------
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_plot, !is.na(KEGG_Subcategory)) %>%
+  mutate(
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  )
+
+# ----------------------------
+# 2) Fractional assignment to Transporters / Non-transporters
+# ----------------------------
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Class = if_else(KEGG_token == "Transporters", "Transporters", "Non-transporters"),
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]],
+    Group_For_Plots    = factor(Group_For_Plots, levels = groups_to_plot)
+  )
+
+# ----------------------------
+# 3) Species × date × class totals (fundamental unit)
+# ----------------------------
+sd_class <- fractional_long %>%
+  group_by(Group_For_Plots, Species_ID, Date, Class) %>%
+  summarise(
+    Count_sd = sum(Weighted_Count, na.rm = TRUE),
+    Abund_sd = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ----------------------------
+# Helpers: build pie df with labels
+# ----------------------------
+pie_df_group <- function(df, value_col) {
+  df %>%
+    mutate(Value = .data[[value_col]]) %>%
+    group_by(Class) %>%
+    mutate(
+      Frac = Value / sum(Value),
+      Label = if_else(
+        Frac >= min_label_frac,
+        paste0(comma(round(Value, 0)), "\n(", percent(Frac, accuracy = percent_accuracy), ")"),
+        ""
+      )
+    ) %>%
+    ungroup()
+}
+
+pie_plot_group <- function(df_pie, title) {
+  ggplot(df_pie, aes(x = "", y = Frac, fill = Group_For_Plots)) +
+    geom_col(width = 1, color = "white", linewidth = 0.4) +
+    coord_polar(theta = "y") +
+    facet_wrap(~Class, nrow = 1) +
+    geom_text(aes(label = Label),
+              position = position_stack(vjust = 0.5),
+              size = 3) +
+    scale_fill_manual(values = trophic_colors) +
+    theme_void(base_size = 12) +
+    labs(title = title, fill = NULL) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      strip.text = element_text(face = "bold")
+    )
+}
+
+# ==========================================================
+# A) TOTAL (species×dates pooled) — by trophic group within class
+# ==========================================================
+tot_counts_group <- sd_class %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Count = sum(Count_sd), .groups = "drop")
+
+tot_abund_group <- sd_class %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Abund = sum(Abund_sd), .groups = "drop")
+
+# ==========================================================
+# B) MEAN per species (equal species weight)
+#   Step 1: within each species, sum across dates by class
+#   Step 2: compute mean across species within each (Class × Group)
+# ==========================================================
+mean_counts_group <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Count_sd), .groups = "drop") %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Count = mean(Value_sp), .groups = "drop")
+
+mean_abund_group <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Abund_sd), .groups = "drop") %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Abund = mean(Value_sp), .groups = "drop")
+
+# ==========================================================
+# C) MEDIAN per species (robust, equal species weight)
+# ==========================================================
+med_counts_group <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Count_sd), .groups = "drop") %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Count = median(Value_sp), .groups = "drop")
+
+med_abund_group <- sd_class %>%
+  group_by(Group_For_Plots, Species_ID, Class) %>%
+  summarise(Value_sp = sum(Abund_sd), .groups = "drop") %>%
+  group_by(Class, Group_For_Plots) %>%
+  summarise(Abund = median(Value_sp), .groups = "drop")
+
+# ----------------------------
+# Build plots
+# ----------------------------
+p_counts_total  <- pie_plot_group(pie_df_group(tot_counts_group,  "Count"), "TOTAL: protein counts (slice = trophic group)")
+p_counts_mean   <- pie_plot_group(pie_df_group(mean_counts_group, "Count"), "MEAN per species: protein counts (slice = trophic group)")
+p_counts_median <- pie_plot_group(pie_df_group(med_counts_group,  "Count"), "MEDIAN per species: protein counts (slice = trophic group)")
+
+p_abund_total   <- pie_plot_group(pie_df_group(tot_abund_group,   "Abund"), "TOTAL: proteome investment (slice = trophic group)")
+p_abund_mean    <- pie_plot_group(pie_df_group(mean_abund_group,  "Abund"), "MEAN per species: proteome investment (slice = trophic group)")
+p_abund_median  <- pie_plot_group(pie_df_group(med_abund_group,   "Abund"), "MEDIAN per species: proteome investment (slice = trophic group)")
+
+# 2 rows (counts / abundance), 3 columns (total/mean/median)
+(p_counts_total | p_counts_mean | p_counts_median) /
+(p_abund_total  | p_abund_mean  | p_abund_median) +
+  plot_annotation(
+    title = "Trophic-group composition within Transporters vs Non-transporters",
+    subtitle = "Facets are functional class; slices are trophic groups. Compare TOTAL vs species-equal MEAN vs species-equal MEDIAN."
+  )
+
+```
+
+```{r}
+############################################################
+# Representative day = MEDIAN date by TRANSPORTER FRACTION (ABUNDANCE).
+# -> This makes the across-date median dot align with the bar interface (by construction),
+# while still showing IQR across dates.
+#
+# Output: ONE-ROW figure with 4 panels
+#   [A] Counts bar (rep day): stacked Transporters vs Non + abs+% labels
+#       + across-date IQR (transporter fraction, counts) + median dot
+#   [B] Counts pies (rep day): trophic composition within each class + abs+% labels
+#   [C] Abundance bar (rep day): stacked Transporters vs Non + abs+% labels
+#       + across-date IQR (transporter fraction, abundance) + median dot (aligned)
+#   [D] Abundance pies (rep day): trophic composition within each class + abs+% labels
+#
+# Requirements in environment:
+#   protein_final with columns:
+#     Date, Species_ID, Protein_ID, Group_For_Plots, KEGG_Subcategory,
+#     Protein_Abundance_IBAQ_Norm
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+groups_to_use      <- c("Oligo_like", "Intermediate", "Copio_like")
+abundance_col      <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex   <- "\\s*;\\s*"   # change to "~" if needed
+percent_accuracy   <- 0.1
+min_label_frac     <- 0.004          # hide tiny pie labels
+
+# Colors (requested)
+trophic_colors <- c(
+  "Oligo_like"    = "#3B6FB6",  # blue
+  "Intermediate"  = "#7F7F7F",  # grey
+  "Copio_like"    = "#C0392B"   # red
+)
+class_colors <- c(
+  "Non-transporters" = "grey80",
+  "Transporters"     = "grey25"
+)
+
+# ----------------------------
+# INPUT CHECKS
+# ----------------------------
+stopifnot(exists("protein_final"))
+req <- c("Date","Species_ID","Protein_ID","Group_For_Plots","KEGG_Subcategory", abundance_col)
+miss <- setdiff(req, names(protein_final))
+if (length(miss) > 0) stop("protein_final missing columns: ", paste(miss, collapse = ", "))
+
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+
+# ==========================================================
+# 1) FRACTIONAL SPLIT INTO CLASSES (Transporters vs Non)
+# ==========================================================
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  mutate(
+    Group_For_Plots  = factor(Group_For_Plots, levels = groups_to_use),
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  ) %>%
+  filter(!is.na(KEGG_Subcategory), KEGG_Subcategory != "")
+
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Class = if_else(KEGG_token == "Transporters", "Transporters", "Non-transporters"),
+    Class = factor(Class, levels = c("Non-transporters", "Transporters")),
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]]
+  )
+
+# ==========================================================
+# 2) PER-DATE TOTALS + FRACTIONS (for IQR + representative day selection)
+# ==========================================================
+lake_by_date <- fractional_long %>%
+  group_by(Date, Class) %>%
+  summarise(
+    Count_day = sum(Weighted_Count, na.rm = TRUE),
+    Abund_day = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+frac_by_date <- lake_by_date %>%
+  group_by(Date) %>%
+  summarise(
+    Count_total = sum(Count_day),
+    Abund_total = sum(Abund_day),
+    Count_trans = sum(Count_day[Class == "Transporters"]),
+    Abund_trans = sum(Abund_day[Class == "Transporters"]),
+    Frac_trans_count = Count_trans / Count_total,
+    Frac_trans_abund = Abund_trans / Abund_total,
+    .groups = "drop"
+  )
+
+# ==========================================================
+# 3) REPRESENTATIVE DATE = MEDIAN BY TRANSPORTER FRACTION (ABUNDANCE)
+# ==========================================================
+daily_frac_abund <- frac_by_date %>%
+  arrange(Frac_trans_abund)
+
+median_date <- daily_frac_abund$Date[ceiling(nrow(daily_frac_abund) / 2)]
+cat("Representative date (median by transporter fraction, abundance):", median_date, "\n")
+
+median_day_data <- fractional_long %>% filter(Date == median_date)
+
+# Across-date IQR/median for transporter fraction
+iqr_counts <- quantile(frac_by_date$Frac_trans_count, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+iqr_abund  <- quantile(frac_by_date$Frac_trans_abund,  probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+
+iqr_df_counts <- tibble(x = "Representative day", q25 = unname(iqr_counts[1]), q50 = unname(iqr_counts[2]), q75 = unname(iqr_counts[3]))
+iqr_df_abund  <- tibble(x = "Representative day", q25 = unname(iqr_abund[1]),  q50 = unname(iqr_abund[2]),  q75 = unname(iqr_abund[3]))
+
+# Representative-day fractions (for optional open-circle marker)
+rep_row <- frac_by_date %>% filter(Date == median_date)
+rep_marker_counts <- tibble(x = "Representative day", y = rep_row$Frac_trans_count)
+rep_marker_abund  <- tibble(x = "Representative day", y = rep_row$Frac_trans_abund)
+
+# ==========================================================
+# 4) BAR DATA (REP DAY) WITH ABS + %
+# ==========================================================
+make_bar_df <- function(df, value_col) {
+  df %>%
+    group_by(Class) %>%
+    summarise(Value = sum(.data[[value_col]], na.rm = TRUE), .groups = "drop") %>%
+    mutate(
+      Total = sum(Value),
+      Frac  = Value / Total,
+      Label = paste0(comma(round(Value, 0)), "\n(", percent(Frac, accuracy = percent_accuracy), ")"),
+      Class = factor(Class, levels = c("Non-transporters", "Transporters"))
+    )
+}
+
+bar_counts <- make_bar_df(median_day_data, "Weighted_Count")
+bar_abund  <- make_bar_df(median_day_data, "Weighted_Abundance")
+
+theme_bar <- theme_classic(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    legend.title = element_blank(),
+    legend.position = "top"
+  )
+
+plot_bar <- function(bar_df, title, ylab, iqr_df, rep_marker, show_rep_marker = FALSE) {
+  p <- ggplot(bar_df, aes(x = "Representative day", y = Frac, fill = Class)) +
+    geom_col(width = 0.62, color = "white", linewidth = 0.5) +
+    geom_text(aes(label = Label), position = position_stack(vjust = 0.5), size = 3.1) +
+    # Across-date IQR and median (transporter fraction across dates)
+    geom_errorbar(
+      data = iqr_df,
+      aes(x = x, ymin = q25, ymax = q75),
+      inherit.aes = FALSE,
+      width = 0.20,
+      linewidth = 0.8
+    ) +
+    geom_point(
+      data = iqr_df,
+      aes(x = x, y = q50),
+      inherit.aes = FALSE,
+      size = 2
+    ) +
+    scale_fill_manual(values = class_colors) +
+    scale_y_continuous(
+      limits = c(0, 1),
+      breaks = seq(0, 1, by = 0.1),
+      labels = percent_format(accuracy = 1)
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0("Date: ", median_date, " (median by transporter fraction, abundance)"),
+      x = NULL,
+      y = ylab
+    ) +
+    theme_bar +
+    theme(axis.text.x = element_text(face = "bold"))
+
+  if (show_rep_marker) {
+    p <- p + geom_point(
+      data = rep_marker,
+      aes(x = x, y = y),
+      inherit.aes = FALSE,
+      shape = 21, fill = "white", color = "black",
+      stroke = 0.8, size = 2.3
+    )
+  }
+  p
+}
+
+# (rep-marker optional; it equals the dot for abundance by construction, so usually omit)
+p_bar_counts <- plot_bar(
+  bar_counts,
+  "Transporters vs non-transporters (counts)",
+  "Fraction of proteins",
+  iqr_df_counts,
+  rep_marker_counts,
+  show_rep_marker = FALSE
+)
+
+p_bar_abund <- plot_bar(
+  bar_abund,
+  "Transporters vs non-transporters (abundance)",
+  "Fraction of abundance",
+  iqr_df_abund,
+  rep_marker_abund,
+  show_rep_marker = FALSE
+)
+
+# ==========================================================
+# 5) PIE DATA (REP DAY) WITH ABS + % LABELS
+# ==========================================================
+make_pie_df <- function(df, value_col) {
+  df %>%
+    group_by(Class, Group_For_Plots) %>%
+    summarise(Value = sum(.data[[value_col]], na.rm = TRUE), .groups = "drop") %>%
+    group_by(Class) %>%
+    mutate(
+      Total = sum(Value),
+      Frac  = Value / Total,
+      Label = if_else(
+        Frac >= min_label_frac,
+        paste0(comma(round(Value, 0)), "\n(", percent(Frac, accuracy = percent_accuracy), ")"),
+        ""
+      ),
+      Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+    ) %>%
+    ungroup()
+}
+
+pie_counts <- make_pie_df(median_day_data, "Weighted_Count")
+pie_abund  <- make_pie_df(median_day_data, "Weighted_Abundance")
+
+pie_plot <- function(df, title) {
+  ggplot(df, aes(x = "", y = Frac, fill = Group_For_Plots)) +
+    geom_col(width = 1, color = "white", linewidth = 0.35) +
+    coord_polar(theta = "y") +
+    facet_wrap(~Class, ncol = 1) +
+    geom_text(aes(label = Label), position = position_stack(vjust = 0.5), size = 3) +
+    scale_fill_manual(values = trophic_colors) +
+    theme_void(base_size = 12) +
+    labs(
+      title = title,
+      subtitle = paste0("Date: ", median_date),
+      fill = NULL
+    ) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      strip.text = element_text(face = "bold"),
+      legend.position = "top"
+    )
+}
+
+p_pie_counts <- pie_plot(pie_counts, "Trophic composition within class (counts)")
+p_pie_abund  <- pie_plot(pie_abund,  "Trophic composition within class (abundance)")
+
+# ==========================================================
+# 6) ASSEMBLE ONE-ROW FIGURE
+# ==========================================================
+final_fig <-
+  p_bar_counts | p_pie_counts | p_bar_abund | p_pie_abund +
+  plot_annotation(
+    title = "Transporter versus non-transporter investment on a representative sampling day",
+    subtitle = "Representative day defined as the median date by transporter fraction (abundance). Whiskers/dots show IQR/median of transporter fraction across all dates."
+  )
+
+final_fig
+
+# ==========================================================
+# 7) SAVE
+# ==========================================================
+ggsave("Figure_Money_RepDay_MedianByFracAbund_IQR.png",
+       final_fig, width = 16.8, height = 4.8, units = "in", dpi = 600)
+ggsave("Figure_Money_RepDay_MedianByFracAbund_IQR.pdf",
+       final_fig, width = 16.8, height = 4.8, units = "in")
+
+# Optional: print underlying numbers
+cat("\n=== Representative day fractions (counts, abundance) ===\n")
+print(rep_row %>% select(Date, Frac_trans_count, Frac_trans_abund))
+cat("\n=== Across-date IQR+median (counts) ===\n"); print(iqr_df_counts)
+cat("\n=== Across-date IQR+median (abundance) ===\n"); print(iqr_df_abund)
+cat("\n=== Representative-day bar tables ===\n")
+cat("Counts:\n"); print(bar_counts)
+cat("Abundance:\n"); print(bar_abund)
+
+```
+
+```{r}
+############################################################
+# Adds 2 extra panels (to the right of your money-figure):
+#   [E] Species composition (fraction + n) by trophic group
+#   [F] Proteome investment composition (fraction + sum iBAQ) by trophic group
+#
+# Definitions:
+#   Species composition: unique Species_ID in protein_final (annotated proteins only), grouped by Group_For_Plots
+#   Abundance composition: sum of Weighted_Abundance across ALL dates (annotated proteins only),
+#                         grouped by Group_For_Plots
+#
+# Requires in environment:
+#   protein_final (same as before)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS (match your existing script)
+# ----------------------------
+groups_to_use     <- c("Oligo_like", "Intermediate", "Copio_like")
+abundance_col     <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex  <- "\\s*;\\s*"   # change to "~" if needed
+percent_accuracy  <- 0.1
+
+trophic_colors <- c(
+  "Oligo_like"    = "#3B6FB6",
+  "Intermediate"  = "#7F7F7F",
+  "Copio_like"    = "#C0392B"
+)
+
+# ----------------------------
+# Build annotated fractional_long (same logic, minimal)
+# ----------------------------
+stopifnot(exists("protein_final"))
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  mutate(
+    Group_For_Plots  = factor(Group_For_Plots, levels = groups_to_use),
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  ) %>%
+  filter(!is.na(KEGG_Subcategory), KEGG_Subcategory != "")
+
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Weighted_Abundance = weight * .data[[abundance_col]],
+    Weighted_Count     = weight
+  )
+
+# ==========================================================
+# PANEL E: Species composition (fraction + n)
+#   "What fraction of included species are in each trophic group?"
+# ==========================================================
+species_comp <- prot_annot %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "n_species") %>%
+  mutate(
+    frac = n_species / sum(n_species),
+    label = paste0(comma(n_species), "\n(", percent(frac, accuracy = percent_accuracy), ")"),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+theme_small <- theme_classic(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+
+p_species_comp <- ggplot(species_comp, aes(x = Group_For_Plots, y = frac, fill = Group_For_Plots)) +
+  geom_col(width = 0.75) +
+  geom_text(aes(label = label), vjust = -0.25, size = 3.2) +
+  scale_fill_manual(values = trophic_colors) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.1),
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.08))
+  ) +
+  labs(
+    title = "Included species",
+    subtitle = "Unique Species_ID in retained proteome",
+    x = NULL,
+    y = "Fraction of species"
+  ) +
+  theme_small +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+
+# ==========================================================
+# PANEL F: Abundance composition (fraction + sum iBAQ)
+#   "What fraction of included proteome investment comes from each trophic group?"
+# ==========================================================
+abund_comp <- fractional_long %>%
+  group_by(Group_For_Plots) %>%
+  summarise(
+    sum_iBAQ = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    frac = sum_iBAQ / sum(sum_iBAQ),
+    label = paste0(scientific(sum_iBAQ, digits = 2), "\n(", percent(frac, accuracy = percent_accuracy), ")"),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+p_abund_comp <- ggplot(abund_comp, aes(x = Group_For_Plots, y = frac, fill = Group_For_Plots)) +
+  geom_col(width = 0.75) +
+  geom_text(aes(label = label), vjust = -0.25, size = 3.0) +
+  scale_fill_manual(values = trophic_colors) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.1),
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.10))
+  ) +
+  labs(
+    title = "Included proteome investment",
+    subtitle = paste0("Sum of weighted ", abundance_col, " across all dates"),
+    x = NULL,
+    y = "Fraction of abundance"
+  ) +
+  theme_small +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+
+# ==========================================================
+# Combine E and F as a small two-panel block (stacked)
+# (To place next to your money-figure: do `money_fig | coverage_block`)
+# ==========================================================
+coverage_block <- (p_species_comp / p_abund_comp) +
+  plot_annotation(
+    title = "What is included in the analysis",
+    subtitle = "Trophic composition of retained dataset"
+  )
+
+coverage_block
+
+# Save this block alone (optional)
+ggsave("Figure_Included_Composition_Species_Abundance.png",
+       coverage_block, width = 6.2, height = 6.2, units = "in", dpi = 600)
+ggsave("Figure_Included_Composition_Species_Abundance.pdf",
+       coverage_block, width = 6.2, height = 6.2, units = "in")
+
+# Optional: print tables
+cat("\n=== Species composition ===\n"); print(species_comp)
+cat("\n=== Abundance composition ===\n"); print(abund_comp)
+
+```
+
+# summplentary overview of data retained
+```{r}
+############################################################
+# Two figures
+#   FIG 1) FRACTIONS (stacked bars per date; sum to 1)
+#   FIG 2) ABSOLUTE SIGNAL/COUNTS (stacked bars per date; no normalization)
+# Each figure has 4 panels (stacked vertically) with shared x-axis (Date):
+#   1) Species fraction/counts (ONLY species with Species_Abundance > 0 on that date)
+#   2) Species abundance (sum over species; mean per species within date)
+#   3) Proteins detected (counts; fractional split for multi-annotated proteins)
+#   4) Protein abundance (fractional split; using abundance_col)
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+groups_to_use     <- c("Oligo_like", "Intermediate", "Copio_like")
+abundance_col     <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex  <- "\\s*;\\s*"   # set to "~" if your delimiter is "~"
+
+trophic_colors <- c(
+  "Oligo_like"    = "#3B6FB6",
+  "Intermediate"  = "#7F7F7F",
+  "Copio_like"    = "#C0392B"
+)
+
+# Optional: set TRUE if your abundance panels have extreme dynamic range
+log10_abs_abundance_panels <- FALSE
+
+# ----------------------------
+# INPUT CHECKS
+# ----------------------------
+stopifnot(exists("protein_final"), exists("species_dat"))
+
+req_p <- c("Date","Species_ID","Protein_ID","Group_For_Plots","KEGG_Subcategory", abundance_col)
+miss_p <- setdiff(req_p, names(protein_final))
+if (length(miss_p) > 0) stop("protein_final missing: ", paste(miss_p, collapse = ", "))
+
+req_s <- c("Species_ID","Date","Species_Abundance","Group_For_Plots")
+miss_s <- setdiff(req_s, names(species_dat))
+if (length(miss_s) > 0) stop("species_dat missing: ", paste(miss_s, collapse = ", "))
+
+protein_final <- protein_final %>%
+  mutate(
+    Date = as.Date(Date),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+species_dat <- species_dat %>%
+  mutate(
+    Date = as.Date(Date),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+# ==========================================================
+# 1) Included proteome universe = annotated proteins only
+# ==========================================================
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  mutate(
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  ) %>%
+  filter(!is.na(KEGG_Subcategory), KEGG_Subcategory != "")
+
+included_species <- prot_annot %>% distinct(Species_ID)
+
+species_dat_included <- species_dat %>%
+  semi_join(included_species, by = "Species_ID") %>%
+  filter(Group_For_Plots %in% groups_to_use)
+
+# ==========================================================
+# 2) Fractional split of proteins if multi-annotated
+# ==========================================================
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]]
+  )
+
+# ==========================================================
+# 3) ABSOLUTE per-date totals (stacked bars)
+# ==========================================================
+
+# Panel 1 ABS: species counts per date & group (ONLY abundance > 0 on that date)
+abs_species_counts <- species_dat_included %>%
+  filter(!is.na(Species_Abundance), Species_Abundance > 0) %>%
+  distinct(Date, Species_ID, Group_For_Plots) %>%
+  count(Date, Group_For_Plots, name = "Value") %>%
+  mutate(Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use))
+
+# Panel 2 ABS: species abundance per date & group (mean per species within date; then sum)
+abs_species_abund <- species_dat_included %>%
+  filter(!is.na(Species_Abundance)) %>%
+  group_by(Date, Species_ID, Group_For_Plots) %>%
+  summarise(Abund_species = mean(Species_Abundance, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Date, Group_For_Plots) %>%
+  summarise(Value = sum(Abund_species, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use))
+
+# Panel 3 ABS: proteins detected per date & group (fractional counts)
+abs_protein_counts <- fractional_long %>%
+  group_by(Date, Group_For_Plots) %>%
+  summarise(Value = sum(Weighted_Count, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use))
+
+# Panel 4 ABS: protein abundance per date & group (fractional abundance)
+abs_protein_abund <- fractional_long %>%
+  group_by(Date, Group_For_Plots) %>%
+  summarise(Value = sum(Weighted_Abundance, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use))
+
+# Fill missing Date × Group combinations with zeros (prevents broken stacks)
+all_dates <- sort(unique(species_dat_included$Date))
+date_group_grid <- expand.grid(
+  Date = all_dates,
+  Group_For_Plots = factor(groups_to_use, levels = groups_to_use)
+) %>% as_tibble()
+
+complete_dg <- function(df) {
+  date_group_grid %>%
+    left_join(df, by = c("Date","Group_For_Plots")) %>%
+    mutate(Value = ifelse(is.na(Value), 0, Value))
+}
+
+abs_species_counts <- complete_dg(abs_species_counts)
+abs_species_abund  <- complete_dg(abs_species_abund)
+abs_protein_counts <- complete_dg(abs_protein_counts)
+abs_protein_abund  <- complete_dg(abs_protein_abund)
+
+# ==========================================================
+# 4) FRACTIONS derived from absolutes (normalize within each Date)
+# ==========================================================
+to_fraction <- function(df) {
+  df %>%
+    group_by(Date) %>%
+    mutate(
+      Total = sum(Value, na.rm = TRUE),
+      Prop  = ifelse(Total > 0, Value / Total, NA_real_)
+    ) %>%
+    ungroup()
+}
+
+frac_species_counts <- to_fraction(abs_species_counts)
+frac_species_abund  <- to_fraction(abs_species_abund)
+frac_protein_counts <- to_fraction(abs_protein_counts)
+frac_protein_abund  <- to_fraction(abs_protein_abund)
+
+# ==========================================================
+# 5) Plot helpers (stacked bars per date)
+# ==========================================================
+theme_ts_bar <- theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "top",
+    panel.grid.minor = element_blank(),
+    axis.title.x     = element_blank(),
+    plot.title       = element_blank()
+  )
+
+plot_frac_bars <- function(df, y_label, show_legend = FALSE) {
+  ggplot(df, aes(x = Date, y = Prop, fill = Group_For_Plots)) +
+    geom_col(width = 0.9) +
+    scale_fill_manual(values = trophic_colors, drop = FALSE) +
+    scale_y_continuous(
+      labels = percent_format(accuracy = 1),
+      breaks = seq(0, 1, by = 0.25),
+      expand = expansion(mult = c(0, 0.01))
+    ) +
+    labs(y = y_label, fill = "Group") +
+    theme_ts_bar +
+    (if (!show_legend) theme(legend.position = "none") else theme())
+}
+
+plot_abs_bars <- function(df, y_label, show_legend = FALSE, log10_y = FALSE) {
+  p <- ggplot(df, aes(x = Date, y = Value, fill = Group_For_Plots)) +
+    geom_col(width = 0.9) +
+    scale_fill_manual(values = trophic_colors, drop = FALSE) +
+    labs(y = y_label, fill = "Group") +
+    theme_ts_bar +
+    (if (!show_legend) theme(legend.position = "none") else theme())
+  if (log10_y) p <- p + scale_y_continuous(trans = "log10", labels = label_number())
+  p
+}
+
+# ==========================================================
+# 6) FIGURE 1: FRACTIONS (4 stacked panels)
+# ==========================================================
+pF1 <- plot_frac_bars(frac_species_counts, "Fraction of species (abundance > 0)", show_legend = TRUE)
+pF2 <- plot_frac_bars(frac_species_abund,  "Fraction of species abundance",       show_legend = FALSE)
+pF3 <- plot_frac_bars(frac_protein_counts, "Fraction of proteins detected (counts)", show_legend = FALSE)
+pF4 <- plot_frac_bars(frac_protein_abund,  "Fraction of protein abundance",       show_legend = FALSE) +
+  theme(axis.title.x = element_text()) +
+  labs(x = "Sampling date")
+
+fig_fractions <- pF1 / pF2 / pF3 / pF4 +
+  plot_annotation(title = "Supplementary: trophic-group composition over time (fractions)")
+
+fig_fractions
+
+# ==========================================================
+# 7) FIGURE 2: ABSOLUTE (4 stacked panels)
+# ==========================================================
+pA1 <- plot_abs_bars(abs_species_counts, "Species count (abundance > 0)", show_legend = TRUE, log10_y = FALSE)
+pA2 <- plot_abs_bars(abs_species_abund,  "Species abundance (summed)",    show_legend = FALSE, log10_y = log10_abs_abundance_panels)
+pA3 <- plot_abs_bars(abs_protein_counts, "Proteins detected (counts)",    show_legend = FALSE, log10_y = FALSE)
+pA4 <- plot_abs_bars(abs_protein_abund,  "Protein abundance (summed)",    show_legend = FALSE, log10_y = log10_abs_abundance_panels) +
+  theme(axis.title.x = element_text()) +
+  labs(x = "Sampling date")
+
+fig_absolute <- pA1 / pA2 / pA3 / pA4 +
+  plot_annotation(title = "Supplementary: trophic-group composition over time (absolute values)")
+
+fig_absolute
+```
+
+
+# transporter allocation figure
+```{r}
+############################################################
+# - Prints representative date on the figure
+# - Representative date = MEDIAN by TOTAL detected proteome abundance (Abund_total)
+# - Overlays MIN–MAX (across dates) ON TOP of the transporter fraction stacked bars (NO median marker)
+# - ALL PANELS summarize the REPRESENTATIVE DATE (incl. "included" panels)
+# - "Included" panels use ONLY species that:
+#     (i) are in the rep-date proteome dataset (median_day_data), AND
+#     (ii) have Species_Abundance > 0 on the rep-date in species_dat
+# - Labels in stacked bars + pies show: PERCENT + ABSOLUTE
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+  library(patchwork)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+groups_to_use     <- c("Oligo_like", "Intermediate", "Copio_like")
+abundance_col     <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex  <- "\\s*;\\s*"   # set to "~" if your delimiter is "~"
+percent_accuracy  <- 0.1
+min_label_frac    <- 0.02
+
+trophic_colors <- c(
+  "Oligo_like"    = "#3B6FB6",
+  "Intermediate"  = "#7F7F7F",
+  "Copio_like"    = "#C0392B"
+)
+class_colors <- c(
+  "Non-transporters" = "grey80",
+  "Transporters"     = "grey25"
+)
+
+# ----------------------------
+# INPUT CHECKS
+# ----------------------------
+stopifnot(exists("protein_final"), exists("species_dat"))
+req_p <- c("Date","Species_ID","Protein_ID","Group_For_Plots","KEGG_Subcategory", abundance_col)
+miss_p <- setdiff(req_p, names(protein_final))
+if (length(miss_p) > 0) stop("protein_final missing: ", paste(miss_p, collapse = ", "))
+
+req_s <- c("Species_ID","Date","Species_Abundance","Group_For_Plots")
+miss_s <- setdiff(req_s, names(species_dat))
+if (length(miss_s) > 0) stop("species_dat missing: ", paste(miss_s, collapse = ", "))
+
+protein_final <- protein_final %>%
+  mutate(
+    Date = as.Date(Date),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+species_dat <- species_dat %>%
+  mutate(
+    Date = as.Date(Date),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+# ==========================================================
+# 1) Included proteome universe = annotated proteins only
+# ==========================================================
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  mutate(
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  ) %>%
+  filter(!is.na(KEGG_Subcategory), KEGG_Subcategory != "")
+
+# ==========================================================
+# 2) Fractional split into Transporters vs Non
+# ==========================================================
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Class = if_else(KEGG_token == "Transporters", "Transporters", "Non-transporters"),
+    Class = factor(Class, levels = c("Non-transporters", "Transporters")),
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]]
+  )
+
+# ==========================================================
+# 3) Per-date totals + fractions + representative date
+#    Representative date = median by TOTAL detected proteome abundance (Abund_total)
+# ==========================================================
+lake_by_date <- fractional_long %>%
+  group_by(Date, Class) %>%
+  summarise(
+    Count_day = sum(Weighted_Count, na.rm = TRUE),
+    Abund_day = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+frac_by_date <- lake_by_date %>%
+  group_by(Date) %>%
+  summarise(
+    Count_total = sum(Count_day),
+    Abund_total = sum(Abund_day),
+    Count_trans = sum(Count_day[Class == "Transporters"]),
+    Abund_trans = sum(Abund_day[Class == "Transporters"]),
+    Frac_trans_count = Count_trans / Count_total,
+    Frac_trans_abund = Abund_trans / Abund_total,
+    .groups = "drop"
+  )
+
+# Representative date: median Abund_total
+median_date <- frac_by_date %>%
+  filter(is.finite(Abund_total)) %>%
+  arrange(Abund_total) %>%
+  slice(ceiling(n()/2)) %>%
+  pull(Date)
+
+median_day_data <- fractional_long %>%
+  filter(Date == median_date)
+
+# MIN–MAX transporter FRACTIONS across dates (for overlays)
+mmx_counts <- frac_by_date %>%
+  summarise(
+    ymin = min(Frac_trans_count, na.rm = TRUE),
+    ymax = max(Frac_trans_count, na.rm = TRUE)
+  ) %>% mutate(x = "")
+
+mmx_abund <- frac_by_date %>%
+  summarise(
+    ymin = min(Frac_trans_abund, na.rm = TRUE),
+    ymax = max(Frac_trans_abund, na.rm = TRUE)
+  ) %>% mutate(x = "")
+
+rep_label <- paste0("Representative date (median detected proteome abundance): ",
+                    format(median_date, "%Y-%m-%d"))
+
+# ==========================================================
+# 4) Included bars (REP-DATE ONLY; aligned to rep proteome + abundance>0)
+#    Labels: percent + absolute
+# ==========================================================
+rep_proteome_species <- median_day_data %>%
+  distinct(Species_ID, Group_For_Plots)
+
+rep_species_abund <- species_dat %>%
+  filter(Date == median_date) %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  filter(!is.na(Species_Abundance), Species_Abundance > 0) %>%
+  distinct(Species_ID, Group_For_Plots, Species_Abundance)
+
+included_repdate <- rep_proteome_species %>%
+  inner_join(rep_species_abund, by = c("Species_ID", "Group_For_Plots"))
+
+incl_species <- included_repdate %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Group_For_Plots, name = "Value") %>%
+  mutate(
+    Total = sum(Value),
+    Prop  = Value / Total,
+    Label = if_else(
+      Prop >= min_label_frac,
+      paste0(percent(Prop, accuracy = percent_accuracy), "\n", comma(round(Value, 0))),
+      ""
+    )
+  )
+
+incl_abund <- included_repdate %>%
+  group_by(Group_For_Plots) %>%
+  summarise(Value = sum(Species_Abundance, na.rm = TRUE), .groups = "drop") %>%
+  mutate(
+    Total = sum(Value),
+    Prop  = Value / Total,
+    Label = if_else(
+      Prop >= min_label_frac,
+      paste0(percent(Prop, accuracy = percent_accuracy), "\n", signif(Value, 3)),
+      ""
+    )
+  )
+
+# ==========================================================
+# Shared theme helpers
+# ==========================================================
+theme_overview <- theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "top",
+    panel.grid.minor = element_blank(),
+    axis.text.x      = element_blank(),
+    axis.ticks.x     = element_blank(),
+    plot.title       = element_blank(),
+    plot.subtitle    = element_blank()
+  )
+
+plot_included_bar <- function(df, y_label, show_legend = TRUE) {
+  p <- ggplot(df, aes(x = "", y = Prop, fill = Group_For_Plots)) +
+    geom_col(width = 0.75) +
+    geom_text(aes(label = Label),
+              position = position_stack(vjust = 0.5),
+              size = 2.9,
+              lineheight = 0.95) +
+    scale_fill_manual(values = trophic_colors) +
+    scale_y_continuous(
+      labels = percent_format(accuracy = 1),
+      breaks = seq(0, 1, by = 0.1),
+      expand = expansion(mult = c(0, 0.02))
+    ) +
+    labs(x = NULL, y = y_label, fill = "Group") +
+    theme_overview
+  if (!show_legend) p <- p + theme(legend.position = "none")
+  p
+}
+
+p_incl_species <- plot_included_bar(
+  incl_species,
+  y_label = "Proportion of included species (rep. date)",
+  show_legend = TRUE
+)
+
+p_incl_abund <- plot_included_bar(
+  incl_abund,
+  y_label = "Proportion of included species abundance (rep. date)",
+  show_legend = FALSE
+)
+
+# ==========================================================
+# 5) Rep-day stacked bars (counts + abundance) with OVERLAID MIN–MAX
+#    Labels: percent + absolute
+# ==========================================================
+make_bar_df <- function(df, value_col, abs_fmt = c("comma0", "signif3")) {
+  abs_fmt <- match.arg(abs_fmt)
+  out <- df %>%
+    group_by(Class) %>%
+    summarise(Value = sum(.data[[value_col]], na.rm = TRUE), .groups = "drop") %>%
+    mutate(
+      Total = sum(Value),
+      Prop  = Value / Total
+    )
+
+  abs_str <- if (abs_fmt == "comma0") comma(round(out$Value, 0)) else signif(out$Value, 3)
+
+  out %>%
+    mutate(
+      Label = if_else(
+        Prop >= min_label_frac,
+        paste0(percent(Prop, accuracy = percent_accuracy), "\n", abs_str),
+        ""
+      )
+    )
+}
+
+bar_counts <- make_bar_df(median_day_data, "Weighted_Count", abs_fmt = "comma0")
+bar_abund  <- make_bar_df(median_day_data, "Weighted_Abundance", abs_fmt = "signif3")
+
+plot_class_bar <- function(df, mmx_df, y_label, show_legend = FALSE) {
+  ggplot(df, aes(x = "", y = Prop, fill = Class)) +
+    geom_col(width = 0.75) +
+    geom_text(aes(label = Label),
+              position = position_stack(vjust = 0.5),
+              size = 2.9,
+              lineheight = 0.95) +
+    geom_errorbar(
+      data = mmx_df,
+      aes(x = x, ymin = ymin, ymax = ymax),
+      inherit.aes = FALSE,
+      width = 0.18,
+      linewidth = 0.9
+    ) +
+    scale_fill_manual(values = class_colors) +
+    scale_y_continuous(
+      labels = percent_format(accuracy = 1),
+      breaks = seq(0, 1, by = 0.1),
+      expand = expansion(mult = c(0, 0.02))
+    ) +
+    labs(x = NULL, y = y_label, fill = NULL) +
+    theme_overview +
+    (if (!show_legend) theme(legend.position = "none") else theme())
+}
+
+p_bar_counts <- plot_class_bar(
+  bar_counts, mmx_counts,
+  y_label = "Proportion of proteins (counts; rep. date)",
+  show_legend = TRUE
+)
+
+p_bar_abund <- plot_class_bar(
+  bar_abund, mmx_abund,
+  y_label = "Proportion of proteome (abundance; rep. date)",
+  show_legend = FALSE
+)
+
+# ==========================================================
+# 6) Rep-day pies (counts + abundance): trophic composition within class
+#    Labels: percent + absolute
+# ==========================================================
+make_pie_df <- function(df, value_col, abs_fmt = c("comma0", "signif3")) {
+  abs_fmt <- match.arg(abs_fmt)
+
+  out <- df %>%
+    group_by(Class, Group_For_Plots) %>%
+    summarise(Value = sum(.data[[value_col]], na.rm = TRUE), .groups = "drop") %>%
+    group_by(Class) %>%
+    mutate(
+      Total = sum(Value),
+      Prop  = Value / Total
+    ) %>%
+    ungroup()
+
+  abs_str <- if (abs_fmt == "comma0") comma(round(out$Value, 0)) else signif(out$Value, 3)
+
+  out %>%
+    mutate(
+      Label = if_else(
+        Prop >= min_label_frac,
+        paste0(percent(Prop, accuracy = percent_accuracy), "\n", abs_str),
+        ""
+      )
+    )
+}
+
+pie_counts <- make_pie_df(median_day_data, "Weighted_Count", abs_fmt = "comma0")
+pie_abund  <- make_pie_df(median_day_data, "Weighted_Abundance", abs_fmt = "signif3")
+
+pie_theme <- theme_void(base_size = 12) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    plot.title = element_blank(),
+    plot.subtitle = element_blank()
+  )
+
+plot_pies <- function(df) {
+  ggplot(df, aes(x = "", y = Prop, fill = Group_For_Plots)) +
+    geom_col(width = 1, color = "white", linewidth = 0.35) +
+    coord_polar(theta = "y") +
+    facet_wrap(~Class, ncol = 1) +
+    geom_text(aes(label = Label),
+              position = position_stack(vjust = 0.5),
+              size = 2.7,
+              lineheight = 0.95) +
+    scale_fill_manual(values = trophic_colors) +
+    pie_theme
+}
+
+p_pie_counts <- plot_pies(pie_counts)
+p_pie_abund  <- plot_pies(pie_abund)
+
+# ==========================================================
+# 7) Combine ONE ROW + print chosen date on the figure
+# ==========================================================
+final_fig <- (p_incl_species | p_incl_abund | p_bar_counts | p_pie_counts | p_bar_abund | p_pie_abund) +
+  plot_annotation(subtitle = rep_label) &
+  theme(plot.subtitle = element_text(size = 10, hjust = 0.5))
+
+final_fig
+
+# ==========================================================
+# 8) SAVE
+# ==========================================================
+ggsave("Figure_Money_OneRow_RepDate_MedianAbundTotal_MINMAX_PctAbs.pdf",
+       final_fig, width = 11.69, height = 8.27, units = "in")
+
+# Optional: report summary values
+cat("\nRepresentative date (median Abund_total):", median_date, "\n")
+cat("\nAbund_total (rep date):\n")
+print(frac_by_date %>% filter(Date == median_date) %>% select(Date, Abund_total))
+
+cat("\nIncluded rep-date species (n):", n_distinct(included_repdate$Species_ID), "\n")
+cat("\nIncluded rep-date species by group:\n")
+print(included_repdate %>% distinct(Species_ID, Group_For_Plots) %>% count(Group_For_Plots))
+
+cat("\nCounts transporter fraction across dates (min/max):\n"); print(mmx_counts)
+cat("\nAbundance transporter fraction across dates (min/max):\n"); print(mmx_abund)
+
+```
+
+# show min max dates maybe in suppmentary to show that also there the trend holds
+```{r}
+############################################################
+# same one-row figure for MIN and MAX Abund_total dates
+# (Abund_total = total detected proteome abundance across all proteins)
+############################################################
+
+# Helper: build the same 6-panel row for any chosen date
+make_money_row_for_date <- function(chosen_date, subtitle_prefix = "Chosen date:") {
+
+  # Rep-day data (same universe as main)
+  day_data <- fractional_long %>% filter(Date == chosen_date)
+
+  # Recompute rep-date included species (aligned to rep proteome + abundance > 0)
+  rep_proteome_species <- day_data %>% distinct(Species_ID, Group_For_Plots)
+
+  rep_species_abund <- species_dat %>%
+    filter(Date == chosen_date) %>%
+    filter(Group_For_Plots %in% groups_to_use) %>%
+    filter(!is.na(Species_Abundance), Species_Abundance > 0) %>%
+    distinct(Species_ID, Group_For_Plots, Species_Abundance)
+
+  included_repdate <- rep_proteome_species %>%
+    inner_join(rep_species_abund, by = c("Species_ID", "Group_For_Plots"))
+
+  # Included panels (percent + absolute)
+  incl_species_x <- included_repdate %>%
+    distinct(Species_ID, Group_For_Plots) %>%
+    count(Group_For_Plots, name = "Value") %>%
+    mutate(
+      Total = sum(Value),
+      Prop  = Value / Total,
+      Label = if_else(
+        Prop >= min_label_frac,
+        paste0(percent(Prop, accuracy = percent_accuracy), "\n", comma(round(Value, 0))),
+        ""
+      )
+    )
+
+  incl_abund_x <- included_repdate %>%
+    group_by(Group_For_Plots) %>%
+    summarise(Value = sum(Species_Abundance, na.rm = TRUE), .groups = "drop") %>%
+    mutate(
+      Total = sum(Value),
+      Prop  = Value / Total,
+      Label = if_else(
+        Prop >= min_label_frac,
+        paste0(percent(Prop, accuracy = percent_accuracy), "\n", signif(Value, 3)),
+        ""
+      )
+    )
+
+  p_incl_species_x <- plot_included_bar(incl_species_x, "Proportion of included species (rep. date)", TRUE)
+  p_incl_abund_x   <- plot_included_bar(incl_abund_x,   "Proportion of included species abundance (rep. date)", FALSE)
+
+  # Transporter vs non panels (rep date) — overlays remain global MIN–MAX across dates
+  bar_counts_x <- make_bar_df(day_data, "Weighted_Count", abs_fmt = "comma0")
+  bar_abund_x  <- make_bar_df(day_data, "Weighted_Abundance", abs_fmt = "signif3")
+
+  p_bar_counts_x <- plot_class_bar(bar_counts_x, mmx_counts,
+                                   "Proportion of proteins (counts; rep. date)", TRUE)
+  p_bar_abund_x  <- plot_class_bar(bar_abund_x,  mmx_abund,
+                                   "Proportion of proteome (abundance; rep. date)", FALSE)
+
+  # Pies (rep date)
+  pie_counts_x <- make_pie_df(day_data, "Weighted_Count", abs_fmt = "comma0")
+  pie_abund_x  <- make_pie_df(day_data, "Weighted_Abundance", abs_fmt = "signif3")
+
+  p_pie_counts_x <- plot_pies(pie_counts_x)
+  p_pie_abund_x  <- plot_pies(pie_abund_x)
+
+  subtitle <- paste0(subtitle_prefix, " ", format(chosen_date, "%Y-%m-%d"))
+
+  (p_incl_species_x | p_incl_abund_x | p_bar_counts_x | p_pie_counts_x | p_bar_abund_x | p_pie_abund_x) +
+    plot_annotation(subtitle = subtitle) &
+    theme(plot.subtitle = element_text(size = 10, hjust = 0.5))
+}
+
+# ---- MIN/MAX dates based on Abund_total (ONLY abundance-based selection) ----
+min_date_abund_total <- frac_by_date %>%
+  filter(is.finite(Abund_total)) %>%
+  slice_min(Abund_total, n = 1, with_ties = FALSE) %>%
+  pull(Date)
+
+max_date_abund_total <- frac_by_date %>%
+  filter(is.finite(Abund_total)) %>%
+  slice_max(Abund_total, n = 1, with_ties = FALSE) %>%
+  pull(Date)
+
+# ---- Build and save 2 supplementary figures ----
+fig_min_abund_total <- make_money_row_for_date(min_date_abund_total, "MIN detected proteome abundance:")
+fig_max_abund_total <- make_money_row_for_date(max_date_abund_total, "MAX detected proteome abundance:")
+
+fig_min_abund_total
+fig_max_abund_total
+
+cat("\nSupplementary MIN/MAX dates based on Abund_total:\n")
+cat("  MIN Abund_total date:", as.character(min_date_abund_total), "\n")
+cat("  MAX Abund_total date:", as.character(max_date_abund_total), "\n")
+```
+
+
+```{r}
+# ==========================================================
+# 7) 2 ROWS (Counts on top, Abundance bottom)
+#    Left: horizontal class bar (with MIN–MAX overlay)
+#    Right: two pies side-by-side (Non-transporters, then Transporters)
+# ==========================================================
+
+# --- horizontal stacked bar (counts/abundance) with MIN–MAX overlay
+plot_class_bar_h <- function(df, mmx_df, x_label, show_legend = FALSE) {
+  ggplot(df, aes(x = "", y = Prop, fill = Class)) +
+    geom_col(width = 0.75) +
+    geom_text(
+      aes(label = Label),
+      position = position_stack(vjust = 0.5),
+      size = 2.9,
+      lineheight = 0.95
+    ) +
+    geom_errorbar(
+      data = mmx_df,
+      aes(x = x, ymin = ymin, ymax = ymax),
+      inherit.aes = FALSE,
+      width = 0.18,
+      linewidth = 0.9
+    ) +
+    coord_flip() +  # <-- makes it horizontal
+    scale_fill_manual(values = class_colors) +
+    scale_y_continuous(
+      labels = percent_format(accuracy = 1),
+      breaks = seq(0, 1, by = 0.1),
+      expand = expansion(mult = c(0, 0.02))
+    ) +
+    labs(x = NULL, y = x_label, fill = NULL) +
+    theme_overview +
+    theme(
+  axis.text.y  = element_text(size = 9),
+  axis.ticks.y = element_line()) +
+    (if (!show_legend) theme(legend.position = "none") else theme())
+}
+
+p_bar_counts_h <- plot_class_bar_h(
+  bar_counts, mmx_counts,
+  x_label = "Proportion of proteins (counts; rep. date)",
+  show_legend = TRUE
+)
+
+p_bar_abund_h <- plot_class_bar_h(
+  bar_abund, mmx_abund,
+  x_label = "Proportion of proteome (abundance; rep. date)",
+  show_legend = FALSE
+)
+
+# --- single pie for a given Class (Non-transporters / Transporters)
+pie_theme_single <- theme_void(base_size = 12) +
+  theme(
+    legend.position = "top",      # allow one shared legend
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 11),
+    plot.margin = margin(2, 2, 2, 2)
+  )
+
+plot_pie_single <- function(df, class_name, show_legend = FALSE) {
+  ggplot(df %>% filter(Class == class_name),
+         aes(x = "", y = Prop, fill = Group_For_Plots)) +
+    geom_col(width = 1, color = "white", linewidth = 0.35) +
+    coord_polar(theta = "y") +
+    geom_text(
+      aes(label = Label),
+      position = position_stack(vjust = 0.5),
+      size = 2.7,
+      lineheight = 0.95
+    ) +
+    scale_fill_manual(values = trophic_colors) +
+    labs(title = class_name, fill = "Group") +
+    pie_theme_single +
+    (if (!show_legend) theme(legend.position = "none") else theme())
+}
+
+# Counts pies (Non first, then Trans)
+p_pie_counts_non   <- plot_pie_single(pie_counts, "Non-transporters", show_legend = TRUE)
+p_pie_counts_trans <- plot_pie_single(pie_counts, "Transporters",     show_legend = FALSE)
+
+# Abundance pies
+p_pie_abund_non   <- plot_pie_single(pie_abund, "Non-transporters", show_legend = FALSE)
+p_pie_abund_trans <- plot_pie_single(pie_abund, "Transporters",     show_legend = FALSE)
+
+# --- assemble rows
+pies_counts_row <- (p_pie_counts_non | p_pie_counts_trans) + plot_layout(widths = c(1, 1))
+pies_abund_row  <- (p_pie_abund_non  | p_pie_abund_trans ) + plot_layout(widths = c(1, 1))
+
+row_counts <- p_bar_counts_h | pies_counts_row
+row_abund  <- p_bar_abund_h  | pies_abund_row
+
+final_fig <- (row_counts / row_abund) +
+  plot_layout(widths = c(1.05, 1.95), guides = "collect") +
+  plot_annotation(subtitle = rep_label) &
+  theme(plot.subtitle = element_text(size = 10, hjust = 0.5))
+
+final_fig
+
+
+# ==========================================================
+# 8) SAVE (A4 portrait)
+# ==========================================================
+ggsave(
+  "Figure_Money_TwoRows_CountsAbund_A4portrait.pdf",
+  final_fig,
+  width = 15, height = 4, units = "in"
+)
+
+```
+## Quantification of transporter investment
+
+To quantify investment into membrane transport functions, the retained metaproteome was classified into **Transporters** and **Non-transporters** based on KEGG subcategory annotations assigned to each detected protein. Analyses were restricted to quality-controlled proteins belonging to species classified into the three trophic strategies used throughout the study (**Oligo_like**, **Intermediate**, and **Copio_like**). Each protein was identified by a unique `Protein_ID` and quantified per species (`Species_ID`) and sampling date (`Date`).
+
+Proteins could carry multiple KEGG subcategory annotations. To avoid over-counting such multi-annotated proteins, a **fractional assignment** approach was applied: for a protein annotated with *n* KEGG subcategories, each annotation received a weight of \( w = 1/n \). Protein fractions annotated as “Transporters” were assigned to the **Transporters** class, whereas all remaining annotations were grouped as **Non-transporters**. Two complementary metrics were calculated in parallel: (i) **protein counts**, where each protein contributed a weighted count equal to \( w \), and (ii) **proteome investment**, where each protein contributed a weighted abundance equal to \( w \times \) normalized iBAQ intensity (`Protein_Abundance_IBAQ_Norm`).
+
+Weighted protein counts and weighted abundances were summed within each sampling date to obtain date-specific totals for Transporters and Non-transporters. Class fractions were then calculated as the proportion of the transporter-associated signal relative to the total detected proteome on that date, separately for counts-based and abundance-based measures.
+
+For visualization, a single **representative sampling date** was selected as the date with the **median total detected proteome abundance** across the time series, ensuring that the displayed composition reflects a typical proteome rather than an extreme sampling point. On this representative date, stacked bar charts summarize the fraction of Transporters versus Non-transporters based on weighted protein counts and weighted abundance. Absolute values and corresponding percentages are reported directly on the bars.
+
+To contextualize temporal variability, the stacked bars include an overlaid **minimum–maximum range** indicating the full spread of transporter fractions observed across all sampling dates, computed independently for counts-based and abundance-based fractions. In addition, pie charts depict the **trophic-group composition** within each functional class (Transporters and Non-transporters) on the representative date. Pie slices represent within-class fractions derived from weighted protein counts or weighted abundance, allowing direct comparison of how different trophic strategies contribute to transporter and non-transporter functions.
+
+## Transporter versus non-transporter investment on a representative sampling date
+
+Stacked bars show the fraction of the detected metaproteome assigned to **Transporters** and **Non-transporters** on the representative sampling date (defined as the date with median total detected proteome abundance; 2021-03-31), calculated from **weighted protein counts** (top row) and **weighted protein abundance** (bottom row; normalized iBAQ). Proteins with multiple KEGG subcategory annotations were fractionally assigned across annotations (\( w = 1/n \)). Bar labels report both the percentage and absolute totals on the representative date.
+
+Error bars overlaid on the stacked bars indicate the **minimum–maximum range** of transporter fractions observed across all sampling dates. Pie charts show the **trophic-group composition** (Oligo_like, Intermediate, Copio_like) within each functional class (Non-transporters and Transporters) on the representative date, based on the same weighted counts or weighted abundance. Pie labels report within-class percentages and absolute values.
+
+
+```{r}
+############################################################
+# DATE-LEVEL SUMMARY (robust to hyphens/spaces in Class names)
+# Uses only protein_final and creates:
+#  - date_summary_all
+#  - date_summary_by_group
+#  - across_date_summary
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(readr)
+})
+
+# ----------------------------
+# SETTINGS
+# ----------------------------
+groups_to_use    <- c("Oligo_like", "Intermediate", "Copio_like")
+abundance_col    <- "Protein_Abundance_IBAQ_Norm"
+kegg_delim_regex <- "\\s*;\\s*"   # change to "~" if needed
+
+# ----------------------------
+# Checks
+# ----------------------------
+stopifnot(exists("protein_final"))
+req <- c("Date","Species_ID","Protein_ID","Group_For_Plots","KEGG_Subcategory", abundance_col)
+miss <- setdiff(req, names(protein_final))
+if (length(miss) > 0) stop("protein_final missing: ", paste(miss, collapse = ", "))
+
+protein_final <- protein_final %>%
+  mutate(
+    Date = as.Date(Date),
+    Group_For_Plots = factor(Group_For_Plots, levels = groups_to_use)
+  )
+
+# ==========================================================
+# 1) Annotated proteome + fractional split (Transporters vs Nontransporters)
+# ==========================================================
+prot_annot <- protein_final %>%
+  filter(Group_For_Plots %in% groups_to_use) %>%
+  mutate(
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    KEGG_Subcategory = str_replace_all(KEGG_Subcategory, "\\s+", " "),
+    KEGG_Subcategory = str_trim(KEGG_Subcategory)
+  ) %>%
+  filter(!is.na(KEGG_Subcategory), KEGG_Subcategory != "")
+
+fractional_long <- prot_annot %>%
+  mutate(KEGG_token = str_split(KEGG_Subcategory, pattern = kegg_delim_regex)) %>%
+  unnest(KEGG_token) %>%
+  mutate(KEGG_token = str_trim(KEGG_token)) %>%
+  group_by(Species_ID, Date, Protein_ID, Group_For_Plots) %>%
+  mutate(weight = 1 / n_distinct(KEGG_token)) %>%
+  ungroup() %>%
+  mutate(
+    Class = if_else(KEGG_token == "Transporters", "Transporters", "Nontransporters"),
+    Weighted_Count     = weight,
+    Weighted_Abundance = weight * .data[[abundance_col]]
+  )
+
+# ==========================================================
+# 2) Species detected per date (overall + by group)
+# ==========================================================
+species_per_date_all <- prot_annot %>%
+  distinct(Date, Species_ID) %>%
+  count(Date, name = "n_species_detected")
+
+species_per_date_group <- prot_annot %>%
+  distinct(Date, Group_For_Plots, Species_ID) %>%
+  count(Date, Group_For_Plots, name = "n_species_detected")
+
+# ==========================================================
+# 3) Per-date totals (overall)
+# ==========================================================
+date_summary_all <- fractional_long %>%
+  group_by(Date, Class) %>%
+  summarise(
+    proteins_equiv = sum(Weighted_Count, na.rm = TRUE),
+    abund_sum      = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from  = Class,
+    values_from = c(proteins_equiv, abund_sum),
+    values_fill = 0
+  ) %>%
+  mutate(
+    proteins_trans = proteins_equiv_Transporters,
+    proteins_non   = proteins_equiv_Nontransporters,
+    abund_trans    = abund_sum_Transporters,
+    abund_non      = abund_sum_Nontransporters,
+    proteins_total = proteins_trans + proteins_non,
+    abund_total    = abund_trans + abund_non,
+    frac_trans_proteins = if_else(proteins_total > 0, proteins_trans / proteins_total, NA_real_),
+    frac_trans_abund    = if_else(abund_total > 0,    abund_trans / abund_total,       NA_real_)
+  ) %>%
+  select(
+    Date,
+    proteins_trans, proteins_non, proteins_total,
+    abund_trans, abund_non, abund_total,
+    frac_trans_proteins, frac_trans_abund
+  ) %>%
+  left_join(species_per_date_all, by = "Date") %>%
+  arrange(Date)
+
+# ==========================================================
+# 4) Per-date × trophic-group totals
+# ==========================================================
+date_summary_by_group <- fractional_long %>%
+  group_by(Date, Group_For_Plots, Class) %>%
+  summarise(
+    proteins_equiv = sum(Weighted_Count, na.rm = TRUE),
+    abund_sum      = sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from  = Class,
+    values_from = c(proteins_equiv, abund_sum),
+    values_fill = 0
+  ) %>%
+  mutate(
+    proteins_trans = proteins_equiv_Transporters,
+    proteins_non   = proteins_equiv_Nontransporters,
+    abund_trans    = abund_sum_Transporters,
+    abund_non      = abund_sum_Nontransporters,
+    proteins_total = proteins_trans + proteins_non,
+    abund_total    = abund_trans + abund_non,
+    frac_trans_proteins = if_else(proteins_total > 0, proteins_trans / proteins_total, NA_real_),
+    frac_trans_abund    = if_else(abund_total > 0,    abund_trans / abund_total,       NA_real_)
+  ) %>%
+  select(
+    Date, Group_For_Plots,
+    proteins_trans, proteins_non, proteins_total,
+    abund_trans, abund_non, abund_total,
+    frac_trans_proteins, frac_trans_abund
+  ) %>%
+  left_join(species_per_date_group, by = c("Date","Group_For_Plots")) %>%
+  arrange(Date, Group_For_Plots)
+
+# ==========================================================
+# 5) Across-date min/max/mean/median (overall)
+# ==========================================================
+across_date_summary <- date_summary_all %>%
+  summarise(
+    n_dates = n(),
+
+    frac_trans_proteins_min    = min(frac_trans_proteins, na.rm = TRUE),
+    frac_trans_proteins_max    = max(frac_trans_proteins, na.rm = TRUE),
+    frac_trans_proteins_mean   = mean(frac_trans_proteins, na.rm = TRUE),
+    frac_trans_proteins_median = median(frac_trans_proteins, na.rm = TRUE),
+
+    frac_trans_abund_min       = min(frac_trans_abund, na.rm = TRUE),
+    frac_trans_abund_max       = max(frac_trans_abund, na.rm = TRUE),
+    frac_trans_abund_mean      = mean(frac_trans_abund, na.rm = TRUE),
+    frac_trans_abund_median    = median(frac_trans_abund, na.rm = TRUE)
+  )
+
+cat("\n=== Across-date transporter fraction summaries (overall) ===\n")
+print(across_date_summary)
+
+cat("\n=== Per-date summary (overall) ===\n")
+print(date_summary_all)
+
+cat("\n=== Per-date × trophic group summary ===\n")
+print(date_summary_by_group)
+
+# Optional exports
+write_csv(date_summary_all,      "Summary_ByDate_AllGroups.csv")
+write_csv(date_summary_by_group, "Summary_ByDate_ByTrophicGroup.csv")
+write_csv(across_date_summary,   "Summary_AcrossDates_MinMaxMeanMedian.csv")
+```
+

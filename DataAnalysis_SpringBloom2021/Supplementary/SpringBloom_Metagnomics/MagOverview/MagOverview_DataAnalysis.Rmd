@@ -1,0 +1,332 @@
+---
+title: MAG Overview
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/SpringBloom_Metagnomics/MagOverview/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "MagOverview.csv")
+```
+
+# Mag Quality Plot before dereplication
+```{r}
+#–– 1) classify quality ––
+dat$Quality <- with(dat,
+  ifelse(Completeness >= 90 & Contamination <= 5, "High_Quality",
+  ifelse(Completeness >= 50 & Contamination <= 10, "Medium_Quality", NA)))
+
+df <- subset(dat, Quality %in% c("Medium_Quality","High_Quality"))
+df$Quality <- factor(df$Quality, levels=c("Medium_Quality","High_Quality"))
+
+#–– 2) palette ––
+cols <- c(Medium_Quality = ColorPalette[8], High_Quality   = ColorPalette[7])
+
+#–– 3) top marginal: completeness histogram ––
+p_top <- ggplot(df, aes(x = Completeness, fill = Quality)) +
+  geom_histogram(binwidth = 5, colour = "black", show.legend = FALSE) +
+  scale_x_continuous(breaks = seq(50, 100, by = 5)) +
+  scale_fill_manual(values = cols) +
+  coord_cartesian(xlim = c(50, 100), ylim = c(0, 500)) +
+  ylab("MAGs [n]") +
+  theme_minimal() +
+  theme(axis.title.x  = element_blank(),
+        axis.text.x   = element_blank(),
+        axis.ticks.x  = element_blank()) 
+
+#–– 4) main scatter: Completeness → x, Contamination → y ––
+p_scatter <- ggplot(df, aes(x = Completeness, y = Contamination, fill = Quality)) +
+  geom_point(shape  = 21, colour = "black", stroke = 0.5, size   = 2, alpha  = 0.8) +
+  scale_x_continuous(breaks = seq(50, 100, by = 5)) +
+  scale_y_continuous(breaks = seq(0, 5, by = 1)) +
+  scale_fill_manual(values = cols) +
+  labs(x = "Completeness (%)", y = "Contamination (%)") +
+  coord_cartesian(xlim = c(50, 100), ylim = c(0, 5)) +
+  theme_bw() 
+
+#–– 5) right marginal: contamination histogram ––
+p_right <- ggplot(df, aes(y = Contamination, fill = Quality)) +
+  geom_histogram(binwidth    = 0.5, orientation = "y", colour = "black", show.legend = FALSE) +
+  scale_y_continuous(breaks = seq(0, 5, by = 1)) +
+  scale_fill_manual(values = cols) +
+  coord_cartesian(ylim = c(0, 5), xlim = c(0, 400)) +
+  xlab("MAGs [n]") +
+  theme_minimal() +
+  theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank())
+
+#–– 6) assemble with patchwork ––
+
+layout <- "
+.A
+BC
+"
+
+final_all_mags <- p_top + plot_spacer() + p_scatter + p_right +
+  plot_layout(design  = layout, widths  = c(4, 1), heights = c(1, 4), guides  = "collect") +
+  plot_annotation(
+    title    = "MAG Quality: Completeness vs Contamination",
+    subtitle = paste("MAGs before dereplication at species level, n = ", n_distinct(dat$MAG_ID)),
+    theme    = theme(plot.title    = element_text(size = 16, face = "bold", hjust = 0.5), plot.subtitle = element_text(size = 12, hjust = 0.5))) &
+  theme(legend.position = "right")
+
+final_all_mags
+
+#–– 9) Export as square PDF (21 × 21 cm ≃ A4 width) ––
+ggsave(filename = "MAG_quality_plot_before_dereplication.png",
+  plot = final_all_mags,
+  device = png,
+  width    = 12,          
+  height   = 6,          
+  units    = "in",
+  dpi      = 300)
+
+
+library(dplyr)
+
+summary_completeness <- dat %>%
+  summarise(
+    n_total = n(),
+    n_90 = sum(Completeness >= 90, na.rm = TRUE),
+    n_95 = sum(Completeness >= 95, na.rm = TRUE),
+    n_99 = sum(Completeness >= 99, na.rm = TRUE)
+  )
+
+summary_completeness
+
+summary_stats <- dat %>%
+  summarise(
+    # Completeness
+    comp_mean   = mean(Completeness, na.rm = TRUE),
+    comp_median = median(Completeness, na.rm = TRUE),
+    comp_sd     = sd(Completeness, na.rm = TRUE),
+    comp_iqr    = IQR(Completeness, na.rm = TRUE),
+    comp_min    = min(Completeness, na.rm = TRUE),
+    comp_max    = max(Completeness, na.rm = TRUE),
+
+    # Contamination
+    cont_mean   = mean(Contamination, na.rm = TRUE),
+    cont_median = median(Contamination, na.rm = TRUE),
+    cont_sd     = sd(Contamination, na.rm = TRUE),
+    cont_iqr    = IQR(Contamination, na.rm = TRUE),
+    cont_min    = min(Contamination, na.rm = TRUE),
+    cont_max    = max(Contamination, na.rm = TRUE),
+
+    # Number of contigs
+    contigs_mean   = mean(Nr_Contigs, na.rm = TRUE),
+    contigs_median = median(Nr_Contigs, na.rm = TRUE),
+    contigs_sd     = sd(Nr_Contigs, na.rm = TRUE),
+    contigs_iqr    = IQR(Nr_Contigs, na.rm = TRUE),
+    contigs_min    = min(Nr_Contigs, na.rm = TRUE),
+    contigs_max    = max(Nr_Contigs, na.rm = TRUE)
+  )
+
+summary_stats
+```
+
+
+
+
+```{r}
+# 1) Prepare representatives (after dereplication), including cluster size
+reps <- dat %>%
+  filter(Species_ID == MAG_ID) %>%
+  mutate(Quality = case_when(Completeness >= 90 & Contamination <= 5  ~ "High",
+                             Completeness >= 50 & Contamination <= 10 ~ "Medium", TRUE ~ NA_character_)) %>%
+  filter(!is.na(Quality)) %>%
+  select(Species_ID,
+         Completeness_rep = Completeness,
+         Contamination_rep = Contamination,
+         MAGs_Per_Species,
+         Quality)
+
+# 2) Compute per‐cluster medians (excluding NAs)
+medians <- dat %>%
+  filter(!is.na(Completeness), !is.na(Contamination)) %>%
+  group_by(Species_ID) %>%
+  summarise(med_Comp = median(Completeness, na.rm = TRUE), 
+            med_Cont = median(Contamination,  na.rm = TRUE), .groups   = "drop")
+
+# 3) Join medians ↔ reps & calculate deltas
+df_delta_med <- medians %>%
+  inner_join(reps, by = "Species_ID") %>%
+  mutate(ΔComp = Completeness_rep - med_Comp,
+         ΔCont = med_Cont - Contamination_rep)
+
+# 4) Define palette
+palQ <- c(Medium = ColorPalette[8], High = ColorPalette[7])
+
+# 5) Bin the cluster sizes into 0–5, 5–10, …, 30–35
+df_delta_med <- df_delta_med %>%
+  mutate(size_cat = cut(MAGs_Per_Species, 
+                        breaks = seq(0, 35, by = 5),
+                        labels = paste0(seq(0, 30, by = 5), "-", seq(5, 35, by = 5)),
+                        include.lowest = TRUE))
+
+# 6) Plot using medians
+Plot_ClusterImprovement <- ggplot(df_delta_med, aes(x = ΔComp, y = ΔCont)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_point(aes(fill = Quality, size = size_cat), alpha  = 0.8, shape  = 21, color  = "black", stroke = 0.3) +
+  scale_fill_manual(values = palQ, name = "MAG Quality") +
+  scale_size_manual(name = "MAGs per species", values = setNames(seq(2, 8, length.out = 7), levels(df_delta_med$size_cat))) +
+  scale_x_continuous(breaks = seq(floor(min(df_delta_med$ΔComp)), ceiling(max(df_delta_med$ΔComp)), by = 5)) +
+  scale_y_continuous(breaks = seq(floor(min(df_delta_med$ΔCont)), ceiling(max(df_delta_med$ΔCont)), by = 1)) +
+  labs(x = expression(Delta~"Completeness"~"(rep−median) [%]"),
+       y = expression(Delta~"Contamination"~"(median−rep) [%]"),
+       title = "Species Representative vs Cluster Median Quality") +
+  coord_cartesian(xlim = c(min(df_delta_med$ΔComp), max(df_delta_med$ΔComp)),
+                  ylim = c(min(df_delta_med$ΔCont), max(df_delta_med$ΔCont))) +
+  theme_bw(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 11),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10))
+
+# 7) Print & export
+print(Plot_ClusterImprovement)
+
+ggsave(filename = "Plot_ClusterImprovement.png",
+       plot = Plot_ClusterImprovement,
+       device = png,
+       width = 12,
+       height = 9,
+       units = "in",
+       dpi = 300)
+
+```
+
+
+
+
+```{r}
+# 1) Prepare df_after as before
+df_after <- dat %>%
+  filter(Species_ID == MAG_ID) %>%
+  mutate(Quality = case_when(Completeness >= 90 & Contamination <= 5  ~ "High", 
+                             Completeness >= 50 & Contamination <= 10 ~ "Medium", TRUE ~ NA_character_)) %>%
+  filter(!is.na(Quality)) %>%
+  mutate(Quality = factor(Quality, levels = c("Medium","High")))
+
+# 2) Build bar‐df & compute percent within each ANI_Status
+bar_df <- df_after %>%
+  mutate(ANI_Status = if_else(is.na(ANI_To_Reference), "Unclassified", "Species Level")) %>%
+  count(ANI_Status, Quality) %>%
+  group_by(ANI_Status) %>%
+  mutate(pct = n / sum(n) * 100) %>%
+  ungroup() %>%
+  mutate(ANI_Status = factor(ANI_Status, levels = c("Unclassified","Species Level")))
+
+# 3) Build bar‐df for 16S
+bar16_df <- df_after %>%
+  mutate(`16S` = if_else(Nr_16s > 0, "16S present", "16S absent")) %>%
+  count(`16S`, Quality) %>%
+  group_by(`16S`) %>%
+  mutate(pct = n / sum(n) * 100) %>%
+  ungroup() %>%
+  mutate(`16S` = factor(`16S`, levels = c("16S absent","16S present")))
+
+# 4) Scatter data
+scatter_df <- df_after %>%
+  filter(!is.na(ANI_To_Reference))
+
+# 5) Palette
+palQ <- c(Medium = ColorPalette[8], High = ColorPalette[7])
+
+# 6) Left panel: ANI
+p_bar <- ggplot(bar_df, aes(ANI_Status, n, fill = Quality)) +
+  geom_col(width = 0.7, colour = "black") +
+  geom_text(aes(label = paste0(round(pct,1), "%")), position = position_stack(vjust = 0.5), colour = "black", size = 5) +
+  scale_fill_manual(values = palQ, name = "MAG Quality") +
+  scale_y_continuous(breaks = seq(0, 350, by = 50), limits = c(0, 350), expand = c(0, 0)) +
+  labs(x = NULL, y = "Number of MAGs") +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        plot.margin = margin(5,5,5,5),
+        legend.position= "top",
+        panel.grid.minor = element_blank())
+
+# 7) Middle panel: 16S
+p_16s <- ggplot(bar16_df, aes(`16S`, n, fill = Quality)) +
+  geom_col(width = 0.7, colour = "black") +
+  geom_text(aes(label = paste0(round(pct,1), "%")), position = position_stack(vjust = 0.5), colour = "black", size = 5) +
+  scale_fill_manual(values = palQ, name = "MAG Quality") +
+  scale_y_continuous(breaks = seq(0, 350, by = 50), limits = c(0, 350), expand = c(0, 0)) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        plot.margin = margin(5,5,5,5),
+        legend.position = "none",
+        panel.grid.minor = element_blank())
+
+# 8) Right panel: ANI scatter
+p_ani <- ggplot(scatter_df, aes(Quality, ANI_To_Reference, fill = Quality)) +
+  geom_jitter(width = 0.2, height = 0, size = 2, alpha = 0.7, color = "black", stroke = 0.3, shape = 21) +
+  scale_fill_manual(values = palQ, guide = "none") +
+  labs(x = "MAG Quality", y = "ANI to Reference (%)") +
+  coord_cartesian(ylim = c(95, 100)) +
+  scale_y_continuous(breaks = seq(95, 100, by = 1)) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        plot.margin = margin(5,5,5,5),
+        panel.grid.minor = element_blank())
+
+# 9) Combine & annotate
+final_taxonomic_resolution <- p_bar + p_ani + p_16s +
+  plot_layout(widths = c(1, 1, 1.2)) +
+  plot_annotation(title = "Species-level MAGs: Taxonomic Resolution",
+                  subtitle = "Left: ANI classified vs unclassified; middle: ANI similarity; right: 16S presencet",
+    theme = theme(plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 14, hjust = 0.5)))
+
+# 10) Print & export
+print(final_taxonomic_resolution)
+
+ggsave(filename = "Plot_taxonomic_resolution.png",
+       plot = final_taxonomic_resolution,
+       device = png,
+       width = 12,
+       height = 9,
+       units = "in",
+       dpi = 300)
+```

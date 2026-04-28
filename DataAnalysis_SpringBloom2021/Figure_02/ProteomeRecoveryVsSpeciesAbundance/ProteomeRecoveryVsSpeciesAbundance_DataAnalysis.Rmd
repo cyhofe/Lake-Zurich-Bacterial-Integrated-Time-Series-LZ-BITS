@@ -1,0 +1,827 @@
+---
+title: Proteome Recovery Vs Species Abundance
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_02/ProteomeRecoveryVsSpeciesAbundance/")
+
+# Load libraries
+library(dplyr)
+library(ggplot2)
+library(ggeffects)
+library(ggnewscale)
+library(readr)
+library(tibble)
+library(car)
+library(readr)
+
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "species_summary_peak_only.csv")
+glimpse(dat)
+```
+
+```{r}
+# -----------------------------
+# 2) Filter to valid values for log-transform and correlations
+#    (log10 requires >0)
+# -----------------------------
+plot_dat <- dat %>%
+  filter(
+    !is.na(Species_Abundance_at_Peak),
+    !is.na(Proteome_Abundance_on_PeakDate),
+    !is.na(Detected_Proteins_at_Peak),
+    Species_Abundance_at_Peak > 0,
+    Proteome_Abundance_on_PeakDate > 0,
+    Detected_Proteins_at_Peak > 0
+  ) %>%
+  mutate(
+    log10_species_abund  = log10(Species_Abundance_at_Peak),
+    log10_proteome_abund = log10(Proteome_Abundance_on_PeakDate),
+    log10_detected_prot  = log10(Detected_Proteins_at_Peak)
+  )
+
+cat("N species used after filtering:", nrow(plot_dat), "\n")
+
+# -----------------------------
+# 3) Normality assessment
+#    IMPORTANT:
+#    With large N, Shapiro-Wilk becomes overly sensitive.
+#    We therefore use:
+#      - Shapiro-Wilk (formal test; interpret cautiously)
+#      - QQ plots (visual)
+#    We test both raw and log10 versions.
+# -----------------------------
+
+# Helper: run Shapiro only if N is within test limits (R typically allows up to 5000)
+run_shapiro <- function(x, label) {
+  x <- x[is.finite(x)]
+  if (length(x) < 3) {
+    cat(label, ": too few values for Shapiro\n")
+    return(invisible(NULL))
+  }
+  if (length(x) > 5000) {
+    cat(label, ": N > 5000 (skipping Shapiro)\n")
+    return(invisible(NULL))
+  }
+  out <- shapiro.test(x)
+  cat(label, "Shapiro-Wilk: W =", round(out$statistic, 4), ", p =", signif(out$p.value, 3), "\n")
+  invisible(out)
+}
+
+cat("\n--- Normality checks (Shapiro-Wilk; interpret with caution for large N) ---\n")
+run_shapiro(plot_dat$Species_Abundance_at_Peak,      "Raw Species_Abundance_at_Peak")
+run_shapiro(plot_dat$Proteome_Abundance_on_PeakDate, "Raw Proteome_Abundance_on_PeakDate")
+run_shapiro(plot_dat$Detected_Proteins_at_Peak,      "Raw Detected_Proteins_at_Peak")
+
+run_shapiro(plot_dat$log10_species_abund,            "Log10 Species abundance")
+run_shapiro(plot_dat$log10_proteome_abund,           "Log10 Proteome abundance")
+run_shapiro(plot_dat$log10_detected_prot,            "Log10 Detected proteins")
+
+# QQ plots for visual assessment (log10 versions are usually most relevant here)
+qq_plot <- function(x, title) {
+  x <- x[is.finite(x)]
+  ggplot(data.frame(x = x), aes(sample = x)) +
+    stat_qq() +
+    stat_qq_line() +
+    theme_bw(base_size = 12) +
+    labs(title = title, x = "Theoretical quantiles", y = "Sample quantiles")
+}
+
+print(qq_plot(plot_dat$log10_species_abund,  "QQ plot: log10 Species abundance"))
+print(qq_plot(plot_dat$log10_proteome_abund, "QQ plot: log10 Proteome abundance"))
+print(qq_plot(plot_dat$log10_detected_prot,  "QQ plot: log10 Detected proteins"))
+
+# -----------------------------
+# 4) Decide correlation method
+#    Rule (reviewer-friendly):
+#      - If both log10 variables are approximately normal -> Pearson on log10
+#      - Otherwise -> Spearman (robust, monotonic)
+#
+# We use Shapiro p>0.05 as an automated heuristic, BUT still recommend Spearman
+# for abundance data (heavy tails, compositional effects).
+# -----------------------------
+norm_ok_species  <- tryCatch(shapiro.test(plot_dat$log10_species_abund)$p.value  > 0.05, error = function(e) FALSE)
+norm_ok_proteome <- tryCatch(shapiro.test(plot_dat$log10_proteome_abund)$p.value > 0.05, error = function(e) FALSE)
+
+use_method <- if (norm_ok_species && norm_ok_proteome) "pearson" else "spearman"
+
+cat("\nChosen correlation method (auto-heuristic):", use_method, "\n")
+cat("Note: For abundance data, Spearman is typically the most robust and reviewer-safe.\n")
+
+# -----------------------------
+# 5) Correlation tests
+#    A) Proteome vs Species abundance (log10)
+#    B) Proteome vs Detected proteins (log10)
+#    C) Species abundance vs Detected proteins (log10)  [optional but informative]
+# -----------------------------
+cat("\n--- Correlation tests on log10 scale ---\n")
+
+test_A <- cor.test(plot_dat$log10_species_abund, plot_dat$log10_proteome_abund, method = use_method, exact = FALSE)
+cat("\nA) log10 Proteome ~ log10 Species abundance\n")
+print(test_A)
+
+test_B <- cor.test(plot_dat$log10_detected_prot, plot_dat$log10_proteome_abund, method = use_method, exact = FALSE)
+cat("\nB) log10 Proteome ~ log10 Detected proteins\n")
+print(test_B)
+
+test_C <- cor.test(plot_dat$log10_species_abund, plot_dat$log10_detected_prot, method = use_method, exact = FALSE)
+cat("\nC) log10 Species abundance ~ log10 Detected proteins (informative)\n")
+print(test_C)
+
+# -----------------------------
+# 6) "Does proteome correlate with species abundance independently of detection?"
+#    Reviewer-friendly approach:
+#      Fit a multiple regression on log10 scale:
+#        log10_proteome ~ log10_species_abund + log10_detected_prot
+#
+# Interpretation:
+#   - Coefficient for log10_species_abund tests association with proteome
+#     AFTER accounting for detection depth.
+#
+# Notes:
+#   - This is not a formal partial Spearman correlation,
+#     but it is widely accepted, transparent, and easy to interpret.
+# -----------------------------
+cat("\n--- Multiple regression on log10 scale (controls for detection depth) ---\n")
+
+fit_lm <- lm(log10_proteome_abund ~ log10_species_abund + log10_detected_prot, data = plot_dat)
+print(summary(fit_lm))
+
+# Optional: Robust regression as a sensitivity check (handles outliers better)
+# Requires MASS (installed with base R on most systems)
+suppressPackageStartupMessages(library(MASS))
+fit_rlm <- MASS::rlm(log10_proteome_abund ~ log10_species_abund + log10_detected_prot, data = plot_dat)
+cat("\nRobust regression (MASS::rlm) coefficients (sensitivity check):\n")
+print(coef(summary(fit_rlm)))
+
+# -----------------------------
+# 7) Produce a reviewer-ready plot with annotation from test A
+#    - Scatter in log10-log10 space
+#    - Dot size = Detected_Proteins_at_Peak (raw counts for readability)
+#    - Smooth line for visualization (LOESS); does NOT define the statistical test
+# -----------------------------
+# Build a compact annotation string from the correlation test
+corr_label <- paste0(
+  toupper(substr(use_method, 1, 1)), substr(use_method, 2, nchar(use_method)),
+  " correlation: ",
+  if (use_method == "pearson") "r = " else if (use_method == "spearman") "rho = " else "tau = ",
+  round(unname(test_A$estimate), 3),
+  "\nP = ", signif(test_A$p.value, 3),
+  "\nN = ", nrow(plot_dat)
+)
+
+p <- ggplot(plot_dat, aes(x = log10_species_abund, y = log10_proteome_abund)) +
+  geom_point(aes(size = Detected_Proteins_at_Peak), alpha = 0.60) +
+  geom_smooth(method = "loess", se = TRUE, color = "black", linewidth = 0.9) +
+  scale_size_continuous(name = "Detected proteins\n(at peak date)") +
+  labs(
+    x = "log10 Species abundance at peak date",
+    y = "log10 Proteome abundance at peak date",
+    title = "Proteome recovery vs species abundance (date-matched peak)"
+  ) +
+  annotate(
+    "text",
+    x = min(plot_dat$log10_species_abund, na.rm = TRUE),
+    y = max(plot_dat$log10_proteome_abund, na.rm = TRUE),
+    hjust = 0, vjust = 1,
+    label = corr_label,
+    size = 3.5
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.key = element_blank()
+  )
+
+print(p)
+```
+
+```{r}
+################################################################################
+# Reviewer-proof stats & plots (PEAK-DATE ONLY; uses dat = species_summary_peak_only.csv)
+# Author: Cyrill Hofer
+#
+# DATA ASSUMPTION:
+#   dat has ONE ROW PER SPECIES and contains:
+#     - Species_Abundance_at_Peak
+#     - Proteome_Abundance_on_PeakDate
+#     - Detected_Proteins_at_Peak
+#     - taxonomy columns (Phylum, etc.)
+#
+# WHAT THIS SCRIPT DOES (reviewer-ready package):
+#  1) QC + transformations (log10) and distribution checks (QQ + Shapiro)
+#  2) Primary association: Spearman correlation (log10 abundance vs log10 proteome)
+#     - bootstrap CI for rho (robust uncertainty estimate)
+#  3) Confounding/mediation check:
+#     - Spearman: proteome vs detected proteins; abundance vs detected proteins
+#     - Multiple regression on log10 scale: proteome ~ abundance + detected proteins
+#     - Robust regression sensitivity check (rlm)
+#  4) Influence/outlier robustness:
+#     - Leave-one-out slope stability (fast diagnostic)
+#  5) Stratified sensitivity:
+#     - Spearman correlation within major phyla (only if n>=20)
+#  6) Publication-quality figure(s):
+#     - Panel A: Proteome vs abundance (size = detected proteins) + LOESS (visual only)
+#     - Panel B: Proteome vs abundance but color = phylum (optional)
+#
+# LIMITATION (explicit):
+#  - With peak-date-only summary, you cannot model detection probability (needs zeros / all dates).
+#  - "Proteome total signal" is mechanically linked to number of detected proteins.
+#    We therefore provide a model controlling for detected proteins, and robust checks.
+################################################################################
+
+# -----------------------------
+# 0) Libraries (keep to what you already loaded + MASS for rlm)
+# -----------------------------
+library(dplyr)
+library(ggplot2)
+library(car)
+library(tibble)
+library(MASS)
+
+# -----------------------------
+# 1) Minimal QC + log transforms
+# -----------------------------
+plot_dat <- dat %>%
+  filter(
+    !is.na(Species_Abundance_at_Peak),
+    !is.na(Proteome_Abundance_on_PeakDate),
+    !is.na(Detected_Proteins_at_Peak),
+    Species_Abundance_at_Peak > 0,
+    Proteome_Abundance_on_PeakDate > 0,
+    Detected_Proteins_at_Peak > 0
+  ) %>%
+  mutate(
+    log10_species_abund  = log10(Species_Abundance_at_Peak),
+    log10_proteome_abund = log10(Proteome_Abundance_on_PeakDate),
+    log10_detected_prot  = log10(Detected_Proteins_at_Peak)
+  )
+
+cat("N species used after filtering:", nrow(plot_dat), "\n")
+
+# -----------------------------
+# 2) Distribution checks (log scale is what we analyze/plot)
+#    Shapiro is sensitive at N~500; interpret alongside QQ plots.
+# -----------------------------
+run_shapiro <- function(x, label) {
+  x <- x[is.finite(x)]
+  if (length(x) < 3) return(invisible(NULL))
+  out <- shapiro.test(x)
+  cat(label, "Shapiro-Wilk: W =", round(out$statistic, 4), ", p =", signif(out$p.value, 3), "\n")
+  invisible(out)
+}
+
+cat("\n--- Normality checks (log10 scale; Shapiro is sensitive for large N) ---\n")
+run_shapiro(plot_dat$log10_species_abund,  "log10 Species abundance")
+run_shapiro(plot_dat$log10_proteome_abund, "log10 Proteome abundance")
+run_shapiro(plot_dat$log10_detected_prot,  "log10 Detected proteins")
+
+qq_plot <- function(x, title) {
+  ggplot(data.frame(x = x), aes(sample = x)) +
+    stat_qq() + stat_qq_line() +
+    theme_bw(base_size = 12) +
+    labs(title = title, x = "Theoretical quantiles", y = "Sample quantiles")
+}
+print(qq_plot(plot_dat$log10_species_abund,  "QQ plot: log10 Species abundance"))
+print(qq_plot(plot_dat$log10_proteome_abund, "QQ plot: log10 Proteome abundance"))
+print(qq_plot(plot_dat$log10_detected_prot,  "QQ plot: log10 Detected proteins"))
+
+# -----------------------------
+# 3) Primary correlation (reviewer-safe): Spearman on log10 scale
+# -----------------------------
+cat("\n--- Primary association (Spearman; log10 scale) ---\n")
+cor_primary <- cor.test(plot_dat$log10_species_abund, plot_dat$log10_proteome_abund,
+                        method = "spearman", exact = FALSE)
+print(cor_primary)
+
+# Bootstrap CI for Spearman rho (robust uncertainty; no distribution assumptions)
+set.seed(1)
+B <- 5000
+n <- nrow(plot_dat)
+rho_boot <- replicate(B, {
+  idx <- sample.int(n, n, replace = TRUE)
+  suppressWarnings(cor(plot_dat$log10_species_abund[idx],
+                       plot_dat$log10_proteome_abund[idx],
+                       method = "spearman"))
+})
+rho_ci <- quantile(rho_boot, c(0.025, 0.975), na.rm = TRUE)
+cat("\nBootstrap 95% CI for Spearman rho:",
+    paste0("[", round(rho_ci[1], 3), ", ", round(rho_ci[2], 3), "]"), "\n")
+
+# -----------------------------
+# 4) Confounding / coupling checks
+#    (Total proteome signal is mechanically linked to # detected proteins)
+# -----------------------------
+cat("\n--- Coupling checks (Spearman; log10 scale) ---\n")
+
+cor_prot_vs_detected <- cor.test(plot_dat$log10_detected_prot, plot_dat$log10_proteome_abund,
+                                 method = "spearman", exact = FALSE)
+cat("\nProteome vs detected proteins:\n")
+print(cor_prot_vs_detected)
+
+cor_abund_vs_detected <- cor.test(plot_dat$log10_species_abund, plot_dat$log10_detected_prot,
+                                  method = "spearman", exact = FALSE)
+cat("\nSpecies abundance vs detected proteins:\n")
+print(cor_abund_vs_detected)
+
+# -----------------------------
+# 5) Multiple regression (log10 scale) controlling for detection depth
+#    Interpretation:
+#     - coefficient for log10_species_abund tests association with proteome
+#       AFTER accounting for detection depth.
+#     - NOT a causal adjustment (detected proteins may be mediator), but a
+#       reviewer-required sensitivity check to show abundance effect persists.
+# -----------------------------
+cat("\n--- Multiple regression: log10 Proteome ~ log10 Abundance + log10 Detected proteins ---\n")
+fit_lm <- lm(log10_proteome_abund ~ log10_species_abund + log10_detected_prot, data = plot_dat)
+print(summary(fit_lm))
+
+# Collinearity diagnostic (reviewers may ask)
+cat("\nVIF (collinearity diagnostic; >5–10 may be concerning):\n")
+print(car::vif(fit_lm))
+
+# Robust regression sensitivity check (downweights outliers)
+fit_rlm <- MASS::rlm(log10_proteome_abund ~ log10_species_abund + log10_detected_prot, data = plot_dat)
+cat("\nRobust regression (rlm) coefficients (sensitivity check):\n")
+print(coef(summary(fit_rlm)))
+
+# -----------------------------
+# 6) Influence diagnostic: leave-one-out slope stability (fast reviewer check)
+#    We track how the abundance coefficient changes if we drop one species.
+# -----------------------------
+beta_full <- coef(fit_lm)["log10_species_abund"]
+beta_loo <- vapply(seq_len(nrow(plot_dat)), function(i) {
+  coef(lm(log10_proteome_abund ~ log10_species_abund + log10_detected_prot,
+          data = plot_dat[-i, ]))["log10_species_abund"]
+}, numeric(1))
+
+cat("\nAbundance coefficient (full model):", round(beta_full, 3), "\n")
+cat("LOO abundance coefficient range:",
+    paste0("[", round(min(beta_loo), 3), ", ", round(max(beta_loo), 3), "]"), "\n")
+
+# -----------------------------
+# 7) Stratified sensitivity: Spearman within major phyla
+#    (helps address taxon-structured biases; only for n>=20 per phylum)
+# -----------------------------
+cat("\n--- Stratified Spearman by Phylum (n>=20) ---\n")
+phy_res <- plot_dat %>%
+  filter(!is.na(Phylum)) %>%
+  count(Phylum, name = "n") %>%
+  filter(n >= 20) %>%
+  pull(Phylum)
+
+if (length(phy_res) == 0) {
+  cat("No phyla with n>=20; skipping.\n")
+} else {
+  phylum_stats <- lapply(phy_res, function(ph) {
+    sub <- plot_dat %>% filter(Phylum == ph)
+    ct  <- cor.test(sub$log10_species_abund, sub$log10_proteome_abund,
+                    method = "spearman", exact = FALSE)
+    tibble(
+      Phylum = ph,
+      n = nrow(sub),
+      rho = unname(ct$estimate),
+      p_value = ct$p.value
+    )
+  }) %>% bind_rows() %>%
+    arrange(desc(n))
+  print(phylum_stats)
+}
+
+# -----------------------------
+# 8) Reviewer-ready figure (primary)
+#    - Spearman rho + bootstrap CI annotation
+#    - LOESS smooth for visualization ONLY
+#    - Point size = detected proteins
+# -----------------------------
+rho <- unname(cor_primary$estimate)
+pval <- cor_primary$p.value
+p_txt <- if (pval < 2.2e-16) "p < 2.2e-16" else paste0("p = ", signif(pval, 3))
+
+anno <- paste0(
+  "Spearman ρ = ", round(rho, 3),
+  "\n95% CI (bootstrap) = [", round(rho_ci[1], 3), ", ", round(rho_ci[2], 3), "]",
+  "\n", p_txt,
+  "\nN = ", nrow(plot_dat)
+)
+
+p1 <- ggplot(plot_dat, aes(x = log10_species_abund, y = log10_proteome_abund)) +
+  geom_point(aes(size = Detected_Proteins_at_Peak), alpha = 0.60) +
+  geom_smooth(method = "loess", se = TRUE, color = "black", linewidth = 0.9) +
+  scale_size_continuous(name = "Detected proteins\n(at peak date)") +
+  labs(
+    x = "log10 Species abundance at peak date",
+    y = "log10 Proteome abundance at peak date",
+    title = "Proteome recovery vs species abundance (date-matched peak)"
+  ) +
+  annotate(
+    "text",
+    x = min(plot_dat$log10_species_abund, na.rm = TRUE),
+    y = max(plot_dat$log10_proteome_abund, na.rm = TRUE),
+    hjust = 0, vjust = 1,
+    label = anno,
+    size = 3.5
+  ) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.key = element_blank())
+
+print(p1)
+
+
+# -----------------------------
+# 9) OPTIONAL figure: color by phylum (addresses taxonomic bias visually)
+#    If you have a custom palette, you can map it here; otherwise ggplot defaults.
+# -----------------------------
+p2 <- ggplot(plot_dat, aes(x = log10_species_abund, y = log10_proteome_abund, color = Phylum)) +
+  geom_point(aes(size = Detected_Proteins_at_Peak), alpha = 0.60) +
+  geom_smooth(aes(group = 1), method = "loess", se = TRUE, color = "black", linewidth = 0.9) +
+  scale_size_continuous(name = "Detected proteins\n(at peak date)") +
+  labs(
+    x = "log10 Species abundance at peak date",
+    y = "log10 Proteome abundance at peak date",
+    title = "Proteome recovery vs species abundance (colored by phylum)"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.key = element_blank())
+
+print(p2)
+
+# -----------------------------
+# 10) Write a compact results table (for the manuscript)
+# -----------------------------
+results_tbl <- tibble(
+  N = nrow(plot_dat),
+  Spearman_rho_proteome_vs_abundance = unname(cor_primary$estimate),
+  Spearman_p_proteome_vs_abundance   = cor_primary$p.value,
+  Spearman_rho_proteome_vs_detected  = unname(cor_prot_vs_detected$estimate),
+  Spearman_p_proteome_vs_detected    = cor_prot_vs_detected$p.value,
+  Spearman_rho_abundance_vs_detected = unname(cor_abund_vs_detected$estimate),
+  Spearman_p_abundance_vs_detected   = cor_abund_vs_detected$p.value,
+  R2_lm = summary(fit_lm)$r.squared,
+  beta_log10_abundance = coef(fit_lm)["log10_species_abund"],
+  p_beta_log10_abundance = summary(fit_lm)$coefficients["log10_species_abund","Pr(>|t|)"],
+  beta_log10_detected = coef(fit_lm)["log10_detected_prot"],
+  p_beta_log10_detected = summary(fit_lm)$coefficients["log10_detected_prot","Pr(>|t|)"],
+  rho_boot_ci_low = rho_ci[1],
+  rho_boot_ci_high = rho_ci[2],
+  beta_loo_min = min(beta_loo),
+  beta_loo_max = max(beta_loo)
+)
+
+write.csv(results_tbl, "Stats_PeakDate_Correlation_Summary.csv", row.names = FALSE)
+cat("\nWrote: Stats_PeakDate_Correlation_Summary.csv\n")
+
+################################################################################
+# INTERPRETATION GUIDE (for your manuscript; keep in text, not code)
+#
+# - Primary result: Spearman correlation supports monotonic association between
+#   metagenome abundance and proteome recovery on the same date.
+# - Strong coupling between proteome total signal and detected proteins is expected
+#   because totals accumulate over detected features.
+# - Multiple regression shows an abundance effect persists even after accounting
+#   for detection depth (sensitivity, not causal adjustment).
+# - Stratified correlations help rule out a single phylum driving the trend.
+#
+# WHAT THIS PEAK-DATE-ONLY DATASET CANNOT DO:
+# - It cannot quantify detection probability vs abundance (needs zeros / all dates).
+# - It cannot address temporal within-species variation (needs repeated dates).
+################################################################################
+
+```
+
+## Proteome recovery vs metagenome species abundance (date-matched peak): statistics summary
+
+### Question
+Do species with higher **metagenome-derived abundance** on their **peak date** (Peak_Date) also show higher **proteome signal** measured on the **same date**?
+
+### Expectation (a priori)
+If proteome recovery reflects underlying biomass, then **proteome abundance** (summed, species-specific protein signal) should **increase monotonically** with **metagenome species abundance** when compared on the *same sampling date*.  
+Because abundance data span orders of magnitude and are heavy-tailed, a **non-parametric** correlation is expected to be most appropriate.
+
+---
+
+### Data used
+- Input table: `species_summary_peak_only.csv`
+- One row per species (N = 481 after filtering)
+- Key variables:
+  - `Species_Abundance_at_Peak` (metagenome; peak date)
+  - `Proteome_Abundance_on_PeakDate` (proteome; same date)
+  - `Detected_Proteins_at_Peak` (proteome detection depth; same date)
+
+---
+
+### Pre-processing
+- Remove invalid values for log-transform:
+  - `Species_Abundance_at_Peak > 0`
+  - `Proteome_Abundance_on_PeakDate > 0`
+  - `Detected_Proteins_at_Peak > 0`
+- Log10-transform abundance variables for analysis and visualization:
+  - `log10_species_abund = log10(Species_Abundance_at_Peak)`
+  - `log10_proteome_abund = log10(Proteome_Abundance_on_PeakDate)`
+  - `log10_detected_prot = log10(Detected_Proteins_at_Peak)`
+
+---
+
+### Normality assessment (decision on parametric vs non-parametric)
+**Tests performed**
+- Shapiro–Wilk on log10-transformed variables (noting high sensitivity at N≈500)
+- QQ-plots for visual assessment
+
+**Result**
+Even after log10 transform, Shapiro–Wilk remained significant (p < 0.01), consistent with minor tail deviations and/or ties.  
+➡ Therefore, the primary inferential test uses **Spearman rank correlation** (non-parametric, robust).
+
+---
+
+### Statistical tests
+1. **Primary test (main claim):**  
+   Spearman correlation between `log10_species_abund` and `log10_proteome_abund`.
+
+2. **Uncertainty (effect size precision):**  
+   Non-parametric bootstrap confidence interval for Spearman’s ρ  
+   - 5,000 bootstrap replicates  
+   - each replicate resamples **N = 481 species (rows)** with replacement  
+   - 95% CI = 2.5th–97.5th percentiles of bootstrap ρ values
+
+3. **Detection-depth coupling (critical sensitivity checks):**
+   - Spearman: `log10_proteome_abund` vs `log10_detected_prot`
+   - Spearman: `log10_species_abund` vs `log10_detected_prot`
+
+4. **Multiple regression sensitivity analysis (not causal, but reviewer-relevant):**
+   - `log10_proteome_abund ~ log10_species_abund + log10_detected_prot`
+   - plus robust regression (`MASS::rlm`) as an outlier-resistant check
+
+---
+
+### Results
+**Primary association (Spearman; log10 scale)**
+- Spearman ρ = **0.646**
+- p-value **< 2.2×10⁻¹⁶**
+- Bootstrap 95% CI for ρ ≈ **0.59–0.70**
+- N = **481**
+
+**Detection-depth coupling**
+- Proteome vs detected proteins:
+  - Spearman ρ = **0.845**, p < 2.2×10⁻¹⁶  
+  (expected because total signal accumulates over detected proteins)
+- Species abundance vs detected proteins:
+  - Spearman ρ = **0.622**, p < 2.2×10⁻¹⁶  
+  (more abundant species tend to yield more detected proteins)
+
+**Multiple regression sensitivity (log10 scale)**
+- Both predictors remain positive and significant:
+  - `log10_species_abund` coefficient ≈ **0.254** (p ≈ 5.3×10⁻⁶)
+  - `log10_detected_prot` coefficient ≈ **1.218** (p < 2.2×10⁻¹⁶)
+- Model fit: R² ≈ **0.725**
+- Robust regression produced similar coefficients → conclusions not driven by a small number of outliers
+
+---
+
+### Interpretation (reviewer-ready)
+Across 481 species (one observation per species), **proteome recovery measured on the same date** shows a **moderately strong, statistically robust monotonic association** with **metagenome-derived species abundance** (Spearman ρ ≈ 0.65, bootstrap 95% CI ≈ 0.59–0.70).  
+
+A strong correlation between total proteome signal and the **number of detected proteins** is also observed (ρ ≈ 0.85), consistent with both biological detectability and a mechanical coupling (total intensity sums over detected features). Importantly, species abundance retains a significant positive association with proteome signal even when accounting for detection depth in a sensitivity regression, supporting the conclusion that metagenome abundance is informative for proteome recovery under the date-matched peak design.
+
+---
+
+### Limitations to acknowledge explicitly
+- Peak-date selection may emphasize “best-case detectability” per species and can inflate associations relative to a full time-series analysis.
+- Total proteome signal is partially coupled to detection depth by definition; hence reporting both the primary Spearman test and the detection-depth sensitivity analyses is essential.
+- This peak-date-only dataset cannot evaluate detection probability across zeros or temporal within-species variation.
+
+
+```{r}
+# ------------------------------------------------------------
+# Publication-ready scatter plot
+# Proteome recovery vs species abundance (date-matched peak)
+# Final axis limits and binned protein detection
+# ------------------------------------------------------------
+
+# Prepare plotting data
+clean_dat <- dat %>%
+  filter(
+    Species_Abundance_at_Peak > 0,
+    Proteome_Abundance_on_PeakDate > 0,
+    Detected_Proteins_at_Peak > 0
+  ) %>%
+  mutate(
+    log10_species_abund  = log10(Species_Abundance_at_Peak),
+    log10_proteome_abund = log10(Proteome_Abundance_on_PeakDate),
+
+    # Bin detected proteins
+    Detected_Protein_Class = cut(
+      Detected_Proteins_at_Peak,
+      breaks = c(0, 20, 50, 100, Inf),
+      labels = c("0–20", "20–50", "50–100", "100+"),
+      right  = TRUE
+    )
+  )
+
+# Build plot
+p <- ggplot(
+  clean_dat,
+  aes(x = log10_species_abund, y = log10_proteome_abund)
+) +
+  geom_point(
+    aes(size = Detected_Protein_Class),
+    shape  = 21,
+    color  = "black",
+    fill   = "#bfd3c1",
+    alpha  = 0.8,
+    stroke = 0.4
+  ) +
+  geom_smooth(
+    method = "loess",
+    se     = TRUE,
+    color  = "black",
+    linewidth = 0.9
+  ) +
+  # Only control the ticks shown (no limits!)
+  scale_x_continuous(breaks = seq(-1, 1.5, by = 0.5)) +
+  scale_y_continuous(breaks = seq(4, 9, by = 1)) +
+  scale_size_manual(
+    values = c("0–20" = 3, "20–50" = 5, "50–100" = 7, "100+" = 10),
+    name = "Detected proteins\n(at peak date)"
+  ) +
+  labs(
+    x = "log10 Species abundance at peak date",
+    y = "log10 Proteome abundance at peak date"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position  = "right",
+    axis.text.x      = element_text(size = 12),
+    axis.text.y      = element_text(size = 10),
+    axis.title       = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+
+
+
+```
+
+Figure X | Proteome recovery reflects species abundance.
+Each point represents one species. The x-axis shows log₁₀ metagenome-derived species abundance at the peak date, and the y-axis shows log₁₀ summed proteome abundance measured on the same date. Point size indicates the number of detected species-specific proteins (0–20, 20–50, 50–100, >100). The black curve represents a LOESS smoother for visualization only. Spearman’s rank correlation coefficient (ρ) with a 95% confidence interval estimated from 5,000 bootstrap resamples (species-level resampling, N = 481 per replicate) is shown.
+
+```{r}
+# ------------------------------------------------------------
+# FINAL publication plot (no point loss) + stats annotation
+# Adds: p-value stars (****) + numeric p format
+# ------------------------------------------------------------
+
+# Prepare data
+clean_dat <- dat %>%
+  filter(
+    Species_Abundance_at_Peak > 0,
+    Proteome_Abundance_on_PeakDate > 0,
+    Detected_Proteins_at_Peak > 0
+  ) %>%
+  mutate(
+    log10_species_abund  = log10(Species_Abundance_at_Peak),
+    log10_proteome_abund = log10(Proteome_Abundance_on_PeakDate),
+    Detected_Protein_Class = cut(
+      Detected_Proteins_at_Peak,
+      breaks = c(0, 20, 50, 100, Inf),
+      labels = c("0–20", "20–50", "50–100", "100+"),
+      right  = TRUE
+    )
+  )
+
+# Spearman + bootstrap CI (self-contained, robust)
+cor_test <- cor.test(clean_dat$log10_species_abund, clean_dat$log10_proteome_abund,
+                     method = "spearman", exact = FALSE)
+
+rho  <- unname(cor_test$estimate)
+pval <- cor_test$p.value
+N    <- nrow(clean_dat)
+
+set.seed(1)
+B <- 5000
+n <- nrow(clean_dat)
+rho_boot <- replicate(B, {
+  idx <- sample.int(n, n, replace = TRUE)
+  suppressWarnings(cor(clean_dat$log10_species_abund[idx],
+                       clean_dat$log10_proteome_abund[idx],
+                       method = "spearman"))
+})
+ci <- quantile(rho_boot, c(0.025, 0.975), na.rm = TRUE)
+rho_low <- unname(ci[1])
+rho_hi  <- unname(ci[2])
+
+# p-value text and stars
+p_txt <- if (is.na(pval)) {
+  "p = NA"
+} else if (pval < 2.2e-16) {
+  "p < 2.2×10⁻¹⁶"
+} else if (pval < 1e-3) {
+  paste0("p = ", formatC(pval, format = "e", digits = 2))
+} else {
+  paste0("p = ", signif(pval, 3))
+}
+
+p_stars <- if (is.na(pval)) {
+  ""
+} else if (pval < 1e-4) {
+  "****"
+} else if (pval < 1e-3) {
+  "***"
+} else if (pval < 1e-2) {
+  "**"
+} else if (pval < 0.05) {
+  "*"
+} else {
+  "ns"
+}
+
+# Build annotation label
+stat_label <- paste0(
+  "Spearman \u03C1 = ", round(rho, 2),
+  "\n95% CI = [", round(rho_low, 2), ", ", round(rho_hi, 2), "]",
+  "\n", p_txt, "  ", p_stars,
+  "\nN = ", N
+)
+
+# Plot (NO limits -> no dropping points)
+p <- ggplot(clean_dat, aes(x = log10_species_abund, y = log10_proteome_abund)) +
+  geom_point(
+    aes(size = Detected_Protein_Class),
+  shape  = 21,
+  color  = "black",                     # outline (opaque)
+  fill   = scales::alpha("#bfd3c1", 0.4), # transparent fill
+  stroke = 0.4
+) +
+  geom_smooth(
+    method = "loess",
+    se = TRUE,
+    color = "black",
+    linewidth = 0.9
+  ) +
+  # show the ticks you want (no data removal)
+  scale_x_continuous(breaks = seq(-1, 1.5, by = 0.5)) +
+  scale_y_continuous(breaks = seq(4, 9, by = 1)) +
+  scale_size_manual(
+    values = c("0–20" = 3, "20–50" = 5, "50–100" = 7, "100+" = 10),
+    name = "Detected proteins\n(at peak date)"
+  ) +
+  labs(
+    x = "log10 Species abundance at peak date",
+    y = "log10 Proteome abundance at peak date"
+  ) +
+  annotate(
+    "text",
+    x = min(clean_dat$log10_species_abund, na.rm = TRUE),
+    y = max(clean_dat$log10_proteome_abund, na.rm = TRUE),
+    label = stat_label,
+    hjust = 0,
+    vjust = 1,
+    size  = 3.5
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position  = "right",
+    axis.text.x      = element_text(size = 12),
+    axis.text.y      = element_text(size = 10),
+    axis.title       = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+
+ggsave(
+  filename = "Fig_ProteomeRecovery_vs_SpeciesAbundance_FINAL.pdf",
+  plot     = p,
+  width    = 10,
+  height   = 6,
+  device   = pdf,
+  bg       = "white"
+)
+```
+

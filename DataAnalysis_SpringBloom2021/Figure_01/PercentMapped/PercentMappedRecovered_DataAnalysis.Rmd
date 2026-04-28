@@ -1,0 +1,139 @@
+---
+title: Percent mapped reads against species MAGs
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_01/PercentMapped/")
+
+# Load the libraries
+library(ggplot2)
+library(scales)
+library(readr)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "PercentMapped.csv")
+```
+
+# Plot the protein recovery and mapped reads per sample
+```{r}
+
+p1 <- ggplot(dat, aes(x = "", y = Mapped_Percent)) +
+  # Filled circles (shape 21) with a black hairline and semi‐transparent fill
+  geom_jitter(
+    width  = 0.25,
+    shape  = 21,
+    size   = 3,
+    fill   = alpha("#70a0af", 0.6),  # semi-transparent fill
+    colour = "black",                # outline color
+    stroke = 0.3                     # hairline width
+  ) +
+  # Box (80% opacity)
+  geom_boxplot(
+    width         = 0.6,
+    outlier.shape = NA,
+    fill          = "#70a0af",
+    alpha         = 0.8,
+    colour        = "black"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%")
+  ) +
+  labs(
+    x = NULL,
+    y = "Mapped Reads [%]"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x      = element_blank(),
+    axis.ticks.x     = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+print(p1)
+
+
+# Save to file
+ggsave("Mapped_Reads_Percent_Styled.pdf",
+       plot   = p1,
+       width  = 2,
+       height =10,
+       units  = "in",
+       dpi    = 300)
+```
+
+```{r}
+median(dat$Mapped_Percent)
+```
+
+```{r}
+p1 <- ggplot(dat, aes(x = "", y = Mapped_Percent)) +
+  geom_jitter(
+    width  = 0.25,
+    shape  = 21,
+    size   = 3,
+    fill   = alpha("#70a0af", 0.6),
+    colour = "black",
+    stroke = 0.3
+  ) +
+  geom_boxplot(
+    width         = 0.6,
+    outlier.shape = NA,
+    fill          = "#70a0af",
+    alpha         = 0.8,
+    colour        = "black"
+  ) +
+  scale_y_continuous(
+    limits = c(40, 80),
+    breaks = seq(40, 80, 5),
+    labels = function(x) paste0(x, "%")
+  ) +
+  labs(
+    x = NULL,
+    y = "Mapped Reads [%]"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x      = element_blank(),
+    axis.ticks.x     = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+print(p1)
+
+ggsave(
+  "Mapped_Reads_Percent_Styled.pdf",
+  plot   = p1,
+  width  = 2,
+  height = 10,
+  units  = "in",
+  dpi    = 300
+)
+
+```
+

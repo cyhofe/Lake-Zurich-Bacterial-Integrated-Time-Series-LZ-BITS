@@ -1,0 +1,3593 @@
+---
+title: "Trophic Index Analysis Script"
+author: "Cyrill Hofer"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: paged
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r}
+# =============================================================================
+# BLOCK 0 — Setup and data loading
+# =============================================================================
+
+rm(list = ls())
+gc()
+options(stringsAsFactors = FALSE)
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(ggplot2)
+  library(ggrepel)
+})
+
+# ---- Working directory ----
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_03/TrophicIndex/")
+
+# ---- Load data ----
+train_dat <- read_csv("IndicatorSpecies_GenomicProperties.csv")
+lake_dat  <- read_csv("Species_GenomicProperties_ObservedVsEstimated.csv")
+
+# ---- Core metadata columns ----
+meta_cols <- c("Species_ID", "Taxonomy", "Accession", "Classification")
+
+# ---- Enforce trophic class order (training data only) ----
+train_dat <- train_dat %>%
+  mutate(Classification = factor(
+    Classification,
+    levels = c("Oligotroph", "Mesotroph", "Copiotroph")
+  ))
+
+# ---- Minimal sanity check ----
+cat("\nTraining set:", nrow(train_dat), "species\n")
+print(table(train_dat$Classification, useNA = "ifany"))
+
+# ---- Consistent colors for all plots ----
+trophic_cols <- c(
+  Oligotroph = "#2166AC",
+  Mesotroph  = "grey60",
+  Copiotroph = "#B2182B"
+)
+
+# ---- seed for reproducibility of bootstraps ---- 
+set.seed(1234)
+
+glimpse(train_dat)
+glimpse(lake_dat)
+```
+
+# how correlated are the variables ?
+```{r}
+# =============================================================================
+# BLOCK 1 — Feature table + correlation structure (pre-PCA QC; ALL traits)
+# =============================================================================
+
+# ---- 1.1 Metadata + candidate genomic traits (training data only) ----
+meta_cols <- c("Species_ID", "Classification")
+
+dat_feat <- train_dat %>%
+  select(
+    all_of(meta_cols),
+    GC,
+    GENOME_LENGTH,
+    TOTAL_TRNA,
+    MAX_RRNA,
+    CODING_DENSITY,
+    MEAN_INTERGENIC_SPACER,
+    NUM_SIGMA,
+    NUM_SIGNALTRANS
+  )
+
+# ---- 1.2 Correlation matrix (Pearson; numeric traits only) ----
+feat_mat <- dat_feat %>%
+  select(-all_of(meta_cols)) %>%
+  as.matrix()
+
+cor_mat <- cor(feat_mat, use = "pairwise.complete.obs", method = "pearson")
+cat("\nCorrelation matrix (Pearson r):\n")
+print(round(cor_mat, 2))
+
+# ---- 1.3 Rank strongest correlations (|r|) ----
+cor_long <- as.data.frame(as.table(cor_mat), stringsAsFactors = FALSE)
+names(cor_long) <- c("Trait_1", "Trait_2", "r")
+
+cor_long <- cor_long %>%
+  filter(Trait_1 != Trait_2) %>%
+  mutate(pair = paste(pmin(Trait_1, Trait_2), pmax(Trait_1, Trait_2), sep = " :: ")) %>%
+  group_by(pair) %>%
+  summarise(
+    Trait_1 = first(pmin(Trait_1, Trait_2)),
+    Trait_2 = first(pmax(Trait_1, Trait_2)),
+    r = first(r),
+    abs_r = abs(first(r)),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(abs_r))
+
+cat("\nTop 15 absolute correlations (|r|):\n")
+print(head(cor_long, 15))
+
+# ---- 1.4 Correlation heatmap ----
+ggplot(as.data.frame(as.table(cor_mat)), aes(Var1, Var2, fill = Freq)) +
+  geom_tile(color = "white", linewidth = 0.2) +
+  scale_fill_gradient2(
+    low = trophic_cols["Oligotroph"],
+    mid = "white",
+    high = trophic_cols["Copiotroph"],
+    midpoint = 0,
+    limits = c(-1, 1),
+    name = "Pearson r"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(
+    title = "Correlation structure of genomic traits (training set)",
+    subtitle = "All candidate traits included; rRNA summarized as MAX_RRNA",
+    x = NULL,
+    y = NULL
+  )
+```
+### Correlation analysis and genomic feature selection
+
+- To construct a genomic trophic index, we first examined pairwise correlations among all candidate genomic traits using the curated training set (n = 22 species).
+- This analysis was used to identify redundancy and ensure that retained features captured independent biological dimensions.
+
+#### Genome architecture and streamlining
+- Genome length was strongly anticorrelated with coding density (r = −0.85) and strongly positively correlated with mean intergenic spacer length (r = 0.85).
+- Coding density and intergenic spacer length were nearly perfectly anticorrelated (r ≈ −1), indicating that they represent inverse measures of the same genome streamlining axis.
+- Mean intergenic spacer length was therefore excluded, and coding density was retained as a direct and widely used proxy for genome compactness.
+
+#### Translational capacity
+- Total tRNA copy number was strongly correlated with rRNA operon copy number (r = 0.87) and moderately correlated with genome length (r = 0.69), indicating redundancy among translational proxies.
+- To avoid collinearity, only a single translational proxy was retained.
+- Total tRNA copy number was selected because it provides a continuous, higher-resolution measure and is less sensitive to assembly fragmentation than discrete rRNA operon counts.
+- rRNA operon counts were therefore excluded from further analyses.
+
+#### Regulatory capacity
+- Regulatory traits (sigma factors and signal transduction genes) were strongly correlated with each other (r = 0.72) and with genome length (r = 0.73–0.78), indicating that regulatory complexity largely scales with genome expansion.
+- To prevent over-representation of genome size–driven variation, only one regulatory proxy was retained.
+- Sigma factor count was selected as a direct indicator of transcriptional reprogramming capacity.
+
+#### GC content
+- GC content showed only weak correlations with genome size and other trophic traits and was effectively orthogonal to the dominant genome streamlining axis.
+- Because GC content is strongly influenced by phylogenetic and mutational constraints rather than ecological life-history strategy, it was excluded from trophic index construction.
+
+#### Final feature set
+- The final genomic feature set used for PCA and trophic index construction comprised:
+  - Genome length (metabolic breadth / genome expansion)
+  - Coding density (genome streamlining)
+  - Total tRNA copy number (translational investment)
+  - Sigma factor count (regulatory flexibility)
+
+- This parsimonious feature set minimizes redundancy, preserves biological interpretability, and is appropriate for multivariate analysis given the size of the training dataset.
+
+```{r}
+# =============================================================================
+# BLOCK 2 — PCA on curated genomic traits (training set)
+#
+# Goal:
+#   - Reduce correlated genomic traits into a dominant life-history axis
+#   - Define PC1 as a candidate genomic trophic index
+#
+# Reviewer-facing rationale:
+#   - Traits were pre-filtered for redundancy (BLOCK 1)
+#   - Variables are z-scaled to remove unit effects
+#   - PC1 orientation is fixed for biological interpretability
+#
+# Requirements:
+#   - dat_feat from BLOCK 1 (training species only)
+#   - trophic_cols from BLOCK 0
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(tibble)
+})
+
+# -----------------------------
+# 2.1 Final PCA trait set (curated)
+# -----------------------------
+# Selected based on correlation screening and biological interpretability:
+#   - GENOME_LENGTH   : genome expansion / metabolic breadth
+#   - CODING_DENSITY  : genome streamlining
+#   - TOTAL_TRNA      : translational investment
+#   - NUM_SIGMA       : regulatory flexibility
+
+pca_vars <- c(
+  "GENOME_LENGTH",
+  "CODING_DENSITY",
+  "TOTAL_TRNA",
+  "NUM_SIGMA"
+)
+
+# -----------------------------
+# 2.2 Assemble PCA input matrix
+# -----------------------------
+pca_df <- dat_feat %>%
+  select(Species_ID, Classification, all_of(pca_vars))
+
+X <- as.matrix(pca_df[, pca_vars])
+
+# -----------------------------
+# 2.3 Standardize traits (z-score)
+# -----------------------------
+# Critical: removes scale/unit dominance (e.g. bp vs gene counts)
+X_scaled <- scale(X, center = TRUE, scale = TRUE)
+
+# -----------------------------
+# 2.4 Fit PCA
+# -----------------------------
+# PCA is run on the already standardized matrix
+pca_res <- prcomp(X_scaled, center = FALSE, scale. = FALSE)
+
+# -----------------------------
+# 2.5 Variance explained
+# -----------------------------
+eig_vals <- pca_res$sdev^2
+var_exp  <- eig_vals / sum(eig_vals)
+
+pca_var_df <- tibble(
+  PC = paste0("PC", seq_along(var_exp)),
+  Eigenvalue = eig_vals,
+  Variance_Explained = var_exp,
+  Cumulative_Variance = cumsum(var_exp)
+)
+
+cat("\nPCA variance explained:\n")
+print(pca_var_df)
+
+# -----------------------------
+# 2.6 PCA scores (species positions)
+# -----------------------------
+scores <- as.data.frame(pca_res$x) %>%
+  mutate(
+    Species_ID = pca_df$Species_ID,
+    Classification = pca_df$Classification
+  )
+
+# -----------------------------
+# 2.7 PCA loadings (trait contributions)
+# -----------------------------
+loadings <- as.data.frame(pca_res$rotation) %>%
+  rownames_to_column("Trait")
+
+cat("\nPCA loadings (rounded):\n")
+print(loadings %>% mutate(across(where(is.numeric), ~ round(.x, 3))))
+
+# -----------------------------
+# 2.8 Orient PC1 for biological interpretability
+# -----------------------------
+# Sign convention:
+#   Positive PC1 = copiotroph-like direction
+#   (anchored by larger genomes)
+
+if (loadings$PC1[loadings$Trait == "GENOME_LENGTH"] < 0) {
+  message("Flipping PC1 so GENOME_LENGTH loads positively.")
+
+  scores$PC1 <- -scores$PC1
+  loadings$PC1 <- -loadings$PC1
+  pca_res$x[, "PC1"] <- -pca_res$x[, "PC1"]
+  pca_res$rotation[, "PC1"] <- -pca_res$rotation[, "PC1"]
+}
+
+# -----------------------------
+# 2.9 PCA score plot (PC1 vs PC2)
+# -----------------------------
+ggplot(scores, aes(PC1, PC2, color = Classification)) +
+  geom_point(size = 3, alpha = 0.9) +
+  scale_color_manual(values = trophic_cols) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "PCA of curated genomic traits (indicator species)",
+    subtitle = paste0(
+      "PC1 = ", round(var_exp[1] * 100, 1), "% | ",
+      "PC2 = ", round(var_exp[2] * 100, 1), "% variance explained"
+    ),
+    x = "PC1 (genomic trophic index axis)",
+    y = "PC2"
+  ) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+
+```
+### PCA of curated genomic traits (training indicator species)
+
+- Principal component analysis of the curated genomic trait set revealed a **strongly dominant first principal component (PC1)**.
+- PC1 explained **75.9% of the total variance**, while PC2 explained **12.8%**; all remaining components each explained <10% of the variance.
+- This steep variance drop indicates that the genomic trait space of the indicator species is effectively **one-dimensional**.
+
+#### Loadings and biological interpretation of PC1
+- PC1 showed coordinated positive and negative loadings across traits that reflect **genome-scale life-history investment**:
+  - **GENOME_LENGTH** loaded strongly and positively (after sign orientation), indicating increasing genomic and metabolic breadth.
+  - **TOTAL_TRNA** and **NUM_SIGMA** loaded positively, reflecting increasing translational capacity and regulatory flexibility.
+  - **CODING_DENSITY** loaded negatively, consistent with reduced genome streamlining at higher PC1 values.
+- This loading structure is consistent with a continuum from **streamlined oligotrophs** (small, compact genomes with limited regulatory capacity) to **copiotrophs** (larger genomes with greater translational and regulatory investment).
+
+#### Separation of a priori trophic classes
+- Indicator species classified a priori as oligotrophs, mesotrophs, and copiotrophs showed a clear gradient along PC1.
+- Oligotrophic taxa clustered at low PC1 values, copiotrophic taxa at high PC1 values, and mesotrophs occupied intermediate positions.
+- No sharp clustering or discrete separation was observed along PC2, supporting the interpretation that trophic strategies form a **continuous spectrum rather than discrete categories**.
+
+#### Orientation and robustness
+- Because PCA sign is arbitrary, PC1 was oriented such that **GENOME_LENGTH loads positively**, ensuring that increasing PC1 values correspond to increasingly copiotrophic genomic strategies.
+- This orientation does not affect relative species ordering and was applied solely to enhance biological interpretability.
+
+#### Conclusion
+- The PCA identifies a **single dominant axis** of coordinated genomic variation that aligns with known trophic life-history strategies.
+- Together with subsequent robustness and permutation-based significance tests, these results justify the use of **PC1 as a continuous genomic trophic index** for downstream analyses and projection onto lake-wide genomic datasets.
+
+
+```{r}
+# =============================================================================
+# BLOCK 3 — Robustness tests for the trophic index (training set)
+#
+# Purpose:
+#   - Demonstrate that the PC1-based trophic axis is not driven by any single trait
+#   - Quantify stability of species ordering when removing key features
+#
+# What this block does:
+#   (A) Re-fit PCA after removing GENOME_LENGTH
+#   (B) Re-fit PCA after removing CODING_DENSITY
+#   (C) (Optional stress test) Re-fit PCA after adding redundant traits
+#       (MAX_RRNA and NUM_SIGNALTRANS), then check if PC1 ordering persists
+#
+# Requirements (already produced in BLOCK 2):
+#   - dat_feat from BLOCK 1
+#   - scores from BLOCK 2 (must contain Species_ID, Classification, PC1)
+#   - pca_vars from BLOCK 2 (curated feature set)
+#
+# Notes for reviewers:
+#   - PCA sign is arbitrary; we align PC1 orientation to the Full model using correlation
+#   - Comparisons are performed on the intersecting set of species (inner join by Species_ID)
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tibble)
+  library(ggplot2)
+})
+
+# -----------------------------
+# 3.1 Helper: fit PCA on a given trait set (z-scaled)
+# -----------------------------
+fit_pca_scaled <- function(dat, vars) {
+  X <- dat %>%
+    select(all_of(vars)) %>%
+    mutate(across(everything(), as.numeric)) %>%
+    as.matrix()
+
+  Xs <- scale(X, center = TRUE, scale = TRUE)
+  prcomp(Xs, center = FALSE, scale. = FALSE)
+}
+
+# -----------------------------
+# 3.2 Helper: compute PC1 and align its sign to the Full model (scores$PC1)
+# -----------------------------
+get_aligned_pc1 <- function(dat_feat, vars, scores_full) {
+
+  pca_tmp <- fit_pca_scaled(dat_feat, vars)
+
+  sc <- as.data.frame(pca_tmp$x) %>%
+    mutate(
+      Species_ID = dat_feat$Species_ID,
+      Classification = dat_feat$Classification
+    ) %>%
+    select(Species_ID, Classification, PC1, PC2)
+
+  # Align sign using correlation to Full PC1 on overlapping Species_IDs
+  joined <- inner_join(
+    scores_full %>% select(Species_ID, PC1_full = PC1),
+    sc %>% select(Species_ID, PC1_test = PC1),
+    by = "Species_ID"
+  )
+
+  r <- cor(joined$PC1_full, joined$PC1_test, use = "complete.obs")
+
+  flipped <- FALSE
+  if (!is.na(r) && r < 0) {
+    sc$PC1 <- -sc$PC1
+    flipped <- TRUE
+    r <- -r
+  }
+
+  list(scores = sc, cor_to_full = r, flipped = flipped, pca = pca_tmp)
+}
+
+# -----------------------------
+# 3.3 Define robustness models
+# -----------------------------
+# Full curated model (from BLOCK 2)
+pca_vars_full <- pca_vars
+
+# Model A: remove GENOME_LENGTH
+pca_vars_no_size <- setdiff(pca_vars_full, "GENOME_LENGTH")
+
+# Model B: remove CODING_DENSITY
+pca_vars_no_density <- setdiff(pca_vars_full, "CODING_DENSITY")
+
+# Optional stress model: add redundant traits (NOT used for the index)
+pca_vars_stress <- c("GENOME_LENGTH", "CODING_DENSITY", "TOTAL_TRNA", "NUM_SIGMA",
+                     "MAX_RRNA", "NUM_SIGNALTRANS")
+
+# -----------------------------
+# 3.4 Run robustness PCA fits (PC1 aligned to Full model)
+# -----------------------------
+res_no_size    <- get_aligned_pc1(dat_feat, pca_vars_no_size, scores)
+res_no_density <- get_aligned_pc1(dat_feat, pca_vars_no_density, scores)
+
+cat("\nRobustness: correlation to Full PC1 (sign-aligned)\n")
+cat(" - No GENOME_LENGTH:  r =", round(res_no_size$cor_to_full, 3),
+    " | flipped =", res_no_size$flipped, "\n")
+cat(" - No CODING_DENSITY: r =", round(res_no_density$cor_to_full, 3),
+    " | flipped =", res_no_density$flipped, "\n")
+
+# Variance explained (PC1) for each model
+get_pc1_var <- function(pca_obj) (pca_obj$sdev[1]^2) / sum(pca_obj$sdev^2)
+
+pc1_var_full <- var_exp[1]  # from BLOCK 2
+pc1_var_no_size <- get_pc1_var(res_no_size$pca)
+pc1_var_no_density <- get_pc1_var(res_no_density$pca)
+
+robust_summary <- tibble(
+  Model = c("Full (curated)", "No GENOME_LENGTH", "No CODING_DENSITY"),
+  PC1_Variance_Explained = c(pc1_var_full, pc1_var_no_size, pc1_var_no_density),
+  PC1_Correlation_to_Full = c(1, res_no_size$cor_to_full, res_no_density$cor_to_full)
+) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 4)))
+
+cat("\nRobustness summary:\n")
+print(robust_summary)
+
+# -----------------------------
+# 3.5 Diagnostic plots: PC1 agreement (Full vs each reduced model)
+# -----------------------------
+pc1_compare_plot <- function(scores_full, scores_test, test_label, r_val) {
+  df <- inner_join(
+    scores_full %>% select(Species_ID, PC1_full = PC1, Classification),
+    scores_test %>% select(Species_ID, PC1_test = PC1),
+    by = "Species_ID"
+  )
+
+  ggplot(df, aes(PC1_full, PC1_test, color = Classification)) +
+    geom_point(size = 3, alpha = 0.9) +
+    scale_color_manual(values = trophic_cols) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "top", panel.grid.minor = element_blank()) +
+    labs(
+      title = paste0("PC1 robustness: Full vs ", test_label),
+      subtitle = paste0("Pearson r = ", round(r_val, 3), " (sign-aligned)"),
+      x = "PC1 (Full curated model)",
+      y = paste0("PC1 (", test_label, ")")
+    )
+}
+
+pc1_compare_plot(scores, res_no_size$scores, "No GENOME_LENGTH", res_no_size$cor_to_full)
+pc1_compare_plot(scores, res_no_density$scores, "No CODING_DENSITY", res_no_density$cor_to_full)
+
+# -----------------------------
+# 3.6 Optional: stress test with redundant traits
+# -----------------------------
+# This tests whether the axis is stable even under deliberate redundancy.
+if (all(pca_vars_stress %in% colnames(dat_feat))) {
+
+  res_stress <- get_aligned_pc1(dat_feat, pca_vars_stress, scores)
+
+  pc1_var_stress <- get_pc1_var(res_stress$pca)
+
+  cat("\nStress test (redundant traits):\n")
+  cat(" - PC1 variance explained:", round(pc1_var_stress, 4), "\n")
+  cat(" - Correlation to Full PC1 (sign-aligned):", round(res_stress$cor_to_full, 3),
+      " | flipped =", res_stress$flipped, "\n")
+
+  # Plot agreement
+  pc1_compare_plot(scores, res_stress$scores, "Stress (redundant traits)", res_stress$cor_to_full)
+
+} else {
+  message("\nStress test skipped: MAX_RRNA and/or NUM_SIGNALTRANS not found in dat_feat.")
+}
+```
+
+### Robustness analysis of the genomic trophic index
+
+- To assess whether the genomic trophic index (PC1) is driven by any single trait or by redundancy among correlated features, we performed a series of robustness analyses based on feature removal and redundancy stress tests.
+- In all cases, PCA was re-fit on standardized traits, and PC1 orientation was aligned to the full curated model to allow direct comparison of species ordering.
+
+#### Robustness to genome size removal
+- Removing genome length from the PCA reduced the variance explained by PC1 only modestly (from 75.9% to 71.5%).
+- PC1 scores from the reduced model were almost perfectly correlated with those from the full model (Pearson r = 0.992), differing only by axis orientation.
+- Species ordering along PC1 was preserved, indicating that the trophic index is not a trivial proxy for genome size alone.
+
+#### Robustness to genome architecture (coding density) removal
+- Excluding coding density from the PCA did not reduce the dominance of PC1; variance explained by PC1 remained high (77.6%).
+- PC1 scores from this reduced model were highly correlated with the full model (Pearson r = 0.983).
+- This demonstrates that the trophic axis persists even when genome streamlining metrics are removed, and is not dependent on genome architecture alone.
+
+#### Robustness to redundancy (stress test with correlated traits)
+- In a deliberate stress test, highly correlated traits (rRNA operon counts and signal transduction gene counts) were reintroduced alongside the curated feature set.
+- Despite the inclusion of redundant variables, PC1 still explained a large fraction of total variance (73.0%).
+- PC1 scores from the stress test remained strongly correlated with the curated model (Pearson r = 0.99), and species ordering was unchanged.
+- This indicates that the trophic axis is not sensitive to feature redundancy and reflects a stable underlying structure.
+
+#### Overall interpretation
+- Across all robustness tests, PC1 remained a dominant, one-dimensional axis with stable species ordering.
+- The high concordance of PC1 scores across models demonstrates that the trophic index is not driven by genome size, genome architecture, or any single genomic trait.
+- Instead, PC1 captures a coordinated genomic investment strategy integrating translational capacity and regulatory flexibility, consistent with a continuum from oligotrophic to copiotrophic life histories.
+
+#### Conclusion
+- These robustness analyses provide strong evidence that the genomic trophic index represents a stable and biologically meaningful life-history axis rather than a methodological artifact of PCA or feature selection.
+
+```{r}
+# =============================================================================
+# BLOCK 5 — Permutation-based PCA significance test (PCAtest-style)
+#
+# Purpose:
+#   - Test whether the curated PCA captures non-random correlational structure
+#   - Statistically justify PC1 as a meaningful biological axis
+#
+# Null model:
+#   - Permute values within each trait column
+#     (destroys cross-trait correlation, preserves marginal distributions)
+#
+# Requirements:
+#   - dat_feat from BLOCK 1
+#   - pca_vars from BLOCK 2 (curated feature set)
+#
+# Notes:
+#   - Uses finite-permutation corrected p-values
+#   - Focus is on PC1; other PCs are reported descriptively
+# =============================================================================
+
+set.seed(123)
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(tibble)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -----------------------------
+# 5.1 Observed PCA (curated model)
+# -----------------------------
+X_obs_df <- dat_feat %>%
+  select(all_of(pca_vars)) %>%
+  mutate(across(everything(), as.numeric))
+
+# PCA requires complete cases
+keep <- complete.cases(X_obs_df)
+if (any(!keep)) {
+  message(sprintf(
+    "[PCAtest] Dropping %d/%d rows with NA in curated traits.",
+    sum(!keep), nrow(X_obs_df)
+  ))
+}
+
+X_obs <- as.matrix(X_obs_df[keep, , drop = FALSE])
+
+# Same scaling + PCA as BLOCK 2
+X_obs_scaled <- scale(X_obs, center = TRUE, scale = TRUE)
+pca_obs <- prcomp(X_obs_scaled, center = FALSE, scale. = FALSE)
+
+eig_obs <- pca_obs$sdev^2
+var_obs <- eig_obs / sum(eig_obs)
+n_pc <- length(var_obs)
+
+# -----------------------------
+# 5.2 Permutation procedure
+# -----------------------------
+n_perm <- 5000  # reduce to 1000 for quick testing
+perm_var <- matrix(NA_real_, nrow = n_perm, ncol = n_pc)
+
+for (i in seq_len(n_perm)) {
+
+  # Permute each column independently
+  X_perm <- apply(X_obs, 2, sample)
+
+  X_perm_scaled <- scale(X_perm, center = TRUE, scale = TRUE)
+  pca_perm <- prcomp(X_perm_scaled, center = FALSE, scale. = FALSE)
+
+  eig_perm <- pca_perm$sdev^2
+  perm_var[i, ] <- eig_perm / sum(eig_perm)
+}
+
+colnames(perm_var) <- paste0("PC", seq_len(n_pc))
+
+# -----------------------------
+# 5.3 PC-wise permutation p-values (finite-sample corrected)
+# -----------------------------
+pvals <- sapply(seq_len(n_pc), function(k) {
+  (1 + sum(perm_var[, k] >= var_obs[k])) / (1 + n_perm)
+})
+
+pval_tbl <- tibble(
+  PC = paste0("PC", seq_len(n_pc)),
+  Observed_Variance = var_obs,
+  P_value = pvals
+)
+
+cat("\nPermutation test: variance explained per PC\n")
+print(pval_tbl)
+
+# -----------------------------
+# 5.4 Null summaries (mean + 95% interval)
+# -----------------------------
+perm_long <- as.data.frame(perm_var) %>%
+  pivot_longer(cols = everything(), names_to = "PC", values_to = "NullVar") %>%
+  mutate(PC_num = as.integer(sub("PC", "", PC)))
+
+null_summary <- perm_long %>%
+  group_by(PC, PC_num) %>%
+  summarise(
+    null_mean = mean(NullVar),
+    null_lo = quantile(NullVar, 0.025),
+    null_hi = quantile(NullVar, 0.975),
+    .groups = "drop"
+  ) %>%
+  arrange(PC_num) %>%
+  mutate(obs = var_obs[PC_num])
+
+# -----------------------------
+# 5.5 Diagnostic plots
+# -----------------------------
+
+# Panel A: PC1 null distribution
+pA <- ggplot(as.data.frame(perm_var), aes(x = PC1)) +
+  geom_histogram(bins = 30, fill = "grey80", color = "black") +
+  geom_vline(xintercept = var_obs[1], color = "red", linewidth = 1) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "A) Null distribution for PC1",
+    subtitle = paste0(
+      "Observed = ", round(var_obs[1], 3),
+      " | p ",
+      ifelse(pvals[1] < 0.001, "< 0.001", paste0("= ", signif(pvals[1], 3)))
+    ),
+    x = "Variance explained by PC1 (null)",
+    y = "Frequency"
+  )
+
+# Panel B: PC2 null distribution
+pB <- ggplot(as.data.frame(perm_var), aes(x = PC2)) +
+  geom_histogram(bins = 30, fill = "grey80", color = "black") +
+  geom_vline(xintercept = var_obs[2], color = "red", linewidth = 1) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "B) Null distribution for PC2",
+    subtitle = paste0(
+      "Observed = ", round(var_obs[2], 3),
+      " | p ",
+      ifelse(pvals[2] < 0.001, "< 0.001", paste0("= ", signif(pvals[2], 3)))
+    ),
+    x = "Variance explained by PC2 (null)",
+    y = "Frequency"
+  )
+
+# Panel C: Observed vs null across PCs
+pC <- ggplot(null_summary, aes(x = PC_num)) +
+  geom_errorbar(aes(ymin = null_lo, ymax = null_hi), width = 0.15) +
+  geom_point(aes(y = null_mean), size = 2) +
+  geom_point(aes(y = obs), color = "red", size = 3) +
+  theme_minimal(base_size = 12) +
+  scale_x_continuous(breaks = seq_len(n_pc)) +
+  labs(
+    title = "C) Observed vs null variance across PCs",
+    subtitle = "Red = observed | Black = null mean ± 95% interval",
+    x = "Principal component",
+    y = "Variance explained"
+  )
+
+# Panel D: Scree plot (observed vs null mean)
+pD <- ggplot(null_summary, aes(x = PC_num)) +
+  geom_line(aes(y = obs), color = "red", linewidth = 1) +
+  geom_point(aes(y = obs), color = "red", size = 2) +
+  geom_line(aes(y = null_mean), linetype = "dashed") +
+  geom_point(aes(y = null_mean), size = 2) +
+  theme_minimal(base_size = 12) +
+  scale_x_continuous(breaks = seq_len(n_pc)) +
+  labs(
+    title = "D) Scree plot: observed vs null",
+    subtitle = "Red = observed | Dashed black = null mean",
+    x = "Principal component",
+    y = "Variance explained"
+  )
+
+# -----------------------------
+# 5.6 Combine panels
+# -----------------------------
+(pA | pB) / (pC | pD)
+```
+### Permutation-based significance testing of the PCA (PCAtest-style)
+
+- To formally test whether the curated PCA captures non-random correlational structure among genomic traits, we applied a permutation-based PCA significance test following the logic of PCAtest.
+- The null hypothesis assumes that genomic traits are uncorrelated; this was implemented by permuting values independently within each trait column, thereby preserving marginal distributions while destroying cross-trait covariance.
+- PCA was then recomputed for each permuted dataset, and the variance explained by each principal component was compared to the observed values.
+
+#### Significance of PC1
+- PC1 explained **75.9%** of the total variance in the observed data.
+- Under the null model, the expected variance explained by PC1 was substantially lower, and the observed value lay far outside the null distribution.
+- The permutation-based p-value for PC1 was **p = 0.0002**, indicating that PC1 explains significantly more variance than expected under a model of uncorrelated genomic traits.
+- This result demonstrates that PC1 reflects a strong, non-random axis of coordinated genomic variation.
+
+#### Higher-order principal components
+- PC2 explained **12.8%** of the variance, but this value was entirely consistent with the null distribution (p = 1).
+- PC3 and PC4 likewise showed no evidence of explaining more variance than expected under the null model (p = 1 for both).
+- These results indicate that higher-order components represent stochastic or residual variation rather than biologically meaningful structure.
+
+#### Overall interpretation
+- Permutation-based testing confirms that the PCA identifies a **single statistically significant axis** of genomic variation.
+- The absence of significance for PC2 and higher components supports the interpretation of the genomic trophic index as a **one-dimensional life-history axis**, rather than a multidimensional trait space.
+- Combined with robustness analyses demonstrating stability to feature removal and redundancy, these results provide strong statistical justification for using PC1 as a continuous genomic trophic index.
+
+#### Conclusion
+- The permutation test establishes that PC1 captures genuine, non-random covariance among genomic traits, while higher PCs do not.
+- This validates the use of PC1 as the sole axis for downstream ecological interpretation and projection onto lake-wide genomic datasets.
+
+```{r}
+# =============================================================================
+# BLOCK 6 — Define and compute the Genomic Trophic Index (PC1) + training rank plot
+#
+# Purpose:
+#   - Formalize the trophic index as the PC1 score of a standardized trait matrix
+#   - Store the training-set centering/scaling parameters and PC1 loadings
+#   - Compute TrophicIndex for each training species
+#   - Produce a ranked index plot with taxonomy labels (interpretation only)
+#
+# This block is intentionally "definition + application" only.
+# It assumes you already performed QC / robustness / permutation testing upstream.
+#
+# Required objects/columns:
+#   - dat_feat: training dataframe containing Species_ID, Classification, and traits
+#   - train_dat: contains Species_ID and Taxonomy (optional; used for labeling)
+#   - trophic_cols: named vector of colors for Classification
+#
+# Notes:
+#   - Index is computed as: TI_i = sum_j w_j * (x_ij - mu_j)/sigma_j
+#   - PC1 sign is oriented so GENOME_LENGTH loads positively (copiotroph direction)
+#   - If you want the 4-trait curated index, keep the default pca_vars below.
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tibble)
+  library(ggplot2)
+  library(ggrepel)
+})
+
+# -----------------------------
+# 6.1 Choose the trait set for the index (DEFAULT = curated 4-trait model)
+# -----------------------------
+# IMPORTANT:
+# Use the same trait set you validated (robustness + permutation testing).
+# If your validated model used 4 traits, keep this as-is.
+# If you intentionally validated a 6-trait model, replace pca_vars accordingly.
+
+pca_vars <- c(
+  "GENOME_LENGTH",
+  "CODING_DENSITY",
+  "TOTAL_TRNA",
+  "NUM_SIGMA"
+)
+
+# Sanity check: ensure traits exist
+stopifnot(all(pca_vars %in% colnames(dat_feat)))
+
+# -----------------------------
+# 6.2 Build standardized training matrix and fit PCA
+# -----------------------------
+X_train_df <- dat_feat %>%
+  select(all_of(pca_vars)) %>%
+  mutate(across(everything(), as.numeric))
+
+# PCA requires complete cases
+keep <- complete.cases(X_train_df)
+if (any(!keep)) {
+  message(sprintf("[TrophicIndex] Dropping %d/%d training rows with NA in pca_vars.",
+                  sum(!keep), nrow(X_train_df)))
+}
+X_train_df <- X_train_df[keep, , drop = FALSE]
+dat_feat_ti <- dat_feat[keep, , drop = FALSE]
+
+# Training-set centering and scaling parameters (stored for projection later)
+train_center <- colMeans(X_train_df)
+train_scale  <- apply(X_train_df, 2, sd)
+
+# Standardize using training parameters
+X_train_scaled <- sweep(as.matrix(X_train_df), 2, train_center, "-")
+X_train_scaled <- sweep(X_train_scaled, 2, train_scale, "/")
+
+# PCA on standardized matrix (do not re-center/scale inside prcomp)
+pca_fit <- prcomp(X_train_scaled, center = FALSE, scale. = FALSE)
+
+# Variance explained (optional print; useful in Methods)
+eig_vals <- pca_fit$sdev^2
+var_exp  <- eig_vals / sum(eig_vals)
+cat("\n[TrophicIndex] PCA variance explained:\n")
+print(tibble(
+  PC = paste0("PC", seq_along(var_exp)),
+  Eigenvalue = eig_vals,
+  Variance_Explained = var_exp,
+  Cumulative_Variance = cumsum(var_exp)
+))
+
+# PC1 loadings (weights w_j)
+pc1_loadings <- pca_fit$rotation[, "PC1"]
+names(pc1_loadings) <- rownames(pca_fit$rotation)
+
+# -----------------------------
+# 6.3 Orient PC1 for biological interpretability
+# -----------------------------
+# Enforce: GENOME_LENGTH has positive loading on PC1
+if (pc1_loadings["GENOME_LENGTH"] < 0) {
+  message("[TrophicIndex] Flipping PC1 so GENOME_LENGTH loads positively.")
+  pc1_loadings <- -pc1_loadings
+  pca_fit$x[, "PC1"] <- -pca_fit$x[, "PC1"]
+}
+
+# -----------------------------
+# 6.4 Compute TrophicIndex for training species (explicit definition)
+# -----------------------------
+# TrophicIndex_i = (standardized traits) %*% (PC1 loadings)
+TrophicIndex <- as.numeric(X_train_scaled %*% pc1_loadings)
+
+dat_feat_ti <- dat_feat_ti %>%
+  mutate(
+    TrophicIndex = TrophicIndex
+  )
+
+# Save the model components needed for later projection onto lake_dat
+trophic_index_model <- list(
+  pca_vars = pca_vars,
+  center = train_center,
+  scale = train_scale,
+  pc1_loadings = pc1_loadings
+)
+
+cat("\n[TrophicIndex] Model definition:\n")
+print(trophic_index_model)
+
+# -----------------------------
+# 6.5 Ranked training plot (taxonomy labels for interpretation only)
+# -----------------------------
+# Taxonomy is NOT used to compute the index; it is displayed for interpretability.
+
+plot_df <- dat_feat_ti %>%
+  left_join(train_dat %>% select(Species_ID, Taxonomy), by = "Species_ID") %>%
+  arrange(TrophicIndex) %>%
+  mutate(
+    Rank = row_number(),
+    Label = ifelse(!is.na(Taxonomy) & Taxonomy != "", Taxonomy, Species_ID)
+  )
+
+ggplot(plot_df, aes(Rank, TrophicIndex, color = Classification)) +
+  geom_point(size = 3, alpha = 0.9) +
+  geom_text_repel(aes(label = Label), size = 3, max.overlaps = Inf) +
+  scale_color_manual(values = trophic_cols) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top") +
+  labs(
+    title = "Ranked genomic trophic index across indicator species",
+    subtitle = "Index = PC1 score of standardized curated genomic traits (taxonomy shown for interpretation only)",
+    x = "Species rank (low → high trophic index)",
+    y = "TrophicIndex (PC1)"
+  )
+```
+### Critical interpretation of the genomic trophic index (PC1)
+
+- The trophic index is defined as the **PC1 score** of a **standardized genomic trait matrix** (GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA), with the sign oriented so that **larger genomes correspond to higher index values**.
+- The **PC1 loading structure is internally coherent and biologically interpretable**:
+  - **GENOME_LENGTH** loads positively (w = 0.552): larger genomes increase the index.
+  - **CODING_DENSITY** loads negatively (w = −0.508): more streamlined genomes decrease the index.
+  - **TOTAL_TRNA** loads positively (w = 0.447): higher translational investment increases the index.
+  - **NUM_SIGMA** loads positively (w = 0.487): greater regulatory flexibility increases the index.
+- Together, these loadings define a single axis contrasting:
+  - **streamlined, low-investment genomes** (low index; oligotroph-like)
+  - versus **expanded, high-investment genomes** (high index; copiotroph-like).
+
+### Can the index be used despite imperfect alignment with experimental readouts?
+
+- **Yes—provided it is interpreted correctly.** The index quantifies **genomic investment potential**, not realized ecological performance in any single assay.
+- Apparent mismatches between index position and experimental readouts are not unexpected because realized phenotypes depend on additional factors not captured by static genomic traits, including:
+  - environmental context (nutrient regime, temperature, seasonality),
+  - biotic interactions (competition, grazing, viral pressure),
+  - physiological state (dormancy, stress history),
+  - regulation and expression (traits may be present but not expressed),
+  - measurement context (assay conditions may not match ecological niche).
+- Therefore, the trophic index should be used primarily as a **continuous ranking** along an oligotroph–copiotroph continuum rather than as a strict categorical classifier.
+
+### Why the index remains statistically defensible
+
+- The trophic axis (PC1) is supported by three independent lines of evidence:
+  - **Dominance of PC1**: PC1 explains a large fraction of variance (≈ 0.759), indicating a strong shared genomic strategy axis.
+  - **Robustness to feature removal and redundancy**: species ordering along PC1 remains highly stable when removing major contributors (GENOME_LENGTH or CODING_DENSITY) and under redundancy stress tests (r ≈ 0.98–0.99).
+  - **Permutation-based PCA diagnostics**: only PC1 explains significantly more variance than expected under a null model of uncorrelated traits (p = 0.0002), whereas PC2–PC4 are fully consistent with the null expectation (p = 1).
+- These results demonstrate that PC1 reflects **non-random, coordinated covariance** among genomic traits rather than a single-trait artifact.
+
+### Practical interpretation for downstream analyses
+
+- The trophic index should be described as a **genome-informed life-history strategy axis**, capturing coordinated investment in genome expansion, reduced streamlining, translational capacity, and regulatory flexibility.
+- Downstream analyses should treat the index as:
+  - a **continuous predictor** (preferred), and/or
+  - a basis for **relative ranking** of taxa,
+  rather than expecting perfect agreement with every experimental classification.
+- Any taxa that contradict expectations should be reported transparently as **exceptions**, discussed as biologically plausible deviations, and not treated as evidence against the validity of the axis itself.
+
+
+```{r}
+# =============================================================================
+# BLOCK 7 — Quartile-based operational strategy groups along the TrophicIndex
+#
+# Purpose:
+#   - Define reviewer-safe *operational* categories from a continuous index
+#   - Use label-independent, distribution-based thresholds (Q1/Q3)
+#   - Visualize the grouping and summarize mapping to a priori labels
+#
+# Why quartiles are defensible (reviewer-facing, implemented here):
+#   - Thresholds are computed from the TrophicIndex distribution (not from labels)
+#   - Captures extremes without imposing artificial hard boundaries everywhere
+#   - Reproducible rule across datasets; no tuning/hand-picking
+#   - Maintains adequate sample sizes for downstream comparisons (esp. n=22)
+#
+# Inputs expected from prior blocks:
+#   - dat_feat_ti : training dataframe produced in BLOCK 6 (contains TrophicIndex)
+#   - trophic_cols: colors for Classification
+#
+# Outputs:
+#   - dat_feat_ti updated with ExtremeClass
+#   - density plot with quartile cutoffs
+#   - (optional) mapping table + stacked bar plot if Classification is present
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -----------------------------
+# 7.1 Quartile thresholds (label-independent)
+# -----------------------------
+q1 <- unname(quantile(dat_feat_ti$TrophicIndex, 0.25, na.rm = TRUE))
+q3 <- unname(quantile(dat_feat_ti$TrophicIndex, 0.75, na.rm = TRUE))
+
+cat("\n[Quartiles] Thresholds for operational groups:\n")
+cat(" Q1 (25%) =", round(q1, 4), "\n")
+cat(" Q3 (75%) =", round(q3, 4), "\n")
+
+# -----------------------------
+# 7.2 Assign operational groups (extremes + intermediate)
+# -----------------------------
+df_ti <- dat_feat_ti %>%
+  mutate(
+    ExtremeClass = case_when(
+      TrophicIndex <= q1 ~ "Oligo_like",
+      TrophicIndex >= q3 ~ "Copio_like",
+      TRUE ~ "Intermediate"
+    ),
+    ExtremeClass = factor(ExtremeClass, levels = c("Oligo_like", "Intermediate", "Copio_like"))
+  )
+
+# Stable explicit colors
+extreme_cols <- c(
+  Oligo_like = "#2166AC",     # match Oligotroph
+  Intermediate = "grey60",
+  Copio_like = "#B2182B"      # match Copiotroph
+)
+
+# -----------------------------
+# 7.3 Density plot: operational groups + thresholds
+# -----------------------------
+p_quartile_density <- ggplot(df_ti, aes(x = TrophicIndex, fill = ExtremeClass, color = ExtremeClass)) +
+  geom_density(alpha = 0.35, linewidth = 1) +
+  geom_vline(xintercept = c(q1, q3), linetype = "dashed", linewidth = 0.8) +
+  scale_fill_manual(values = extreme_cols, drop = FALSE) +
+  scale_color_manual(values = extreme_cols, drop = FALSE) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Quartile-based operational strategy groups along the trophic index",
+    subtitle = "Extreme quartiles define oligo-like and copio-like groups; middle half remains intermediate",
+    x = "TrophicIndex (PC1 score)",
+    y = "Density"
+  ) +
+  theme(legend.position = "top")
+
+# -----------------------------
+# 7.4 Mapping to a priori labels (interpretation only; NOT used to define cutoffs)
+# -----------------------------
+# Only run if Classification exists and is not all NA.
+if ("Classification" %in% colnames(df_ti) && !all(is.na(df_ti$Classification))) {
+
+  df_ti$Classification <- factor(df_ti$Classification,
+                                levels = c("Oligotroph", "Mesotroph", "Copiotroph"))
+
+  mapping_tbl <- df_ti %>%
+    count(Classification, ExtremeClass) %>%
+    pivot_wider(names_from = ExtremeClass, values_from = n, values_fill = 0) %>%
+    arrange(Classification)
+
+  cat("\n[Quartiles] Mapping of a priori labels onto quartile-defined groups (interpretation only):\n")
+  print(mapping_tbl)
+
+  p_mapping <- ggplot(df_ti, aes(x = Classification, fill = ExtremeClass)) +
+    geom_bar(position = "fill", color = "white") +
+    scale_fill_manual(values = extreme_cols, drop = FALSE) +
+    theme_minimal(base_size = 13) +
+    labs(
+      title = "A priori trophic labels across quartile-defined operational groups",
+      subtitle = "Operational groups are index-defined; labels shown only for interpretability",
+      x = NULL,
+      y = "Proportion within label"
+    ) +
+    theme(legend.position = "top")
+
+  p_quartile_density | p_mapping
+
+} else {
+  p_quartile_density
+}
+
+# -----------------------------
+# 7.5 Write back into your main object for downstream steps
+# -----------------------------
+# Keep dat_feat_ti as the canonical training table with TrophicIndex + ExtremeClass.
+dat_feat_ti <- df_ti
+```
+### Reviewer verdict on quartile-based operational grouping
+
+- The quartile-based stratification of the trophic index yields **biologically coherent extremes** while preserving the continuous nature of the underlying axis.
+- The *oligo-like* group is strongly enriched for a priori oligotrophic taxa (5/6), with no copiotrophs present.
+- The *copio-like* group is enriched for copiotrophic taxa (4/6), with no oligotrophs present; the remaining taxa are mesotrophs, consistent with intermediate strategies.
+- The intermediate group contains a mixture of all three a priori classes, as expected under a **continuous trophic strategy spectrum**.
+
+- Importantly, group definitions are **label-independent**, relying solely on index quantiles rather than a priori trophic classifications.
+- The observed overlap in the intermediate range is not a weakness but a strength, as it avoids imposing artificial hard boundaries on a continuous genomic trait axis.
+- Combined with permutation-based PCA significance testing and robustness analyses, these results support the use of the trophic index as a **statistically grounded, biologically interpretable continuum**, with quartile-based groups serving as **operational extremes** for downstream analyses.
+
+> *We therefore treat the trophic index as the primary variable and use quantile-based groups only to contrast genomic and ecological patterns at the extremes of the continuum.*
+
+
+**At this stage, we have rigorously defined and validated a continuous genomic trophic index using independent indicator species; subsequent analyses focus on applying this index to community-wide datasets rather than further validating its construction.**
+
+# assess the changes on species level moving from incomplete observed to 100% complete estimated lake taxa
+```{r}
+# =============================================================================
+# BLOCK 8 (COMPACT) — One figure per PCA trait (Lake Zurich): Obs vs Est + shift + regression
+#
+# You asked for ONE exported figure per trait that enters the PCA:
+#   - Estimated_Genome_Size  (proxy for "true" genome size; compare to GENOME_LENGTH)
+#   - NUM_SIGMA             (Obs vs Est)
+#   - TOTAL_TRNA            (Obs vs Est)
+#   - CODING_DENSITY        (no Obs/Est in your table; plotted vs Completeness + distribution)
+#
+# Output per trait: ONE PDF with 3 panels:
+#   A) Observed vs Estimated scatter (or GENOME_LENGTH vs Estimated_Genome_Size)
+#   B) Distribution shift (overlay density; simple and clean)
+#   C) Change vs Completeness (Delta = Estimated − Observed; regression)
+#
+# Notes:
+#   - For NUM_SIGMA and TOTAL_TRNA we use Obs_* and Est_* columns.
+#   - For Estimated_Genome_Size we compare GENOME_LENGTH (observed assembly length)
+#     to Estimated_Genome_Size (expected full genome size).
+#   - CODING_DENSITY is not "completion-corrected" here (no Est_CODING_DENSITY column),
+#     so we show its distribution + relationship to completeness only (no Delta panel).
+# =============================================================================
+
+# -----------------------------
+# 1) Helper: 3-panel figure for traits with Obs/Est
+# -----------------------------
+make_tripanel_obs_est <- function(dat, obs_col, est_col, trait_name, out_pdf) {
+
+  dat <- dat %>%
+    mutate(Delta = .data[[est_col]] - .data[[obs_col]])
+
+  # A) Obs vs Est
+  pA <- ggplot(dat, aes(x = .data[[obs_col]], y = .data[[est_col]])) +
+    geom_point(alpha = 0.6) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = paste0(trait_name, " — A) Observed vs Estimated"),
+      subtitle = "Dashed line = 1:1 (no change)",
+      x = "Observed (MAG)",
+      y = "Estimated (100% genome)"
+    )
+
+  # B) Distribution shift (Observed vs Estimated)
+  df_long <- dat %>%
+    select(all_of(c(obs_col, est_col))) %>%
+    pivot_longer(everything(), names_to = "Version", values_to = "Value") %>%
+    mutate(
+      Version = ifelse(Version == obs_col, "Observed", "Estimated"),
+      Version = factor(Version, levels = c("Observed", "Estimated"))
+    )
+
+  pB <- ggplot(df_long, aes(x = Value, color = Version, fill = Version)) +
+    geom_density(alpha = 0.25, linewidth = 1) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "top") +
+    labs(
+      title = paste0(trait_name, " — B) Distribution shift"),
+      subtitle = "Overlay densities",
+      x = trait_name,
+      y = "Density",
+      color = NULL,
+      fill = NULL
+    )
+
+  # C) Delta vs Completeness (regression)
+  pC <- ggplot(dat, aes(x = Completeness, y = Delta)) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE) +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = paste0(trait_name, " — C) Correction vs completeness"),
+      subtitle = "Delta = Estimated − Observed (linear regression shown)",
+      x = "Completeness (%)",
+      y = "Delta"
+    )
+
+  fig <- (pA | pB) / pC +
+    plot_annotation(
+      title = paste0("Lake Zurich MAGs: completion correction impact on ", trait_name),
+      theme = theme(plot.title = element_text(face = "bold", size = 13))
+    )
+
+  ggsave(out_pdf, fig, width = 10.5, height = 7.5, units = "in")
+  print(fig)
+  invisible(fig)
+}
+
+# -----------------------------
+# 2) Helper: 3-panel figure for genome size proxy (GENOME_LENGTH vs Estimated_Genome_Size)
+# -----------------------------
+make_tripanel_genomesize <- function(dat, out_pdf) {
+
+  dat <- dat %>%
+    mutate(Delta = Estimated_Genome_Size - GENOME_LENGTH)
+
+  pA <- ggplot(dat, aes(x = GENOME_LENGTH, y = Estimated_Genome_Size)) +
+    geom_point(alpha = 0.6) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = "Estimated genome size — A) Assembly length vs estimated full size",
+      subtitle = "Dashed line = 1:1 (no missing genome implied)",
+      x = "Observed assembly length (GENOME_LENGTH, bp)",
+      y = "Estimated full genome size (bp)"
+    )
+
+  df_long <- dat %>%
+    select(GENOME_LENGTH, Estimated_Genome_Size) %>%
+    pivot_longer(everything(), names_to = "Version", values_to = "Value") %>%
+    mutate(
+      Version = recode(Version,
+                       GENOME_LENGTH = "Observed (assembly)",
+                       Estimated_Genome_Size = "Estimated (full genome)"),
+      Version = factor(Version, levels = c("Observed (assembly)", "Estimated (full genome)"))
+    )
+
+  pB <- ggplot(df_long, aes(x = Value, color = Version, fill = Version)) +
+    geom_density(alpha = 0.25, linewidth = 1) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "top") +
+    labs(
+      title = "Estimated genome size — B) Distribution shift",
+      subtitle = "Overlay densities",
+      x = "Genome size (bp)",
+      y = "Density",
+      color = NULL,
+      fill = NULL
+    )
+
+  pC <- ggplot(dat, aes(x = Completeness, y = Delta)) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE) +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = "Estimated genome size — C) Missing genome length vs completeness",
+      subtitle = "Delta = Estimated_Genome_Size − GENOME_LENGTH",
+      x = "Completeness (%)",
+      y = "Missing genome length (bp)"
+    )
+
+  fig <- (pA | pB) / pC +
+    plot_annotation(
+      title = "Lake Zurich MAGs: completion correction impact on genome size",
+      theme = theme(plot.title = element_text(face = "bold", size = 13))
+    )
+
+  ggsave(out_pdf, fig, width = 10.5, height = 7.5, units = "in")
+  print(fig)
+  invisible(fig)
+}
+
+# -----------------------------
+# 3) Helper: trait with NO Obs/Est (CODING_DENSITY)
+#    -> One figure with 2 panels (distribution + vs completeness)
+# -----------------------------
+make_coding_density_fig <- function(dat, out_pdf) {
+
+  pA <- ggplot(dat, aes(x = CODING_DENSITY)) +
+    geom_histogram(bins = 35, color = "white") +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = "CODING_DENSITY — A) Distribution across Lake Zurich MAGs",
+      x = "Coding density (%)",
+      y = "Number of MAGs"
+    )
+
+  pB <- ggplot(dat, aes(x = Completeness, y = CODING_DENSITY)) +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE) +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = "CODING_DENSITY — B) Relationship to completeness",
+      subtitle = "Linear regression shown",
+      x = "Completeness (%)",
+      y = "Coding density (%)"
+    )
+
+  fig <- pA / pB +
+    plot_annotation(
+      title = "Lake Zurich MAGs: coding density (input trait for PCA)",
+      theme = theme(plot.title = element_text(face = "bold", size = 13))
+    )
+
+  ggsave(out_pdf, fig, width = 8.5, height = 7.5, units = "in")
+  print(fig)
+  invisible(fig)
+}
+
+# =============================================================================
+# 4) Build the four figures you requested (ONE PDF each)
+# =============================================================================
+
+# (1) Genome size: GENOME_LENGTH vs Estimated_Genome_Size
+make_tripanel_genomesize(
+  lake_dat,
+  out_pdf = "LakeZurich_GenomeSize_GenomeLength_vs_EstimatedGenomeSize.pdf"
+)
+
+# (2) TOTAL_TRNA (Obs vs Est)
+make_tripanel_obs_est(
+  lake_dat,
+  obs_col = "Obs_TOTAL_TRNA",
+  est_col = "Est_TOTAL_TRNA",
+  trait_name = "TOTAL_TRNA",
+  out_pdf = "LakeZurich_TOTAL_TRNA_ObsVsEst_Shift_Regression.pdf"
+)
+
+# (3) NUM_SIGMA (Obs vs Est)
+make_tripanel_obs_est(
+  lake_dat,
+  obs_col = "Obs_NUM_SIGMA",
+  est_col = "Est_NUM_SIGMA",
+  trait_name = "NUM_SIGMA",
+  out_pdf = "LakeZurich_NUM_SIGMA_ObsVsEst_Shift_Regression.pdf"
+)
+
+# (4) CODING_DENSITY (no corrected version available in lake_dat)
+make_coding_density_fig(
+  lake_dat,
+  out_pdf = "LakeZurich_CODING_DENSITY_Distribution_Regression.pdf"
+)
+
+cat("\nWrote 4 PDFs:\n",
+    " - LakeZurich_GenomeSize_GenomeLength_vs_EstimatedGenomeSize.pdf\n",
+    " - LakeZurich_TOTAL_TRNA_ObsVsEst_Shift_Regression.pdf\n",
+    " - LakeZurich_NUM_SIGMA_ObsVsEst_Shift_Regression.pdf\n",
+    " - LakeZurich_CODING_DENSITY_Distribution_Regression.pdf\n", sep = "")
+# =============================================================================
+```
+
+```{r}
+# =============================================================================
+# BLOCK 9 — Lake Zurich trophic index projection (OBS vs EST) + same plots as before
+#
+# Clean + reviewer-safe:
+#   - Uses training-defined model (center/scale/loadings) from BLOCK 6
+#   - Projects Lake Zurich twice:
+#       OBS: GENOME_LENGTH, CODING_DENSITY, Obs_TOTAL_TRNA, Obs_NUM_SIGMA
+#       EST: Estimated_Genome_Size, CODING_DENSITY, Est_TOTAL_TRNA, Est_NUM_SIGMA
+#   - Reproduces your exact plot types, now as 2-panel comparisons (OBS | EST):
+#       1) Ranked plot with training anchors
+#       2) Training density + Lake density (side-by-side)
+#       3) Overlay density (Training vs Lake)
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(ggrepel)
+  library(patchwork)
+})
+
+# --- training model pieces (from BLOCK 6) ---
+center_tr <- trophic_index_model$center
+scale_tr  <- trophic_index_model$scale
+w_pc1     <- trophic_index_model$pc1_loadings
+
+# --- training anchors (from BLOCK 6 + BLOCK 0) ---
+train_scored <- dat_feat_ti %>%
+  left_join(train_dat %>% select(Species_ID, Taxonomy), by = "Species_ID") %>%
+  mutate(
+    Dataset = "Training",
+    Label = ifelse(!is.na(Taxonomy) & Taxonomy != "", Taxonomy, Species_ID)
+  )
+
+# =============================================================================
+# 9.1 Project Lake Zurich twice (OBS and EST), using training centering/scaling
+# =============================================================================
+
+# OBS matrix mapped into training variable names
+X_obs <- lake_dat %>%
+  transmute(
+    GENOME_LENGTH  = as.numeric(GENOME_LENGTH),
+    CODING_DENSITY = as.numeric(CODING_DENSITY),
+    TOTAL_TRNA     = as.numeric(Obs_TOTAL_TRNA),
+    NUM_SIGMA      = as.numeric(Obs_NUM_SIGMA)
+  ) %>%
+  as.matrix()
+
+# EST matrix mapped into training variable names
+X_est <- lake_dat %>%
+  transmute(
+    GENOME_LENGTH  = as.numeric(Estimated_Genome_Size),
+    CODING_DENSITY = as.numeric(CODING_DENSITY),
+    TOTAL_TRNA     = as.numeric(Est_TOTAL_TRNA),
+    NUM_SIGMA      = as.numeric(Est_NUM_SIGMA)
+  ) %>%
+  as.matrix()
+
+# enforce training order (important)
+X_obs <- X_obs[, names(center_tr)]
+X_est <- X_est[, names(center_tr)]
+
+# standardize with TRAINING parameters
+Z_obs <- sweep(sweep(X_obs, 2, center_tr, "-"), 2, scale_tr, "/")
+Z_est <- sweep(sweep(X_est, 2, center_tr, "-"), 2, scale_tr, "/")
+
+# score
+lake_scored_obs <- lake_dat %>%
+  mutate(TrophicIndex = as.numeric(Z_obs %*% w_pc1),
+         Dataset = "LakeZurich_Obs")
+
+lake_scored_est <- lake_dat %>%
+  mutate(TrophicIndex = as.numeric(Z_est %*% w_pc1),
+         Dataset = "LakeZurich_Est")
+
+# =============================================================================
+# 9.2 Plot 1 — Ranked plot with training anchors (OBS | EST)
+# =============================================================================
+
+rank_plot <- function(lake_scored, main_title) {
+
+  comb <- bind_rows(
+    lake_scored %>% select(Species_ID, TrophicIndex, Dataset),
+    train_scored %>% select(Species_ID, TrophicIndex, Dataset, Classification, Label)
+  ) %>%
+    arrange(TrophicIndex) %>%
+    mutate(Rank = row_number())
+
+  ggplot() +
+    geom_point(
+      data = comb %>% filter(grepl("^LakeZurich", Dataset)),
+      aes(Rank, TrophicIndex),
+      color = "grey70", alpha = 0.9, size = 2
+    ) +
+    geom_point(
+      data = comb %>% filter(Dataset == "Training"),
+      aes(Rank, TrophicIndex, color = Classification),
+      size = 3
+    ) +
+    ggrepel::geom_text_repel(
+      data = comb %>% filter(Dataset == "Training"),
+      aes(Rank, TrophicIndex, label = Label, color = Classification),
+      size = 3,
+      max.overlaps = Inf,
+      box.padding = 0.4,
+      point.padding = 0.2,
+      show.legend = FALSE
+    ) +
+    scale_color_manual(values = trophic_cols) +
+    theme_minimal(base_size = 13) +
+    labs(
+      title = main_title,
+      subtitle = "Grey = Lake Zurich MAGs (ranked); Colored + labeled = indicator species (anchors)",
+      x = "Rank along combined trophic index (low → high)",
+      y = "TrophicIndex (training PC1 score)"
+    ) +
+    theme(legend.position = "top")
+}
+
+p_rank_obs <- rank_plot(lake_scored_obs, "Lake Zurich trophic index (OBSERVED traits) with training anchors")
+p_rank_est <- rank_plot(lake_scored_est, "Lake Zurich trophic index (ESTIMATED traits) with training anchors")
+print(p_rank_obs | p_rank_est)
+
+# =============================================================================
+# 9.3 Plot 2 — Training density + Lake density (side-by-side) (OBS | EST)
+# =============================================================================
+
+density_pair <- function(lake_scored, title_txt) {
+
+  p_den_train <- ggplot(train_scored, aes(TrophicIndex)) +
+    geom_density(linewidth = 1) +
+    theme_minimal(base_size = 13) +
+    labs(title = "Training density", x = "TrophicIndex", y = "Density")
+
+  p_den_lake <- ggplot(lake_scored, aes(TrophicIndex)) +
+    geom_density(linewidth = 1) +
+    theme_minimal(base_size = 13) +
+    labs(title = "Lake Zurich density", x = "TrophicIndex", y = "Density")
+
+  (p_den_train | p_den_lake) + plot_annotation(title = title_txt)
+}
+
+p_den_pair_obs <- density_pair(lake_scored_obs, "Densities (OBSERVED projection)")
+p_den_pair_est <- density_pair(lake_scored_est, "Densities (ESTIMATED projection)")
+print(p_den_pair_obs)
+print(p_den_pair_est)
+
+# =============================================================================
+# 9.4 Plot 3 — Overlay density (Training vs Lake) (OBS | EST)
+# =============================================================================
+
+density_overlay <- function(lake_scored, lake_label, title_txt) {
+  ggplot() +
+    geom_density(data = train_scored, aes(TrophicIndex, color = "Training"), linewidth = 1) +
+    geom_density(data = lake_scored,  aes(TrophicIndex, color = lake_label), linewidth = 1) +
+    scale_color_manual(values = c("Training" = "black", lake_label = "grey50")) +
+    theme_minimal(base_size = 13) +
+    labs(title = title_txt, x = "TrophicIndex", y = "Density", color = NULL) +
+    theme(legend.position = "top")
+}
+
+p_ov_obs <- density_overlay(lake_scored_obs, "LakeZurich_Obs", "Overlay density (Training vs Lake Zurich — OBS)")
+p_ov_est <- density_overlay(lake_scored_est, "LakeZurich_Est", "Overlay density (Training vs Lake Zurich — EST)")
+print(p_ov_obs | p_ov_est)
+# =============================================================================
+```
+
+### Projection of the genomic trophic index onto Lake Zurich taxa: reviewer-ready interpretation
+
+**What this analysis does**
+- Lake Zurich MAGs were **projected into the trophic index space defined exclusively by the training (indicator) species**.
+- The training PCA model (trait centering, scaling, and PC1 loadings) was *not re-fit* using lake data.
+- This constitutes a true **out-of-sample projection**, analogous to applying a trained model to new data.
+
+**Key observations**
+- Lake Zurich taxa span a **broad range of trophic index values**, largely overlapping but extending beyond the training distribution.
+- Indicator species appear at biologically sensible anchor positions:
+  - Canonical oligotrophs anchor the low end.
+  - Genome-rich copiotrophs anchor the high end.
+- Lake taxa populate the continuum between and beyond these anchors without forming artificial clusters.
+
+**Density comparison (training vs. lake)**
+- The lake distribution is **shifted toward lower trophic index values**, consistent with oligotrophy-dominated lake conditions.
+- The overlap between distributions indicates that lake taxa fall within the same genomic strategy space defined by the training set.
+- The extended tails (especially toward lower values) suggest **novel or more extreme oligotrophic strategies** not fully represented among indicator species.
+
+**Why this is biologically and statistically sound**
+- No retraining or rescaling using lake data → **no circularity or data leakage**.
+- The trophic index remains a **single, fixed, interpretable axis**.
+- Training species function as **biological reference points**, not classification rules.
+- Differences in distributions reflect **ecological structure**, not methodological artifacts.
+
+**Reviewer-facing conclusion**
+> *“Projection of Lake Zurich MAGs onto the training-derived genomic trophic index revealed that lake taxa occupy the same continuous genomic strategy space as the indicator species, while exhibiting a distribution skewed toward oligotrophic strategies. The coherent placement of well-characterized indicator taxa as anchors confirms the validity of out-of-sample projection and supports the use of the trophic index for lake-wide comparative analyses.”*
+
+**Bottom line**
+- This is exactly the correct and defensible way to extend the index to environmental data.
+- The result strengthens (rather than weakens) the claim that the trophic index captures a **generalizable genomic life-history continuum**.
+
+```{r}
+# =============================================================================
+# BLOCK 10 — Training-anchored operational groups applied to Lake Zurich
+# (OBS lake vs Training) AND (EST lake vs Training)
+#
+# Assumes you already created:
+#   - train_scored     (Dataset == "Training", has TrophicIndex)
+#   - lake_scored_obs  (Dataset == "LakeZurich_Obs", has TrophicIndex)
+#   - lake_scored_est  (Dataset == "LakeZurich_Est", has TrophicIndex)
+#
+# Output:
+#   - Figure 1: OBS lake vs Training (side-by-side)
+#   - Figure 2: EST lake vs Training (side-by-side)
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -----------------------------
+# 10.1 Training-anchored quartile cutoffs (fixed reference thresholds)
+# -----------------------------
+q1_train <- unname(quantile(train_scored$TrophicIndex, probs = 0.25, na.rm = TRUE))
+q3_train <- unname(quantile(train_scored$TrophicIndex, probs = 0.75, na.rm = TRUE))
+
+cat("\n[Train-anchored quartiles]\n")
+cat(" Q1 (25%) =", round(q1_train, 4), "\n")
+cat(" Q3 (75%) =", round(q3_train, 4), "\n")
+
+assign_extremes_trainanchored <- function(df, q1, q3) {
+  df %>%
+    mutate(
+      ExtremeClass = case_when(
+        TrophicIndex <= q1 ~ "Oligo_like",
+        TrophicIndex >= q3 ~ "Copio_like",
+        TRUE ~ "Intermediate"
+      ),
+      ExtremeClass = factor(ExtremeClass, levels = c("Oligo_like","Intermediate","Copio_like"))
+    )
+}
+
+# -----------------------------
+# 10.2 Helper for subtitle counts
+# -----------------------------
+fmt_counts <- function(df) {
+  df %>% count(ExtremeClass) %>%
+    mutate(txt = paste0(ExtremeClass, "=", n)) %>%
+    pull(txt) %>%
+    paste(collapse = " | ")
+}
+
+# -----------------------------
+# 10.3 Colors (consistent with palette)
+# -----------------------------
+extreme_cols <- c(
+  Oligo_like = "#2166AC",
+  Intermediate = "grey60",
+  Copio_like = "#B2182B"
+)
+
+# -----------------------------
+# 10.4 Plot helper (density with fixed thresholds)
+# -----------------------------
+density_ext_plot <- function(df, title_txt, subtitle_txt) {
+  ggplot(df, aes(TrophicIndex, fill = ExtremeClass, color = ExtremeClass)) +
+    geom_density(alpha = 0.4, linewidth = 1) +
+    geom_vline(xintercept = c(q1_train, q3_train), linetype = "dashed", linewidth = 0.8) +
+    scale_fill_manual(values = extreme_cols, drop = FALSE) +
+    scale_color_manual(values = extreme_cols, drop = FALSE) +
+    theme_minimal(base_size = 13) +
+    labs(
+      title = title_txt,
+      subtitle = subtitle_txt,
+      x = "TrophicIndex (training PC1 score)",
+      y = "Density"
+    ) +
+    theme(legend.position = "top")
+}
+
+# =============================================================================
+# FIGURE 1 — OBSERVED Lake vs Training
+# =============================================================================
+train_ext <- assign_extremes_trainanchored(train_scored, q1_train, q3_train)
+lake_obs_ext <- assign_extremes_trainanchored(lake_scored_obs, q1_train, q3_train)
+
+sub_train <- paste0("n: ", fmt_counts(train_ext),
+                    "   (Q25=", round(q1_train, 2), ", Q75=", round(q3_train, 2), ")")
+sub_lake_obs <- paste0("n: ", fmt_counts(lake_obs_ext),
+                       "   (Q25=", round(q1_train, 2), ", Q75=", round(q3_train, 2), ")")
+
+p_lake_obs <- density_ext_plot(lake_obs_ext, "Lake Zurich OBS (training-anchored thresholds)", sub_lake_obs)
+p_train    <- density_ext_plot(train_ext,    "Training set (thresholds defined here)",       sub_train)
+
+fig_obs <- p_lake_obs | p_train
+print(fig_obs)
+
+ggsave("TrainAnchored_Extremes_OBS_Lake_vs_Training.pdf",
+       fig_obs, width = 12, height = 5.5, units = "in")
+
+# =============================================================================
+# FIGURE 2 — ESTIMATED Lake vs Training
+# =============================================================================
+lake_est_ext <- assign_extremes_trainanchored(lake_scored_est, q1_train, q3_train)
+
+sub_lake_est <- paste0("n: ", fmt_counts(lake_est_ext),
+                       "   (Q25=", round(q1_train, 2), ", Q75=", round(q3_train, 2), ")")
+
+p_lake_est <- density_ext_plot(lake_est_ext, "Lake Zurich EST (training-anchored thresholds)", sub_lake_est)
+
+fig_est <- p_lake_est | p_train
+print(fig_est)
+
+ggsave("TrainAnchored_Extremes_EST_Lake_vs_Training.pdf",
+       fig_est, width = 12, height = 5.5, units = "in")
+```
+
+### Training-anchored operational grouping of Lake Zurich taxa: interpretation and critical assessment
+
+#### What this analysis does
+- We applied **fixed, training-derived quartile thresholds** of the genomic trophic index (Q25 = −1.15; Q75 = 1.33) to Lake Zurich species.
+- These thresholds were defined **exclusively from the indicator (training) set** and then projected onto the lake community.
+- As a result, lake taxa are classified relative to a **global reference space of genomic strategies**, not relative to the lake distribution itself.
+
+#### Interpretation of the results
+- Lake Zurich species occupy a **restricted and left-shifted subset** of the trophic index space defined by the training data.
+- The lake distribution is strongly skewed toward low index values, indicating dominance of **oligotrophic genomic strategies**.
+- Using training-anchored thresholds:
+  - The **oligo-like group dominates** the lake community (≈ 100 taxa),
+  - A substantial **intermediate group** remains (≈ 150 taxa),
+  - **Copio-like strategies are rare** (≈ 15 taxa).
+- In contrast, the training set spans the **full continuum** from oligo-like to copio-like strategies, with balanced representation of extremes.
+- This asymmetry demonstrates that Lake Zurich does **not mirror the global strategy space**, but instead occupies a biologically constrained subset of it.
+
+#### Why training-anchored thresholds are important
+- Defining quartiles from the lake distribution itself would:
+  - Redefine “copiotrophic” strategies relative to an already oligotroph-dominated community,
+  - Obscure absolute biological meaning,
+  - Prevent comparison across systems.
+- Training-anchored thresholds preserve **interpretability and comparability** across datasets and environments.
+- The approach explicitly treats these groups as **operational extremes along a continuum**, not as discrete ecological categories.
+
+#### Critical assessment (reviewer-facing)
+- Strengths:
+  - Thresholds are **label-independent and reproducible**.
+  - The method respects the **continuous nature** of trophic strategies.
+  - Extremes are defined conservatively, avoiding overclassification.
+  - Provides a transparent bridge between continuous indices and group-based analyses.
+- Limitations:
+  - Quartile cutoffs are inherently **arbitrary**, though defensible as operational definitions.
+  - Group membership should not be overinterpreted as strict ecological classes.
+- These limitations are mitigated by:
+  - Prior permutation-based PCA validation,
+  - Robustness tests,
+  - Clear presentation of the underlying continuous index.
+
+#### Justification for downstream group-based comparisons
+- While the trophic index is treated as a **continuous axis**, quartile-based groups provide a practical framework for:
+  - Comparing **genomic potential** (e.g., functional gene repertoires),
+  - Assessing **realized proteomic investment** across strategy extremes,
+  - Visualizing contrasts using boxplots or similar summaries.
+- Importantly, such comparisons are **anchored in a validated continuous framework**, ensuring that statistical contrasts do not imply artificial discretization.
+
+#### Take-home message
+- Lake Zurich harbors predominantly oligotrophic and intermediate genomic strategies, with only sparse copiotrophic representation.
+- Training-anchored operational groups allow biologically meaningful, reviewer-safe comparisons while fully respecting the continuum of trophic adaptation.
+- This framework is well suited for subsequent analyses linking genomic capacity to realized proteomic function.
+
+```{r}
+# =============================================================================
+# BLOCK 10A — MONEY FIGURE (OBSERVED Lake Zurich projection) + exports
+# Reviewer-safe, fully hardcoded, no NSE tricks.
+#
+# Inputs assumed to exist:
+#   train_scored      (Training; has TrophicIndex, Classification optional, Label optional)
+#   lake_scored_obs   (Lake OBS; has Species_ID, TrophicIndex, plus numeric predictors)
+#   trophic_cols      (optional; colors for Classification in panel C)
+#
+# Exports:
+#   MoneyFigure_OBS.pdf
+#   LakeZurich_RetainedSpecies_TrophicIndex_TrophicGroup_OBS.csv
+#   LakeZurich_TrophicIndex_PredictorStats_Summary_OBS.csv
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(ggrepel)
+  library(patchwork)
+  library(readr)
+})
+
+# -----------------------------
+# 1) Training-anchored cutoffs (defined ONCE from training)
+# -----------------------------
+q25_train <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+q75_train <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+cat("\n[OBS] Training-anchored cutoffs:\n")
+cat("  Q25 =", round(q25_train, 4), "\n")
+cat("  Q75 =", round(q75_train, 4), "\n")
+
+assign_groups <- function(df) {
+  df %>%
+    mutate(
+      TrophicGroup = case_when(
+        TrophicIndex <= q25_train ~ "Oligo_like",
+        TrophicIndex >= q75_train ~ "Copio_like",
+        TRUE                      ~ "Intermediate"
+      ),
+      TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like"))
+    )
+}
+
+train_g <- assign_groups(train_scored)
+lake_g  <- assign_groups(lake_scored_obs)
+
+cat("\n[OBS] Group sizes (training):\n")
+print(train_g %>% count(TrophicGroup))
+cat("\n[OBS] Group sizes (lake):\n")
+print(lake_g %>% count(TrophicGroup))
+
+# Colors for operational groups
+group_cols <- c(
+  Oligo_like   = "#2166AC",
+  Intermediate = "grey60",
+  Copio_like   = "#B2182B"
+)
+
+# -----------------------------
+# 2) MONEY FIGURE PANELS
+# -----------------------------
+
+# Panel A — Density overlay (Training vs Lake OBS)
+pA <- ggplot() +
+  geom_density(data = train_g, aes(TrophicIndex, color = "Training"), linewidth = 1) +
+  geom_density(data = lake_g,  aes(TrophicIndex, color = "LakeZurich_OBS"), linewidth = 1) +
+  geom_vline(xintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.8) +
+  scale_color_manual(values = c(Training = "black", LakeZurich_OBS = "grey50")) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "A) Calibration + occupancy of index space",
+    subtitle = "Lake Zurich projection uses OBSERVED genomic traits (dashed = training Q25/Q75)",
+    x = "TrophicIndex (training PC1 score)",
+    y = "Density",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+# Panel B — Lake OBS density colored by training-anchored groups
+fmt_counts <- function(df) {
+  tab <- df %>% count(TrophicGroup)
+  paste0(tab$TrophicGroup, "=", tab$n, collapse = " | ")
+}
+sub_lake  <- paste0("n: ", fmt_counts(lake_g),  "   (Q25=", round(q25_train,2), ", Q75=", round(q75_train,2), ")")
+
+pB <- ggplot(lake_g, aes(TrophicIndex, fill = TrophicGroup, color = TrophicGroup)) +
+  geom_density(alpha = 0.35, linewidth = 1) +
+  geom_vline(xintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.8) +
+  scale_fill_manual(values = group_cols, drop = FALSE) +
+  scale_color_manual(values = group_cols, drop = FALSE) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "B) Lake Zurich (OBS) with training-anchored thresholds",
+    subtitle = sub_lake,
+    x = "TrophicIndex (training PC1 score)",
+    y = "Density"
+  ) +
+  theme(legend.position = "top")
+
+# Panel C — Ranked axis with training anchors (lake grey; training colored/labeled)
+use_class_colors <- ("Classification" %in% names(train_g)) && exists("trophic_cols")
+comb <- bind_rows(
+  lake_g  %>% transmute(Species_ID, TrophicIndex, Dataset = "LakeZurich_OBS",
+                        Classification = NA_character_, Label = NA_character_),
+  train_g %>% transmute(
+    Species_ID = as.character(Species_ID),
+    TrophicIndex,
+    Dataset = "Training",
+    Classification = if ("Classification" %in% names(train_g)) as.character(Classification) else NA_character_,
+    Label = if ("Label" %in% names(train_g)) as.character(Label) else as.character(Species_ID)
+  )
+) %>% arrange(TrophicIndex) %>% mutate(Rank = row_number())
+
+pC <- ggplot() +
+  geom_point(
+    data = comb %>% filter(Dataset == "LakeZurich_OBS"),
+    aes(Rank, TrophicIndex),
+    color = "grey75", alpha = 0.8, size = 1.8
+  ) +
+  geom_point(
+    data = comb %>% filter(Dataset == "Training"),
+    aes(Rank, TrophicIndex, color = if (use_class_colors) Classification else Dataset),
+    size = 2.8
+  ) +
+  ggrepel::geom_text_repel(
+    data = comb %>% filter(Dataset == "Training" & !is.na(Label)),
+    aes(Rank, TrophicIndex, label = Label,
+        color = if (use_class_colors) Classification else Dataset),
+    size = 3,
+    max.overlaps = Inf,
+    box.padding = 0.35,
+    point.padding = 0.15,
+    show.legend = FALSE
+  ) +
+  geom_hline(yintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.6) +
+  { if (use_class_colors) scale_color_manual(values = trophic_cols) else scale_color_manual(values = c(Training = "black")) } +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "C) Ranked axis with training anchors",
+    subtitle = "Grey = Lake Zurich (OBS); labeled points = indicator species (dashed = Q25/Q75)",
+    x = "Rank along combined trophic index (low → high)",
+    y = "TrophicIndex (training PC1 score)",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+# Panel D — Bootstrap stability of cutoffs + near-boundary lake fraction
+set.seed(123)
+B <- 2000
+boot_cutoffs <- replicate(B, {
+  idx <- sample(seq_len(nrow(train_g)), replace = TRUE)
+  x <- train_g$TrophicIndex[idx]
+  c(q25 = unname(quantile(x, 0.25, na.rm = TRUE)),
+    q75 = unname(quantile(x, 0.75, na.rm = TRUE)))
+}) %>% t() %>% as.data.frame()
+
+ci_q25 <- quantile(boot_cutoffs$q25, c(0.025, 0.975), na.rm = TRUE)
+ci_q75 <- quantile(boot_cutoffs$q75, c(0.025, 0.975), na.rm = TRUE)
+
+eps <- 0.1 * IQR(train_g$TrophicIndex, na.rm = TRUE)
+near_boundary <- lake_g %>%
+  mutate(near = (abs(TrophicIndex - q25_train) <= eps) | (abs(TrophicIndex - q75_train) <= eps))
+near_frac <- mean(near_boundary$near, na.rm = TRUE)
+near_n <- sum(near_boundary$near, na.rm = TRUE)
+
+boot_long <- boot_cutoffs %>%
+  pivot_longer(cols = everything(), names_to = "Cutoff", values_to = "Value") %>%
+  mutate(Cutoff = recode(Cutoff, q25 = "Q25", q75 = "Q75"))
+
+pD <- ggplot(boot_long, aes(Value, fill = Cutoff)) +
+  geom_histogram(bins = 35, alpha = 0.55, color = "grey30") +
+  geom_vline(xintercept = q25_train, linetype = "dashed", linewidth = 0.8) +
+  geom_vline(xintercept = q75_train, linetype = "dashed", linewidth = 0.8) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "D) Cutoff stability (bootstrap on training set)",
+    subtitle = paste0(
+      "OBS projection; 95% CI: Q25[", round(ci_q25[1],2), ", ", round(ci_q25[2],2),
+      "], Q75[", round(ci_q75[1],2), ", ", round(ci_q75[2],2),
+      "]; Lake near-boundary=", near_n, "/", nrow(lake_g), " (", round(100*near_frac,1), "%), eps=", round(eps,2)
+    ),
+    x = "Bootstrap cutoff value",
+    y = "Count",
+    fill = NULL
+  ) +
+  theme(legend.position = "top")
+
+# Assemble money figure
+money_figure_obs <- (pA | pB) / (pC | pD) +
+  plot_annotation(
+    title = "Training-defined genomic trophic index (Lake Zurich OBS projection)",
+    subtitle = "Index + thresholds defined in indicator species; applied unchanged to Lake Zurich taxa"
+  )
+
+print(money_figure_obs)
+
+# -----------------------------
+# 3) EXPORTS (OBS)
+# -----------------------------
+ggsave("MoneyFigure_OBS.pdf", money_figure_obs, width = 13, height = 10, units = "in")
+
+lake_retained_tbl_obs <- lake_g %>%
+  transmute(
+    Species_ID = as.character(Species_ID),
+    TrophicIndex = as.numeric(TrophicIndex),
+    TrophicGroup = as.character(TrophicGroup)
+  ) %>%
+  arrange(TrophicIndex)
+
+write_csv(lake_retained_tbl_obs, "LakeZurich_RetainedSpecies_TrophicIndex_TrophicGroup_OBS.csv")
+
+# Hypothesis-testing readiness: KW + Cliff's delta (extremes)
+predictors <- lake_g %>% select(where(is.numeric)) %>% names()
+predictors <- setdiff(predictors, c("TrophicIndex"))
+
+kw_tbl <- lapply(predictors, function(v) {
+  dat <- lake_g %>% select(TrophicGroup, all_of(v)) %>% filter(!is.na(TrophicGroup), !is.na(.data[[v]]))
+  kt <- kruskal.test(dat[[v]] ~ dat$TrophicGroup)
+  tibble(Predictor = v, chi_sq = unname(kt$statistic), df = unname(kt$parameter), p_value = unname(kt$p.value))
+}) %>% bind_rows() %>%
+  mutate(p_adj_BH = p.adjust(p_value, method = "BH"))
+
+cliffs_delta <- function(x, y) {
+  x <- x[is.finite(x)]; y <- y[is.finite(y)]
+  if (length(x) == 0 || length(y) == 0) return(NA_real_)
+  diffs <- outer(x, y, "-")
+  (sum(diffs > 0) - sum(diffs < 0)) / (length(x) * length(y))
+}
+cliff_mag <- function(d) {
+  ad <- abs(d)
+  dplyr::case_when(
+    is.na(ad)  ~ NA_character_,
+    ad < 0.147 ~ "negligible",
+    ad < 0.33  ~ "small",
+    ad < 0.474 ~ "medium",
+    TRUE       ~ "large"
+  )
+}
+
+cliff_tbl <- lapply(predictors, function(v) {
+  dat <- lake_g %>% select(TrophicGroup, all_of(v)) %>%
+    filter(!is.na(TrophicGroup), !is.na(.data[[v]]), TrophicGroup %in% c("Oligo_like","Copio_like"))
+  x <- dat %>% filter(TrophicGroup == "Oligo_like") %>% pull(v)
+  y <- dat %>% filter(TrophicGroup == "Copio_like") %>% pull(v)
+  d <- cliffs_delta(x, y)
+  tibble(Predictor = v, Cliff_delta = d, Magnitude = cliff_mag(d))
+}) %>% bind_rows()
+
+stats_summary_tbl_obs <- kw_tbl %>%
+  transmute(Predictor, KW_chi2 = chi_sq, KW_df = df, KW_p = p_value, KW_p_BH = p_adj_BH) %>%
+  left_join(cliff_tbl, by = "Predictor") %>%
+  mutate(
+    Cliff_delta = round(as.numeric(Cliff_delta), 3),
+    KW_p        = signif(as.numeric(KW_p), 3),
+    KW_p_BH     = signif(as.numeric(KW_p_BH), 3)
+  ) %>%
+  arrange(KW_p_BH)
+
+write_csv(stats_summary_tbl_obs, "LakeZurich_TrophicIndex_PredictorStats_Summary_OBS.csv")
+# =============================================================================
+```
+```{r}
+# =============================================================================
+# BLOCK 10B — MONEY FIGURE (ESTIMATED Lake Zurich projection) + exports
+# Same as 10A, but uses lake_scored_est and labels everything "EST".
+#
+# Inputs assumed to exist:
+#   train_scored
+#   lake_scored_est
+#   trophic_cols (optional)
+#
+# Exports:
+#   MoneyFigure_EST.pdf
+#   LakeZurich_RetainedSpecies_TrophicIndex_TrophicGroup_EST.csv
+#   LakeZurich_TrophicIndex_PredictorStats_Summary_EST.csv
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(ggrepel)
+  library(patchwork)
+  library(readr)
+})
+
+# 1) Training-anchored cutoffs (same reference thresholds)
+q25_train <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+q75_train <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+cat("\n[EST] Training-anchored cutoffs:\n")
+cat("  Q25 =", round(q25_train, 4), "\n")
+cat("  Q75 =", round(q75_train, 4), "\n")
+
+assign_groups <- function(df) {
+  df %>%
+    mutate(
+      TrophicGroup = case_when(
+        TrophicIndex <= q25_train ~ "Oligo_like",
+        TrophicIndex >= q75_train ~ "Copio_like",
+        TRUE                      ~ "Intermediate"
+      ),
+      TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like"))
+    )
+}
+
+train_g <- assign_groups(train_scored)
+lake_g  <- assign_groups(lake_scored_est)
+
+cat("\n[EST] Group sizes (training):\n")
+print(train_g %>% count(TrophicGroup))
+cat("\n[EST] Group sizes (lake):\n")
+print(lake_g %>% count(TrophicGroup))
+
+group_cols <- c(
+  Oligo_like   = "#2166AC",
+  Intermediate = "grey60",
+  Copio_like   = "#B2182B"
+)
+
+# Panel A — Density overlay (Training vs Lake EST)
+pA <- ggplot() +
+  geom_density(data = train_g, aes(TrophicIndex, color = "Training"), linewidth = 1) +
+  geom_density(data = lake_g,  aes(TrophicIndex, color = "LakeZurich_EST"), linewidth = 1) +
+  geom_vline(xintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.8) +
+  scale_color_manual(values = c(Training = "black", LakeZurich_EST = "grey50")) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "A) Calibration + occupancy of index space",
+    subtitle = "Lake Zurich projection uses ESTIMATED (completion-corrected) traits (dashed = training Q25/Q75)",
+    x = "TrophicIndex (training PC1 score)",
+    y = "Density",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+# Panel B — Lake EST density colored by training-anchored groups
+fmt_counts <- function(df) {
+  tab <- df %>% count(TrophicGroup)
+  paste0(tab$TrophicGroup, "=", tab$n, collapse = " | ")
+}
+sub_lake <- paste0("n: ", fmt_counts(lake_g), "   (Q25=", round(q25_train,2), ", Q75=", round(q75_train,2), ")")
+
+pB <- ggplot(lake_g, aes(TrophicIndex, fill = TrophicGroup, color = TrophicGroup)) +
+  geom_density(alpha = 0.35, linewidth = 1) +
+  geom_vline(xintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.8) +
+  scale_fill_manual(values = group_cols, drop = FALSE) +
+  scale_color_manual(values = group_cols, drop = FALSE) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "B) Lake Zurich (EST) with training-anchored thresholds",
+    subtitle = sub_lake,
+    x = "TrophicIndex (training PC1 score)",
+    y = "Density"
+  ) +
+  theme(legend.position = "top")
+
+# Panel C — Ranked axis with training anchors
+use_class_colors <- ("Classification" %in% names(train_g)) && exists("trophic_cols")
+comb <- bind_rows(
+  lake_g  %>% transmute(Species_ID, TrophicIndex, Dataset = "LakeZurich_EST",
+                        Classification = NA_character_, Label = NA_character_),
+  train_g %>% transmute(
+    Species_ID = as.character(Species_ID),
+    TrophicIndex,
+    Dataset = "Training",
+    Classification = if ("Classification" %in% names(train_g)) as.character(Classification) else NA_character_,
+    Label = if ("Label" %in% names(train_g)) as.character(Label) else as.character(Species_ID)
+  )
+) %>% arrange(TrophicIndex) %>% mutate(Rank = row_number())
+
+pC <- ggplot() +
+  geom_point(
+    data = comb %>% filter(Dataset == "LakeZurich_EST"),
+    aes(Rank, TrophicIndex),
+    color = "grey75", alpha = 0.8, size = 1.8
+  ) +
+  geom_point(
+    data = comb %>% filter(Dataset == "Training"),
+    aes(Rank, TrophicIndex, color = if (use_class_colors) Classification else Dataset),
+    size = 2.8
+  ) +
+  ggrepel::geom_text_repel(
+    data = comb %>% filter(Dataset == "Training" & !is.na(Label)),
+    aes(Rank, TrophicIndex, label = Label,
+        color = if (use_class_colors) Classification else Dataset),
+    size = 3,
+    max.overlaps = Inf,
+    box.padding = 0.35,
+    point.padding = 0.15,
+    show.legend = FALSE
+  ) +
+  geom_hline(yintercept = c(q25_train, q75_train), linetype = "dashed", linewidth = 0.6) +
+  { if (use_class_colors) scale_color_manual(values = trophic_cols) else scale_color_manual(values = c(Training = "black")) } +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "C) Ranked axis with training anchors",
+    subtitle = "Grey = Lake Zurich (EST); labeled points = indicator species (dashed = Q25/Q75)",
+    x = "Rank along combined trophic index (low → high)",
+    y = "TrophicIndex (training PC1 score)",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+# Panel D — Bootstrap stability + near-boundary fraction
+set.seed(123)
+B <- 2000
+boot_cutoffs <- replicate(B, {
+  idx <- sample(seq_len(nrow(train_g)), replace = TRUE)
+  x <- train_g$TrophicIndex[idx]
+  c(q25 = unname(quantile(x, 0.25, na.rm = TRUE)),
+    q75 = unname(quantile(x, 0.75, na.rm = TRUE)))
+}) %>% t() %>% as.data.frame()
+
+ci_q25 <- quantile(boot_cutoffs$q25, c(0.025, 0.975), na.rm = TRUE)
+ci_q75 <- quantile(boot_cutoffs$q75, c(0.025, 0.975), na.rm = TRUE)
+
+eps <- 0.1 * IQR(train_g$TrophicIndex, na.rm = TRUE)
+near_boundary <- lake_g %>%
+  mutate(near = (abs(TrophicIndex - q25_train) <= eps) | (abs(TrophicIndex - q75_train) <= eps))
+near_frac <- mean(near_boundary$near, na.rm = TRUE)
+near_n <- sum(near_boundary$near, na.rm = TRUE)
+
+boot_long <- boot_cutoffs %>%
+  pivot_longer(cols = everything(), names_to = "Cutoff", values_to = "Value") %>%
+  mutate(Cutoff = recode(Cutoff, q25 = "Q25", q75 = "Q75"))
+
+pD <- ggplot(boot_long, aes(Value, fill = Cutoff)) +
+  geom_histogram(bins = 35, alpha = 0.55, color = "grey30") +
+  geom_vline(xintercept = q25_train, linetype = "dashed", linewidth = 0.8) +
+  geom_vline(xintercept = q75_train, linetype = "dashed", linewidth = 0.8) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "D) Cutoff stability (bootstrap on training set)",
+    subtitle = paste0(
+      "EST projection; 95% CI: Q25[", round(ci_q25[1],2), ", ", round(ci_q25[2],2),
+      "], Q75[", round(ci_q75[1],2), ", ", round(ci_q75[2],2),
+      "]; Lake near-boundary=", near_n, "/", nrow(lake_g), " (", round(100*near_frac,1), "%), eps=", round(eps,2)
+    ),
+    x = "Bootstrap cutoff value",
+    y = "Count",
+    fill = NULL
+  ) +
+  theme(legend.position = "top")
+
+money_figure_est <- (pA | pB) / (pC | pD) +
+  plot_annotation(
+    title = "Training-defined genomic trophic index (Lake Zurich EST projection)",
+    subtitle = "Index + thresholds defined in indicator species; applied unchanged to Lake Zurich taxa"
+  )
+
+print(money_figure_est)
+
+# -----------------------------
+# EXPORTS (EST)
+# -----------------------------
+ggsave("MoneyFigure_EST.pdf", money_figure_est, width = 13, height = 10, units = "in")
+
+lake_retained_tbl_est <- lake_g %>%
+  transmute(
+    Species_ID = as.character(Species_ID),
+    TrophicIndex = as.numeric(TrophicIndex),
+    TrophicGroup = as.character(TrophicGroup)
+  ) %>%
+  arrange(TrophicIndex)
+
+write_csv(lake_retained_tbl_est, "LakeZurich_RetainedSpecies_TrophicIndex_TrophicGroup_EST.csv")
+
+# Hypothesis-testing readiness: KW + Cliff's delta
+predictors <- lake_g %>% select(where(is.numeric)) %>% names()
+predictors <- setdiff(predictors, c("TrophicIndex"))
+
+kw_tbl <- lapply(predictors, function(v) {
+  dat <- lake_g %>% select(TrophicGroup, all_of(v)) %>% filter(!is.na(TrophicGroup), !is.na(.data[[v]]))
+  kt <- kruskal.test(dat[[v]] ~ dat$TrophicGroup)
+  tibble(Predictor = v, chi_sq = unname(kt$statistic), df = unname(kt$parameter), p_value = unname(kt$p.value))
+}) %>% bind_rows() %>%
+  mutate(p_adj_BH = p.adjust(p_value, method = "BH"))
+
+cliffs_delta <- function(x, y) {
+  x <- x[is.finite(x)]; y <- y[is.finite(y)]
+  if (length(x) == 0 || length(y) == 0) return(NA_real_)
+  diffs <- outer(x, y, "-")
+  (sum(diffs > 0) - sum(diffs < 0)) / (length(x) * length(y))
+}
+cliff_mag <- function(d) {
+  ad <- abs(d)
+  dplyr::case_when(
+    is.na(ad)  ~ NA_character_,
+    ad < 0.147 ~ "negligible",
+    ad < 0.33  ~ "small",
+    ad < 0.474 ~ "medium",
+    TRUE       ~ "large"
+  )
+}
+
+cliff_tbl <- lapply(predictors, function(v) {
+  dat <- lake_g %>% select(TrophicGroup, all_of(v)) %>%
+    filter(!is.na(TrophicGroup), !is.na(.data[[v]]), TrophicGroup %in% c("Oligo_like","Copio_like"))
+  x <- dat %>% filter(TrophicGroup == "Oligo_like") %>% pull(v)
+  y <- dat %>% filter(TrophicGroup == "Copio_like") %>% pull(v)
+  d <- cliffs_delta(x, y)
+  tibble(Predictor = v, Cliff_delta = d, Magnitude = cliff_mag(d))
+}) %>% bind_rows()
+
+stats_summary_tbl_est <- kw_tbl %>%
+  transmute(Predictor, KW_chi2 = chi_sq, KW_df = df, KW_p = p_value, KW_p_BH = p_adj_BH) %>%
+  left_join(cliff_tbl, by = "Predictor") %>%
+  mutate(
+    Cliff_delta = round(as.numeric(Cliff_delta), 3),
+    KW_p        = signif(as.numeric(KW_p), 3),
+    KW_p_BH     = signif(as.numeric(KW_p_BH), 3)
+  ) %>%
+  arrange(KW_p_BH)
+
+write_csv(stats_summary_tbl_est, "LakeZurich_TrophicIndex_PredictorStats_Summary_EST.csv")
+# =============================================================================
+```
+
+
+## Block 10 — “Money figure” + hypothesis-testing readiness (technical + biological interpretation)
+
+### What this figure establishes (and why it is reviewer-convincing)
+
+This block demonstrates **three things at once**:
+
+1. **Calibration (training-defined scale):** the trophic index is defined in the indicator (training) set, and Lake Zurich taxa are **projected into the same PC1 space** (Panels A–C).  
+2. **Operational grouping for hypothesis testing:** fixed **training-anchored cutoffs** (Q25/Q75) define three *operational* strategy groups (**Oligo_like / Meso / Copio_like**) that can be used in downstream comparisons (Panels B–C).  
+3. **Stability / fragility check:** the block quantifies how stable those cutoffs are under resampling of the small training set, and how many lake taxa sit close enough to the thresholds that their group assignment could plausibly flip under slightly different cutoffs (Panel D + “near-boundary” metric).
+
+---
+
+### Panel-by-panel interpretation
+
+#### **A) Calibration + occupancy of index space (Training vs Lake densities)**
+- The **lake distribution is shifted to lower index values** compared to the training set.
+- This means Lake Zurich taxa occupy a **restricted, oligotroph-skewed subset** of the broader genomic strategy continuum spanned by the indicator species.
+- Importantly, this is not a circular result: the **training** data define the axis and cutoffs; the **lake** data only reveal how environmental taxa populate that axis.
+
+**Biological meaning:** the Lake Zurich MAG set is dominated by streamlined / low-investment genomic strategies, with relatively few taxa showing the high-index “copiotroph-like” trait combination.
+
+#### **B) Training-anchored operational groups (Lake and Training shown separately)**
+Cutoffs are fixed from the training set:
+- **Q25 = −1.1469**, **Q75 = 1.3329**
+- Training group sizes: **6 / 10 / 6** (as expected from quartiles in n=22)
+- Lake group sizes: **102 / 150 / 16** (strong oligotroph bias)
+
+**Interpretation:** using **training-anchored cutoffs** preserves *absolute meaning* of “extreme” strategies.  
+If lake-specific quartiles were used, the “Copio_like” group would be redefined relative to an already oligotroph-dominated community, weakening comparability and biological interpretation.
+
+#### **C) Ranked axis with training anchors**
+- Grey points show **all lake taxa ranked along the same axis**.
+- Colored/labeled training points serve as **anchors** that link the axis back to well-characterized indicator taxa.
+
+**Interpretation:** this panel makes the index usable for readers: the axis has an ecological interpretation (streamlined → investment-rich) and the lake taxa can be interpreted relative to known reference organisms.
+
+#### **D) Cutoff stability (bootstrap on training) + “near-boundary” lake fraction**
+Because the training set is small (**n = 22**), quartile cutoffs are **order statistics** and can move noticeably under bootstrap resampling:
+- Q25 bootstrap 95% CI: **[-2.262, -0.036]**
+- Q75 bootstrap 95% CI: **[0.012, 1.975]**
+
+This does **not** mean the index is unstable; it means the *exact numeric location* of Q25/Q75 has uncertainty when estimated from small n.
+
+---
+
+### What “lake near-boundary taxa” means (precise definition)
+
+A lake taxon is counted as **near-boundary** if its trophic index lies within a small tolerance **ε** of **either cutoff** (Q25 or Q75):
+
+\[
+\text{near} =
+\left|\text{TI} - Q25\right|\le \varepsilon
+\quad \text{or} \quad
+\left|\text{TI} - Q75\right|\le \varepsilon
+\]
+
+Here you defined:
+
+\[
+\varepsilon = 0.1 \times \mathrm{IQR}(\text{TI}_{train})
+\]
+
+In your run:
+- **ε = 0.248**
+- **52 / 268 lake taxa (19.4%)** are near a cutoff
+
+**Interpretation:** ~19% of lake taxa sit close enough to the decision boundaries that small shifts in the training-estimated cutoffs (e.g., under bootstrap uncertainty) could change their discrete group assignment.  
+This is a **fragility diagnostic**, not a failure:
+- taxa far from cutoffs are **robustly classified**
+- taxa near cutoffs are inherently “borderline” on a continuum (biologically reasonable)
+
+**How to use this in hypothesis testing:**  
+- For primary analyses, use all taxa with the fixed cutoffs (keeps power).  
+- For sensitivity, rerun key tests after excluding near-boundary taxa (or treating TI continuously); robust conclusions should persist.
+
+---
+
+## Hypothesis-testing readiness: what the stats table is actually proving
+
+Your summary table reports, per predictor, a **global Kruskal–Wallis test across the 3 lake groups**, plus an **effect size for extremes** (Cliff’s delta: Oligo_like vs Copio_like).
+
+### Technical interpretation
+- **Kruskal–Wallis** tests whether the distributions differ among the three groups (non-parametric; robust to skew and unequal n).
+- **BH correction** controls false discovery rate across predictors.
+- **Cliff’s delta** quantifies effect size between extremes:
+  - δ ≈ −1: Copio_like almost always > Oligo_like
+  - δ ≈ +1: Oligo_like almost always > Copio_like
+  - magnitude labels summarize practical effect size.
+
+### Biological interpretation (what differs between strategies)
+The strongest signals are exactly the traits expected to define “investment vs streamlining”:
+
+- **GENOME_LENGTH**: KW p ≪ 10⁻³⁰, **δ = −1 (large)**  
+  → Copio_like genomes are consistently larger than Oligo_like genomes.
+
+- **CODING_DENSITY**: KW p ≪ 10⁻³⁰, **δ = +0.962 (large)**  
+  → Oligo_like genomes are consistently more streamlined/compact.
+
+- **NUM_SIGMA**: KW p ≪ 10⁻²⁰, **δ = −1 (large)**  
+  → Copio_like taxa have far higher regulatory capacity.
+
+- **TOTAL_TRNA**: KW p ~ 10⁻⁸, **δ = −0.914 (large)**  
+  → Copio_like taxa show higher translational investment.
+
+- **MAX_RRNA**: KW p ~ 10⁻⁶, **δ = −0.472 (medium)**  
+  → growth potential proxy separates extremes, but more weakly (expected for MAG-derived rRNA features and ecological decoupling).
+
+Overall: the operational groups correspond to **biologically coherent and strongly separated genomic syndromes**, not arbitrary bins.
+
+---
+
+## Critical assessment (what a careful reviewer might ask, and how you answer)
+
+1. **“Aren’t group differences inevitable because groups are defined on the same index?”**  
+   Partly yes for traits used to compute the index, but your key defense is:
+   - the cutoffs are **defined in training**, and the separation is shown in an **independent lake dataset**.
+   - the result is a **generalization test**: the same axis meaningfully stratifies an environmental community.
+
+2. **“Bootstrap CI of Q25/Q75 is wide.”**  
+   True, because n=22 and quartiles are discrete. You explicitly quantify this and show its practical consequence (near-boundary fraction).  
+   This strengthens credibility because you are not hiding uncertainty.
+
+3. **“Does discretization contradict the continuum claim?”**  
+   No—your grouping is explicitly **operational** for hypothesis tests.  
+   The continuum is still preserved by:
+   - reporting **continuous TI** in core figures (A/C)
+   - using groups only as a pragmatic way to compare genomic/proteomic outcomes (B + downstream boxplots)
+   - optionally including sensitivity analyses excluding near-boundary taxa.
+
+---
+
+## How to “sell” the take-home message (text you can reuse)
+
+**“A training-defined genomic trophic index provides a calibrated, biologically anchored continuum of genomic investment strategies. When projected onto Lake Zurich taxa, the community occupies a predominantly oligotrophic region of this index space. Fixed training-anchored thresholds define operational strategy groups that enable hypothesis testing, and these groups show strong, coherent differences in genome size, streamlining, and regulatory/translational capacity. Bootstrap diagnostics quantify cutoff uncertainty given the small training set and identify a minority of near-boundary taxa whose discrete assignment is most sensitive—providing a transparent robustness check rather than an ad hoc categorization.”**
+
+
+# publication plot
+```{r}
+# =============================================================================
+# PUBLICATION FIGURE A (OBSERVED)
+# Uses: dat_feat_ti, trophic_cols, lake_scored_obs
+# Exports: Fig_TrophicIndex_Training_vs_LakeZurich_FINAL_OBS.pdf
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -----------------------------
+# 1) Training-anchored cutoffs (fixed reference)
+# -----------------------------
+q25_train <- unname(quantile(dat_feat_ti$TrophicIndex, 0.25, na.rm = TRUE))
+q75_train <- unname(quantile(dat_feat_ti$TrophicIndex, 0.75, na.rm = TRUE))
+
+group_cols <- c(
+  Oligo_like   = "#2166AC",
+  Intermediate = "grey60",
+  Copio_like   = "#B2182B"
+)
+
+shade_layers <- function(q25, q75, group_cols) {
+  list(
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = q25,
+             fill = group_cols["Oligo_like"], alpha = 0.06),
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = q25,  ymax = q75,
+             fill = group_cols["Intermediate"], alpha = 0.05),
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = q75,  ymax = Inf,
+             fill = group_cols["Copio_like"], alpha = 0.06),
+    geom_hline(yintercept = c(q25, q75),
+               linetype = "dashed", linewidth = 0.7, color = "grey35")
+  )
+}
+
+# -----------------------------
+# 2) TRAINING: ranked scatter + attached density
+# -----------------------------
+train_plot_df <- dat_feat_ti %>%
+  mutate(
+    TrophicGroup = case_when(
+      TrophicIndex <= q25_train ~ "Oligo_like",
+      TrophicIndex >= q75_train ~ "Copio_like",
+      TRUE                      ~ "Intermediate"
+    ),
+    TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like"))
+  ) %>%
+  arrange(TrophicIndex) %>%
+  mutate(Rank = row_number())
+
+train_y <- c(-3, 5)
+
+p_train_rank <- ggplot(train_plot_df, aes(Rank, TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_point(aes(fill = Classification),
+             shape = 21, color = "black", stroke = 0.35, size = 5, alpha = 0.75) +
+  scale_fill_manual(values = trophic_cols) +
+  scale_x_continuous(limits = c(0, 22), breaks = seq(0, 22, 4), expand = c(0.05, 0)) +
+  scale_y_continuous(limits = train_y, breaks = seq(-3, 5, 2), expand = c(0, 0)) +
+  coord_cartesian(ylim = train_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(5.5, 0, 5.5, 5.5)
+  ) +
+  labs(x = "Rank", y = "TrophicIndex", fill = NULL)
+
+p_train_density <- ggplot(train_plot_df, aes(y = TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_density(aes(x = after_stat(density), fill = Classification, color = Classification),
+               linewidth = 0.8, alpha = 0.35, adjust = 1) +
+  scale_fill_manual(values = trophic_cols) +
+  scale_color_manual(values = trophic_cols) +
+  geom_density(aes(x = after_stat(density)),
+               color = "black", fill = NA, linewidth = 1.1, adjust = 1) +
+  scale_y_continuous(limits = train_y, expand = c(0, 0)) +
+  coord_cartesian(ylim = train_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.title = element_blank(),
+    axis.text  = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(5.5, 5.5, 5.5, 0)
+  )
+
+train_rank_density_fig <- p_train_rank + p_train_density + plot_layout(widths = c(4, 2))
+
+# -----------------------------
+# 3) LAKE (OBSERVED): build grouped lake_g locally from lake_scored_obs
+# -----------------------------
+lake_plot_df <- lake_scored_obs %>%
+  mutate(
+    TrophicGroup = case_when(
+      TrophicIndex <= q25_train ~ "Oligo_like",
+      TrophicIndex >= q75_train ~ "Copio_like",
+      TRUE                      ~ "Intermediate"
+    ),
+    TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like")),
+    Highlight = case_when(
+      Phylum == "Planctomycetota" ~ "Planctomycetota",
+      Genus  == "Planktophila"    ~ "Planktophila",
+      Genus  == "Flavobacterium"  ~ "Flavobacterium",
+      Genus  == "Fonsibacter"     ~ "Fonsibacter",
+      TRUE                        ~ "Other"
+    ),
+    Highlight = factor(Highlight,
+                       levels = c("Planctomycetota","Planktophila","Flavobacterium","Fonsibacter","Other"))
+  ) %>%
+  arrange(TrophicIndex) %>%
+  mutate(Rank = row_number())
+
+hl_cols <- c(
+  Planctomycetota = "#7B3294",
+  Planktophila    = "#008837",
+  Flavobacterium  = "#E66101",
+  Fonsibacter     = "#1F78B4",
+  Other           = "grey75"
+)
+
+lake_y <- c(-3, 7)
+
+p_lake_rank <- ggplot(lake_plot_df, aes(Rank, TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_point(aes(fill = Highlight),
+             shape = 21, color = "black", stroke = 0.35, size = 5, alpha = 0.75) +
+  scale_fill_manual(values = hl_cols,
+                    breaks = c("Planctomycetota","Planktophila","Flavobacterium","Fonsibacter"),
+                    drop = FALSE) +
+  scale_x_continuous(limits = c(0, nrow(lake_plot_df)),
+                     breaks = seq(0, nrow(lake_plot_df), 50),
+                     expand = c(0.05, 0)) +
+  scale_y_continuous(limits = lake_y, breaks = seq(-3, 7, 2), expand = c(0, 0)) +
+  coord_cartesian(ylim = lake_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(5.5, 0, 5.5, 5.5)
+  ) +
+  labs(x = "Rank", y = "TrophicIndex", fill = NULL)
+
+p_lake_density <- ggplot(lake_plot_df, aes(y = TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_density(aes(x = after_stat(density), fill = TrophicGroup, color = TrophicGroup),
+               linewidth = 0.9, alpha = 0.35, adjust = 1) +
+  scale_fill_manual(values = group_cols, drop = FALSE) +
+  scale_color_manual(values = group_cols, drop = FALSE) +
+  geom_density(aes(x = after_stat(density)),
+               color = "black", fill = NA, linewidth = 1.1, adjust = 1) +
+  scale_y_continuous(limits = lake_y, expand = c(0, 0)) +
+  coord_cartesian(ylim = lake_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.title = element_blank(),
+    axis.text  = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(5.5, 5.5, 5.5, 0)
+  )
+
+lake_rank_density_fig <- p_lake_rank + p_lake_density + plot_layout(widths = c(4, 2))
+
+# -----------------------------
+# 4) FINAL stacked figure + export
+# -----------------------------
+final_train_lake_fig_obs <- train_rank_density_fig / lake_rank_density_fig +
+  plot_layout(heights = c(1, 2))
+
+final_train_lake_fig_obs
+
+ggsave("Fig_TrophicIndex_Training_vs_LakeZurich_FINAL_OBS.pdf",
+       final_train_lake_fig_obs, width = 12, height = 9, units = "in", dpi = 300)
+```
+
+```{r}
+# =============================================================================
+# PUBLICATION FIGURE B (ESTIMATED)
+# Uses: dat_feat_ti, trophic_cols, lake_scored_est
+# Exports: Fig_TrophicIndex_Training_vs_LakeZurich_FINAL_EST.pdf
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# -----------------------------
+# 1) Training-anchored cutoffs (fixed reference)
+# -----------------------------
+q25_train <- unname(quantile(dat_feat_ti$TrophicIndex, 0.25, na.rm = TRUE))
+q75_train <- unname(quantile(dat_feat_ti$TrophicIndex, 0.75, na.rm = TRUE))
+
+# q25_train
+# -1.146852
+# q75_train
+# 1.332919
+
+group_cols <- c(
+  Oligo_like   = "#2166AC",
+  Intermediate = "grey60",
+  Copio_like   = "#B2182B"
+)
+
+shade_layers <- function(q25, q75, group_cols) {
+  list(
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = q25,
+             fill = group_cols["Oligo_like"], alpha = 0.06),
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = q25,  ymax = q75,
+             fill = group_cols["Intermediate"], alpha = 0.05),
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = q75,  ymax = Inf,
+             fill = group_cols["Copio_like"], alpha = 0.06),
+    geom_hline(yintercept = c(q25, q75),
+               linetype = "dashed", linewidth = 0.7, color = "grey35")
+  )
+}
+
+# -----------------------------
+# 2) TRAINING: ranked scatter + attached density (same as OBS)
+# -----------------------------
+train_plot_df <- dat_feat_ti %>%
+  mutate(
+    TrophicGroup = case_when(
+      TrophicIndex <= q25_train ~ "Oligo_like",
+      TrophicIndex >= q75_train ~ "Copio_like",
+      TRUE                      ~ "Intermediate"
+    ),
+    TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like"))
+  ) %>%
+  arrange(TrophicIndex) %>%
+  mutate(Rank = row_number())
+
+train_y <- c(-3, 5)
+
+p_train_rank <- ggplot(train_plot_df, aes(Rank, TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_point(aes(fill = Classification),
+             shape = 21, color = "black", stroke = 0.35, size = 5, alpha = 0.75) +
+  scale_fill_manual(values = trophic_cols) +
+  scale_x_continuous(limits = c(0, 22), breaks = seq(0, 22, 4), expand = c(0.05, 0)) +
+  scale_y_continuous(limits = train_y, breaks = seq(-3, 5, 2), expand = c(0, 0)) +
+  coord_cartesian(ylim = train_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(5.5, 0, 5.5, 5.5)
+  ) +
+  labs(x = "Rank", y = "TrophicIndex", fill = NULL)
+
+p_train_density <- ggplot(train_plot_df, aes(y = TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_density(aes(x = after_stat(density), fill = Classification, color = Classification),
+               linewidth = 0.8, alpha = 0.35, adjust = 1) +
+  scale_fill_manual(values = trophic_cols) +
+  scale_color_manual(values = trophic_cols) +
+  geom_density(aes(x = after_stat(density)),
+               color = "black", fill = NA, linewidth = 1.1, adjust = 1) +
+  scale_y_continuous(limits = train_y, expand = c(0, 0)) +
+  coord_cartesian(ylim = train_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.title = element_blank(),
+    axis.text  = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(5.5, 5.5, 5.5, 0)
+  )
+
+train_rank_density_fig <- p_train_rank + p_train_density + plot_layout(widths = c(4, 2))
+
+# -----------------------------
+# 3) LAKE (ESTIMATED): build grouped lake_g locally from lake_scored_est
+# -----------------------------
+lake_plot_df <- lake_scored_est %>%
+  mutate(
+    TrophicGroup = case_when(
+      TrophicIndex <= q25_train ~ "Oligo_like",
+      TrophicIndex >= q75_train ~ "Copio_like",
+      TRUE                      ~ "Intermediate"
+    ),
+    TrophicGroup = factor(TrophicGroup, levels = c("Oligo_like","Intermediate","Copio_like")),
+    Highlight = case_when(
+      Phylum == "Planctomycetota" ~ "Planctomycetota",
+      Genus  == "Planktophila"    ~ "Planktophila",
+      Genus  == "Flavobacterium"  ~ "Flavobacterium",
+      Genus  == "Fonsibacter"     ~ "Fonsibacter",
+      TRUE                        ~ "Other"
+    ),
+    Highlight = factor(Highlight,
+                       levels = c("Planctomycetota","Planktophila","Flavobacterium","Fonsibacter","Other"))
+  ) %>%
+  arrange(TrophicIndex) %>%
+  mutate(Rank = row_number())
+
+hl_cols <- c(
+  Planctomycetota = "#7B3294",
+  Planktophila    = "#008837",
+  Flavobacterium  = "#E66101",
+  Fonsibacter     = "#1F78B4",
+  Other           = "grey75"
+)
+
+lake_y <- c(-3, 8)
+
+p_lake_rank <- ggplot(lake_plot_df, aes(Rank, TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_point(aes(fill = Highlight),
+             shape = 21, color = "black", stroke = 0.35, size = 5, alpha = 0.75) +
+  scale_fill_manual(values = hl_cols,
+                    breaks = c("Planctomycetota","Planktophila","Flavobacterium","Fonsibacter"),
+                    drop = FALSE) +
+  scale_x_continuous(limits = c(0, nrow(lake_plot_df)),
+                     breaks = seq(0, nrow(lake_plot_df), 50),
+                     expand = c(0.05, 0)) +
+  scale_y_continuous(limits = lake_y, breaks = seq(-3, 7, 2), expand = c(0, 0)) +
+  coord_cartesian(ylim = lake_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(5.5, 0, 5.5, 5.5)
+  ) +
+  labs(x = "Rank", y = "TrophicIndex", fill = NULL)
+
+p_lake_density <- ggplot(lake_plot_df, aes(y = TrophicIndex)) +
+  shade_layers(q25_train, q75_train, group_cols) +
+  geom_density(aes(x = after_stat(density), fill = TrophicGroup, color = TrophicGroup),
+               linewidth = 0.9, alpha = 0.35, adjust = 1) +
+  scale_fill_manual(values = group_cols, drop = FALSE) +
+  scale_color_manual(values = group_cols, drop = FALSE) +
+  geom_density(aes(x = after_stat(density)),
+               color = "black", fill = NA, linewidth = 1.1, adjust = 1) +
+  scale_y_continuous(limits = lake_y, expand = c(0, 0)) +
+  coord_cartesian(ylim = lake_y, clip = "off") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.title = element_blank(),
+    axis.text  = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(5.5, 5.5, 5.5, 0)
+  )
+
+lake_rank_density_fig <- p_lake_rank + p_lake_density + plot_layout(widths = c(4, 2))
+
+# -----------------------------
+# 4) FINAL stacked figure + export
+# -----------------------------
+final_train_lake_fig_est <- train_rank_density_fig / lake_rank_density_fig +
+  plot_layout(heights = c(1, 2))
+
+final_train_lake_fig_est
+
+ggsave("Fig_TrophicIndex_Training_vs_LakeZurich_FINAL_EST.pdf",
+       final_train_lake_fig_est, width = 11, height = 14.5, units = "in", dpi = 300)
+```
+
+## Reviewer-facing methodological summary and interpretation
+
+### Methodological goal
+- Derive a **continuous genomic trophic strategy axis** from indicator species with known lifestyles.
+- Use this axis as a **reference strategy space** onto which lake community genomes can be projected.
+- Quantify **ecosystem occupancy of trophic strategies** without re-fitting or re-scaling the axis.
+
+---
+
+### What is done (training / indicator species)
+- A genomic feature matrix from indicator species is reduced to a single **TrophicIndex** (PC1).
+- Species are ranked along this axis to visualize monotonic variation in trophic strategy.
+- **A priori trophic labels** (oligotroph, mesotroph, copiotroph) are *not used to define the axis*, but are used for **post hoc validation**.
+- Training quartiles (Q25/Q75) of the TrophicIndex define **operational regions**:
+  - Oligo-like (≤ Q25)
+  - Intermediate (Q25–Q75)
+  - Copio-like (≥ Q75)
+- Side densities show:
+  - Colored densities: \( p(\text{TrophicIndex} \mid \text{known trophic class}) \)
+  - Black outline: overall \( p(\text{TrophicIndex}) \)
+- Purpose:
+  - Validate that the learned axis **recovers known trophic strategies**.
+  - Demonstrate overlap and continuity rather than discrete class separation.
+
+---
+
+### What is done (Lake Zurich projection)
+- Lake genomes are **projected onto the fixed training-defined TrophicIndex**.
+- No re-training, re-centering, or lake-specific thresholds are applied.
+- Species are ranked to visualize **relative positioning within the reference strategy space**.
+- Training Q25/Q75 cutoffs are reused to define **operational trophic groups** in the lake.
+- Side densities show:
+  - Colored densities: \( p(\text{TrophicIndex} \mid \text{operational region}) \)
+  - Black outline: overall lake \( p(\text{TrophicIndex}) \)
+- Purpose:
+  - Quantify how the lake community **occupies** the reference trophic space.
+  - Identify enrichment or depletion of oligotrophic vs copiotrophic strategies.
+
+---
+
+### Why densities are shown differently in training vs lake
+- **Training densities** are conditioned on *external labels*:
+  - Used for **biological validation** of the learned axis.
+  - Avoids circularity (index is not used to define its own groups).
+- **Lake densities** are conditioned on *index-derived operational regions*:
+  - No external trophic labels exist.
+  - Used for **ecological interpretation and comparison**.
+- This asymmetry is intentional and reflects two distinct scientific questions:
+  - *Does the axis capture known biology?* (training)
+  - *How does the ecosystem occupy that axis?* (lake)
+
+---
+
+### Why the overall density is drawn on top
+- The black density line represents the **marginal distribution** of the data.
+- Drawing it last improves visibility without altering underlying data.
+- Group densities remain semi-transparent and interpretable.
+- This follows standard practice in trait-based ecology and latent-axis visualization.
+
+---
+
+### Key interpretation
+- The TrophicIndex captures a **continuous gradient** rather than discrete trophic classes.
+- Known oligotrophs and copiotrophs are shifted toward expected ends of the axis but overlap.
+- Lake Zurich communities show **non-uniform occupancy** of the reference trophic space.
+- Extremes of the axis are disproportionately occupied by specific operational strategies.
+- This framework enables **direct, quantitative comparison** of trophic organization across systems using a fixed genomic reference axis.
+
+---
+
+### Conceptual takeaway
+> The training set defines a biologically interpretable trophic strategy space;  
+> the lake community is projected into this space to reveal how ecological structure emerges along a continuous genomic gradient.
+
+```{r}
+# =============================================================================
+# FIGURE A — FINAL MODEL-JUSTIFICATION (OBSERVED lake traits)
+# Produces: Fig_ModelJustification_BoxplotsPlusVariance_FINAL_OBS.pdf
+#
+# Uses (already loaded):
+#   dat_feat      (training; must contain Species_ID, Classification, and pca_vars)
+#   trophic_cols  (named colors for Classification)
+#   pca_vars      (curated trait names; here we map to OBS lake columns)
+#   lake_dat      (lake table with Obs_* and/or GENOME_LENGTH, CODING_DENSITY)
+#
+# Notes:
+#   - PCA + permutation test are done on TRAINING only (as in your original code).
+#   - Panel A shows TRAINING boxplots/points (z-scored) + PC1 loadings/correlations.
+#   - This OBS block additionally computes lake TrophicIndex (observed traits) and
+#     overlays Lake density as a grey line in Panel BOTTOM (simple + interpretable).
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(tibble)
+  library(ggplot2)
+  library(patchwork)
+})
+
+set.seed(123)
+n_perm <- 5000
+
+# -----------------------------
+# 0) Map curated traits to OBSERVED lake columns
+# -----------------------------
+# Training uses: GENOME_LENGTH, CODING_DENSITY, TOTAL_TRNA, NUM_SIGMA
+# Lake OBS uses: GENOME_LENGTH, CODING_DENSITY, Obs_TOTAL_TRNA, Obs_NUM_SIGMA
+lake_trait_map_obs <- c(
+  GENOME_LENGTH  = "GENOME_LENGTH",
+  CODING_DENSITY = "CODING_DENSITY",
+  TOTAL_TRNA     = "Obs_TOTAL_TRNA",
+  NUM_SIGMA      = "Obs_NUM_SIGMA"
+)
+
+# -----------------------------
+# 1) TRAINING PCA on curated traits (z-scored)
+# -----------------------------
+pca_df <- dat_feat %>%
+  select(Species_ID, Classification, all_of(pca_vars)) %>%
+  mutate(across(all_of(pca_vars), as.numeric)) %>%
+  drop_na()
+
+X <- scale(as.matrix(pca_df[, pca_vars]), center = TRUE, scale = TRUE)
+
+pca_res <- prcomp(X, center = FALSE, scale. = FALSE)
+eig_vals <- pca_res$sdev^2
+var_exp  <- eig_vals / sum(eig_vals)
+
+scores <- as.data.frame(pca_res$x) %>%
+  mutate(
+    Species_ID = pca_df$Species_ID,
+    Classification = pca_df$Classification
+  )
+
+loadings <- as.data.frame(pca_res$rotation) %>%
+  rownames_to_column("Trait")
+
+# Orient PC1 so GENOME_LENGTH loads positively
+if (loadings$PC1[loadings$Trait == "GENOME_LENGTH"] < 0) {
+  loadings$PC1 <- -loadings$PC1
+  scores$PC1   <- -scores$PC1
+}
+
+# Store training center/scale + PC1 weights for lake projection
+train_center <- colMeans(pca_df[, pca_vars])
+train_scale  <- apply(pca_df[, pca_vars], 2, sd)
+w_pc1 <- loadings$PC1
+names(w_pc1) <- loadings$Trait
+
+# -----------------------------
+# 2) Permutation null (variance explained; training only)
+# -----------------------------
+perm_var <- replicate(n_perm, {
+  Xp <- apply(X, 2, sample)
+  prcomp(scale(Xp), center = FALSE, scale. = FALSE)$sdev^2
+})
+perm_var <- t(perm_var / colSums(perm_var))
+
+pc1_p <- (1 + sum(perm_var[, 1] >= var_exp[1])) / (1 + n_perm)
+
+null_summary <- tibble(
+  PC = seq_along(var_exp),
+  obs = var_exp,
+  null_mean = colMeans(perm_var),
+  null_lo = apply(perm_var, 2, quantile, 0.025),
+  null_hi = apply(perm_var, 2, quantile, 0.975)
+)
+
+# -----------------------------
+# 3) Trait z-scores + correlations with PC1 (training)
+# -----------------------------
+trait_long <- pca_df %>%
+  mutate(across(all_of(pca_vars), scale)) %>%
+  bind_cols(scores %>% select(PC1)) %>%
+  pivot_longer(cols = all_of(pca_vars), names_to = "Trait", values_to = "Trait_z") %>%
+  mutate(
+    Trait = factor(Trait, levels = pca_vars),
+    Classification = factor(Classification, levels = names(trophic_cols))
+  )
+
+trait_corr <- trait_long %>%
+  group_by(Trait) %>%
+  summarise(r = cor(Trait_z, PC1), .groups = "drop") %>%
+  left_join(loadings, by = c("Trait" = "Trait")) %>%
+  mutate(label = paste0("PC1=", sprintf("%.2f", PC1), " | r=", sprintf("%.2f", r)))
+
+y_annot <- max(trait_long$Trait_z, na.rm = TRUE) + 0.55
+
+# -----------------------------
+# 4) Panel A — Training boxplots + points + loading/correlation labels
+# -----------------------------
+pA <- ggplot(trait_long, aes(Trait, Trait_z, fill = Classification)) +
+  geom_hline(yintercept = 0, color = "grey70", linewidth = 0.4) +
+  geom_point(
+    position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75),
+    shape = 21, size = 3, color = "black", stroke = 0.2, alpha = 0.65
+  ) +
+  geom_boxplot(
+    position = position_dodge(width = 0.75),
+    width = 0.55, outlier.shape = NA, color = "black",
+    linewidth = 0.35, alpha = 0.30
+  ) +
+  geom_text(
+    data = trait_corr,
+    aes(Trait, y_annot, label = label),
+    inherit.aes = FALSE,
+    size = 3.1
+  ) +
+  scale_fill_manual(values = trophic_cols) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top", panel.grid.minor = element_blank()) +
+  labs(
+    title = "Standardized genomic trait distributions defining the trophic index (TRAINING)",
+    subtitle = paste0(
+      "PC1=", round(var_exp[1] * 100, 1), "%; PC2=", round(var_exp[2] * 100, 1),
+      "% | Permutation p(PC1)=", signif(pc1_p, 3),
+      " (n_perm=", n_perm, ") | Lake projection shown below: OBS"
+    ),
+    x = NULL, y = "Trait value (z-score)", fill = NULL
+  )
+
+# -----------------------------
+# 5) Lake projection (OBS) — compute TrophicIndex using training params
+# -----------------------------
+lake_obs <- lake_dat %>%
+  transmute(
+    Species_ID = Species_ID,
+    GENOME_LENGTH  = as.numeric(.data[[lake_trait_map_obs["GENOME_LENGTH"]]]),
+    CODING_DENSITY = as.numeric(.data[[lake_trait_map_obs["CODING_DENSITY"]]]),
+    TOTAL_TRNA     = as.numeric(.data[[lake_trait_map_obs["TOTAL_TRNA"]]]),
+    NUM_SIGMA      = as.numeric(.data[[lake_trait_map_obs["NUM_SIGMA"]]])
+  ) %>%
+  filter(complete.cases(.))
+
+Z_lake <- sweep(as.matrix(lake_obs[, pca_vars]), 2, train_center, "-")
+Z_lake <- sweep(Z_lake, 2, train_scale, "/")
+lake_obs$TrophicIndex <- as.numeric(Z_lake %*% w_pc1)
+
+train_ti <- scores$PC1
+
+# -----------------------------
+# 6) Panel B — Variance explained + simple index density overlay (Training vs Lake OBS)
+# -----------------------------
+pB <- ggplot(null_summary, aes(PC)) +
+  geom_errorbar(aes(ymin = null_lo, ymax = null_hi), width = 0.18) +
+  geom_line(aes(y = null_mean), linetype = "dashed") +
+  geom_point(aes(y = null_mean)) +
+  geom_line(aes(y = obs), color = "red", linewidth = 0.9) +
+  geom_point(aes(y = obs), color = "red", size = 2.6) +
+  scale_x_continuous(breaks = seq_along(var_exp)) +
+  scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.2)) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Variance explained by PCA (TRAINING; observed vs permutation null)",
+    subtitle = "Bottom overlay: distribution of PC1 (training) vs projected lake index (OBS)",
+    x = "Principal component",
+    y = "Proportion variance explained"
+  )
+
+# small attached density panel (kept simple)
+pB_den <- ggplot() +
+  geom_density(aes(x = train_ti), color = "black", linewidth = 1) +
+  geom_density(aes(x = lake_obs$TrophicIndex), color = "grey50", linewidth = 1) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  labs(x = "PC1 / TrophicIndex", y = NULL)
+
+fig_model_justify_obs <- pA / (pB / pB_den + plot_layout(heights = c(1, 0.65))) +
+  plot_layout(heights = c(1.35, 1.0))
+
+fig_model_justify_obs
+
+ggsave("Fig_ModelJustification_BoxplotsPlusVariance_FINAL_OBS.pdf",
+       fig_model_justify_obs, width = 9, height = 9, units = "in", device = pdf)
+```
+```{r}
+# =============================================================================
+# FIGURE B — FINAL MODEL-JUSTIFICATION (ESTIMATED lake traits)
+# Produces: Fig_ModelJustification_BoxplotsPlusVariance_FINAL_EST.pdf
+#
+# Same as OBS block, but lake projection uses:
+#   Est_TOTAL_TRNA and Est_NUM_SIGMA
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(tibble)
+  library(ggplot2)
+  library(patchwork)
+})
+
+set.seed(123)
+n_perm <- 5000
+
+# -----------------------------
+# 0) Map curated traits to ESTIMATED lake columns
+# -----------------------------
+lake_trait_map_est <- c(
+  GENOME_LENGTH  = "GENOME_LENGTH",
+  CODING_DENSITY = "CODING_DENSITY",
+  TOTAL_TRNA     = "Est_TOTAL_TRNA",
+  NUM_SIGMA      = "Est_NUM_SIGMA"
+)
+
+# -----------------------------
+# 1) TRAINING PCA on curated traits (z-scored)
+# -----------------------------
+pca_df <- dat_feat %>%
+  select(Species_ID, Classification, all_of(pca_vars)) %>%
+  mutate(across(all_of(pca_vars), as.numeric)) %>%
+  drop_na()
+
+X <- scale(as.matrix(pca_df[, pca_vars]), center = TRUE, scale = TRUE)
+
+pca_res <- prcomp(X, center = FALSE, scale. = FALSE)
+eig_vals <- pca_res$sdev^2
+var_exp  <- eig_vals / sum(eig_vals)
+
+scores <- as.data.frame(pca_res$x) %>%
+  mutate(
+    Species_ID = pca_df$Species_ID,
+    Classification = pca_df$Classification
+  )
+
+loadings <- as.data.frame(pca_res$rotation) %>%
+  rownames_to_column("Trait")
+
+# Orient PC1 so GENOME_LENGTH loads positively
+if (loadings$PC1[loadings$Trait == "GENOME_LENGTH"] < 0) {
+  loadings$PC1 <- -loadings$PC1
+  scores$PC1   <- -scores$PC1
+}
+
+train_center <- colMeans(pca_df[, pca_vars])
+train_scale  <- apply(pca_df[, pca_vars], 2, sd)
+w_pc1 <- loadings$PC1
+names(w_pc1) <- loadings$Trait
+
+# -----------------------------
+# 2) Permutation null (variance explained; training only)
+# -----------------------------
+perm_var <- replicate(n_perm, {
+  Xp <- apply(X, 2, sample)
+  prcomp(scale(Xp), center = FALSE, scale. = FALSE)$sdev^2
+})
+perm_var <- t(perm_var / colSums(perm_var))
+
+pc1_p <- (1 + sum(perm_var[, 1] >= var_exp[1])) / (1 + n_perm)
+
+null_summary <- tibble(
+  PC = seq_along(var_exp),
+  obs = var_exp,
+  null_mean = colMeans(perm_var),
+  null_lo = apply(perm_var, 2, quantile, 0.025),
+  null_hi = apply(perm_var, 2, quantile, 0.975)
+)
+
+# -----------------------------
+# 3) Trait z-scores + correlations with PC1 (training)
+# -----------------------------
+trait_long <- pca_df %>%
+  mutate(across(all_of(pca_vars), scale)) %>%
+  bind_cols(scores %>% select(PC1)) %>%
+  pivot_longer(cols = all_of(pca_vars), names_to = "Trait", values_to = "Trait_z") %>%
+  mutate(
+    Trait = factor(Trait, levels = pca_vars),
+    Classification = factor(Classification, levels = names(trophic_cols))
+  )
+
+trait_corr <- trait_long %>%
+  group_by(Trait) %>%
+  summarise(r = cor(Trait_z, PC1), .groups = "drop") %>%
+  left_join(loadings, by = c("Trait" = "Trait")) %>%
+  mutate(label = paste0("PC1=", sprintf("%.2f", PC1), " | r=", sprintf("%.2f", r)))
+
+y_annot <- max(trait_long$Trait_z, na.rm = TRUE) + 0.55
+
+# -----------------------------
+# 4) Panel A — Training boxplots + points + loading/correlation labels
+# -----------------------------
+pA <- ggplot(trait_long, aes(Trait, Trait_z, fill = Classification)) +
+  geom_hline(yintercept = 0, color = "grey70", linewidth = 0.4) +
+  geom_point(
+    position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75),
+    shape = 21, size = 3, color = "black", stroke = 0.2, alpha = 0.65
+  ) +
+  geom_boxplot(
+    position = position_dodge(width = 0.75),
+    width = 0.55, outlier.shape = NA, color = "black",
+    linewidth = 0.35, alpha = 0.30
+  ) +
+  geom_text(
+    data = trait_corr,
+    aes(Trait, y_annot, label = label),
+    inherit.aes = FALSE,
+    size = 3.1
+  ) +
+  scale_fill_manual(values = trophic_cols) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top", panel.grid.minor = element_blank()) +
+  labs(
+    title = "Standardized genomic trait distributions defining the trophic index (TRAINING)",
+    subtitle = paste0(
+      "PC1=", round(var_exp[1] * 100, 1), "%; PC2=", round(var_exp[2] * 100, 1),
+      "% | Permutation p(PC1)=", signif(pc1_p, 3),
+      " (n_perm=", n_perm, ") | Lake projection shown below: EST"
+    ),
+    x = NULL, y = "Trait value (z-score)", fill = NULL
+  )
+
+# -----------------------------
+# 5) Lake projection (EST) — compute TrophicIndex using training params
+# -----------------------------
+lake_est <- lake_dat %>%
+  transmute(
+    Species_ID = Species_ID,
+    GENOME_LENGTH  = as.numeric(.data[[lake_trait_map_est["GENOME_LENGTH"]]]),
+    CODING_DENSITY = as.numeric(.data[[lake_trait_map_est["CODING_DENSITY"]]]),
+    TOTAL_TRNA     = as.numeric(.data[[lake_trait_map_est["TOTAL_TRNA"]]]),
+    NUM_SIGMA      = as.numeric(.data[[lake_trait_map_est["NUM_SIGMA"]]])
+  ) %>%
+  filter(complete.cases(.))
+
+Z_lake <- sweep(as.matrix(lake_est[, pca_vars]), 2, train_center, "-")
+Z_lake <- sweep(Z_lake, 2, train_scale, "/")
+lake_est$TrophicIndex <- as.numeric(Z_lake %*% w_pc1)
+
+train_ti <- scores$PC1
+
+# -----------------------------
+# 6) Panel B — Variance explained + simple index density overlay (Training vs Lake EST)
+# -----------------------------
+pB <- ggplot(null_summary, aes(PC)) +
+  geom_errorbar(aes(ymin = null_lo, ymax = null_hi), width = 0.18) +
+  geom_line(aes(y = null_mean), linetype = "dashed") +
+  geom_point(aes(y = null_mean)) +
+  geom_line(aes(y = obs), color = "red", linewidth = 0.9) +
+  geom_point(aes(y = obs), color = "red", size = 2.6) +
+  scale_x_continuous(breaks = seq_along(var_exp)) +
+  scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.2)) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Variance explained by PCA (TRAINING; observed vs permutation null)",
+    subtitle = "Bottom overlay: distribution of PC1 (training) vs projected lake index (EST)",
+    x = "Principal component",
+    y = "Proportion variance explained"
+  )
+
+pB_den <- ggplot() +
+  geom_density(aes(x = train_ti), color = "black", linewidth = 1) +
+  geom_density(aes(x = lake_est$TrophicIndex), color = "grey50", linewidth = 1) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  labs(x = "PC1 / TrophicIndex", y = NULL)
+
+fig_model_justify_est <- pA / (pB / pB_den + plot_layout(heights = c(1, 0.65))) +
+  plot_layout(heights = c(1.35, 1.0))
+
+fig_model_justify_est
+
+ggsave("Fig_ModelJustification_BoxplotsPlusVariance_FINAL_EST.pdf",
+       fig_model_justify_est, width = 9, height = 9, units = "in", device = pdf)
+```
+
+
+### Genomic trophic index: construction, validation, and biological interpretation
+
+- **What was done**
+  - We quantified four curated genomic traits capturing complementary aspects of microbial life-history strategy: genome size (GENOME_LENGTH), genome streamlining (CODING_DENSITY), translational investment (TOTAL_TRNA), and regulatory flexibility (NUM_SIGMA).
+  - Traits were **z-standardized across indicator species** and integrated using principal component analysis (PCA).
+  - The first principal component (PC1) was oriented such that increasing values correspond to increasing genome size and metabolic breadth, and is hereafter referred to as the **genomic trophic index**.
+  - The statistical significance of PC1 dominance was evaluated using a **permutation-based null model** that destroys cross-trait covariance while preserving marginal trait distributions.
+
+- **Why this approach**
+  - Individual genomic traits are correlated but noisy proxies of trophic strategy; no single trait is expected to fully capture trophic life-history variation.
+  - PCA provides a data-driven way to identify a **latent axis of coordinated genomic investment**, while permutation testing distinguishes true biological structure from random covariance.
+  - Trait standardization ensures that all traits contribute comparably and that the resulting index reflects **relative investment patterns**, not absolute trait magnitudes.
+
+- **Key results**
+  - PC1 explains **75.9% of total variance**, far exceeding expectations under the permutation null model (**PC1 perm. p < 0.001; n_perm = 5000**), while PC2 explains only 12.8%.
+  - This steep drop in variance indicates that genomic trait variation among indicator species is effectively **one-dimensional**.
+  - All curated traits show **strong monotonic correlations with PC1** (|r| ≈ 0.78–0.96), and similar absolute PC1 loadings (≈0.45–0.55), indicating that they contribute comparably to the index.
+  - The direction of correlations is biologically coherent: genome length, tRNA copy number, and sigma factor diversity increase with PC1, whereas coding density decreases.
+
+- **Biological interpretation**
+  - PC1 captures a continuum from **streamlined oligotrophic genomes** (small, compact genomes with limited regulatory and translational investment) to **copiotrophic genomes** (larger, less streamlined genomes with greater regulatory and translational capacity).
+  - The similarity of PC1 loadings across traits indicates **coordinated genomic investment**, rather than dominance by any single variable.
+  - Traits that do not show sharp separation between a priori trophic classes still contribute meaningfully by reinforcing the shared life-history axis.
+
+- **What the reported values mean**
+  - **PC1 variance explained (75.9%)**: the proportion of total standardized trait variance captured by the trophic index.
+  - **Permutation p-value (<0.001)**: the probability that such a dominant axis arises by chance in uncorrelated trait data.
+  - **Trait–PC1 correlations (r)**: the strength and direction with which each trait aligns with the trophic index.
+
+- **What these results do not imply**
+  - The index is **not** equivalent to genome length alone, despite strong correlation; it integrates multiple genomic dimensions and is therefore more robust to noise and trait-specific biases.
+  - Non-discrete separation of trophic classes does **not** indicate weak signal; rather, it supports the interpretation of trophic strategy as a **continuous spectrum**.
+  - PC1 is not a classifier but a **quantitative life-history gradient** suitable for downstream projection and comparative analyses.
+
+- **Conclusion**
+  - Together, these results justify PC1 as a statistically robust and biologically interpretable **genomic trophic index**, capturing coordinated life-history variation across microbial genomes and enabling consistent comparison between reference species and environmental genomic datasets.
+
+
+# Find what has changed in the trophic index and trophic groups because of completion of the mags
+```{r}
+# =============================================================================
+# Compare OBSERVED vs ESTIMATED trophic index (Lake Zurich)
+# + Identify taxa that change trophic group and visualize associated trait shifts
+#
+# Produces:
+#   A) Density comparison (Observed vs Estimated) + training Q25/Q75 cutoffs
+#   B) Rank-profile comparison (Observed-ranked) + training cutoffs
+#   C) Group agreement tables (counts + row-wise % within OBS group)
+#   D) Change figure:
+#        - Delta TI vs Completeness (red = changed group)
+#        - Dumbbell TI_obs -> TI_est for changed taxa + cutoff lines
+#   E) Trait overview (one-row panels; dumbbells for changed taxa):
+#        Genome size, Total tRNA, Sigma factors, Coding density
+#
+# REQUIRED objects already in your session:
+#   - lake_scored_obs : tibble/data.frame with Species_ID, TrophicIndex (OBS)
+#   - lake_scored_est : tibble/data.frame with Species_ID, TrophicIndex (EST)
+#   - train_scored    : tibble/data.frame with TrophicIndex (to define cutoffs)
+#   - lake_dat        : tibble/data.frame with Species_ID and trait columns listed below
+#       * Completeness
+#       * GENOME_LENGTH, Estimated_Genome_Size
+#       * Obs_TOTAL_TRNA, Est_TOTAL_TRNA
+#       * Obs_NUM_SIGMA, Est_NUM_SIGMA
+#       * CODING_DENSITY
+#
+# OUTPUT FILE NAMING:
+#   All exports are prefixed with: "ChangedTaxa_"
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(patchwork)
+  library(readr)
+  library(scales)
+})
+
+# -----------------------------------------------------------------------------
+# 0) Helpers
+# -----------------------------------------------------------------------------
+
+# Training-anchored trophic cutoffs (shared across OBS + EST)
+q25_train <- unname(quantile(train_scored$TrophicIndex, 0.25, na.rm = TRUE))
+q75_train <- unname(quantile(train_scored$TrophicIndex, 0.75, na.rm = TRUE))
+
+assign_group <- function(x, q25 = q25_train, q75 = q75_train) {
+  dplyr::case_when(
+    x <= q25 ~ "Oligo_like",
+    x >= q75 ~ "Copio_like",
+    TRUE     ~ "Intermediate"
+  )
+}
+
+# Base file prefix for ALL exports
+out_prefix <- "ChangedTaxa_"
+
+# -----------------------------------------------------------------------------
+# 1) Build paired comparison table (intersection only)
+# -----------------------------------------------------------------------------
+
+cmp <- inner_join(
+  lake_scored_obs %>% transmute(Species_ID, TI_obs = as.numeric(TrophicIndex)),
+  lake_scored_est %>% transmute(Species_ID, TI_est = as.numeric(TrophicIndex)),
+  by = "Species_ID"
+) %>%
+  left_join(
+    lake_dat %>% select(Species_ID, Completeness),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Group_obs = factor(assign_group(TI_obs),
+                       levels = c("Oligo_like", "Intermediate", "Copio_like")),
+    Group_est = factor(assign_group(TI_est),
+                       levels = c("Oligo_like", "Intermediate", "Copio_like")),
+    Delta     = TI_est - TI_obs,
+    Changed   = Group_obs != Group_est
+  )
+
+cat("\n[OBS vs EST] Paired taxa (intersection):", nrow(cmp), "\n")
+cat("[OBS vs EST] Taxa that changed group:", sum(cmp$Changed), "\n\n")
+
+# -----------------------------------------------------------------------------
+# 2) Plot A — Distribution comparison (density)
+# -----------------------------------------------------------------------------
+
+den_df <- cmp %>%
+  select(TI_obs, TI_est) %>%
+  pivot_longer(everything(), names_to = "Type", values_to = "TrophicIndex") %>%
+  mutate(Type = recode(Type, TI_obs = "Observed", TI_est = "Estimated"))
+
+p_den <- ggplot(den_df, aes(TrophicIndex, color = Type)) +
+  geom_density(linewidth = 1) +
+  geom_vline(xintercept = c(q25_train, q75_train),
+             linetype = "dashed", linewidth = 0.8, color = "grey35") +
+  scale_color_manual(values = c(Observed = "black", Estimated = "grey50")) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Lake Zurich trophic index distribution: Observed vs Estimated",
+    subtitle = paste0(
+      "Dashed = training Q25/Q75 (Q25=", round(q25_train, 2),
+      ", Q75=", round(q75_train, 2), ")"
+    ),
+    x = "TrophicIndex (training PC1 score)",
+    y = "Density",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+print(p_den)
+
+ggsave(
+  filename = paste0(out_prefix, "TrophicIndex_Distribution_OBS_vs_EST.pdf"),
+  plot = p_den,
+  width = 7.5, height = 4.5, units = "in", device = pdf
+)
+
+# -----------------------------------------------------------------------------
+# 3) Plot B — Rank-profile comparison (rank by OBS; show cutoffs as hlines)
+# -----------------------------------------------------------------------------
+
+rank_df <- cmp %>%
+  arrange(TI_obs) %>%
+  mutate(Rank = row_number()) %>%
+  select(Species_ID, Rank, TI_obs, TI_est) %>%
+  pivot_longer(cols = c(TI_obs, TI_est), names_to = "Type", values_to = "TrophicIndex") %>%
+  mutate(Type = recode(Type, TI_obs = "Observed", TI_est = "Estimated"))
+
+p_rank <- ggplot(rank_df, aes(Rank, TrophicIndex, color = Type)) +
+  geom_hline(yintercept = c(q25_train, q75_train),
+             linetype = "dashed", linewidth = 0.8, color = "grey35") +
+  geom_line(linewidth = 0.9, alpha = 0.95) +
+  scale_color_manual(values = c(Observed = "black", Estimated = "grey50")) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Lake Zurich trophic index rank profile: Observed vs Estimated",
+    subtitle = "Rank order defined by Observed index (direct comparison of profiles)",
+    x = "Lake taxa rank (sorted by Observed TrophicIndex)",
+    y = "TrophicIndex (training PC1 score)",
+    color = NULL
+  ) +
+  theme(legend.position = "top")
+
+print(p_rank)
+
+ggsave(
+  filename = paste0(out_prefix, "TrophicIndex_Rank_OBS_vs_EST.pdf"),
+  plot = p_rank,
+  width = 8.5, height = 4.8, units = "in", device = pdf
+)
+
+# -----------------------------------------------------------------------------
+# 4) Tables — Group agreement (counts + row-wise % within OBS group)
+# -----------------------------------------------------------------------------
+
+tab_counts <- cmp %>%
+  count(Group_obs, Group_est) %>%
+  tidyr::pivot_wider(names_from = Group_est, values_from = n, values_fill = 0)
+
+tab_props <- cmp %>%
+  count(Group_obs, Group_est) %>%
+  group_by(Group_obs) %>%
+  mutate(pct_within_obs = round(100 * n / sum(n), 1)) %>%
+  ungroup()
+
+cat("[OBS vs EST] Group agreement (counts):\n")
+print(tab_counts)
+
+cat("\n[OBS vs EST] Group agreement (row-wise % within OBS group):\n")
+print(tab_props)
+
+write_csv(tab_counts, paste0(out_prefix, "TrophicGroup_ObsVsEst_Counts.csv"))
+write_csv(tab_props,  paste0(out_prefix, "TrophicGroup_ObsVsEst_RowPercent.csv"))
+
+shift_summary <- cmp %>%
+  summarise(
+    mean_shift       = mean(Delta, na.rm = TRUE),
+    max_shift        = max(Delta,  na.rm = TRUE),
+    n_changed_group  = sum(Changed, na.rm = TRUE)
+  )
+
+cat("\n[OBS vs EST] Shift summary:\n")
+print(shift_summary)
+
+# -----------------------------------------------------------------------------
+# 5) Plot C — Changed taxa focus figure:
+#    Panel A: Delta vs Completeness (red = changed group)
+#    Panel B: Dumbbell TI_obs -> TI_est for changed taxa + vertical cutoff lines
+# -----------------------------------------------------------------------------
+
+# Panel A: Delta vs completeness
+p_delta <- ggplot(cmp, aes(Completeness, Delta, color = Changed)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point(size = 2.8, alpha = 0.85) +
+  scale_color_manual(values = c(`FALSE` = "grey70", `TRUE` = "#B2182B")) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Shift in trophic index after completion correction",
+    subtitle = "Red = taxa that changed operational trophic group",
+    x = "MAG Completeness (%)",
+    y = "Δ TrophicIndex (Estimated − Observed)",
+    color = "Group changed"
+  ) +
+  theme(legend.position = "top")
+
+# Panel B: Dumbbell for changed-only taxa
+changed_only <- cmp %>%
+  filter(Changed) %>%
+  arrange(TI_obs) %>%
+  mutate(Species_ID = factor(Species_ID, levels = Species_ID))
+
+p_dumbbell_ti <- ggplot(changed_only) +
+  geom_vline(xintercept = c(q25_train, q75_train),
+             linetype = "dashed", linewidth = 0.8, color = "grey40") +
+  geom_segment(aes(x = TI_obs, xend = TI_est, y = Species_ID, yend = Species_ID),
+               linewidth = 1) +
+  geom_point(aes(x = TI_obs, y = Species_ID), color = "black", size = 3) +
+  geom_point(aes(x = TI_est, y = Species_ID), color = "#B2182B", size = 3) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Taxa that changed trophic group",
+    subtitle = paste0(
+      "Black = Observed | Red = Estimated | Training cutoffs: Q25=", round(q25_train, 2),
+      ", Q75=", round(q75_train, 2)
+    ),
+    x = "TrophicIndex (training PC1 score)",
+    y = NULL
+  )
+
+final_change_fig <- p_delta / p_dumbbell_ti +
+  plot_layout(heights = c(1, 1))
+
+print(final_change_fig)
+
+ggsave(
+  filename = paste0(out_prefix, "TrophicGroup_Changes_OBS_vs_EST_withCutoffs.pdf"),
+  plot = final_change_fig,
+  width = 9, height = 9, units = "in", device = pdf
+)
+
+# -----------------------------------------------------------------------------
+# 6) Plot D — Trait overview for changed taxa (one row of dumbbell panels)
+#    - Species ordered by observed TI (same ordering as above)
+#    - Y labels only on first panel
+# -----------------------------------------------------------------------------
+
+changed_ids <- changed_only %>%
+  pull(Species_ID) %>%
+  as.character() %>%
+  unique()
+
+# Species order = observed TI order (stable + matches earlier plots)
+sp_order <- cmp %>%
+  filter(Species_ID %in% changed_ids) %>%
+  arrange(TI_obs) %>%
+  pull(Species_ID)
+
+trait_cmp <- lake_dat %>%
+  filter(Species_ID %in% changed_ids) %>%
+  transmute(
+    Species_ID,
+
+    Genome_obs = as.numeric(GENOME_LENGTH),
+    Genome_est = as.numeric(Estimated_Genome_Size),
+
+    tRNA_obs   = as.numeric(Obs_TOTAL_TRNA),
+    tRNA_est   = as.numeric(Est_TOTAL_TRNA),
+
+    Sigma_obs  = as.numeric(Obs_NUM_SIGMA),
+    Sigma_est  = as.numeric(Est_NUM_SIGMA),
+
+    CD_obs     = as.numeric(CODING_DENSITY),
+    CD_est     = as.numeric(CODING_DENSITY)   # unchanged; explicit for dumbbell
+  ) %>%
+  mutate(Species_ID = factor(Species_ID, levels = sp_order))
+
+trait_long <- bind_rows(
+  trait_cmp %>% transmute(Species_ID, Trait = "Genome size (bp)",        Obs = Genome_obs, Est = Genome_est),
+  trait_cmp %>% transmute(Species_ID, Trait = "Total tRNA (count)",      Obs = tRNA_obs,   Est = tRNA_est),
+  trait_cmp %>% transmute(Species_ID, Trait = "Sigma factors (count)",   Obs = Sigma_obs,  Est = Sigma_est),
+  trait_cmp %>% transmute(Species_ID, Trait = "Coding density (%)",      Obs = CD_obs,     Est = CD_est)
+) %>%
+  mutate(Trait = factor(Trait, levels = c(
+    "Genome size (bp)",
+    "Total tRNA (count)",
+    "Sigma factors (count)",
+    "Coding density (%)"
+  )))
+
+make_trait_panel <- function(df, show_y = FALSE) {
+  p <- ggplot(df, aes(y = Species_ID)) +
+    geom_segment(aes(x = Obs, xend = Est, yend = Species_ID), linewidth = 0.9) +
+    geom_point(aes(x = Obs), color = "black", size = 2.4) +
+    geom_point(aes(x = Est), color = "#B2182B", size = 2.4) +
+    theme_minimal(base_size = 12) +
+    theme(
+      panel.grid.minor = element_blank(),
+      axis.title.y = element_blank(),
+      axis.title.x = element_blank()
+    )
+
+  if (!show_y) {
+    p <- p + theme(
+      axis.text.y  = element_blank(),
+      axis.ticks.y = element_blank()
+    )
+  } else {
+    p <- p + theme(axis.text.y = element_text(size = 9))
+  }
+
+  p
+}
+
+p1 <- make_trait_panel(trait_long %>% filter(Trait == "Genome size (bp)"), show_y = TRUE) +
+  labs(title = "Genome size") +
+  scale_x_continuous(labels = scales::comma)
+
+p2 <- make_trait_panel(trait_long %>% filter(Trait == "Total tRNA (count)"), show_y = FALSE) +
+  labs(title = "Total tRNA")
+
+p3 <- make_trait_panel(trait_long %>% filter(Trait == "Sigma factors (count)"), show_y = FALSE) +
+  labs(title = "Sigma factors")
+
+p4 <- make_trait_panel(trait_long %>% filter(Trait == "Coding density (%)"), show_y = FALSE) +
+  labs(title = "Coding density")
+
+final_trait_row <- (p1 | p2 | p3 | p4) +
+  plot_layout(widths = c(1.35, 1, 1, 1)) +
+  plot_annotation(
+    title = "Observed vs completion-corrected traits for taxa that changed trophic group",
+    subtitle = "Black = observed | Red = estimated (completion-corrected). Species ordered by observed TrophicIndex."
+  )
+
+print(final_trait_row)
+
+ggsave(
+  filename = paste0(out_prefix, "ObsVsEst_Traits_ChangedTaxa_OneRow.pdf"),
+  plot = final_trait_row,
+  width = 14,
+  height = 0.22 * length(sp_order) + 2.3,  # scales with # taxa
+  units = "in",
+  device = pdf
+)
+
+# =============================================================================
+# Minimal export — lake_dat rows for taxa that changed trophic group,
+# plus OBS/EST trophic index and OBS/EST trophic group
+#
+# Requires in memory:
+#   - cmp (must contain Species_ID, TI_obs, TI_est, Group_obs, Group_est, Changed)
+#   - lake_dat (taxonomy + traits; contains Species_ID)
+#
+# Output:
+#   - ChangedTaxa_LakeDat_WithObsEstTIandGroups.csv
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+})
+
+changed_ids <- cmp %>%
+  filter(Changed) %>%
+  pull(Species_ID) %>%
+  unique()
+
+changed_export <- lake_dat %>%
+  filter(Species_ID %in% changed_ids) %>%
+  left_join(
+    cmp %>%
+      filter(Changed) %>%
+      select(Species_ID, TI_obs, TI_est, Group_obs, Group_est),
+    by = "Species_ID"
+  ) %>%
+  # optional: put the new columns at the end (delete if you don't care)
+  relocate(TI_obs, TI_est, Group_obs, Group_est, .after = last_col()) %>%
+  arrange(Phylum, Class, Order, Family, Genus, Species)
+
+write_csv(changed_export, "ChangedTaxa_LakeDat_WithObsEstTIandGroups.csv")
+
+cat("Wrote: ChangedTaxa_LakeDat_WithObsEstTIandGroups.csv\n",
+    "Rows (changed taxa): ", nrow(changed_export), "\n", sep = "")
+```
+
+

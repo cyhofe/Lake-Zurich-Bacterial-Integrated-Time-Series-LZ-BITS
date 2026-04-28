@@ -1,0 +1,723 @@
+---
+title: "Sample Description Lake Zurich"
+output:
+  html_document:
+    code_folding: hide
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+Setup:
+
+___
+* Libraries:
+```{r, message=FALSE, warning=FALSE}
+#Libraries
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(readxl)
+library(cmocean)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(openxlsx)
+library(patchwork)
+library(hrbrthemes)
+library(webshot)
+library(reticulate)
+library(webexercises)
+```
+___
+___
+* Functions:
+```{r, message=FALSE, warning=FALSE}
+#Lake profile extrapolation function
+LakeProfile <- function(dataset, variable, start_depth, end_depth, calc_interval, start_date, end_date) {
+  
+  # Description:
+  
+  #   This function generates data for lake profiles. It takes measurements as input and extrapolates in the given 
+  #   interval values for the given time, depth, variable.
+  
+  # Inputs:
+  
+  #   dataset -> just give the name of the dataframe (type = dataframe)
+  #   variable -> give the name of the variable of interest between ""(type = character) -> variable itself must be type integer/numerical
+  #   stat_depth -> give the depth as an integer (type = int)
+  #   end_depth -> give the depth as an integer (type = int)
+  #   calc_interval -> give the extrapolation inverval as an integer (type = int)
+  #   start_date -> give the date in the format "yyyy-mm-dd" (type = character)
+  #   end_date -> give the date in the format "yyyy-mm-dd" (type = character)
+  
+  # Outputs: 
+  
+  #  Dataframe containing extrapolation for the chosen variable "variablename"
+  
+  innerfunction1 <- function(target_date, target_depth, dataset, variable) {
+    data_for_date <- dataset %>% 
+      filter(date == target_date) %>%
+      arrange(depth)
+    approx(data_for_date$depth, data_for_date[[variable]], xout = target_depth)$y
+  }
+  
+  innerfunction2 <- function(target_depth, target_date, dataset, variable) {
+    data_for_depth <- interp_depth %>% 
+      filter(depth == target_depth) %>%
+      arrange(date)
+    data_for_depth$date <- as.Date(data_for_depth$date)
+    approx(data_for_depth$date, data_for_depth[[variable]], xout = target_date)$y
+  }
+  
+  interp_depth <- crossing(tibble(date = unique(dataset$date)), tibble(depth = seq(start_depth, end_depth, length.out = calc_interval))) %>% 
+    group_by(date) %>% 
+    mutate(!!variable := innerfunction1(date[1], depth, dataset, variable))
+  
+  raster <- crossing(tibble(date = seq(as.Date(start_date), as.Date(end_date), by = 1)), tibble(depth = unique(interp_depth$depth))) %>%
+    group_by(depth) %>%
+    mutate(!!variable := innerfunction2(depth[1], date, interp_depth, variable))
+  
+  return(raster)
+}
+
+#Function to Plot the Profiles
+PlotProfiles_Flexible <- function(profile, variable, interval_legend_ticks, interval_contour_lines, plot_title, legend_title, color_palette) {
+  
+  # Description:
+  
+  #   This function generates lake profile plots using plotly
+  
+  # Inputs:
+  
+  #   profile -> dataset for the given lake profile (type = dataframe)
+  #   variable -> variable for which the profile should be generated ""(type = character)
+  #   interval_legend_ticks -> interval of the ticks in the legend (type = int)
+  #   interval_legend_ticks -> at which interval should a contour line be drawn (type = int)
+  #   plot_title -> give the title of the plot between "" (type = character)
+  #   legend_title -> give the legend title between "" (type = character)
+  #   color_palette -> give a desired color pallette from rcolorbrewer between "" (type = character)
+  
+  # Outputs: 
+  
+  #  Dataframe containing extrapolation for the chosen variable "variablename"
+  
+  #Set Plot Settings
+  min_val <- min(profile[[variable]], na.rm = TRUE)
+  max_val <- max(profile[[variable]], na.rm = TRUE)
+  legend_ticks <- round(seq(min_val, max_val,by = interval_legend_ticks))
+  
+  #Plot
+  plotly_plot <- plot_ly(x = profile$date,
+        y = profile$depth,
+        z = profile[[variable]],
+        type = "contour",
+        colors = color_palette,
+        contours = list(
+                 start = min_val,
+                 end = max_val,
+                 size = interval_contour_lines,
+                 coloring = 'heatmap',
+                 showlines = TRUE
+               ),
+        colorbar = list(
+                 title = legend_title,
+                 tickmode = "array",
+                 tickvals = legend_ticks, 
+                 ticktext = legend_ticks
+               )) %>%
+  layout(yaxis = list(autorange = "reversed", title = "Depth [m]")) %>%
+  layout(xaxis = list(title = "Date")) %>%
+  layout(title = list(text = plot_title)) %>%
+  colorbar(title = legend_title)
+
+  return(plotly_plot)
+}
+
+#Function to Plot the Profiles
+PlotProfiles_Fixed <- function(profile, variable, plot_title, legend_title, color_palette) {
+  
+  # Description:
+  
+  #   This function generates lake profile plots using plotly
+  
+  # Inputs:
+  
+  #   profile -> dataset for the given lake profile (type = dataframe)
+  #   variable -> variable for which the profile should be generated ""(type = character)
+  #   plot_title -> give the title of the plot between "" (type = character)
+  #   legend_title -> give the legend title between "" (type = character)
+  #   color_palette -> give a desired color pallette from rcolorbrewer between "" (type = character)
+  
+  # Outputs: 
+  
+  #  Dataframe containing extrapolation for the chosen variable "variablename"
+  
+  #Plot
+  plotly_plot <- plot_ly(x = profile$date,
+        y = profile$depth,
+        z = profile[[variable]],
+        type = "contour",
+        colors = color_palette) %>% 
+  layout(yaxis = list(autorange = "reversed", title = "Depth [m]")) %>%
+  layout(xaxis = list(title = "Date")) %>%
+  layout(title = list(text = plot_title)) %>%
+  colorbar(title = legend_title)
+
+  return(plotly_plot)
+}
+```
+___
+___
+* Data:
+```{r message=FALSE, warning=FALSE}
+#Load the data
+abiotic_LT_dat <- read_excel("Data/Data_2009-2023.xlsx", sheet = "abiotic")
+abiotic_ST_dat <- read_excel("Data/Data_2021.xlsx", sheet = "abiotic")
+biotic_ST_dat <- read_excel("Data/Data_2021.xlsx", sheet = "biotic")
+```
+___
+
+### Sampling site and map of lake zurich
+```{r}
+# ============================================================
+# Nature-style overview map of Lake Zurich sampling sites
+#
+# FEATURES
+# --------
+# - Shows two study locations:
+#   1) LZ-BITS sampling site:
+#      47°19′15.2″ N, 8°33′32.0″ E
+#   2) Long term monitoring sampling site:
+#      47°18′16″ N, 8°34′31″ E
+# - Downloads Lake Zurich polygon from OpenStreetMap
+# - Includes Zurich for orientation
+# - Adds a north arrow
+# - Uses the confirmed working Overpass endpoint:
+#     https://lz4.overpass-api.de/api/interpreter
+# - Clean, publication-style map appearance
+#
+# OUTPUT
+# ------
+# Lake_Zurich_two_sampling_sites.png
+# ============================================================
+
+suppressPackageStartupMessages({
+  library(sf)
+  library(dplyr)
+  library(ggplot2)
+  library(osmdata)
+  library(rnaturalearth)
+  library(rnaturalearthdata)
+  library(ggspatial)
+})
+
+# ============================================================
+# 1) Sampling locations
+# ============================================================
+# LZ-BITS sampling site
+sample1_lat <- 47 + 19/60 + 15.2/3600
+sample1_lon <- 8 + 33/60 + 32.0/3600
+
+# Long term monitoring sampling site
+sample2_lat <- 47 + 18/60 + 16/3600
+sample2_lon <- 8 + 34/60 + 31/3600
+
+sites_df <- data.frame(
+  name = c("LZ-BITS sampling site", "Long term monitoring sampling site"),
+  lon  = c(sample1_lon, sample2_lon),
+  lat  = c(sample1_lat, sample2_lat),
+  coord_label = c(
+    "47°19′15.2″N, 8°33′32.0″E",
+    "47°18′16″N, 8°34′31″E"
+  ),
+  fill_col = c("#c62828", "#7b1fa2")  # red, violet
+)
+
+sampling_sites <- st_as_sf(
+  sites_df,
+  coords = c("lon", "lat"),
+  crs = 4326
+)
+
+site_xy <- st_coordinates(sampling_sites)
+
+sites_plot_df <- sites_df |>
+  mutate(
+    x = site_xy[, 1],
+    y = site_xy[, 2]
+  )
+
+# ============================================================
+# 2) Download Lake Zurich polygon from OSM
+# ============================================================
+set_overpass_url("https://lz4.overpass-api.de/api/interpreter")
+
+q <- opq(
+  bbox = c(8.35, 47.10, 8.95, 47.45)
+) |>
+  add_osm_feature(key = "natural", value = "water")
+
+osm <- osmdata_sf(q)
+
+water_polys <- bind_rows(
+  osm$osm_polygons,
+  osm$osm_multipolygons
+)
+
+lake <- water_polys |>
+  filter(!is.na(name)) |>
+  filter(name %in% c("Zürichsee", "Zurichsee", "Lake Zurich"))
+
+# Fallback if name-based match fails
+if (nrow(lake) == 0) {
+  message("Named Lake Zurich polygon not found; using largest water polygon in query area.")
+  water_proj <- st_transform(water_polys, 2056)
+  lake <- water_polys[which.max(st_area(water_proj)), ]
+}
+
+lake <- st_make_valid(lake)
+
+# ============================================================
+# 3) Get Zurich for orientation
+# ============================================================
+places <- ne_download(
+  scale = 10,
+  type = "populated_places",
+  category = "cultural",
+  returnclass = "sf"
+)
+
+bb <- st_bbox(lake)
+
+cities <- places |>
+  filter(
+    LONGITUDE >= bb["xmin"] - 0.05,
+    LONGITUDE <= bb["xmax"] + 0.05,
+    LATITUDE  >= bb["ymin"] - 0.05,
+    LATITUDE  <= bb["ymax"] + 0.05
+  ) |>
+  filter(NAME %in% c("Zurich", "Zürich"))
+
+city_coords <- st_coordinates(cities)
+
+cities_df <- cities |>
+  st_drop_geometry() |>
+  mutate(
+    x = city_coords[, 1],
+    y = city_coords[, 2]
+  )
+
+# ============================================================
+# 4) Plot extent
+# ============================================================
+xpad <- 0.045
+ypad_bottom <- 0.030
+ypad_top <- 0.050
+
+xmin <- bb["xmin"] - xpad
+xmax <- bb["xmax"] + xpad
+ymin <- bb["ymin"] - ypad_bottom
+ymax <- bb["ymax"] + ypad_top
+
+# ============================================================
+# 5) Build Nature-like plot
+# ============================================================
+p <- ggplot() +
+  geom_sf(
+    data = lake,
+    fill = "#d9ecf5",
+    color = "#6a8fa6",
+    linewidth = 0.35
+  ) +
+
+  # LZ-BITS site (red)
+  geom_sf(
+    data = sampling_sites |> filter(name == "LZ-BITS sampling site"),
+    shape = 21,
+    size = 3.4,
+    fill = "#c62828",
+    color = "black",
+    stroke = 0.25
+  ) +
+
+  # Long-term monitoring site (violet)
+  geom_sf(
+    data = sampling_sites |> filter(name == "Long term monitoring sampling site"),
+    shape = 21,
+    size = 3.4,
+    fill = "#7b1fa2",
+    color = "black",
+    stroke = 0.25
+  ) +
+
+  # LZ-BITS label and coordinates above point
+  annotate(
+    "text",
+    x = sites_plot_df$x[sites_plot_df$name == "LZ-BITS sampling site"],
+    y = sites_plot_df$y[sites_plot_df$name == "LZ-BITS sampling site"] + 0.013,
+    label = "LZ-BITS sampling site",
+    hjust = 0.5,
+    size = 3.6,
+    fontface = "bold"
+  ) +
+  annotate(
+    "text",
+    x = sites_plot_df$x[sites_plot_df$name == "LZ-BITS sampling site"],
+    y = sites_plot_df$y[sites_plot_df$name == "LZ-BITS sampling site"] + 0.006,
+    label = "47°19′15.2″N, 8°33′32.0″E",
+    hjust = 0.5,
+    size = 3.0
+  ) +
+
+  # Long-term monitoring label and coordinates below point
+  annotate(
+    "text",
+    x = sites_plot_df$x[sites_plot_df$name == "Long term monitoring sampling site"],
+    y = sites_plot_df$y[sites_plot_df$name == "Long term monitoring sampling site"] - 0.010,
+    label = "Long term monitoring sampling site",
+    hjust = 0.5,
+    size = 3.6,
+    fontface = "bold"
+  ) +
+  annotate(
+    "text",
+    x = sites_plot_df$x[sites_plot_df$name == "Long term monitoring sampling site"],
+    y = sites_plot_df$y[sites_plot_df$name == "Long term monitoring sampling site"] - 0.017,
+    label = "47°18′16″N, 8°34′31″E",
+    hjust = 0.5,
+    size = 3.0
+  ) +
+
+  geom_sf(
+    data = cities,
+    color = "black",
+    size = 1.1
+  ) +
+  geom_text(
+    data = cities_df,
+    aes(x = x, y = y, label = NAME),
+    nudge_y = 0.008,
+    size = 3.0
+  ) +
+  annotation_north_arrow(
+    location = "tr",
+    which_north = "true",
+    pad_x = unit(0.25, "cm"),
+    pad_y = unit(0.25, "cm"),
+    style = north_arrow_fancy_orienteering(
+      text_size = 7,
+      line_width = 0.7
+    )
+  ) +
+  coord_sf(
+    xlim = c(xmin, xmax),
+    ylim = c(ymin, ymax),
+    expand = FALSE
+  ) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme_void(base_size = 11) +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(fill = NA, color = "black", linewidth = 0.4),
+    plot.margin = margin(6, 6, 6, 6)
+  )
+
+print(p)
+
+# ============================================================
+# 6) Export as PNG
+# ============================================================
+ggsave(
+  filename = "Lake_Zurich_two_sampling_sites.png",
+  plot = p,
+  width = 14,
+  height = 6,
+  dpi = 600,
+  bg = "white"
+)
+```
+
+
+### 1. Long term data - lake profiles
+```{r message=FALSE, warning=FALSE}
+#Calculate the Profiles
+temperature_LT_profile <- LakeProfile(abiotic_LT_dat, "temperature", 0, 135, 100, "2009-01-07", "2023-11-08")
+oxygen_LT_profile <- LakeProfile(abiotic_LT_dat, "oxygen", 0, 135, 100, "2009-01-07", "2023-11-08")
+phosphate_LT_profile <- LakeProfile(abiotic_LT_dat, "phosphate", 0, 135, 100, "2009-01-07", "2023-11-08")
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=15}
+#Plot the Profiles
+PlotProfiles_Flexible(temperature_LT_profile, "temperature", 5, 1, "Temperature Profile", "C", RColorBrewer::brewer.pal(9, "YlOrRd"))
+PlotProfiles_Flexible(oxygen_LT_profile, "oxygen", 5, 1, "Oxygen Profile", "mg/L", rev(RColorBrewer::brewer.pal(11, "RdYlBu")))
+PlotProfiles_Flexible(phosphate_LT_profile, "phosphate", 50, 5,"Phosphate Profile", "μg/L", RColorBrewer::brewer.pal(9, "YlGnBu"))
+```
+
+### Spring bloom 2021 - lake profiles
+```{r message=FALSE, warning=FALSE, fig.width=15}
+#Calculate the Profiles
+temperature_ST_profile <- LakeProfile(abiotic_ST_dat, "temperature", 0, 40, 1000, "2021-02-22", "2021-06-07")
+oxygen_ST_profile <- LakeProfile(abiotic_ST_dat, "oxygen", 0, 40, 1000, "2021-02-22", "2021-06-07")
+chlorophyll_ST_profile <- LakeProfile(abiotic_ST_dat, "chlorophyll", 0, 40, 1000, "2021-02-22", "2021-06-07")
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=15}
+#Plot the Profiles
+PlotProfiles_Fixed(temperature_ST_profile, "temperature", "Temperature Profile", "°C", "YlOrRd")
+PlotProfiles_Fixed(oxygen_ST_profile, "oxygen", "Oxygen Profile", "mg/L", rev(RColorBrewer::brewer.pal(10, "RdYlBu")))
+PlotProfiles_Fixed(chlorophyll_ST_profile, "chlorophyll", "Chlorophyll Profile", "μg/L", "Greens")
+```
+
+### Spring bloom 2021 - microorganisms
+
+```{r message=FALSE, warning=FALSE, fig.width=15}
+#Plot bacterial- vs. hnf-abundance
+biotic_plot <- plot_ly(biotic_ST_dat, x = ~date) %>%
+  add_lines(y = ~bacteria, line = list(color = "#4682B4", width = 1.5), name = "Bacteria [cells/mL]") %>%
+  add_trace(y = ~hnf, line = list(color = "#A0522D", width = 1.5), name = "HNF [cells/mL]", yaxis = "y2", marker = list(color = "#A0522D")) %>%
+  add_markers(x = ~date, y = ~bacteria, marker = list(color = "#4682B4"), name = "Bacteria [cells/mL]") %>%
+  layout(title = "Spring bloom 2021 - Epilimnion [1-8m]", xaxis = list(title = "Date")) %>%
+  layout(plot_bgcolor = "white") %>%
+  layout(showlegend = FALSE) %>%
+  layout(yaxis = list(title = "Bacteria [million cells/mL]", titlefont = list(color = "#4682B4"), tickfont = list(color = "#4682B4"), tickvals = c(1, 2, 3, 4, 5, 6, 7, 8) * 1e6, ticktext = c("1", "2", "3", "4", "5", "6", "7", "8"), range = c(0, 8e6)),
+         yaxis2 = list(title = "HNF [thousand cells/mL]", titlefont = list(color = "#A0522D"), tickfont = list(color = "#A0522D"), overlaying = "y", side = "right", tickvals = c(1, 2, 3, 4, 5, 6, 7, 8) * 1e3, ticktext = c("1", "2", "3", "4", "5", "6", "7", "8"), range = c(0, 8e3))) %>%
+  layout(margin = list(l = 60, r = 80, b = 50, t = 50))
+biotic_plot
+```
+
+
+```{r}
+############################################################
+# ST_Bacteria_Plot
+#
+# PURPOSE
+# -------
+# Reproduce bacterial abundance as a Spring Bloom 2021
+# short-term (ST) lake profile in the same overall style
+# as the ST plots in Sample_Overview.Rmd:
+#   - profile interpolation in depth and time
+#   - Plotly contour plot
+#   - reversed depth axis
+#   - restricted ST time window only
+#
+# INPUT REQUIRED
+# --------------
+# FC_FULL.csv with at least these columns:
+#   - date
+#   - depth
+#   - bac_abu
+#
+# OUTPUT
+# ------
+# Interactive Plotly object + optional HTML export
+############################################################
+
+########################
+## 0) Setup
+########################
+data_dir <- "/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/LakeProfiles/"
+out_dir  <- data_dir
+
+ST_START <- as.Date("2021-02-22")
+ST_END   <- as.Date("2021-06-07")
+
+# Same ST depth focus as the Sample_Overview ST profiles
+ST_DEPTH_MIN <- 0
+ST_DEPTH_MAX <- 40
+
+########################
+## 1) Libraries
+########################
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lubridate)
+  library(plotly)
+  library(htmlwidgets)
+  library(RColorBrewer)
+})
+
+########################
+## 2) Lake profile function
+########################
+# This follows the same logic as in Sample_Overview.Rmd:
+# 1) interpolate across depth for each date
+# 2) interpolate across time for each depth
+LakeProfile <- function(dataset, variable, start_depth, end_depth,
+                        calc_interval, start_date, end_date) {
+
+  innerfunction1 <- function(target_date, target_depth, dataset, variable) {
+    data_for_date <- dataset %>%
+      filter(date == target_date) %>%
+      arrange(depth)
+
+    # Need at least 2 measurements for interpolation
+    if (nrow(data_for_date) < 2) {
+      return(rep(NA_real_, length(target_depth)))
+    }
+
+    approx(
+      x = data_for_date$depth,
+      y = data_for_date[[variable]],
+      xout = target_depth,
+      rule = 2
+    )$y
+  }
+
+  interp_depth <- tidyr::crossing(
+    tibble(date = unique(dataset$date)),
+    tibble(depth = seq(start_depth, end_depth, length.out = calc_interval))
+  ) %>%
+    group_by(date) %>%
+    mutate(!!variable := innerfunction1(date[1], depth, dataset, variable)) %>%
+    ungroup()
+
+  innerfunction2 <- function(target_depth, target_date, dataset, variable) {
+    data_for_depth <- interp_depth %>%
+      filter(depth == target_depth) %>%
+      arrange(date)
+
+    data_for_depth$date <- as.Date(data_for_depth$date)
+
+    good <- !is.na(data_for_depth[[variable]])
+    if (sum(good) < 2) {
+      return(rep(NA_real_, length(target_date)))
+    }
+
+    approx(
+      x = as.numeric(data_for_depth$date[good]),
+      y = data_for_depth[[variable]][good],
+      xout = as.numeric(target_date),
+      rule = 2
+    )$y
+  }
+
+  raster <- tidyr::crossing(
+    tibble(date = seq(as.Date(start_date), as.Date(end_date), by = 1)),
+    tibble(depth = unique(interp_depth$depth))
+  ) %>%
+    group_by(depth) %>%
+    mutate(!!variable := innerfunction2(depth[1], date, interp_depth, variable)) %>%
+    ungroup()
+
+  return(raster)
+}
+
+########################
+## 3) Plot function in ST style
+########################
+# Same general plotting logic as Sample_Overview.Rmd,
+# but adapted for bacterial abundance.
+PlotProfiles_Fixed <- function(profile, variable, plot_title, legend_title, color_palette) {
+
+  plot_ly(
+    x = profile$date,
+    y = profile$depth,
+    z = profile[[variable]],
+    type = "contour",
+    colors = color_palette
+  ) %>%
+    layout(
+      title = list(text = plot_title),
+      xaxis = list(title = "Date"),
+      yaxis = list(
+        autorange = "reversed",
+        title = "Depth [m]"
+      ),
+      plot_bgcolor = "white"
+    ) %>%
+    colorbar(title = legend_title)
+}
+
+########################
+## 4) Load and clean FC data
+########################
+fc_data <- readr::read_csv(
+  file.path(data_dir, "/LongTermLakeProfiles/Data/FC_FULL.csv"),
+  show_col_types = FALSE
+)
+
+fc_data_clean <- fc_data %>%
+  mutate(
+    date    = as.Date(date, format = "%m/%d/%Y"),
+    depth   = as.numeric(depth),
+    bac_abu = as.numeric(bac_abu)
+  ) %>%
+  filter(
+    !is.na(date),
+    !is.na(depth),
+    !is.na(bac_abu)
+  ) %>%
+  filter(
+    date >= ST_START,
+    date <= ST_END,
+    depth >= ST_DEPTH_MIN,
+    depth <= ST_DEPTH_MAX
+  ) %>%
+  arrange(date, depth)
+
+########################
+## 5) Build ST bacterial profile
+########################
+# Same interpolation density used for ST profiles in Sample_Overview
+# (0-40 m, 1000 interpolated depth steps, daily interpolation in time)
+bacteria_ST_profile <- LakeProfile(
+  dataset       = fc_data_clean,
+  variable      = "bac_abu",
+  start_depth   = ST_DEPTH_MIN,
+  end_depth     = ST_DEPTH_MAX,
+  calc_interval = 1000,
+  start_date    = ST_START,
+  end_date      = ST_END
+)
+
+########################
+## 6) Plot
+########################
+# Purple-pink palette chosen to stay visually close to your
+# previous bacterial abundance plot, while keeping the ST contour style.
+bac_palette_ST <- colorRampPalette(
+  c("#f7fcf5", "#f2e5ff", "#d4b9da", "#c994c7",
+    "#df65b0", "#e7298a", "#ce1256", "#980043", "#440154")
+)(100)
+
+ST_Bacteria_Plot <- PlotProfiles_Fixed(
+  profile      = bacteria_ST_profile,
+  variable     = "bac_abu",
+  plot_title   = "Bacterial Abundance Profile",
+  legend_title = "Bacteria [cells/mL]",
+  color_palette = bac_palette_ST
+)
+
+ST_Bacteria_Plot
+
+########################
+## 7) Optional export
+########################
+htmlwidgets::saveWidget(
+  ST_Bacteria_Plot,
+  file = file.path(out_dir, "ST_Bacteria_Plot.html"),
+  selfcontained = TRUE
+)
+
+########################
+## 9) Export static image (recommended)
+########################
+
+# Make sure kaleido is available
+# install.packages("reticulate")
+# reticulate::py_install("kaleido")
+
+export(ST_Bacteria_Plot,"ST_Bacteria_Plot.png")
+```
+ 
+ 

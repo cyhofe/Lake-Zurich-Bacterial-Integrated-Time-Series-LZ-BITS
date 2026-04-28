@@ -1,0 +1,553 @@
+---
+title: Protein Database Description
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/SpringBloom_Metaproteomics/PeptidesProteinsRecovered/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+library(data.table)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "PeptideProteinRecovery_Summary.csv")
+Protein_Distribution <- read_csv(file = "PeptideProteinDistribution.csv")
+```
+
+
+```{r}
+# 1) Recode & order Stage
+dat <- dat %>%
+  mutate(
+    Stage = recode(Stage,
+      Raw      = "Unfiltered",
+      `Q<1%`   = "1% Peptide FDR",
+      `All<1%` = "1% Protein FDR",
+      `2+ pep` = ">2 Peptides Per Protein"
+    ),
+    Stage = factor(Stage, levels = c(
+      "Unfiltered",
+      "1% Peptide FDR",
+      "1% Protein FDR",
+      ">2 Peptides Per Protein"
+    ))
+  )
+
+# 2) Build long-form counts
+bar_data <- bind_rows(
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Proteotypic",     Count = ProteotypicPeptides),
+  dat %>% transmute(Stage, Metric = "Peptides", Category = "Non-proteotypic", Count = Peptides - ProteotypicPeptides),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Proteotypic",     Count = ProteotypicProteins),
+  dat %>% transmute(Stage, Metric = "Proteins", Category = "Non-proteotypic", Count = Proteins - ProteotypicProteins)
+)
+
+# 3) Compute percentages & mid-points once
+anno <- bar_data %>%
+  group_by(Metric, Stage) %>%
+  mutate(
+    Total = sum(Count),
+    Pct   = Count / Total * 100,
+    Cum   = cumsum(Count),
+    Mid   = Cum - Count/2
+  ) %>%
+  ungroup()
+
+# 4) Colors (shared)
+fill_cols <- c(
+  "Proteotypic"     = ColorPalette[2],
+  "Non-proteotypic" = ColorPalette[4]
+)
+
+# 5) Helper to build each panel
+make_panel <- function(metric, breaks, limits) {
+  df <- filter(bar_data, Metric == metric)
+  an <- filter(anno,      Metric == metric)
+  
+  ggplot(df, aes(Stage, Count, fill = Category)) +
+    geom_col(color = "black", stroke = 0.1) +
+    geom_text(
+      data = an,
+      aes(y = Mid, label = sprintf("%.1f%%", Pct)),
+      color    = "black",
+      fontface = "bold",
+      size     = 4
+    ) +
+    scale_y_continuous(
+      breaks = breaks,
+      limits = limits,
+      labels = comma
+    ) +
+    labs(title = metric, x = NULL, y = "Count") +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x  = element_text(angle = 45, hjust = 1, face = "bold"),
+      axis.title.y = element_text(face = "bold")
+    )
+}
+
+# 6) Create the two panels
+p_pep <- make_panel("Peptides", seq(0,  90000, 10000), c(0, 95000))
+p_prt <- make_panel("Proteins", seq(0,  40000,  5000), c(0, 40000))
+
+# 7) Combine with one shared legend + global title
+p <- (p_pep + p_prt) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Proteome Search Quality Filtering",
+    theme = theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5)
+    )
+  ) & 
+  scale_fill_manual(values = fill_cols) &
+  theme(legend.position = "bottom")
+
+# 8) Print (and you can ggsave it as before)
+print(p)
+```
+
+```{r}
+# --- PEPTIDE & PROTEIN LENGTH DISTRIBUTIONS — already long‐form ---------------
+
+# Order Phylum by mean protein length
+phylum_order <- Protein_Distribution %>%
+  group_by(Phylum) %>%
+  summarise(mean_prot = mean(Protein_Length, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(mean_prot)) %>%
+  pull(Phylum)
+
+PD <- Protein_Distribution %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+# Total counts for subtitles
+n_peptides <- nrow(PD)
+n_proteins <- PD %>% distinct(Protein_ID) %>% nrow()
+
+# Per‐phylum peptide counts + labels
+phylum_pep_counts <- PD %>%
+  group_by(Phylum) %>%
+  summarise(n_peptides = n(), .groups = "drop") %>%
+  mutate(Facet_Label = paste0(Phylum, " (n=", n_peptides, ")"))
+
+PDp <- PD %>%
+  left_join(phylum_pep_counts, by = "Phylum") %>%
+  mutate(Facet_Label = factor(Facet_Label, levels = phylum_pep_counts$Facet_Label))
+
+# Compute density peaks and means for peptides
+peptide_means <- PDp %>%
+  group_by(Facet_Label) %>%
+  summarise(
+    Peptide_Mean = mean(Peptide_Length, na.rm = TRUE),
+    Max_Y        = max(density(Peptide_Length)$y),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Label_Y = Max_Y * 1.1,
+    Label_X = Peptide_Mean + 0.3
+  )
+
+# Peptide length density plot
+p_pep_len <- ggplot(PDp, aes(x = Peptide_Length, fill = Phylum)) +
+  geom_density(alpha = 0.6, adjust = 1.2) +
+  geom_vline(data = peptide_means,
+             aes(xintercept = Peptide_Mean),
+             linetype = "dashed") +
+  geom_text(data = peptide_means,
+            aes(x = Label_X, y = Label_Y, label = round(Peptide_Mean, 1)),
+            inherit.aes = FALSE, hjust = -0.5, size = 2.5) +
+  facet_wrap(~ Facet_Label, scales = "free_y") +
+  scale_x_continuous(limits = c(6, 31), breaks = seq(6, 30, by = 2)) +
+  scale_fill_manual(values = ColorPalette) +
+  labs(title = paste("Peptide length distribution (7–30 aa) — Total N =", n_peptides),
+       x = "Peptide length (aa)", y = "Density") +
+  theme_minimal(base_size = 8) +
+  theme(
+    strip.text      = element_text(face = "bold", size = 8),
+    legend.position = "none",
+    plot.title      = element_text(face = "bold", hjust = 0.5)
+  )
+
+# Per‐phylum protein counts + labels
+phylum_prot_counts <- PD %>%
+  distinct(Phylum, Protein_ID, Protein_Length) %>%
+  group_by(Phylum) %>%
+  summarise(n_proteins = n(), .groups = "drop") %>%
+  mutate(Facet_Label = paste0(Phylum, " (n=", n_proteins, ")"))
+
+PDpr <- PD %>%
+  distinct(Phylum, Protein_ID, Protein_Length) %>%
+  left_join(phylum_prot_counts, by = "Phylum") %>%
+  mutate(Facet_Label = factor(Facet_Label, levels = phylum_prot_counts$Facet_Label))
+
+# Compute density peaks and means for proteins
+protein_means <- PDpr %>%
+  group_by(Facet_Label) %>%
+  summarise(
+    Protein_Mean = mean(Protein_Length, na.rm = TRUE),
+    Max_Y        = max(density(log10(Protein_Length))$y),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Label_Y = Max_Y * 1.1,
+    Label_X = Protein_Mean * 1.03
+  )
+
+# Protein length density plot (log10 scale)
+p_prot_len <- ggplot(PDpr, aes(x = Protein_Length, fill = Phylum)) +
+  geom_density(alpha = 0.6, adjust = 1.2) +
+  geom_vline(data = protein_means,
+             aes(xintercept = Protein_Mean),
+             linetype = "dashed") +
+  geom_text(data = protein_means,
+            aes(x = Label_X, y = Label_Y, label = round(Protein_Mean)),
+            inherit.aes = FALSE, hjust = -0.5, size = 2.5) +
+  facet_wrap(~ Facet_Label, scales = "free_y") +
+  scale_x_log10(breaks = c(0, 30, 100, 300, 1e3, 3e3, 1e4),
+                labels = scales::comma) +
+  scale_fill_manual(values = ColorPalette) +
+  labs(title = paste("Protein length distribution (log10) — Total N =", n_proteins),
+       x = "Protein length (aa, log10)", y = "Density") +
+  theme_minimal(base_size = 8) +
+  theme(
+    strip.text      = element_text(face = "bold", size = 8),
+    legend.position = "none",
+    plot.title      = element_text(face = "bold", hjust = 0.5)
+  )
+
+# Print and export
+print(p_pep_len)
+print(p_prot_len)
+
+ggsave("Plot_Peptide_LengthDistribution_In_Database.png",
+       plot   = p_pep_len,
+       device = png,
+       height = 21, width = 29.7,
+       units  = "cm", dpi = 300)
+
+ggsave("Plot_Protein_LengthDistribution_In_Database.png",
+       plot   = p_prot_len,
+       device = png,
+       height = 21, width = 29.7,
+       units  = "cm", dpi = 300)
+
+```
+
+```{r}
+# 1) Summarise per species ---------------------------------------------------
+species_summary <- Protein_Distribution %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(Proteins = n_distinct(Protein_ID),
+    Peptides = n_distinct(Peptide_ID),
+    KEGG_Classified = n_distinct(KEGG_ID[!is.na(KEGG_ID) & KEGG_ID != "Unclassified"]),
+    .groups = "drop")
+
+# 2) Totals & maxima for label placement ------------------------------------
+phylum_totals <- species_summary %>%
+  group_by(Phylum) %>%
+  summarise(total_proteins = sum(Proteins),
+    total_peptides = sum(Peptides),
+    total_kegg_classified = sum(KEGG_Classified), .groups = "drop")
+
+# compute 5%‐above maxima
+global_max_prot <- max(species_summary$Proteins,        na.rm = TRUE)
+global_max_pep  <- max(species_summary$Peptides,        na.rm = TRUE)
+global_max_kegg <- max(species_summary$KEGG_Classified, na.rm = TRUE)
+
+phylum_totals <- phylum_totals %>%
+  mutate(y_prot = global_max_prot * 1.05,
+         y_pep  = global_max_pep  * 1.05,
+         y_kegg = global_max_kegg * 1.05)
+
+overall_proteins <- sum(phylum_totals$total_proteins)
+overall_peptides <- sum(phylum_totals$total_peptides)
+overall_kegg     <- sum(phylum_totals$total_kegg_classified)
+
+# 3) Order Phyla by median Proteins (for consistent x‐axis) -----------------
+phylum_order <- species_summary %>%
+  group_by(Phylum) %>%
+  summarise(med = median(Proteins), .groups = "drop") %>%
+  arrange(desc(med)) %>%
+  pull(Phylum)
+
+species_summary <- species_summary %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+phylum_totals <- phylum_totals %>%
+  mutate(Phylum = factor(Phylum, levels = phylum_order))
+
+# 4) Color mapping ------------------------------------------------------------
+fill_cols <- setNames(ColorPalette, phylum_order)
+
+# 5) Build each plot ---------------------------------------------------------
+
+# a) Tryptic peptides per species
+p_pep <- ggplot(species_summary, aes(Phylum, Peptides)) +
+  geom_jitter(aes(fill = Phylum), width = 0.35, shape = 21, colour = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, colour = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_pep, label = total_peptides), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  scale_y_continuous(breaks = seq(0, 3000, by = 500), limits = c(-1, 3000)) +
+  labs(title = paste0("Detected Peptides per species  (total=", overall_peptides, ")"), x = NULL, y = "Peptides [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14))
+
+# b) Proteins per species
+p_prot <- ggplot(species_summary, aes(Phylum, Proteins)) +
+  geom_jitter(aes(fill = Phylum), width = 0.35, shape = 21, colour = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, colour = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_prot, label = total_proteins), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  scale_y_continuous(breaks = seq(0, 600, by = 50), limits = c(-1, 600)) +
+  labs(title = paste0("Detected Proteins per species  (total=", overall_proteins, ")"), x = NULL, y = "Proteins [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14))
+
+# c) KEGG classified proteins per species
+p_kegg <- ggplot(species_summary, aes(Phylum, KEGG_Classified)) +
+  geom_jitter(aes(fill = Phylum), width = 0.35, shape = 21, colour = "black", size = 2.5, alpha = 0.7) +
+  geom_boxplot(aes(fill = Phylum), width = 0.75, outlier.shape = NA, alpha = 0.3, colour = "black") +
+  geom_text(data = phylum_totals, aes(x = Phylum, y = y_kegg, label = total_kegg_classified), size = 2) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  scale_y_continuous(breaks = seq(0, 400, by = 50), limits = c(-1, 400)) +
+  labs(title = paste0("KEGG classified proteins per species  (total=", overall_kegg, ")"), x = "Phylum", y = "KEGG IDs [n]") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 14))
+
+# 6) Stack vertically & add main title --------------------------------------
+final_plot <- (p_pep / p_prot / p_kegg) +
+  plot_layout(heights = c(1, 1, 1.2)) +
+  plot_annotation(title = "Proteome Overview", theme = theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5)))
+
+print(final_plot)
+
+# 7) Save to PDF -------------------------------------------------------------
+ggsave("Per_phylum_database_summary.png",
+       plot   = final_plot,
+       device = png,
+       width  = 14, height = 7,
+       units  = "in", dpi = 300)
+
+
+```
+
+
+```{r}
+# ----------------------------------------------------------------------
+# Full script: From data summarization (step 1) to plotting and saving
+# ----------------------------------------------------------------------
+
+# 0) Define phylum order and color palette --------------------------------
+phylum_order <- c(
+  "Actinomycetota",   "Bacteroidota",     "Pseudomonadota",
+  "Verrucomicrobiota","Planctomycetota",  "Chloroflexota",
+  "Bdellovibrionota", "Acidobacteriota",  "Armatimonadota",
+  "Myxococcota",      "Nitrospirota",     "Thermoproteota",
+  "Patescibacteria",  "Gemmatimonadota",  "Cyanobacteriota",
+  "Deinococcota",     "Chlamydiota"
+)
+
+names(ColorPalette) <- phylum_order
+
+
+# 1) Summarise per species ---------------------------------------------------
+species_summary <- Protein_Distribution %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins        = n_distinct(Protein_ID),
+    Peptides        = n_distinct(Peptide_ID),
+    KEGG_Classified = n_distinct(KEGG_ID[!is.na(KEGG_ID) & KEGG_ID != "Unclassified"]),
+    .groups         = "drop"
+  )
+
+# Global median proteins per species
+global_median_prot <- median(species_summary$Proteins, na.rm = TRUE)
+
+# 2) Totals per phylum & label positions ------------------------------------
+phylum_totals <- species_summary %>%
+  group_by(Phylum) %>%
+  summarise(
+    total_proteins        = sum(Proteins),
+    total_peptides        = sum(Peptides),
+    total_kegg_classified = sum(KEGG_Classified),
+    .groups               = "drop"
+  )
+
+# Compute label height
+global_max_prot <- max(species_summary$Proteins, na.rm = TRUE)
+
+# 3) Identify Top-8 phyla by total proteins ---------------------------------
+Top8_Phyla_Most_Number_Of_Proteins <- phylum_totals %>%
+  arrange(desc(total_proteins)) %>%
+  slice_head(n = 8) %>%
+  pull(Phylum)
+
+ordered_top8 <- phylum_order[phylum_order %in% Top8_Phyla_Most_Number_Of_Proteins]
+
+# 4) Create Phylum_Concatenated ---------------------------------------------
+species_summary <- species_summary %>%
+  mutate(
+    Phylum_Concatenated = if_else(
+      Phylum %in% ordered_top8,
+      Phylum,
+      "Rest"
+    ),
+    Phylum_Concatenated = factor(
+      Phylum_Concatenated,
+      levels = rev(c(ordered_top8, "Rest"))
+    )
+  )
+
+# 5) Build phylum_totals2 including “Rest” row -------------------------------
+rest_total <- phylum_totals %>%
+  filter(!Phylum %in% ordered_top8) %>%
+  summarise(
+    total_proteins = sum(total_proteins)
+  ) %>%
+  mutate(Phylum = "Rest")
+
+phylum_totals2 <- phylum_totals %>%
+  filter(Phylum %in% ordered_top8) %>%
+  bind_rows(rest_total) %>%
+  mutate(
+    Phylum_Concatenated = factor(
+      Phylum,
+      levels = rev(c(ordered_top8, "Rest"))
+    )
+  )
+
+# Species count per displayed group for labels above boxplots
+species_counts <- species_summary %>%
+  group_by(Phylum_Concatenated) %>%
+  summarise(
+    n_species = n_distinct(Species_ID),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    y_lab = 620   # slightly above plotting range; adjust if needed
+  )
+
+# 6) Color mapping -----------------------------------------------------------
+fill_cols <- c(
+  ColorPalette[ordered_top8],
+  Rest = "red"
+)
+
+# 7) Build the plot ----------------------------------------------------------
+p_prot_horiz <- ggplot(
+  species_summary,
+  aes(
+    x    = Phylum_Concatenated,
+    y    = Proteins,
+    fill = Phylum_Concatenated
+  )
+) +
+  # global median line
+  geom_hline(
+    yintercept = global_median_prot,
+    linetype   = "dashed",
+    linewidth  = 0.8,
+    colour     = "black"
+  ) +
+  # jittered points
+  geom_jitter(
+    width  = 0.35,
+    height = 0,
+    shape  = 21,
+    colour = "black",
+    size   = 2.5,
+    alpha  = 0.7
+  ) +
+  # boxplots
+  geom_boxplot(
+    width         = 0.75,
+    outlier.shape = NA,
+    alpha         = 0.7,
+    colour        = "black"
+  ) +
+  # species count labels above each boxplot
+  geom_text(
+    data = species_counts,
+    aes(
+      x = Phylum_Concatenated,
+      y = y_lab,
+      label = paste0("n = ", n_species)
+    ),
+    inherit.aes = FALSE,
+    size = 3.5,
+    fontface = "bold"
+  ) +
+  scale_fill_manual(values = fill_cols, guide = "none") +
+  scale_y_continuous(
+    trans   = "sqrt",
+    breaks  = c(0, 10, 20, 50, 100, 200, 400, 600),
+    limits  = c(0, 650),   # increased upper limit so labels are visible
+    expand  = expansion(mult = c(0, 0.02))
+  ) +
+  labs(
+    x = NULL,
+    y = "Proteins Per Species [n]"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x      = element_text(size = 12, angle = 45, hjust = 1),
+    axis.text.y      = element_text(size = 12, face = "bold"),
+    axis.title.y     = element_text(size = 12)
+  )
+
+# 8) Display the plot -------------------------------------------------------
+print(p_prot_horiz)
+
+# 9) Export -----------------------------------------------------------------
+ggsave(
+  filename = "Proteins_Per_Species.png",
+  plot     = p_prot_horiz,
+  width    = 12,
+  height   = 4,
+  units    = "in",
+  dpi      = 300
+)
+```
+

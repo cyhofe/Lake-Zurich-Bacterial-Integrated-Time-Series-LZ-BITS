@@ -1,0 +1,1002 @@
+---
+title: MAG Overview
+subtitle: SpringBloom2021 - Genome-resolved Metaproteomic Dataset
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Figure_01/AssemblyQualityComparison/")
+
+# Load the libraries
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_csv(file = "AssemblyComparison.csv")
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(forcats)
+library(scales)
+
+# 1) lock the display order
+lvl <- c("Illumina_Raw","Illumina_Filtered",
+         "Nanopore_Raw","Nanopore_Filtered","Nanopore_Corrected")
+dat2 <- dat %>%
+  mutate(AssemblyType = factor(AssemblyType, levels = lvl))
+
+# 2) gather the metrics you want to compare
+metrics_to_plot <- c("total_bp","snps_per_mbp","indels_per_mbp",
+                     "genes_total","intact_orf_pct","n_Contigs","N50")
+
+plot_df <- dat2 %>%
+  select(AssemblyType, all_of(metrics_to_plot)) %>%
+  pivot_longer(-AssemblyType, names_to = "metric", values_to = "value") %>%
+  mutate(metric = recode(metric,
+    total_bp        = "Assembly span (bp)",
+    snps_per_mbp    = "SNPs per Mbp (DP≥20, AF≥0.9)",
+    indels_per_mbp  = "Indels per Mbp (DP≥20, AF≥0.9)",
+    genes_total     = "Predicted proteins",
+    intact_orf_pct  = "Intact ORFs (%)",
+    n_Contigs       = "# contigs",
+    N50             = "N50 (bp)"
+  ),
+  metric = factor(metric, levels = c("Assembly span (bp)",
+                                     "# contigs",
+                                     "N50 (bp)",
+                                     "SNPs per Mbp (DP≥20, AF≥0.9)",
+                                     "Indels per Mbp (DP≥20, AF≥0.9)",
+                                     "Predicted proteins",
+                                     "Intact ORFs (%)"))
+  )
+
+# 3) faceted boxplots (one figure)
+p <- ggplot(plot_df, aes(x = AssemblyType, y = value, fill = AssemblyType)) +
+  geom_boxplot(outlier.alpha = 0.2, width = 0.7, linewidth = 0.3) +
+  facet_wrap(~ metric, scales = "free_y", ncol = 3) +
+  scale_x_discrete(drop = FALSE) +
+  labs(x = NULL, y = NULL, title = "Assembly comparison across technologies") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
+
+p
+
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(scales)
+library(ggradar)
+library(patchwork)
+
+# 0) order types exactly as you want
+lvl <- c("Illumina_Raw","Illumina_Filtered",
+         "Nanopore_Raw","Nanopore_Filtered","Nanopore_Corrected")
+dat <- dat %>% mutate(AssemblyType = fct_relevel(AssemblyType, lvl))
+
+# 1) choose metrics
+metrics <- c("total_bp","snps_per_mbp","indels_per_mbp",
+             "genes_total","intact_orf_pct","n_Contigs","N50")
+
+# 2) compute medians per type
+med <- dat %>%
+  group_by(AssemblyType) %>%
+  summarise(across(all_of(metrics), ~median(.x, na.rm = TRUE)), .groups = "drop")
+
+# 3) tame skew (log10) for scale-like metrics
+log_vars <- c("total_bp","genes_total","n_Contigs","N50")
+med_tr <- med %>%
+  mutate(across(all_of(log_vars), log10, .names = "{.col}_log")) %>%
+  select(-all_of(log_vars)) %>%
+  rename(total_bp = total_bp_log,
+         genes_total = genes_total_log,
+         n_Contigs = n_Contigs_log,
+         N50 = N50_log)
+
+# 4) rescale 0–1 per metric; invert "lower is better"
+scale01 <- function(x){
+  r <- range(x, na.rm=TRUE)
+  if (!is.finite(diff(r)) || diff(r) == 0) return(rep(1, length(x)))
+  (x - r[1]) / diff(r)
+}
+lower_is_better <- c("snps_per_mbp","indels_per_mbp","n_Contigs")
+
+med_scaled <- med_tr %>%
+  mutate(across(all_of(setdiff(names(med_tr), "AssemblyType")), scale01)) %>%
+  mutate(across(all_of(lower_is_better), ~ 1 - .x))
+
+# 5) pretty axis labels
+axis_labels <- c(
+  total_bp       = "Assembly span (log10)",
+  n_Contigs      = "# contigs (log10, ↓ is better)",
+  N50            = "N50 (log10)",
+  snps_per_mbp   = "SNPs/Mbp (↓ better)",
+  indels_per_mbp = "Indels/Mbp (↓ better)",
+  genes_total    = "Predicted proteins (log10)",
+  intact_orf_pct = "Intact ORFs (%)"
+)
+
+radar_df <- med_scaled %>%
+  rename(group = AssemblyType) %>%
+  relocate(group)
+
+# 6) helper to draw one spider per type
+make_radar <- function(target_type, data = radar_df, labels = axis_labels){
+  df <- data
+  # reorder columns to a consistent, readable axis order
+  df <- df %>% select(group,
+                      total_bp, n_Contigs, N50,
+                      snps_per_mbp, indels_per_mbp,
+                      genes_total, intact_orf_pct)
+
+  # ggradar expects first column = group; values already 0–1
+  p <- ggradar(df %>% filter(group == target_type),
+               grid.min = 0, grid.mid = 0.5, grid.max = 1,
+               values.radar = c("0", "0.5", "1"),
+               group.line.width = 1.2,
+               group.point.size = 2.5,
+               background.circle.colour = "grey92",
+               gridline.min.linetype = "solid",
+               gridline.mid.linetype = "solid",
+               gridline.max.linetype = "solid",
+               gridline.min.colour = "white",
+               gridline.mid.colour = "grey86",
+               gridline.max.colour = "grey70",
+               axis.label.size = 3.2,
+               legend.position = "none") +
+       labs(title = target_type) +
+       scale_x_discrete(labels = c(
+         "total_bp"       = labels["total_bp"],
+         "n_Contigs"      = labels["n_Contigs"],
+         "N50"            = labels["N50"],
+         "snps_per_mbp"   = labels["snps_per_mbp"],
+         "indels_per_mbp" = labels["indels_per_mbp"],
+         "genes_total"    = labels["genes_total"],
+         "intact_orf_pct" = labels["intact_orf_pct"]
+       ))
+  p
+}
+
+# 7) build the five radars
+plots <- lapply(levels(dat$AssemblyType), make_radar)
+# arrange nicely
+wrap_plots(plots, ncol = 3) +
+  plot_annotation(title = "Spider plots (medians per assembly type; all axes scaled 0–1, outward = better)")
+
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(ggplot2)
+library(scales)
+
+# enforce order
+lvl <- c("Illumina_Raw","Illumina_Filtered","Nanopore_Raw","Nanopore_Filtered","Nanopore_Corrected")
+dat <- dat %>% mutate(AssemblyType = fct_relevel(AssemblyType, lvl))
+
+metrics <- c("total_bp","snps_per_mbp","indels_per_mbp",
+             "genes_total","intact_orf_pct","n_Contigs","N50")
+
+sumdf <- dat %>%
+  pivot_longer(all_of(metrics), names_to="metric", values_to="value") %>%
+  group_by(AssemblyType, metric) %>%
+  summarise(med = median(value, na.rm=TRUE),
+            q1  = quantile(value, 0.25, na.rm=TRUE),
+            q3  = quantile(value, 0.75, na.rm=TRUE),
+            .groups="drop") %>%
+  mutate(metric = recode(metric,
+    total_bp        = "Assembly span (bp)",
+    snps_per_mbp    = "SNPs per Mbp (DP≥20, AF≥0.9)",
+    indels_per_mbp  = "Indels per Mbp (DP≥20, AF≥0.9)",
+    genes_total     = "Predicted proteins",
+    intact_orf_pct  = "Intact ORFs (%)",
+    n_Contigs       = "# contigs",
+    N50             = "N50 (bp)"
+  ),
+  metric = factor(metric, levels = c("Assembly span (bp)", "# contigs", "N50 (bp)",
+                                     "SNPs per Mbp (DP≥20, AF≥0.9)",
+                                     "Indels per Mbp (DP≥20, AF≥0.9)",
+                                     "Predicted proteins", "Intact ORFs (%)")))
+
+# NEW: labelers using the current 'scales' API
+short_lab <- scales::label_number(scale_cut = scales::cut_short_scale(), accuracy = 0.1)  # e.g., 1.2k, 3.4M
+num_lab   <- scales::label_number(accuracy = 0.1)
+
+sumdf <- sumdf %>%
+  mutate(label = dplyr::case_when(
+    metric %in% c("Assembly span (bp)", "# contigs", "Predicted proteins", "N50 (bp)") ~ short_lab(med),
+    TRUE ~ num_lab(med)
+  ))
+
+ggplot(sumdf, aes(x = med, y = AssemblyType, color = AssemblyType)) +
+  geom_linerange(aes(xmin = q1, xmax = q3), linewidth = 1.4, alpha = 0.6) +
+  geom_point(size = 2.8) +
+  geom_text(aes(label = label), nudge_y = 0.25, size = 2.7, color = "grey20") +
+  facet_wrap(~ metric, scales = "free_x", ncol = 2) +
+  scale_color_brewer(palette = "Dark2", guide = "none") +
+  labs(x = NULL, y = NULL, title = "Per-metric comparison (median ± IQR, real units)") +
+  theme_minimal(base_size = 12) +
+  theme(strip.text = element_text(face = "bold"),
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(size = 9))
+
+
+ggplot(sumdf, aes(x = med, y = AssemblyType, color = AssemblyType)) +
+  geom_linerange(aes(xmin = q1, xmax = q3), linewidth = 1.2, alpha = 0.6) +
+  geom_point(size = 2.6) +
+  geom_text(aes(label = label), nudge_y = 0.25, size = 2.6, color = "grey20") +
+  facet_wrap(~ metric, scales = "free_x", ncol = 1, strip.position = "left") +
+  scale_color_brewer(palette = "Dark2", guide = "none") +
+  labs(x = NULL, y = NULL, title = "Per-metric comparison (median ± IQR, real units)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.placement = "outside",
+    strip.text.y.left = element_text(face = "bold", angle = 0),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 9)
+  )
+
+# suggested export size for 7 facets stacked:
+# ggsave("all_metrics_one_column.pdf", width = 7, height = 14, device = cairo_pdf)
+
+```
+
+```{r}
+# --- packages ---
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(ggplot2)
+library(ggforce)   # geom_circle
+library(patchwork) # to arrange side-by-side
+
+# --- config ---
+lvl <- c("Illumina_Raw","Illumina_Filtered","Nanopore_Raw","Nanopore_Filtered","Nanopore_Corrected")
+dat  <- dat %>% mutate(AssemblyType = fct_relevel(AssemblyType, lvl))
+
+# metrics + axis order (same as before)
+metrics <- c("total_bp","n_Contigs","N50","snps_per_mbp","indels_per_mbp","genes_total","intact_orf_pct")
+axis_labels <- c(
+  total_bp       = "Span (log10)",
+  n_Contigs      = "Contigs (log10, inv)",
+  N50            = "N50 (log10)",
+  snps_per_mbp   = "SNPs/Mbp (inv)",
+  indels_per_mbp = "INDELs/Mbp (inv)",
+  genes_total    = "Proteins (log10)",
+  intact_orf_pct = "Intact ORFs (%)"
+)
+axes <- names(axis_labels)
+
+# colors for the three target types
+cols <- c(
+  Illumina_Filtered  = "#2ca02c",
+  Nanopore_Filtered  = "#ff7f0e",
+  Nanopore_Corrected = "#9467bd"
+)
+
+# --- 1) Medians per type (only the 3 types you want to show) ---
+focus_types <- c("Illumina_Filtered","Nanopore_Filtered","Nanopore_Corrected")
+med <- dat %>%
+  filter(AssemblyType %in% focus_types) %>%
+  group_by(AssemblyType) %>%
+  summarise(across(all_of(metrics), ~median(.x, na.rm = TRUE)), .groups = "drop")
+
+# --- 2) Log-tame skewed counts (so shapes aren’t dominated by orders of magnitude) ---
+log_vars <- c("total_bp","genes_total","n_Contigs","N50")
+med_tr <- med %>%
+  mutate(across(all_of(log_vars), ~log10(pmax(.x, 1))))  # avoid log(0)
+
+# --- 3) Scale 0–1 *globally across the three* & invert lower-better axes ---
+scale01 <- function(x){
+  r <- range(x, na.rm=TRUE); d <- diff(r)
+  if (!is.finite(d) || d == 0) return(rep(1, length(x)))
+  (x - r[1]) / d
+}
+inv_vars <- c("snps_per_mbp","indels_per_mbp","n_Contigs")
+
+med_scaled <- med_tr %>%
+  mutate(across(all_of(setdiff(names(med_tr), "AssemblyType")), scale01)) %>%
+  mutate(across(all_of(inv_vars), ~1 - .x))
+
+# --- 4) Radar helper: draw ONE polygon (one assembly type) on shared axes ---
+make_single_radar <- function(df, type_label, title){
+  df1 <- df %>% filter(AssemblyType == type_label) %>%
+    select(AssemblyType, all_of(axes)) %>%
+    rename(group = AssemblyType) %>%
+    pivot_longer(-group, names_to = "axis", values_to = "value") %>%
+    mutate(axis = factor(axis, levels = axes))
+
+  k <- length(axes)
+  angle_tbl <- tibble(
+    axis  = factor(axes, levels = axes),
+    theta = 2*pi*(seq_along(axes)-1)/k
+  )
+
+  poly <- df1 %>%
+    left_join(angle_tbl, by = "axis") %>%
+    mutate(x = value * sin(theta),
+           y = value * cos(theta))
+
+  # grid, spokes, labels
+  grid   <- tibble(r = c(0.25, 0.5, 0.75, 1))
+  spokes <- angle_tbl %>%
+    mutate(xend = 1.02*sin(theta), yend = 1.02*cos(theta))
+  labs_df <- angle_tbl %>%
+    mutate(x = 1.10*sin(theta), y = 1.10*cos(theta),
+           lab = axis_labels[as.character(axis)])
+
+  ggplot() +
+    ggforce::geom_circle(data = grid, aes(x0 = 0, y0 = 0, r = r),
+                         linetype = "dashed", color = "grey80", linewidth = 0.3) +
+    geom_segment(data = spokes,
+                 aes(x = 0, y = 0, xend = xend, yend = yend),
+                 color = "grey75", linewidth = 0.3) +
+    geom_polygon(data = poly,
+                 aes(x, y), fill = cols[type_label], color = cols[type_label],
+                 alpha = 0.22, linewidth = 1.0) +
+    geom_point(data = poly, aes(x, y), color = cols[type_label], size = 2) +
+    # ring labels (0, 0.5, 1) at the top
+    annotate("text", x = 0, y = 0.25, label = "0.25", size = 3, color = "grey40") +
+    annotate("text", x = 0, y = 0.50, label = "0.50", size = 3, color = "grey40") +
+    annotate("text", x = 0, y = 1.00, label = "1.00", size = 3, color = "grey40") +
+    geom_text(data = labs_df, aes(x, y, label = lab), size = 3.2) +
+    coord_equal(xlim = c(-1.25, 1.25), ylim = c(-1.25, 1.25), expand = FALSE) +
+    theme_void(base_size = 12) +
+    ggtitle(title) +
+    theme(plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(b = 4)))
+}
+
+# --- 5) Build the three panels (shared scale from med_scaled) ---
+p1 <- make_single_radar(med_scaled, "Illumina_Filtered",  "Illumina Filtered")
+p2 <- make_single_radar(med_scaled, "Nanopore_Filtered",  "Nanopore Filtered")
+p3 <- make_single_radar(med_scaled, "Nanopore_Corrected", "Nanopore Corrected")
+
+# arrange in one row (or 3x1 column if preferred)
+p_row <- p1 | p2 | p3
+p_row
+
+# save
+
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(scales)
+
+# --- config (match your radar) ---
+focus_types <- c("Illumina_Raw", "Illumina_Filtered","Nanopore_Raw","Nanopore_Filtered","Nanopore_Corrected")
+axes_order  <- c("total_bp","n_Contigs","N50","snps_per_mbp","indels_per_mbp","genes_total","intact_orf_pct")
+pretty_lab  <- c(
+  total_bp       = "Span ≥2.5 kb (bp)",
+  n_Contigs      = "# contigs",
+  N50            = "N50 (bp)",
+  snps_per_mbp   = "SNPs per Mbp (DP≥20, AF≥0.9)",
+  indels_per_mbp = "INDELs per Mbp (DP≥20, AF≥0.9)",
+  genes_total    = "Predicted proteins",
+  intact_orf_pct = "Intact ORFs (%)"
+)
+
+log_vars <- c("total_bp","genes_total","n_Contigs","N50")      # log10 before scaling
+inv_vars <- c("snps_per_mbp","indels_per_mbp","n_Contigs")     # invert AFTER scaling
+
+# --- 1) keep only focus types & long format ---
+df_long_raw <- dat %>%
+  filter(AssemblyType %in% focus_types) %>%
+  select(AssemblyType, all_of(axes_order)) %>%
+  pivot_longer(-AssemblyType, names_to = "metric", values_to = "value") %>%
+  mutate(metric = factor(metric, levels = axes_order))
+
+# --- 2) RAW summaries (real units) ---
+raw_sum <- df_long_raw %>%
+  group_by(AssemblyType, metric) %>%
+  summarise(
+    n     = sum(!is.na(value)),
+    mean  = mean(value, na.rm = TRUE),
+    sd    = sd(value, na.rm = TRUE),
+    median= median(value, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# --- 3) Transform for radar: log10 some metrics, then global 0–1 scaling across the three types, then invert lower-better ---
+df_trans <- df_long_raw %>%
+  mutate(value_t = ifelse(metric %in% log_vars, log10(pmax(value, 1)), value))
+
+# per-metric min/max on transformed values
+mm <- df_trans %>%
+  group_by(metric) %>%
+  summarise(vmin = min(value_t, na.rm = TRUE),
+            vmax = max(value_t, na.rm = TRUE),
+            .groups = "drop")
+
+scaled_long <- df_trans %>%
+  left_join(mm, by = "metric") %>%
+  mutate(scaled = ifelse(is.finite(vmax - vmin) & (vmax > vmin),
+                         (value_t - vmin) / (vmax - vmin), 1)) %>%
+  mutate(scaled = ifelse(metric %in% inv_vars, 1 - scaled, scaled))
+
+radar_sum <- scaled_long %>%
+  group_by(AssemblyType, metric) %>%
+  summarise(
+    scaled_mean   = mean(scaled, na.rm = TRUE),
+    scaled_sd     = sd(scaled, na.rm = TRUE),
+    scaled_median = median(scaled, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# --- 4) Combine RAW + SCALED summaries; add pretty labels and nice formatting helpers ---
+final_tbl <- raw_sum %>%
+  left_join(radar_sum, by = c("AssemblyType","metric")) %>%
+  mutate(metric_label = pretty_lab[as.character(metric)],
+         AssemblyType = factor(AssemblyType, levels = focus_types)) %>%
+  select(AssemblyType, metric_label, n,
+         mean, sd, median,
+         scaled_mean, scaled_sd, scaled_median) %>%
+  arrange(match(metric_label, pretty_lab[axes_order]),
+          AssemblyType)
+
+# print a compact numeric table
+final_tbl
+
+# Optional: human-friendly formatting + export
+fmt_big <- label_number(scale_cut = cut_short_scale(), accuracy = 0.1)   # 1.2k, 3.4M, …
+fmt_num <- label_number(accuracy = 0.1)
+
+final_tbl_pretty <- final_tbl %>%
+  mutate(
+    mean   = ifelse(metric_label %in% c("Span ≥2.5 kb (bp)", "# contigs", "Predicted proteins", "N50 (bp)"),
+                    fmt_big(mean),   fmt_num(mean)),
+    sd     = ifelse(metric_label %in% c("Span ≥2.5 kb (bp)", "# contigs", "Predicted proteins", "N50 (bp)"),
+                    fmt_big(sd),     fmt_num(sd)),
+    median = ifelse(metric_label %in% c("Span ≥2.5 kb (bp)", "# contigs", "Predicted proteins", "N50 (bp)"),
+                    fmt_big(median), fmt_num(median)),
+    scaled_mean   = round(scaled_mean, 3),
+    scaled_sd     = round(scaled_sd, 3),
+    scaled_median = round(scaled_median, 3)
+  )
+
+# view nicely (requires gt)
+# install.packages("gt")
+# library(gt)
+# gt(final_tbl_pretty) %>%
+#   tab_header(title = "Summary (raw units) and radar-scaled 0–1") %>%
+#   cols_label(
+#     AssemblyType = "Type",
+#     metric_label = "Metric",
+#     n = "n",
+#     mean = "Mean (raw)",
+#     sd = "SD (raw)",
+#     median = "Median (raw)",
+#     scaled_mean = "Mean (0–1)",
+#     scaled_sd = "SD (0–1)",
+#     scaled_median = "Median (0–1)"
+#   )
+
+# export CSV for supplement
+# write.csv(final_tbl_pretty, "three_types_summary_table.csv", row.names = FALSE)
+
+```
+
+
+```{r}
+############################################################
+## Hybrid-assembly comparison: sqrt-scaled per-metric panels
+## - Three assembly types: Illumina_Filtered, Nanopore_Filtered, Nanopore_Corrected
+## - Metrics: total_bp, n_Contigs, N50, snps_per_mbp, indels_per_mbp, intact_per_Mbp
+## - Axes: sqrt scale (original units), 4 ticks chosen from custom “nice” pools
+## - Labels: concise; switch to scientific (1.2e5) for large values
+## - Output: single-row figure via patchwork
+##
+## Input expected: a data.frame `dat` with columns:
+##   AssemblyType, total_bp, n_Contigs, N50, snps_per_mbp, indels_per_mbp,
+##   genes_total, intact_orf_pct, (optional) callable_bp_20x
+############################################################
+
+# ---- packages ----
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(forcats)
+  library(ggplot2)
+  library(patchwork)
+  library(scales)
+})
+
+# ---- config ----
+keep_types <- c("Illumina_Filtered","Nanopore_Filtered","Nanopore_Corrected")
+cols <- c(Illumina_Filtered="#8fbf9f", Nanopore_Filtered="#ead0ad", Nanopore_Corrected="#c99aa8")
+n_ticks_per_panel <- 4   # set to 6 if you want six ticks per panel
+
+# ---- labeler: small values as numbers, large as scientific (e.g., 1.2e5) ----
+label_sci_if_needed <- function(threshold = 1e4, digits = 1, small_acc = 0.1) {
+  num_lab <- scales::label_number(accuracy = small_acc)
+  function(x) vapply(x, function(v) {
+    if (!is.finite(v)) return(NA_character_)
+    if (abs(v) >= threshold) {
+      if (v == 0) return("0")
+      e  <- floor(log10(abs(v)))
+      m  <- abs(v) / (10^e)
+      ms <- format(round(m, digits), trim = TRUE, scientific = FALSE)
+      ms <- sub("\\.?0+$", "", ms)      # drop trailing .0
+      paste0(if (v < 0) "-" else "", ms, "e", e)
+    } else {
+      num_lab(v)
+    }
+  }, character(1))
+}
+sci_lab <- label_sci_if_needed(threshold = 1e4, digits = 1, small_acc = 0.1)
+
+# ---- helper: pick ticks from a “nice” pool that spans the data range ----
+ticks_from_pool <- function(x, pool, n = 4) {
+  x <- x[is.finite(x)]
+  if (!length(x)) return(head(pool, n))
+  lo <- max(pool[pool <= min(x)], default = min(pool))
+  hi <- min(pool[pool >= max(x)], default = max(pool))
+  cand <- pool[pool >= lo & pool <= hi]
+  if (length(cand) < n) return(seq(lo, hi, length.out = n))
+  idx <- round(seq(1, length(cand), length.out = n))
+  unique(cand[idx])
+}
+
+# ---- plotting function for one metric (sqrt y, custom ticks, neat styling) ----
+make_metric_plot <- function(df, metric, title, cols, tick_pool, n_ticks = 4) {
+  d <- df %>% select(AssemblyType, value = all_of(metric)) %>%
+       mutate(value = pmax(value, 0))  # safety for sqrt
+  brks <- ticks_from_pool(d$value, tick_pool, n = n_ticks)
+  lims <- range(brks)
+
+  ggplot(d, aes(x = AssemblyType, y = value)) +
+    geom_point(aes(fill = AssemblyType),
+               position = position_jitter(width = 0.15, height = 0),
+               shape = 21, size = 1.9, stroke = 0.35,
+               color = "black", alpha = 0.6) +
+    geom_boxplot(aes(fill = AssemblyType),
+                 width = 0.55, outlier.shape = NA,
+                 alpha = 0.45, linewidth = 0.35) +
+    scale_fill_manual(values = cols) +
+    scale_y_sqrt(limits = lims, breaks = brks, labels = sci_lab, expand = c(0,0)) +
+    labs(x = NULL, y = NULL, title = title) +
+    theme_minimal(base_size = 12) +
+    theme(
+      legend.position = "none",
+      panel.grid.minor = element_blank(),
+      axis.text.x  = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.y  = element_text(size = 18),
+      strip.text   = element_text(face = "bold"),
+      plot.title   = element_text(face = "bold", hjust = 0.5, margin = margin(b = 4)),
+      plot.margin  = margin(5, 5, 5, 5)
+    )
+}
+
+# ---- derive intact proteins per Mbp + keep three types ----
+df0 <- dat %>%
+  filter(AssemblyType %in% keep_types) %>%
+  mutate(
+    AssemblyType    = fct_relevel(AssemblyType, keep_types),
+    intact_proteins = genes_total * intact_orf_pct / 100,              # absolute count
+    intact_per_Mbp  = intact_proteins / (total_bp / 1e6)               # proteome-ready per Mbp
+  ) %>%
+  select(AssemblyType, total_bp, n_Contigs, N50,
+         snps_per_mbp, indels_per_mbp, intact_per_Mbp)
+
+# ---- custom tick pools (edit to taste; ensure they cover your ranges) ----
+pool_total   <- c(0, 5e7, 1e8, 2e8, 3e8, 5e8, 7e8, 1e9, 1.5e9, 2e9)
+pool_contigs <- c(0, 1e4, 2.5e4, 5e4, 7.5e4, 1e5, 1.5e5, 2e5)
+pool_N50     <- c(0, 5e3, 1e4, 2e4, 3e4, 5e4, 7.5e4, 1e5, 1.5e5, 2e5)
+pool_SNPs    <- c(0, 50, 100, 200, 300, 500, 700, 1000, 1500, 2000, 3000)
+pool_INDELs  <- c(0, 5, 10, 20, 50, 100, 150, 200, 300, 500, 800)
+pool_intact  <- c(0, 200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500)
+
+# ---- build each panel (use n_ticks_per_panel) ----
+p_span   <- make_metric_plot(df0, "total_bp",       "Total bases (bp)",         cols, pool_total,   n_ticks_per_panel)
+p_ctg    <- make_metric_plot(df0, "n_Contigs",      "Number of contigs",        cols, pool_contigs, n_ticks_per_panel)
+p_n50    <- make_metric_plot(df0, "N50",            "N50 (bp)",                 cols, pool_N50,     n_ticks_per_panel)
+p_snps   <- make_metric_plot(df0, "snps_per_mbp",   "SNPs per Mbp",             cols, pool_SNPs,    n_ticks_per_panel)
+p_indels <- make_metric_plot(df0, "indels_per_mbp", "INDELs per Mbp",           cols, pool_INDELs,  n_ticks_per_panel)
+p_intact <- make_metric_plot(df0, "intact_per_Mbp", "Intact proteins per Mbp",  cols, pool_intact,  n_ticks_per_panel)
+
+# ---- combine & save ----
+p_final <- p_span | p_ctg | p_n50 | p_snps | p_indels | p_intact
+p_final
+
+ggsave("AssemblyComparison.pdf", p_final, width = 17, height = 4.3, device = pdf)
+# ggsave("hybrid_comparison_sqrt_customticks.png", p_final, width = 1600, height = 330, dpi = 300, units = "px")
+```
+
+
+
+```{r}
+############################################################
+## Hybrid-assembly comparison with significance annotations
+## - Replots 6 metric panels (sqrt y-scale, custom ticks)
+## - Adds pairwise significance brackets (ns, *, **, *** ...)
+## - Outputs publication-ready stats tables (supplement)
+############################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(forcats)
+  library(ggplot2)
+  library(patchwork)
+  library(scales)
+  library(ggpubr)   # stat_pvalue_manual
+  library(rstatix)  # kruskal_test, wilcox_test, wilcox_effsize
+  library(tidyr)
+})
+
+# ----------------------------
+# helper: p-value -> stars
+# ----------------------------
+p_to_stars <- function(p){
+  dplyr::case_when(
+    is.na(p)        ~ NA_character_,
+    p <= 1e-4       ~ "****",
+    p <= 1e-3       ~ "***",
+    p <= 1e-2       ~ "**",
+    p <= 0.05       ~ "*",
+    TRUE            ~ "ns"
+  )
+}
+
+# ----------------------------
+# 0) I/O
+# ----------------------------
+infile <- "AssemblyComparison.csv"
+dat <- readr::read_csv(infile, show_col_types = FALSE)
+
+# ----------------------------
+# 1) Config (match your figure)
+# ----------------------------
+keep_types <- c("Illumina_Filtered","Nanopore_Filtered","Nanopore_Corrected")
+cols <- c(Illumina_Filtered="#8fbf9f", Nanopore_Filtered="#ead0ad", Nanopore_Corrected="#c99aa8")
+
+metrics <- c("total_bp","n_Contigs","N50","snps_per_mbp","indels_per_mbp","intact_per_Mbp")
+metric_titles <- c(
+  total_bp       = "Total bases (bp)",
+  n_Contigs      = "Number of contigs",
+  N50            = "N50 (bp)",
+  snps_per_mbp   = "SNPs per Mbp",
+  indels_per_mbp = "INDELs per Mbp",
+  intact_per_Mbp = "Intact proteins per Mbp"
+)
+
+tick_pools <- list(
+  total_bp       = c(0, 5e7, 1e8, 2e8, 3e8, 5e8, 7e8, 1e9, 1.5e9, 2e9),
+  n_Contigs      = c(0, 1e4, 2.5e4, 5e4, 7.5e4, 1e5, 1.5e5, 2e5),
+  N50            = c(0, 5e3, 1e4, 2e4, 3e4, 5e4, 7.5e4, 1e5, 1.5e5, 2e5),
+  snps_per_mbp   = c(0, 50, 100, 200, 300, 500, 700, 1000, 1500, 2000, 3000),
+  indels_per_mbp = c(0, 5, 10, 20, 50, 100, 150, 200, 300, 500, 800),
+  intact_per_Mbp = c(0, 200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500)
+)
+
+label_sci_if_needed <- function(threshold = 1e4, digits = 1, small_acc = 0.1) {
+  num_lab <- scales::label_number(accuracy = small_acc)
+  function(x) vapply(x, function(v) {
+    if (!is.finite(v)) return(NA_character_)
+    if (abs(v) >= threshold) {
+      if (v == 0) return("0")
+      e  <- floor(log10(abs(v)))
+      m  <- abs(v) / (10^e)
+      ms <- format(round(m, digits), trim = TRUE, scientific = FALSE)
+      ms <- sub("\\.?0+$", "", ms)
+      paste0(if (v < 0) "-" else "", ms, "e", e)
+    } else {
+      num_lab(v)
+    }
+  }, character(1))
+}
+sci_lab <- label_sci_if_needed(threshold = 1e4, digits = 1, small_acc = 0.1)
+
+ticks_from_pool <- function(x, pool, n = 4) {
+  x <- x[is.finite(x)]
+  if (!length(x)) return(head(pool, n))
+  lo <- max(pool[pool <= min(x)], default = min(pool))
+  hi <- min(pool[pool >= max(x)], default = max(pool))
+  cand <- pool[pool >= lo & pool <= hi]
+  if (length(cand) < n) return(seq(lo, hi, length.out = n))
+  idx <- round(seq(1, length(cand), length.out = n))
+  unique(cand[idx])
+}
+
+# ----------------------------
+# 2) Derive intact_per_Mbp and keep 3 types
+# ----------------------------
+df0 <- dat %>%
+  filter(AssemblyType %in% keep_types) %>%
+  mutate(
+    AssemblyType    = fct_relevel(AssemblyType, keep_types),
+    intact_proteins = genes_total * intact_orf_pct / 100,
+    intact_per_Mbp  = intact_proteins / (total_bp / 1e6)
+  ) %>%
+  select(AssemblyType, total_bp, n_Contigs, N50, snps_per_mbp, indels_per_mbp, intact_per_Mbp)
+
+df_long <- df0 %>%
+  pivot_longer(cols = all_of(metrics), names_to = "metric", values_to = "value") %>%
+  mutate(
+    metric = factor(metric, levels = metrics),
+    value  = pmax(value, 0)
+  )
+
+# ----------------------------
+# 3) Stats: Kruskal-Wallis + pairwise Wilcoxon (BH) + effect size
+# ----------------------------
+kw_tbl <- df_long %>%
+  group_by(metric) %>%
+  rstatix::kruskal_test(value ~ AssemblyType) %>%
+  ungroup() %>%
+  rename(kw_statistic = statistic, kw_df = df, p_kw = p) %>%
+  mutate(p_kw_fmt = rstatix::p_format(p_kw, digits = 3))
+
+pw_tbl <- df_long %>%
+  group_by(metric) %>%
+  rstatix::wilcox_test(value ~ AssemblyType, p.adjust.method = "BH") %>%
+  ungroup() %>%
+  rename(p_raw = p, p_adj = p.adj) %>%
+  mutate(
+    signif = p_to_stars(p_adj),
+    p_raw_fmt = rstatix::p_format(p_raw, digits = 3),
+    p_adj_fmt = rstatix::p_format(p_adj, digits = 3)
+  )
+
+eff_tbl <- df_long %>%
+  group_by(metric) %>%
+  rstatix::wilcox_effsize(value ~ AssemblyType) %>%
+  ungroup() %>%
+  rename(effsize = effsize, eff_mag = magnitude)
+
+desc_tbl <- df_long %>%
+  group_by(metric, AssemblyType) %>%
+  summarise(
+    n      = sum(!is.na(value)),
+    mean   = mean(value, na.rm = TRUE),
+    sd     = sd(value, na.rm = TRUE),
+    median = median(value, na.rm = TRUE),
+    q1     = quantile(value, 0.25, na.rm = TRUE),
+    q3     = quantile(value, 0.75, na.rm = TRUE),
+    IQR    = IQR(value, na.rm = TRUE), 
+    .groups = "drop"
+  )
+
+pairwise_pub <- pw_tbl %>%
+  left_join(eff_tbl, by = c("metric","group1","group2")) %>%
+  left_join(kw_tbl,  by = "metric") %>%
+  left_join(desc_tbl %>% rename(group1 = AssemblyType,
+                                n1=n, mean1=mean, sd1=sd, med1=median, q1_1=q1, q3_1=q3),
+            by = c("metric","group1")) %>%
+  left_join(desc_tbl %>% rename(group2 = AssemblyType,
+                                n2=n, mean2=mean, sd2=sd, med2=median, q1_2=q1, q3_2=q3),
+            by = c("metric","group2")) %>%
+  mutate(
+    metric_title = unname(metric_titles[as.character(metric)]),
+    test_omnibus = "Kruskal–Wallis",
+    test_pairwise = "Wilcoxon rank-sum (BH adjusted within metric)",
+    effsize = round(effsize, 3)
+  ) %>%
+  select(
+    metric, metric_title,
+    test_omnibus, kw_statistic, kw_df, p_kw,
+    group1, group2, n1, n2,
+    med1, q1_1, q3_1, med2, q1_2, q3_2,
+    p_raw, p_adj, signif,
+    effsize, eff_mag,
+    test_pairwise
+  ) %>%
+  arrange(metric, p_adj)
+
+readr::write_csv(pairwise_pub, "AssemblyComparison_stats_pairwise.csv")
+readr::write_csv(desc_tbl,      "AssemblyComparison_stats_descriptive.csv")
+readr::write_csv(kw_tbl,        "AssemblyComparison_stats_kruskal.csv")
+
+pairwise_pub  # show in console
+
+# ----------------------------
+# 4) Bracket positions for plotting (per metric)
+# ----------------------------
+bracket_tbl <- df_long %>%
+  group_by(metric) %>%
+  summarise(ymax_data = max(value, na.rm = TRUE), .groups = "drop") %>%
+  rowwise() %>%
+  mutate(
+    pool = list(tick_pools[[as.character(metric)]]),
+    brks = list(ticks_from_pool(df_long$value[df_long$metric == metric], pool[[1]], n = 4)),
+    ylim_top = max(brks[[1]], na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    y_step = 0.06 * ylim_top,
+    y1 = ylim_top + 1 * y_step,
+    y2 = ylim_top + 2 * y_step,
+    y3 = ylim_top + 3 * y_step
+  ) %>%
+  select(metric, ylim_top, y1, y2, y3)
+
+pw_for_plot <- pairwise_pub %>%
+  mutate(metric = factor(metric, levels = metrics)) %>%
+  left_join(bracket_tbl, by = "metric") %>%
+  group_by(metric) %>%
+  mutate(
+    comp_id = dplyr::case_when(
+      (group1 == keep_types[1] & group2 == keep_types[2]) | (group1 == keep_types[2] & group2 == keep_types[1]) ~ 1L,
+      (group1 == keep_types[1] & group2 == keep_types[3]) | (group1 == keep_types[3] & group2 == keep_types[1]) ~ 2L,
+      TRUE ~ 3L
+    ),
+    y.position = dplyr::case_when(comp_id == 1L ~ y1,
+                                 comp_id == 2L ~ y2,
+                                 TRUE ~ y3),
+    label = signif
+  ) %>%
+  ungroup() %>%
+  select(metric, group1, group2, p_adj, label, y.position)
+
+# ----------------------------
+# 5) Plot function (one panel)
+# ----------------------------
+make_metric_plot_sig <- function(df_wide, metric, title, cols, tick_pool, pw_plot) {
+  d <- df_wide %>%
+    select(AssemblyType, value = all_of(metric)) %>%
+    mutate(value = pmax(value, 0))
+
+  brks <- ticks_from_pool(d$value, tick_pool, n = 4)
+  lims <- range(brks)
+
+  pvals_m <- pw_plot %>% filter(metric == !!factor(metric, levels = metrics))
+
+  ggplot(d, aes(x = AssemblyType, y = value)) +
+    geom_point(aes(fill = AssemblyType),
+               position = position_jitter(width = 0.15, height = 0),
+               shape = 21, size = 1.9, stroke = 0.35,
+               color = "black", alpha = 0.6) +
+    geom_boxplot(aes(fill = AssemblyType),
+                 width = 0.55, outlier.shape = NA,
+                 alpha = 0.45, linewidth = 0.35) +
+    scale_fill_manual(values = cols) +
+    scale_y_sqrt(limits = lims, breaks = brks, labels = sci_lab, expand = c(0,0)) +
+    ggpubr::stat_pvalue_manual(
+      pvals_m,
+      label = "label",
+      xmin = "group1", xmax = "group2",
+      y.position = "y.position",
+      tip.length = 0.01,
+      size = 5,
+      bracket.size = 0.4
+    ) +
+    labs(x = NULL, y = NULL, title = title) +
+    theme_minimal(base_size = 12) +
+    theme(
+      legend.position = "none",
+      panel.grid.minor = element_blank(),
+      axis.text.x  = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.y  = element_text(size = 18),
+      plot.title   = element_text(face = "bold", hjust = 0.5, margin = margin(b = 4)),
+      plot.margin  = margin(5, 5, 5, 5)
+    )
+}
+
+# ----------------------------
+# 6) Build panels + export
+# ----------------------------
+p_span   <- make_metric_plot_sig(df0, "total_bp",       metric_titles["total_bp"],       cols, tick_pools$total_bp,       pw_for_plot)
+p_ctg    <- make_metric_plot_sig(df0, "n_Contigs",      metric_titles["n_Contigs"],      cols, tick_pools$n_Contigs,      pw_for_plot)
+p_n50    <- make_metric_plot_sig(df0, "N50",            metric_titles["N50"],            cols, tick_pools$N50,            pw_for_plot)
+p_snps   <- make_metric_plot_sig(df0, "snps_per_mbp",   metric_titles["snps_per_mbp"],   cols, tick_pools$snps_per_mbp,   pw_for_plot)
+p_indels <- make_metric_plot_sig(df0, "indels_per_mbp", metric_titles["indels_per_mbp"], cols, tick_pools$indels_per_mbp, pw_for_plot)
+p_intact <- make_metric_plot_sig(df0, "intact_per_Mbp", metric_titles["intact_per_Mbp"], cols, tick_pools$intact_per_Mbp, pw_for_plot)
+
+p_final <- p_span | p_ctg | p_n50 | p_snps | p_indels | p_intact
+p_final
+
+ggsave("AssemblyComparison_withSignificance.pdf", p_final, width = 17, height = 4.6, device = cairo_pdf)
+ggsave("AssemblyComparison_withSignificance.png", p_final, width = 17, height = 4.6, dpi = 300)
+
+message("Wrote: AssemblyComparison_withSignificance.pdf/.png")
+message("Wrote stats: AssemblyComparison_stats_pairwise.csv, AssemblyComparison_stats_descriptive.csv, AssemblyComparison_stats_kruskal.csv")
+```
+
+## Statistical analysis (as used for Fig. X)
+
+Assembly metrics were compared across three assembly strategies (Illumina_Filtered, Nanopore_Filtered, Nanopore_Corrected; n = 37 each). Because several metrics are strongly skewed and include outliers (e.g., contig counts, N50, error rates), **non-parametric tests** were applied.
+
+For each metric, an **omnibus Kruskal–Wallis test** assessed whether any group differences exist. To identify *which* groups differ, **pairwise Wilcoxon rank-sum tests** were performed for all three pairwise contrasts. Pairwise p-values were **Benjamini–Hochberg adjusted within each metric** (FDR control). Significance labels follow: ns (≥0.05), * (<0.05), ** (<0.01), *** (<0.001), **** (<0.0001).
+
+## Results (numbers + figure-consistent interpretation)
+
+Patterns match the six-panel comparison figure (Total bases, #contigs, N50, SNPs/Mbp, INDELs/Mbp, intact proteins/Mbp) :contentReference[oaicite:1]{index=1}.
+
+### Assembly span (Total bases)
+Assembly span did **not** differ significantly (Kruskal–Wallis p = 0.188). Medians (Q1–Q3):
+- Illumina_Filtered: 3.85e8 (2.68e8–4.93e8)
+- Nanopore_Filtered: 4.19e8 (3.44e8–5.10e8)
+- Nanopore_Corrected: 4.18e8 (3.43e8–5.08e8)  
+All pairwise comparisons were non-significant (BH-adjusted p ≥ 0.18), consistent with similar boxplot heights in the “Total bases” panel :contentReference[oaicite:2]{index=2}.
+
+### Contiguity: number of contigs and N50
+**Number of contigs** differed strongly (Kruskal–Wallis p = 1.33e-15). Medians (Q1–Q3):
+- Illumina_Filtered: 72,823 (57,381–91,518)
+- Nanopore_Filtered: 20,601 (14,854–27,113)
+- Nanopore_Corrected: 20,601 (14,854–27,113)
+
+Illumina_Filtered had **more contigs** than both Nanopore strategies (both BH-adjusted p = 9.9e-18; ****), while Nanopore_Filtered vs Nanopore_Corrected was not significant (p = 1.0). This matches the “Number of contigs” panel :contentReference[oaicite:3]{index=3}.
+
+**N50** also differed strongly (Kruskal–Wallis p = 1.18e-16). Medians (Q1–Q3):
+- Illumina_Filtered: 4,942 (4,536–5,570)
+- Nanopore_Filtered: 40,220 (31,401–47,956)
+- Nanopore_Corrected: 40,118 (31,336–47,896)
+
+Both Nanopore approaches had **much higher N50** than Illumina_Filtered (both BH-adjusted p = 2.13e-13; ****), with no difference between Nanopore_Filtered and Nanopore_Corrected (p = 0.838). This matches the “N50” panel :contentReference[oaicite:4]{index=4}.
+
+### Sequence accuracy: SNPs/Mbp and INDELs/Mbp
+**SNPs per Mbp** differed strongly (Kruskal–Wallis p = 5.00e-18). Medians (Q1–Q3):
+- Illumina_Filtered: 171.73 (127.35–187.53)
+- Nanopore_Filtered: 602.85 (515.98–862.33)
+- Nanopore_Corrected: 91.73 (65.28–157.31)
+
+Ordering is: **Nanopore_Filtered (worst) > Illumina_Filtered > Nanopore_Corrected (best)**, consistent with the SNPs panel :contentReference[oaicite:5]{index=5}. Pairwise:
+- Illumina_Filtered vs Nanopore_Filtered: p_adj = 1.72e-21 (****)
+- Nanopore_Filtered vs Nanopore_Corrected: p_adj = 1.72e-21 (****)
+- Illumina_Filtered vs Nanopore_Corrected: p_adj = 1.14e-4 (***)  
+
+**INDELs per Mbp** differed extremely strongly (Kruskal–Wallis p = 5.84e-22). Medians (Q1–Q3):
+- Illumina_Filtered: 0.115 (0.092–0.134)
+- Nanopore_Filtered: 146.57 (119.72–242.99)
+- Nanopore_Corrected: 1.302 (0.847–2.009)
+
+Ordering is: **Nanopore_Filtered (worst) >> Nanopore_Corrected > Illumina_Filtered (best)**, matching the INDELs panel :contentReference[oaicite:6]{index=6}. All pairwise contrasts were significant (p_adj = 1.15e-21; ****).
+
+### Proteome readiness: intact proteins per Mbp
+**Intact proteins per Mbp** differed strongly (Kruskal–Wallis p = 2.69e-17). Medians (Q1–Q3):
+- Illumina_Filtered: 721.38 (707.74–738.16)
+- Nanopore_Filtered: 574.90 (562.28–588.56)
+- Nanopore_Corrected: 711.73 (695.26–725.95)
+
+Crucially (and consistent with the last panel in the figure) :contentReference[oaicite:7]{index=7}:
+- **Nanopore_Filtered is lowest**, significantly below both others (both p_adj = 1.72e-21; ****).
+- **Illumina_Filtered is slightly higher than Nanopore_Corrected** (p_adj = 0.01; **), i.e., correction recovers intact-protein density close to Illumina, but does not exceed it in this dataset.
+
+## One-sentence summary
+Long-read assemblies dramatically improve contiguity (fewer contigs, higher N50), but raw Nanopore assemblies show markedly higher error rates; correction substantially reduces SNP/INDEL rates and restores intact-protein density close to Illumina, while total assembly span remains similar across strategies :contentReference[oaicite:8]{index=8}.
