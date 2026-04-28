@@ -1,0 +1,75 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# CorelDRAW
+*.cdr
+*.CDR
+*.bak
+*.tmp
+
+# Word
+*.doc
+*.docx
+*.docm
+*.dotx
+*.dotm
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# =========================
+# DATA FILES (ignore all)
+# =========================
+*.csv
+*.tsv
+*.txt
+*.rds
+*.RData
+*.h5
+*.hdf5
+
+# =========================
+# ARCHIVES
+# =========================
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# =========================
+# FIGURES / OUTPUT
+# =========================
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.pdf
+*.svg
+
+# =========================
+# OPTIONAL: logs / temp
+# =========================
+*.log
+*.tmp
+
+# Excel
+*.xlsx
+
+# HTML reports
+*.html
+
+# sequence / database files
+*.fasta
+*.fa
+
+# R temp/session
+*.RDataTmp
+*.RDataTmp*
+
+# general outputs
+*.out
