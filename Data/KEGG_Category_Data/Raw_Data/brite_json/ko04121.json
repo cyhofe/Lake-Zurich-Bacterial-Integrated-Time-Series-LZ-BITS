@@ -1,0 +1,2957 @@
+{
+  "name": "ko04121",
+  "children": [
+    {
+      "name": "Ubiquitins and ubiquitin-like proteins",
+      "children": [
+        {
+          "name": "Ubiquitins",
+          "children": [
+            {
+              "name": "K04551  UBB; ubiquitin B"
+            },
+            {
+              "name": "K08770  UBC; ubiquitin C"
+            },
+            {
+              "name": "K02927  RP-L40e, RPL40, UBA52; ubiquitin-large subunit ribosomal protein L40e"
+            },
+            {
+              "name": "K02977  RP-S27Ae, RPS27A, UBA80; ubiquitin-small subunit ribosomal protein S27Ae"
+            }
+          ]
+        },
+        {
+          "name": "Ubiquitin-like proteins (UBLs)",
+          "children": [
+            {
+              "name": "K12157  UBD, FAT10; ubiquitin D"
+            },
+            {
+              "name": "K12158  NEDD8; ubiquitin-like protein Nedd8"
+            },
+            {
+              "name": "K02983  RP-S30e, RPS30; small subunit ribosomal protein S30e"
+            },
+            {
+              "name": "K12159  ISG15; ubiquitin cross-reactive protein"
+            },
+            {
+              "name": "K12160  SUMO, SMT3; small ubiquitin-related modifier"
+            },
+            {
+              "name": "K08341  GABARAP, ATG8, LC3; GABA(A) receptor-associated protein"
+            },
+            {
+              "name": "K08336  ATG12; ubiquitin-like protein ATG12"
+            },
+            {
+              "name": "K12161  URM1; ubiquitin related modifier 1"
+            },
+            {
+              "name": "K12162  UFM1; ubiquitin-fold modifier 1"
+            },
+            {
+              "name": "K28515  UBL3, MUB; membrane-anchored ubiquitin-fold protein"
+            },
+            {
+              "name": "K12163  ZFAND4, ANUBL1; AN1-type zinc finger protein 4"
+            },
+            {
+              "name": "K13570  pup; prokaryotic ubiquitin-like protein Pup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ubiquitin-activating enzymes (E1)",
+      "children": [
+        {
+          "name": "Ubiquitin activating enzyme",
+          "children": [
+            {
+              "name": "K03178  UBE1, UBA1; ubiquitin-activating enzyme E1 [EC:6.2.1.45]"
+            }
+          ]
+        },
+        {
+          "name": "UBL-activating enzymes",
+          "children": [
+            {
+              "name": "K10684  UBLE1A, SAE1; ubiquitin-like 1-activating enzyme E1 A [EC:6.2.1.45]"
+            },
+            {
+              "name": "K10685  UBLE1B, SAE2, UBA2; ubiquitin-like 1-activating enzyme E1 B [EC:6.2.1.45]"
+            },
+            {
+              "name": "K10686  UBA3, UBE1C; NEDD8-activating enzyme E1 [EC:6.2.1.64]"
+            },
+            {
+              "name": "K04532  NAE1, APPBP1; NEDD8-activating enzyme E1 regulatory subunit"
+            },
+            {
+              "name": "K11996  MOCS3, UBA4; adenylyltransferase and sulfurtransferase [EC:2.7.7.80 2.8.1.11]"
+            },
+            {
+              "name": "K12164  UBA5, UBE1DC1; ubiquitin-like modifier-activating enzyme 5"
+            },
+            {
+              "name": "K10698  UBE1L, UBA7; ubiquitin-activating enzyme E1-like [EC:6.2.1.45]"
+            },
+            {
+              "name": "K10699  UBE1L2, UBA6; ubiquitin-activating enzyme E1-like protein 2 [EC:6.2.1.45]"
+            },
+            {
+              "name": "K08337  ATG7; ubiquitin-like modifier-activating enzyme ATG7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ubiquitin-conjugating enzymes (E2)",
+      "children": [
+        {
+          "name": "Ubiquitin-conjugating enzymes",
+          "children": [
+            {
+              "name": "K10573  UBE2A, UBC2, RAD6A; ubiquitin-conjugating enzyme E2 A [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10574  UBE2B, RAD6B; ubiquitin-conjugating enzyme E2 B [EC:2.3.2.23]"
+            },
+            {
+              "name": "K06688  UBE2C, UBC11; ubiquitin-conjugating enzyme E2 C [EC:2.3.2.23]"
+            },
+            {
+              "name": "K06689  UBE2D, UBC4, UBC5; ubiquitin-conjugating enzyme E2 D [EC:2.3.2.23]"
+            },
+            {
+              "name": "K20217  UBE2E; ubiquitin-conjugating enzyme E2 E [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10575  UBE2G1, UBC7; ubiquitin-conjugating enzyme E2 G1 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K04555  UBE2G2, UBC7; ubiquitin-conjugating enzyme E2 G2 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10576  UBE2H, UBC8; ubiquitin-conjugating enzyme E2 H [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10578  UBE2J1, NCUBE1, UBC6; ubiquitin-conjugating enzyme E2 J1 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K04554  UBE2J2, NCUBE2, UBC6; ubiquitin-conjugating enzyme E2 J2 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K04649  UBE2K, HIP2, UBC1; ubiquitin-conjugating enzyme (huntingtin interacting protein 2) [EC:2.3.2.23]"
+            },
+            {
+              "name": "K04552  UBE2L3, UBCH7; ubiquitin-conjugating enzyme E2 L3 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K04553  UBE2L6, UBCH8; ubiquitin/ISG15-conjugating enzyme E2 L6 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10580  UBE2N, BLU, UBC13; ubiquitin-conjugating enzyme E2 N [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10581  UBE2O; ubiquitin-conjugating enzyme E2 O [EC:2.3.2.24]"
+            },
+            {
+              "name": "K10582  UBE2Q; ubiquitin-conjugating enzyme E2 Q [EC:2.3.2.23]"
+            },
+            {
+              "name": "K02207  UBE2R, UBC3, CDC34; ubiquitin-conjugating enzyme E2 R [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10583  UBE2S, E2EPF; ubiquitin-conjugating enzyme E2 S [EC:2.3.2.23]"
+            },
+            {
+              "name": "K13960  UBE2T, HSPC150; ubiquitin-conjugating enzyme E2 T [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10584  UBE2U; ubiquitin-conjugating enzyme E2 U [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10688  UBE2W, UBC16; ubiquitin-conjugating enzyme E2 W [EC:2.3.2.23 2.3.2.25]"
+            },
+            {
+              "name": "K10585  UBE2Z; ubiquitin-conjugating enzyme E2 Z [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10586  BIRC6, BRUCE; baculoviral IAP repeat-containing protein 6 (apollon) [EC:2.3.2.23]"
+            },
+            {
+              "name": "K10689  PEX4; peroxin-4 [EC:2.3.2.23]"
+            }
+          ]
+        },
+        {
+          "name": "UBL-conjugating enzymes",
+          "children": [
+            {
+              "name": "K10577  UBE2I, UBC9; ubiquitin-conjugating enzyme E2 I"
+            },
+            {
+              "name": "K10687  UBE2F; ubiquitin-conjugating enzyme E2 F [EC:2.3.2.34]"
+            },
+            {
+              "name": "K10579  UBE2M, UBC12; ubiquitin-conjugating enzyme E2 M [EC:2.3.2.34]"
+            },
+            {
+              "name": "K04553  UBE2L6, UBCH8; ubiquitin/ISG15-conjugating enzyme E2 L6 [EC:2.3.2.23]"
+            },
+            {
+              "name": "K08343  ATG3; ubiquitin-like-conjugating enzyme ATG3"
+            },
+            {
+              "name": "K08338  ATG10; ubiquitin-like-conjugating enzyme ATG10"
+            },
+            {
+              "name": "K17888  ATG10L, ATG10; ubiquitin-like-conjugating enzyme ATG10"
+            },
+            {
+              "name": "K12165  UFC1; ufm1-conjugating enzyme 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ubiquitin ligases (E3)",
+      "children": [
+        {
+          "name": "HECT type E3",
+          "children": [
+            {
+              "name": "K10587  UBE3A, E6AP; ubiquitin-protein ligase E3 A [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10588  UBE3B; ubiquitin-protein ligase E3 B [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10589  UBE3C; ubiquitin-protein ligase E3 C [EC:2.3.2.26]"
+            },
+            {
+              "name": "K20803  UBE3D; ubiquitin-protein ligase E3 D [EC:2.3.2.26]"
+            },
+            {
+              "name": "K04678  SMURF; E3 ubiquitin ligase SMURF1/2 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K05632  ITCH, AIP4; E3 ubiquitin-protein ligase Itchy [EC:2.3.2.26]"
+            },
+            {
+              "name": "K05633  WWP1, AIP5; NEDD4-like E3 ubiquitin-protein ligase WWP1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K05630  WWP2, AIP2; NEDD4-like E3 ubiquitin-protein ligase WWP2 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10590  TRIP12; E3 ubiquitin-protein ligase TRIP12 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10591  NEDD4, RSP5; E3 ubiquitin-protein ligase NEDD4 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K13305  NEDD4L; E3 ubiquitin-protein ligase NEDD4-like [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10592  HUWE1, MULE, ARF-BP1, TOM1; E3 ubiquitin-protein ligase HUWE1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K22370  AREL1; apoptosis-resistant E3 ubiquitin protein ligase 1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10593  EDD1, UBR5; E3 ubiquitin-protein ligase EDD1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K22371  G2H3; G2/M phase-specific E3 ubiquitin-protein ligase [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10594  HERC1; E3 ubiquitin-protein ligase HERC1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10595  HERC2; E3 ubiquitin-protein ligase HERC2 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10614  HERC3; E3 ubiquitin-protein ligase HERC3 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K10615  HERC4; E3 ubiquitin-protein ligase HERC4 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12166  HACE1; E3 ubiquitin-protein ligase HACE1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12167  HECW1; E3 ubiquitin-protein ligase HECW1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12168  HECW2; E3 ubiquitin-protein ligase HECW2 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12231  HECTD1; E3 ubiquitin-protein ligase HECTD1 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12232  HECTD2; E3 ubiquitin-protein ligase HECTD2 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K12233  HECTD3; E3 ubiquitin-protein ligase HECTD3 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K17849  HECTD4; E3 ubiquitin-protein ligase HECTD4 [EC:2.3.2.26]"
+            },
+            {
+              "name": "K03874  HECT; other hect domain ubiquitin protein ligase E3 [EC:2.3.2.26]"
+            },
+            {
+              "name": "HECT type E3 associated proteins",
+              "children": [
+                {
+                  "name": "K25839  NDFIP; NEDD4 family-interacting protein"
+                },
+                {
+                  "name": "K26473  N4BP3; NEDD4-binding protein 3"
+                },
+                {
+                  "name": "K27699  HAPSTR1; HUWE1-associated protein modifying stress responses 1"
+                },
+                {
+                  "name": "K27700  HAPSTR2; HUWE1-associated protein modifying stress responses 2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "U-box type E3",
+          "children": [
+            {
+              "name": "K10596  UBE4A; ubiquitin conjugation factor E4 A [EC:2.3.2.27]"
+            },
+            {
+              "name": "K10597  UBE4B, UFD2; ubiquitin conjugation factor E4 B [EC:2.3.2.27]"
+            },
+            {
+              "name": "K09561  STUB1, CHIP; STIP1 homology and U-box containing protein 1 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K10598  PPIL2, CYC4, CHP60; peptidyl-prolyl cis-trans isomerase-like 2 [EC:5.2.1.8]"
+            },
+            {
+              "name": "K10599  PRPF19, PRP19; pre-mRNA-processing factor 19 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K10624  RBBP6; E3 ubiquitin-protein ligase RBBP6 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K10600  UBOX5, UIP5; U-box domain-containing protein 5 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K27970  PUB2S; U-box gene family group I [EC:2.3.2.27]"
+            },
+            {
+              "name": "K27628  PUB12_13_14; U-box domain-containing protein 12/13/14 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K28412  PUB42_43_44; U-box domain-containing protein 42/43/44 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K28593  RFI2; E3 ubiquitin-protein ligase RFI2 and related proteins [EC:2.3.2.27]"
+            }
+          ]
+        },
+        {
+          "name": "Single Ring-finger type E3",
+          "children": [
+            {
+              "name": "BRE1 proteins",
+              "children": [
+                {
+                  "name": "K10696  BRE1; E3 ubiquitin-protein ligase BRE1 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "CBL proteins",
+              "children": [
+                {
+                  "name": "K04707  CBL; E3 ubiquitin-protein ligase CBL [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22517  CBLB; E3 ubiquitin-protein ligase CBL-B [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22518  CBLC; E3 ubiquitin-protein ligase CBL-C [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "SINA (Seven in absentia) proteins",
+              "children": [
+                {
+                  "name": "K04506  SIAH1; E3 ubiquitin-protein ligase SIAH1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08742  SIAH2; E3 ubiquitin-protein ligase SIAH2 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "Ligand of Numb proteins",
+              "children": [
+                {
+                  "name": "K10692  LNX1_2; ligand of Numb protein X 1/2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15682  PDZRN3_4, LNX3_4; ligand of Numb protein X 3/4 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "March proteins",
+              "children": [
+                {
+                  "name": "K10656  MARCH1_8; E3 ubiquitin-protein ligase MARCH1/8 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10657  MARCH2_3; E3 ubiquitin-protein ligase MARCH2/3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10658  MARCH3; E3 ubiquitin-protein ligase MARCH3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10659  MARCH4_9_11; E3 ubiquitin-protein ligase MARCH4/9/11 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10660  MARCH5; E3 ubiquitin-protein ligase MARCH5 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10661  MARCH6, DOA10; E3 ubiquitin-protein ligase MARCH6 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10662  MARCH7, AXOT; E3 ubiquitin-protein ligase MARCH7 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10665  MARCH10; E3 ubiquitin-protein ligase MARCH10 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "MDM2/MDM4 proteins",
+              "children": [
+                {
+                  "name": "K06643  MDM2; E3 ubiquitin-protein ligase Mdm2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10127  MDM4, MDMX; protein Mdm4"
+                }
+              ]
+            },
+            {
+              "name": "NFX1 proteins",
+              "children": [
+                {
+                  "name": "K12236  NFX1; transcriptional repressor NF-X1"
+                },
+                {
+                  "name": "K15683  NFXL1, OZFP; NF-X1-type zinc finger protein NFXL1"
+                }
+              ]
+            },
+            {
+              "name": "Pellino proteins",
+              "children": [
+                {
+                  "name": "K11964  PELI; pellino [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "Peripheral membrane proteins",
+              "children": [
+                {
+                  "name": "K13346  PEX10; peroxin-10"
+                },
+                {
+                  "name": "K13345  PEX12, PAF3; peroxin-12"
+                },
+                {
+                  "name": "K06664  PEX2, PXMP3; peroxin-2"
+                }
+              ]
+            },
+            {
+              "name": "RBR proteins",
+              "children": [
+                {
+                  "name": "K04556  PARK2; parkin [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11967  ANKIB1; ankyrin repeat and IBR domain-containing protein 1 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11968  ARIH1; ariadne-1 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11969  ARIH2; ariadne-2 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K10630  RBCK1, HOIL1; RanBP-type and C3HC4-type zinc finger-containing protein 1 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11971  RNF14, ARA54; E3 ubiquitin-protein ligase RNF14 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11972  RNF19A; E3 ubiquitin-protein ligase RNF19A [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11973  RNF19B; E3 ubiquitin-protein ligase RNF19B [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11974  RNF31, HOIP; E3 ubiquitin-protein ligase RNF31 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K20804  RNF34; E3 ubiquitin-protein ligase RNF34 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11975  RNF144; E3 ubiquitin-protein ligase RNF144 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K20779  RNF168; E3 ubiquitin-protein ligase RNF168 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K20805  RNF169; E3 ubiquitin-protein ligase RNF169 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K22157  RNF183; E3 ubiquitin-protein ligase RNF183 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11976  RNF216, TRIAD3; E3 ubiquitin-protein ligase RNF216 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11977  RNF217, IBRDC1; E3 ubiquitin-protein ligase RNF217 [EC:2.3.2.31]"
+                }
+              ]
+            },
+            {
+              "name": "TRAF proteins",
+              "children": [
+                {
+                  "name": "K03173  TRAF2; TNF receptor-associated factor 2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K09849  TRAF5; TNF receptor-associated factor 5"
+                },
+                {
+                  "name": "K03175  TRAF6; TNF receptor-associated factor 6 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10646  TRAF7, RFWD1; E3 ubiquitin-protein ligase TRAF7 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "TRIM/RBCC proteins",
+              "children": [
+                {
+                  "name": "K10647  TRIM1, MID2; midline 2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11997  TRIM2_3; tripartite motif-containing protein 2/3"
+                },
+                {
+                  "name": "K11998  TRIM4; tripartite motif-containing protein 4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10648  TRIM5; tripartite motif-containing protein 5 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11999  TRIM6_22_34; tripartite motif-containing protein 6/22/34"
+                },
+                {
+                  "name": "K12000  TRIM7; tripartite motif-containing protein 7"
+                },
+                {
+                  "name": "K12001  TRIM8; tripartite motif-containing protein 8 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10649  TRIM9_67; tripartite motif-containing protein 9/67"
+                },
+                {
+                  "name": "K12002  TRIM10; tripartite motif-containing protein 10"
+                },
+                {
+                  "name": "K10650  TRIM11; tripartite motif-containing protein 11 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12003  TRIM13; tripartite motif-containing protein 13 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12004  TRIM14; tripartite motif-containing protein 14"
+                },
+                {
+                  "name": "K12005  TRIM15; tripartite motif-containing protein 15"
+                },
+                {
+                  "name": "K12006  TRIM16; tripartite motif-containing protein 16 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12007  TRIM17; tripartite motif-containing protein 17 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08285  TRIM18, MID1; midline 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10651  TRIM21, SSA1; tripartite motif-containing protein 21 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K07963  TRIM23, ARFD1; tripartite motif-containing protein 23 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08881  TRIM24, TIF1A; tripartite motif-containing protein 24 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10652  TRIM25, EFP; tripartite motif-containing protein 25 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12008  TRIM26; tripartite motif-containing protein 26"
+                },
+                {
+                  "name": "K12009  TRIM27, RFP; tripartite motif-containing protein 27 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08882  TRIM28, TIF1B; tripartite motif-containing protein 28 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12010  TRIM29, ATDC; tripartite motif-containing protein 29"
+                },
+                {
+                  "name": "K12011  TRIM31; tripartite motif-containing protein 31 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10607  TRIM32, HT2A; tripartite motif-containing protein 32 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08883  TRIM33, TIF1G; tripartite motif-containing protein 33 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12012  TRIM35; tripartite motif-containing protein 35"
+                },
+                {
+                  "name": "K12013  TRIM36; tripartite motif-containing protein 36 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10608  TRIM37, MUL; tripartite motif-containing protein 37 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12014  TRIM38; tripartite motif-containing protein 38 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12015  TRIM39, BTR; tripartite motif-containing protein 39 / bloodthirsty-related gene family protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12016  TRIM40; tripartite motif-containing protein 40"
+                },
+                {
+                  "name": "K12017  TRIM41; tripartite motif-containing protein 41 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12018  TRIM42; tripartite motif-containing protein 42"
+                },
+                {
+                  "name": "K12019  TRIM43S; tripartite motif-containing protein 43/48/49/64/77"
+                },
+                {
+                  "name": "K12020  TRIM44; tripartite motif-containing protein 44"
+                },
+                {
+                  "name": "K12021  TRIM45; tripartite motif-containing protein 45"
+                },
+                {
+                  "name": "K12022  TRIM46; tripartite motif-containing protein 46"
+                },
+                {
+                  "name": "K12023  TRIM47; tripartite motif-containing protein 47"
+                },
+                {
+                  "name": "K12024  TRIM50_73_74; tripartite motif-containing protein 50/73/74"
+                },
+                {
+                  "name": "K12025  TRIM52; tripartite motif-containing protein 52"
+                },
+                {
+                  "name": "K10653  TRIM54, MURF3; tripartite motif-containing protein 54"
+                },
+                {
+                  "name": "K10654  TRIM55, MURF2; tripartite motif-containing protein 55"
+                },
+                {
+                  "name": "K12026  TRIM56; tripartite motif-containing protein 56 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12027  TRIM58; tripartite motif-containing protein 58 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12028  TRIM59; tripartite motif-containing protein 59"
+                },
+                {
+                  "name": "K12029  TRIM60_61; tripartite motif-containing protein 60/61"
+                },
+                {
+                  "name": "K12030  TRIM62; tripartite motif-containing protein 62 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10655  TRIM63, MURF1; tripartite motif-containing protein 63 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12031  TRIM65; tripartite motif-containing protein 65"
+                },
+                {
+                  "name": "K12032  TRIM66; tripartite motif-containing protein 66"
+                },
+                {
+                  "name": "K12033  TRIM68; tripartite motif-containing protein 68 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12034  TRIM69; tripartite motif-containing protein 69 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12035  TRIM71; tripartite motif-containing protein 71 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12036  TRIM72; tripartite motif-containing protein 72"
+                },
+                {
+                  "name": "K12037  TRIM75; tripartite motif-containing protein 75"
+                },
+                {
+                  "name": "K28076  FTR; finTRIM family protein"
+                }
+              ]
+            },
+            {
+              "name": "UBR box proteins",
+              "children": [
+                {
+                  "name": "K10625  UBR1; E3 ubiquitin-protein ligase UBR1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10626  UBR2; E3 ubiquitin-protein ligase UBR2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11978  UBR3; E3 ubiquitin-protein ligase UBR3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10691  UBR4, ZUBR1; E3 ubiquitin-protein ligase UBR4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11979  UBR7; E3 ubiquitin-protein ligase UBR7 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "ATL proteins",
+              "children": [
+                {
+                  "name": "K10663  ATL4; E3 ubiquitin-protein ligase ATL4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10664  ATL6S; E3 ubiquitin-protein ligase ATL6/9/15/31/42/55 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19037  ATL23; E3 ubiquitin-protein ligase ATL23 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19038  ATL41; E3 ubiquitin-protein ligase ATL41 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19039  ATL7_58_59; E3 ubiquitin-protein ligase ATL7/58/59 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19040  ATL76S; E3 ubiquitin-protein ligase ATL10/75/76/77/78 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "Other single Ring-finger type E3",
+              "children": [
+                {
+                  "name": "K10636  AMFR, GP78; E3 ubiquitin-protein ligase AMFR [EC:2.3.2.36]"
+                },
+                {
+                  "name": "K10603  AIRE; autoimmune regulator"
+                },
+                {
+                  "name": "K15684  BFAR; bifunctional apoptosis regulator"
+                },
+                {
+                  "name": "K16060  BIRC2_3; baculoviral IAP repeat-containing protein 2/3"
+                },
+                {
+                  "name": "K04725  XIAP, BIRC4; E3 ubiquitin-protein ligase XIAP [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16061  BIRC7_8; baculoviral IAP repeat-containing protein 7/8"
+                },
+                {
+                  "name": "K10632  BRAP; BRCA1-associated protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15685  CBLL1; E3 ubiquitin-protein ligase Hakai [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10639  CCNB1IP1, HEI10; E3 ubiquitin-protein ligase CCNP1IP1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10644  CHFR; E3 ubiquitin-protein ligase CHFR [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10643  CNOT4, NOT4, MOT2; CCR4-NOT transcription complex subunit 4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22375  DCST1; E3 ubiquitin-protein ligase DCST1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K06058  DTX; deltex [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10642  DZIP3; E3 ubiquitin-protein ligase DZIP3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10606  FANCL, PHF9; E3 ubiquitin-protein ligase FANCL [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22376  KCMF1, FIGC; E3 ubiquitin-protein ligase KCMF1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10641  LRSAM1; E3 ubiquitin-protein ligase LRSAM1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22377  LTN1; E3 ubiquitin-protein ligase listerin [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K04416  MAP3K1, MEKK1; mitogen-activated protein kinase kinase kinase 1 [EC:2.7.11.25]"
+                },
+                {
+                  "name": "K15686  MEX3, RKHD; RNA-binding protein MEX3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10604  MGRN1; E3 ubiquitin-protein ligase MGRN1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10645  MIB; E3 ubiquitin-protein ligase mind-bomb [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15687  MKRN; E3 ubiquitin-protein ligase makorin [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15688  MUL1; E3 ubiquitin-protein ligase MUL1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10693  MYCBP2, PAM; RCR-type E3 ubiquitin transferase [EC:2.3.2.33]"
+                },
+                {
+                  "name": "K10637  MYLIP, MIR; E3 ubiquitin-protein ligase MYLIP [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K01931  NEUR; protein neuralized [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15689  NEURL3, LINCR; E3 ubiquitin-protein ligase NEURL3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10602  NHLRC1; E3 ubiquitin-protein ligase NHLRC1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K24091  OBI1; ORC ubiquitin ligase 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10633  PJA1; E3 ubiquitin-protein ligase Praja1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10634  PJA2; E3 ubiquitin-protein ligase Praja2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10627  RAD18; E3 ubiquitin-protein ligase RAD18 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10628  RAG1; V(D)J recombination-activating protein 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10144  RCHY1, PIRH2; RING finger and CHY zinc finger domain-containing protein 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15690  RC3H; RING finger and CCCH-type zinc finger domain-containing protein"
+                },
+                {
+                  "name": "K10143  RFWD2, COP1; E3 ubiquitin-protein ligase RFWD2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15691  RFWD3; E3 ubiquitin-protein ligase RFWD3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10695  RNF1_2; E3 ubiquitin-protein ligase RNF1/2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22651  RNF4; E3 ubiquitin-protein ligase RNF4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10666  RNF5_185; E3 ubiquitin-protein ligase RNF5/185 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22753  RNF6; E3 ubiquitin-protein ligase RNF6 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10667  RNF8; E3 ubiquitin-protein ligase RNF8 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K26979  RNF10; E3 ubiquitin-protein ligase RNF10 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11980  RNF11; E3 ubiquitin-protein ligase RNF11"
+                },
+                {
+                  "name": "K16271  RLIM, RNF12; E3 ubiquitin-protein ligase RLIM [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15692  RNF13, RZF; E3 ubiquitin-protein ligase RNF13 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10640  RNF25, AO7; E3 ubiquitin-protein ligase RNF25 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15693  RNF26; E3 ubiquitin-protein ligase RNF26 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19041  RNF38_44; E3 ubiquitin-protein ligase RNF38/44 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11981  RNF41, NRDP1; E3 ubiquitin-protein ligase NRDP1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15694  RNF43; E3 ubiquitin-protein ligase RNF43 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15695  RNF103, KF1; E3 ubiquitin-protein ligase RNF103 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10635  RNF111; E3 ubiquitin-protein ligase Arkadia [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25173  RNF112; E3 ubiquitin-protein ligase RNF112 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15696  RNF113B; RING finger protein 113B"
+                },
+                {
+                  "name": "K15697  RNF114; E3 ubiquitin-protein ligase RNF114 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11982  RNF115_126; E3 ubiquitin-protein ligase RNF115/126 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15698  RNF121_175; RING finger protein 121/175"
+                },
+                {
+                  "name": "K15699  RNF122; RING finger protein 122"
+                },
+                {
+                  "name": "K12169  KPC1, RNF123; Kip1 ubiquitination-promoting complex protein 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12170  RNF125; E3 ubiquitin-protein ligase RNF125 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10629  RNF128, GRAIL; E3 ubiquitin-protein ligase RNF128 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15701  RNF130, GOLIATH; E3 ubiquitin-protein ligase RNF130 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15702  RNF133; E3 ubiquitin-protein ligase RNF133 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16272  RNF135; E3 ubiquitin-protein ligase RNF135 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10668  RNF138; E3 ubiquitin-protein ligase RNF138 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15703  RNF139, TRC8; E3 ubiquitin-protein ligase RNF139 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K23789  RNF145; E3 ubiquitin-protein ligase RNF145 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15700  RNF146; E3 ubiquitin-protein ligase RNF146 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15704  RNF149; E3 ubiquitin-protein ligase RNF149 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15705  RNF152; E3 ubiquitin-protein ligase RNF152 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25192  RNF157; E3 ubiquitin-protein ligase RNF157 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K17821  RNF165; E3 ubiquitin-protein ligase RNF165 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K17044  RNF166; E3 ubiquitin-protein ligase RNF166 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15706  RNF167; E3 ubiquitin-protein ligase RNF167 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15707  RNF170; E3 ubiquitin-protein ligase RNF170 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15708  RNF180; E3 ubiquitin-protein ligase RNF180 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22378  RNF181; E3 ubiquitin-protein ligase RNF181 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11983  RNF182; E3 ubiquitin-protein ligase RNF182 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25214  RNF186; E3 ubiquitin-protein ligase RNF186 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15709  RNF187; E3 ubiquitin-protein ligase RNF187 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22754  RNF213; E3 ubiquitin-protein ligase RNF213 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25174  RNF220; E3 ubiquitin-protein ligase RNF220 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22379  RNFT1; E3 ubiquitin-protein ligase RNFT1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K28516  RNFT2; E3 ubiquitin-protein ligase RNFT2"
+                },
+                {
+                  "name": "K11984  SART1, HAF, SNU66; U4/U6.U5 tri-snRNP-associated protein 1"
+                },
+                {
+                  "name": "K15710  SHPRH; E3 ubiquitin-protein ligase SHPRH [EC:5.6.2.- 2.3.2.27]"
+                },
+                {
+                  "name": "K12171  SH3RF, POSH; E3 ubiquitin-protein ligase SH3RF [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15711  SMARCA3, HLTF; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily A3 [EC:5.6.2. 2.3.2.27]"
+                },
+                {
+                  "name": "K10601  SYVN1, HRD1; E3 ubiquitin-protein ligase synoviolin [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22380  TMEM129; E3 ubiquitin-protein ligase TM129 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10631  TOPORS; E3 ubiquitin-protein ligase Topors [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K11985  TRAIP, TRIP; TRAF-interacting protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15712  TTC3; E3 ubiquitin-protein ligase TTC3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10638  UHRF1, NP95; E3 ubiquitin-protein ligase UHRF1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15713  UHRF2, NIRF; E3 ubiquitin-protein ligase UHRF2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K23047  UNKL; E3 ubiquitin-protein ligase UNKL [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22381  ZNF598; E3 ubiquitin-protein ligase ZNF598 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15714  ZNF645; E3 ubiquitin-protein ligase ZNF645 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25175  ZFP91; E3 ubiquitin-protein ligase ZFP91 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10694  ZNRF1_2; E3 ubiquitin-protein ligase ZNRF1/2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16273  ZNRF3; E3 ubiquitin-protein ligase ZNRF3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15715  ZNRF4; E3 ubiquitin-protein ligase ZNRF4 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15716  ZSWIM2; E3 ubiquitin-protein ligase ZSWIM2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16274  AIP2; E3 ubiquitin-protein ligase AIP2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16275  BAH, NLA; E3 ubiquitin-protein ligase BAH [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19045  BB; E3 ubiquitin-protein ligase BIG BROTHER and related proteins [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16276  K16276, BTS; zinc finger protein-like protein"
+                },
+                {
+                  "name": "K19042  BOI; E3 ubiquitin-protein ligase BOI and related proteins [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16277  DRIP; E3 ubiquitin-protein ligase DRIP [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16278  HOS1; E3 ubiquitin-protein ligase HOS1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16279  KEG; E3 ubiquitin-protein ligase KEG [EC:2.7.11.1 2.3.2.27]"
+                },
+                {
+                  "name": "K16280  RGLG; E3 ubiquitin-protein ligase RGLG [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16281  RHA1; RING-H2 zinc finger protein RHA1"
+                },
+                {
+                  "name": "K16282  RHA2; E3 ubiquitin-protein ligase RHA2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19043  RHF; E3 ubiquitin-protein ligase RHF [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16283  SDIR1; E3 ubiquitin-protein ligase SDIR1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16284  SIS3; E3 ubiquitin-protein ligase SIS3 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19044  XBAT32_33; E3 ubiquitin-protein ligase XBAT32/33 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16285  XERICO; RING/U-box domain-containing protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K16286  EL5; E3 ubiquitin-protein ligase EL5 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K23788  TUL1, FLY1_2; transmembrane E3 ubiquitin-protein ligase [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K25840  AIRP2; E3 ubiquitin-protein ligase AIRP2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K27504  LOG2; E3 ubiquitin-protein ligase LOG2 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K23787  DMA1_2; E3 ubiquitin-protein ligase DMA1/2 [EC:2.3.2.27]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Atypical E3",
+          "children": [
+            {
+              "name": "K22155  JADE2; E3 ubiquitin-protein ligase Jade-2 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K22401  E4F1; transcription factor E4F1 / E3 ubiquitin-protein ligase [EC:2.3.2.27]"
+            },
+            {
+              "name": "K22817  NSMCE1, NSE1; non-structural maintenance of chromosomes element 1 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K22383  IRF2BP; interferon regulatory factor 2-binding protein"
+            }
+          ]
+        },
+        {
+          "name": "UBL E3 ligases",
+          "children": [
+            {
+              "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+            },
+            {
+              "name": "K10631  TOPORS; E3 ubiquitin-protein ligase Topors [EC:2.3.2.27]"
+            },
+            {
+              "name": "K12172  RANBP2, NUP358; E3 SUMO-protein ligase RanBP2 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K04706  PIAS1; E3 SUMO-protein ligase PIAS1 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K16063  PIAS2; E3 SUMO-protein ligase PIAS2 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K16064  PIAS3; E3 SUMO-protein ligase PIAS3 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K16065  PIAS4; E3 SUMO-protein ligase PIAS4 [EC:2.3.2.27]"
+            },
+            {
+              "name": "K10054  PML, TRIM19; E3 SUMO-protein ligase PML [EC:2.3.2.-]"
+            },
+            {
+              "name": "K11452  CBX4, PC2; E3 SUMO-protein ligase CBX4 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K22756  NSMCE2, NSE2; E3 SUMO-protein ligase NSE2 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K25662  RNF212; E3 SUMO-protein ligase RNF212 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K24637  ZBED1; zinc finger BED domain-containing protein 1 (E3 SUMO-protein ligase ZBED1) [EC:2.3.2.-]"
+            },
+            {
+              "name": "K25176  ZNF451; E3 SUMO-protein ligase ZNF451 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K22372  HERC5_6; E3 ISG15--protein ligase [EC:2.3.2.-]"
+            },
+            {
+              "name": "K22755  UFL1; E3 UFM1-protein ligase 1 [EC:2.3.2.-]"
+            },
+            {
+              "name": "K17822  DCUN1D1_2; DCN1-like protein 1/2"
+            },
+            {
+              "name": "K17823  DCUN1D3; DCN1-like protein 3"
+            },
+            {
+              "name": "K17824  DCUN1D4_5; DCN1-like protein 4/5"
+            }
+          ]
+        },
+        {
+          "name": "Multi subunit type E3",
+          "children": [
+            {
+              "name": "SCF complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K03347  CUL1, CDC53; cullin 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adaptor protein",
+                  "children": [
+                    {
+                      "name": "K03094  SKP1, CBF3D; S-phase kinase-associated protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit (F-box)",
+                  "children": [
+                    {
+                      "name": "K03362  FBXW1_11, BTRC, beta-TRCP; F-box and WD-40 domain protein 1/11"
+                    },
+                    {
+                      "name": "K10261  FBXW2, MD6; F-box and WD-40 domain protein 2"
+                    },
+                    {
+                      "name": "K10262  FBXW4, SHFM3; F-box and WD-40 domain protein 4"
+                    },
+                    {
+                      "name": "K10263  FBXW5; F-box and WD-40 domain protein 5"
+                    },
+                    {
+                      "name": "K10260  FBXW7, SEL10; F-box and WD-40 domain protein 7"
+                    },
+                    {
+                      "name": "K10264  FBXW8; F-box and WD-40 domain protein 8"
+                    },
+                    {
+                      "name": "K10265  FBXW9; F-box and WD-40 domain protein 9"
+                    },
+                    {
+                      "name": "K10266  FBXW10; F-box and WD-40 domain protein 10"
+                    },
+                    {
+                      "name": "K10267  FBXW12S; F-box and WD-40 domain protein 12/13/14/15/16/17/19"
+                    },
+                    {
+                      "name": "K10259  MET30; F-box and WD-40 domain protein MET30"
+                    },
+                    {
+                      "name": "K03361  CDC4; F-box and WD-40 domain protein CDC4"
+                    },
+                    {
+                      "name": "K03875  SKP2, FBXL1; F-box and leucine-rich repeat protein 1 (S-phase kinase-associated protein 2)"
+                    },
+                    {
+                      "name": "K10268  FBXL2_20; F-box and leucine-rich repeat protein 2/20"
+                    },
+                    {
+                      "name": "K10269  FBXL3; F-box and leucine-rich repeat protein 3"
+                    },
+                    {
+                      "name": "K10270  FBXL4; F-box and leucine-rich repeat protein 4"
+                    },
+                    {
+                      "name": "K10271  FBXL5; F-box and leucine-rich repeat protein 5"
+                    },
+                    {
+                      "name": "K10272  FBXL6; F-box and leucine-rich repeat protein 6"
+                    },
+                    {
+                      "name": "K10273  FBXL7; F-box and leucine-rich repeat protein 7"
+                    },
+                    {
+                      "name": "K10274  FBXL8; F-box and leucine-rich repeat protein 8"
+                    },
+                    {
+                      "name": "K10275  FBXL9, LRRC29; F-box and leucine-rich repeat protein 9"
+                    },
+                    {
+                      "name": "K10276  FBXL10_11, KDM2; F-box and leucine-rich repeat protein 10/11 [EC:1.14.11.27]"
+                    },
+                    {
+                      "name": "K10278  FBXL12; F-box and leucine-rich repeat protein 12"
+                    },
+                    {
+                      "name": "K10279  FBXL13, DRC6; dynein regulatory complex subunit 6"
+                    },
+                    {
+                      "name": "K10280  FBXL14; F-box and leucine-rich repeat protein 14"
+                    },
+                    {
+                      "name": "K10281  FBXL15; F-box and leucine-rich repeat protein 15"
+                    },
+                    {
+                      "name": "K10282  FBXL16; F-box and leucine-rich repeat protein 16"
+                    },
+                    {
+                      "name": "K10283  FBXL17; F-box and leucine-rich repeat protein 17"
+                    },
+                    {
+                      "name": "K10284  FBXL18; F-box and leucine-rich repeat protein 18"
+                    },
+                    {
+                      "name": "K10285  FBXL19; F-box and leucine-rich repeat protein 19"
+                    },
+                    {
+                      "name": "K10287  FBXL21; F-box and leucine-rich repeat protein 21"
+                    },
+                    {
+                      "name": "K10288  FBXL22; F-box and leucine-rich repeat protein 22"
+                    },
+                    {
+                      "name": "K13463  COI-1; coronatine-insensitive protein 1"
+                    },
+                    {
+                      "name": "K27701  MAX2; F-box protein MAX2"
+                    },
+                    {
+                      "name": "K14515  EBF1_2; EIN3-binding F-box protein"
+                    },
+                    {
+                      "name": "K14485  TIR1; transport inhibitor response 1"
+                    },
+                    {
+                      "name": "K03360  GRR1; F-box and leucine-rich repeat protein GRR1"
+                    },
+                    {
+                      "name": "K15068  DIA2, POF3; protein DIA2"
+                    },
+                    {
+                      "name": "K15069  POF3; F-box/TPR repeat protein Pof3"
+                    },
+                    {
+                      "name": "K10289  CCNF, FBXO1; F-box protein 1 (cyclin F)"
+                    },
+                    {
+                      "name": "K10099  FBXO2, NFB42; F-box protein 2"
+                    },
+                    {
+                      "name": "K10290  FBXO3; F-box protein 3"
+                    },
+                    {
+                      "name": "K10291  FBXO4; F-box protein 4"
+                    },
+                    {
+                      "name": "K10292  FBXO5, EMI1; F-box protein 5"
+                    },
+                    {
+                      "name": "K10100  FBXO6; F-box protein 6"
+                    },
+                    {
+                      "name": "K10293  FBXO7; F-box protein 7"
+                    },
+                    {
+                      "name": "K10294  FBXO8; F-box protein 8"
+                    },
+                    {
+                      "name": "K10295  FBXO9; F-box protein 9"
+                    },
+                    {
+                      "name": "K10296  FBXO10; F-box protein 10"
+                    },
+                    {
+                      "name": "K10297  FBXO11; F-box protein 11"
+                    },
+                    {
+                      "name": "K10298  FBXO15; F-box protein 15"
+                    },
+                    {
+                      "name": "K10299  FBXO16; F-box protein 16"
+                    },
+                    {
+                      "name": "K10101  FBXO17, FBXO26; F-box protein 17"
+                    },
+                    {
+                      "name": "K10300  FBH1, FBXO18; F-box DNA helicase 1 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K06084  LMO7, FBXO20; F-box protein 20"
+                    },
+                    {
+                      "name": "K10301  FBXO21; F-box protein 21"
+                    },
+                    {
+                      "name": "K10302  FBXO22; F-box protein 22"
+                    },
+                    {
+                      "name": "K10303  FBXO23, TSPAN17; F-box protein 23"
+                    },
+                    {
+                      "name": "K10304  FBXO24; F-box protein 24"
+                    },
+                    {
+                      "name": "K10305  FBXO25_32; F-box protein 25/32"
+                    },
+                    {
+                      "name": "K10102  FBXO27; F-box protein 27"
+                    },
+                    {
+                      "name": "K10306  FBXO28; F-box protein 28"
+                    },
+                    {
+                      "name": "K10307  FBXO30; F-box protein 30"
+                    },
+                    {
+                      "name": "K10308  FBXO31; F-box protein 31"
+                    },
+                    {
+                      "name": "K10310  FBXO33; F-box protein 33"
+                    },
+                    {
+                      "name": "K10311  FBXO34; F-box protein 34"
+                    },
+                    {
+                      "name": "K10312  FBXO36; F-box protein 36"
+                    },
+                    {
+                      "name": "K10313  FBXO38, MOKA; F-box protein 38"
+                    },
+                    {
+                      "name": "K10314  FBXO39; F-box protein 39"
+                    },
+                    {
+                      "name": "K10315  FBXO40; F-box protein 40"
+                    },
+                    {
+                      "name": "K10316  FBXO41; F-box protein 41"
+                    },
+                    {
+                      "name": "K10317  FBXO42; F-box protein 42"
+                    },
+                    {
+                      "name": "K10318  FBXO43, EMI2; F-box protein 43"
+                    },
+                    {
+                      "name": "K10103  FBXO44; F-box protein 44"
+                    },
+                    {
+                      "name": "K10319  FBXO45; F-box protein 45"
+                    },
+                    {
+                      "name": "K10320  FBXO46; F-box protein 46"
+                    },
+                    {
+                      "name": "K10321  FBXO47; F-box protein 47"
+                    },
+                    {
+                      "name": "K27313  FBXO48; F-box protein 48"
+                    },
+                    {
+                      "name": "K12116  FKF1; flavin-binding kelch repeat F-box protein 1"
+                    },
+                    {
+                      "name": "K14495  GID2, SLY1; F-box protein GID2"
+                    },
+                    {
+                      "name": "K27314  SNE, SLY2; F-box protein SNE"
+                    },
+                    {
+                      "name": "K12117  LKP2; LOV kelch protein 2"
+                    },
+                    {
+                      "name": "K12115  ZTL; clock-associated PAS protein ZTL"
+                    },
+                    {
+                      "name": "K28517  RMF; protein RMF"
+                    },
+                    {
+                      "name": "K15070  MDM30; mitochondrial distribution and morphology protein 30"
+                    },
+                    {
+                      "name": "K15071  RCY1, POF6; recyclin-1"
+                    },
+                    {
+                      "name": "K15072  SAF1; SCF-associated factor 1"
+                    },
+                    {
+                      "name": "K15073  UFO1; ubiquitin ligase complex F-box protein UFO1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul2 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K03870  CUL2; cullin 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adoptor protein",
+                  "children": [
+                    {
+                      "name": "K03872  ELOC, TCEB1; elongin-C"
+                    },
+                    {
+                      "name": "K03873  ELOB, TCEB2; elongin-B"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit",
+                  "children": [
+                    {
+                      "name": "K03871  VHL; von Hippel-Lindau disease tumor supressor"
+                    },
+                    {
+                      "name": "K10348  LRR1, PPIL5; LRR-repeat protein 1"
+                    },
+                    {
+                      "name": "K25805  FEM1A_C; protein fem-1 homolog A/C"
+                    },
+                    {
+                      "name": "K10349  FEM1B; protein fem-1 homolog B"
+                    },
+                    {
+                      "name": "K25806  APPBP2; amyloid protein-binding protein 2"
+                    },
+                    {
+                      "name": "K25807  KLHDC2; kelch domain-containing protein 2"
+                    },
+                    {
+                      "name": "K25808  KLHDC3; kelch domain-containing protein 3"
+                    },
+                    {
+                      "name": "K25809  KLHDC10; kelch domain-containing protein 10"
+                    },
+                    {
+                      "name": "K10350  ZYG11; Zyg-11 protein"
+                    },
+                    {
+                      "name": "K25207  ZSWIM8; zinc finger SWIM domain-containing protein 8"
+                    },
+                    {
+                      "name": "K28155  PRAME; melanoma antigen preferentially expressed in tumors"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul3 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K03869  CUL3; cullin 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adoptor and target recognizing subunit (BTB)",
+                  "children": [
+                    {
+                      "name": "K10442  KLHL1_4_5; kelch-like protein 1/4/5"
+                    },
+                    {
+                      "name": "K10443  KLHL2_3; kelch-like protein 2/3"
+                    },
+                    {
+                      "name": "K10444  KLHL6; kelch-like protein 6"
+                    },
+                    {
+                      "name": "K10445  KLHL7; kelch-like protein 7"
+                    },
+                    {
+                      "name": "K10446  KLHL8; kelch-like protein 8"
+                    },
+                    {
+                      "name": "K10447  KLHL9_13; kelch-like protein 9/13"
+                    },
+                    {
+                      "name": "K10448  KLHL10; kelch-like protein 10"
+                    },
+                    {
+                      "name": "K10449  KLHL11; kelch-like protein 11"
+                    },
+                    {
+                      "name": "K10450  KLHL12, C3IP1; kelch-like protein 12"
+                    },
+                    {
+                      "name": "K10451  KLHL14; kelch-like protein 14"
+                    },
+                    {
+                      "name": "K10452  KLHL15; kelch-like protein 15"
+                    },
+                    {
+                      "name": "K10453  KLHL16, GAN; kelch-like protein 16 (gigaxonin)"
+                    },
+                    {
+                      "name": "K10454  KLHL17; kelch-like protein 17 (actinfilin)"
+                    },
+                    {
+                      "name": "K10455  KLHL18; kelch-like protein 18"
+                    },
+                    {
+                      "name": "K10456  KLHL19, KEAP1, INRF2; kelch-like protein 19"
+                    },
+                    {
+                      "name": "K10457  KLHL20, KLEIP; kelch-like protein 20"
+                    },
+                    {
+                      "name": "K10458  KLHL21; kelch-like protein 21"
+                    },
+                    {
+                      "name": "K10459  KLHL22, KELCHL; kelch-like protein 22"
+                    },
+                    {
+                      "name": "K10460  KLHL23; kelch-like protein 23"
+                    },
+                    {
+                      "name": "K10461  KLHL24_35; kelch-like protein 24/35"
+                    },
+                    {
+                      "name": "K10462  KLHL25_37, ENC1, ENC2; kelch-like protein 25/37 (ectoderm-neural cortex protein)"
+                    },
+                    {
+                      "name": "K10463  KLHL26; kelch-like protein 26"
+                    },
+                    {
+                      "name": "K13956  IPP, KLHL27; actin-binding protein IPP"
+                    },
+                    {
+                      "name": "K10464  KLHL28; kelch-like protein 28"
+                    },
+                    {
+                      "name": "K10465  KLHL29, KBTBD9; kelch-like protein 29"
+                    },
+                    {
+                      "name": "K10466  KLHL30; kelch-like protein 30"
+                    },
+                    {
+                      "name": "K10467  KLHL31; kelch-like protein 31"
+                    },
+                    {
+                      "name": "K10468  KLHL32; kelch-like protein 32"
+                    },
+                    {
+                      "name": "K13957  KLHL33; kelch-like protein 33"
+                    },
+                    {
+                      "name": "K10469  KLHL34; kelch-like protein 34"
+                    },
+                    {
+                      "name": "K13958  KLHL36; kelch-like protein 36"
+                    },
+                    {
+                      "name": "K13959  KLHL38; kelch-like protein 38"
+                    },
+                    {
+                      "name": "K27973  KLHL42; kelch-like protein 42"
+                    },
+                    {
+                      "name": "K10470  KBTBD2; kelch repeat and BTB domain-containing protein 2"
+                    },
+                    {
+                      "name": "K10471  KBTBD3; kelch repeat and BTB domain-containing protein 3"
+                    },
+                    {
+                      "name": "K10472  KBTBD4; kelch repeat and BTB domain-containing protein 4"
+                    },
+                    {
+                      "name": "K10473  KBTBD5_10; kelch repeat and BTB domain-containing protein 5/10"
+                    },
+                    {
+                      "name": "K10474  KBTBD6_7; kelch repeat and BTB domain-containing protein 6/7"
+                    },
+                    {
+                      "name": "K10475  KBTBD8; kelch repeat and BTB domain-containing protein 8"
+                    },
+                    {
+                      "name": "K10476  KBTBD11; kelch repeat and BTB domain-containing protein 11"
+                    },
+                    {
+                      "name": "K21912  KBTBD12; kelch repeat and BTB domain-containing protein 12"
+                    },
+                    {
+                      "name": "K21913  KBTBD13; kelch repeat and BTB domain-containing protein 13"
+                    },
+                    {
+                      "name": "K10477  BTBD1_2; BTB/POZ domain-containing protein 1/2"
+                    },
+                    {
+                      "name": "K10478  BTBD3_6; BTB/POZ domain-containing protein 3/6"
+                    },
+                    {
+                      "name": "K10479  BTBD7; BTB/POZ domain-containing protein 7"
+                    },
+                    {
+                      "name": "K10480  BTBD8; BTB/POZ domain-containing protein 8"
+                    },
+                    {
+                      "name": "K10481  BTBD9; BTB/POZ domain-containing protein 9"
+                    },
+                    {
+                      "name": "K10482  BTBD10; BTB/POZ domain-containing protein 10"
+                    },
+                    {
+                      "name": "K10483  BTBD11; BTB/POZ domain-containing protein 11"
+                    },
+                    {
+                      "name": "K10484  BTBD12, SLX4; structure-specific endonuclease subunit SLX4 (BTB/POZ domain-containing protein 12)"
+                    },
+                    {
+                      "name": "K10485  BTBD13, GMCL1, GCL; BTB/POZ domain-containing protein 13 (germ cell-less protein-like 1)"
+                    },
+                    {
+                      "name": "K10486  BTBD14; BTB/POZ domain-containing protein 14"
+                    },
+                    {
+                      "name": "K10487  BTBD16; BTB/POZ domain-containing protein 16"
+                    },
+                    {
+                      "name": "K10488  ZBTB1; zinc finger and BTB domain-containing protein 1"
+                    },
+                    {
+                      "name": "K10489  ZBTB2; zinc finger and BTB domain-containing protein 2"
+                    },
+                    {
+                      "name": "K10490  ZBTB3; zinc finger and BTB domain-containing protein 3"
+                    },
+                    {
+                      "name": "K10491  ZBTB4; zinc finger and BTB domain-containing protein 4"
+                    },
+                    {
+                      "name": "K10492  ZBTB5; zinc finger and BTB domain-containing protein 5"
+                    },
+                    {
+                      "name": "K10493  ZBTB6; zinc finger and BTB domain-containing protein 6"
+                    },
+                    {
+                      "name": "K10494  ZBTB7; zinc finger and BTB domain-containing protein 7"
+                    },
+                    {
+                      "name": "K10495  ZBTB8; zinc finger and BTB domain-containing protein 8"
+                    },
+                    {
+                      "name": "K10496  ZBTB9; zinc finger and BTB domain-containing protein 9"
+                    },
+                    {
+                      "name": "K10497  ZBTB10, RINZF; zinc finger and BTB domain-containing protein 10"
+                    },
+                    {
+                      "name": "K10498  ZBTB11; zinc finger and BTB domain-containing protein 11"
+                    },
+                    {
+                      "name": "K10499  ZBTB12; zinc finger and BTB domain-containing protein 12"
+                    },
+                    {
+                      "name": "K10055  ZBTB16, PLZF; zinc finger and BTB domain-containing protein 16"
+                    },
+                    {
+                      "name": "K10500  ZBTB17, MIZ1; zinc finger and BTB domain-containing protein 17"
+                    },
+                    {
+                      "name": "K10501  ZBTB20, HOF, DPZF; zinc finger and BTB domain-containing protein 20"
+                    },
+                    {
+                      "name": "K10502  ZBTB22, BING1; zinc finger and BTB domain-containing protein 22"
+                    },
+                    {
+                      "name": "K10503  ZBTB24, BIF1; zinc finger and BTB domain-containing protein 24"
+                    },
+                    {
+                      "name": "K10504  ZBTB25; zinc finger and BTB domain-containing protein 25"
+                    },
+                    {
+                      "name": "K10505  ZBTB26; zinc finger and BTB domain-containing protein 26"
+                    },
+                    {
+                      "name": "K10506  ZBTB32, TZFP; zinc finger and BTB domain-containing protein 32"
+                    },
+                    {
+                      "name": "K10507  ZBTB33, KAISO; zinc finger and BTB domain-containing protein 33"
+                    },
+                    {
+                      "name": "K10508  ZBTB34; zinc finger and BTB domain-containing protein 34"
+                    },
+                    {
+                      "name": "K10509  ZBTB37; zinc finger and BTB domain-containing protein 37"
+                    },
+                    {
+                      "name": "K10510  ZBTB38; zinc finger and BTB domain-containing protein 38"
+                    },
+                    {
+                      "name": "K10511  ZBTB39; zinc finger and BTB domain-containing protein 39"
+                    },
+                    {
+                      "name": "K10512  ZBTB40; zinc finger and BTB domain-containing protein 40"
+                    },
+                    {
+                      "name": "K10513  ZBTB41; zinc finger and BTB domain-containing protein 41"
+                    },
+                    {
+                      "name": "K10514  ZBTB43; zinc finger and BTB domain-containing protein 43"
+                    },
+                    {
+                      "name": "K10515  ZBTB44, BTBD15; zinc finger and BTB domain-containing protein 44"
+                    },
+                    {
+                      "name": "K10516  ZBTB45; zinc finger and BTB domain-containing protein 45"
+                    },
+                    {
+                      "name": "K10517  ZBTB46, BTBD4; zinc finger and BTB domain-containing protein 46"
+                    },
+                    {
+                      "name": "K10518  ZBTB47; zinc finger and BTB domain-containing protein 47"
+                    },
+                    {
+                      "name": "K10519  ZBTB48, HKR3; zinc finger and BTB domain-containing protein 48"
+                    },
+                    {
+                      "name": "K10520  ABTB1, BPOZ; ankyrin repeat and BTB/POZ domain-containing protein 1"
+                    },
+                    {
+                      "name": "K10521  ABTB2; ankyrin repeat and BTB/POZ domain-containing protein 2"
+                    },
+                    {
+                      "name": "K07868  RHOBTB1_2; Rho-related BTB domain-containing protein 1/2"
+                    },
+                    {
+                      "name": "K07869  RHOBTB3; Rho-related BTB domain-containing protein 3"
+                    },
+                    {
+                      "name": "K15074  BACURD; BTB/POZ domain-containing adapter for CUL3-mediated RhoA degradation protein"
+                    },
+                    {
+                      "name": "K21754  KCTD1_15; BTB/POZ domain-containing protein KCTD1/15"
+                    },
+                    {
+                      "name": "K21914  KCTD2_5_17; BTB/POZ domain-containing protein KCTD2/5/17"
+                    },
+                    {
+                      "name": "K21915  KCTD3; BTB/POZ domain-containing protein KCTD3"
+                    },
+                    {
+                      "name": "K21916  KCTD6; BTB/POZ domain-containing protein KCTD6"
+                    },
+                    {
+                      "name": "K21917  KCTD7_14; BTB/POZ domain-containing protein KCTD7/14"
+                    },
+                    {
+                      "name": "K21918  KCTD8_12_16; BTB/POZ domain-containing protein KCTD8/12/16"
+                    },
+                    {
+                      "name": "K21919  KCTD9; BTB/POZ domain-containing protein KCTD9"
+                    },
+                    {
+                      "name": "K21920  KCTD11; BTB/POZ domain-containing protein KCTD11 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K21921  KCTD18; BTB/POZ domain-containing protein KCTD18"
+                    },
+                    {
+                      "name": "K21922  KCTD21; BTB/POZ domain-containing protein KCTD21"
+                    },
+                    {
+                      "name": "K10522  DIABLO, SMAC; diablo"
+                    },
+                    {
+                      "name": "K10523  SPOP; speckle-type POZ protein"
+                    },
+                    {
+                      "name": "K23330  LZTR1; leucine-zipper-like transcriptional regulator 1"
+                    },
+                    {
+                      "name": "K03876  MEL26; BTB domain ubiquitin protein ligase cofactor"
+                    },
+                    {
+                      "name": "K14508  NPR1; regulatory protein NPR1"
+                    },
+                    {
+                      "name": "K28592  ETO1; ethylene-overproduction protein 1 and related proteins"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul4 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K10609  CUL4; cullin 4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adoptor protein",
+                  "children": [
+                    {
+                      "name": "K10610  DDB1; DNA damage-binding protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit (DCAF)",
+                  "children": [
+                    {
+                      "name": "K10140  DDB2; DNA damage-binding protein 2"
+                    },
+                    {
+                      "name": "K10570  ERCC8, CKN1, CSA; DNA excision repair protein ERCC-8"
+                    },
+                    {
+                      "name": "K10571  DET1; de-etiolated-1"
+                    },
+                    {
+                      "name": "K10143  RFWD2, COP1; E3 ubiquitin-protein ligase RFWD2 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K11792  DDA1; DET1- and DDB1-associated protein 1"
+                    },
+                    {
+                      "name": "K11793  CRBN; cereblon"
+                    },
+                    {
+                      "name": "K11794  IFRG15; IFRG15 protein"
+                    },
+                    {
+                      "name": "K11796  TRPC4AP; Trpc4-associated protein"
+                    },
+                    {
+                      "name": "K11789  DCAF1, VPRBP; DDB1- and CUL4-associated factor 1 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K11790  DTL, CDT2, DCAF2; denticleless"
+                    },
+                    {
+                      "name": "K11799  DCAF4; DDB1- and CUL4-associated factor 4"
+                    },
+                    {
+                      "name": "K11800  DCAF5, BCRP2; DDB1- and CUL4-associated factor 5"
+                    },
+                    {
+                      "name": "K11795  DCAF6, IQWD1, NRIP, ARCAP; DDB1- and CUL4-associated factor 6"
+                    },
+                    {
+                      "name": "K11805  DCAF7, HAN11; DDB1- and CUL4-associated factor 7"
+                    },
+                    {
+                      "name": "K11804  DCAF8; DDB1- and CUL4-associated factor 8"
+                    },
+                    {
+                      "name": "K11807  WDTC1, DCAF9; WD and tetratricopeptide repeats protein 1"
+                    },
+                    {
+                      "name": "K11802  DCAF10; DDB1- and CUL4-associated factor 10"
+                    },
+                    {
+                      "name": "K11801  DCAF11; DDB1- and CUL4-associated factor 11"
+                    },
+                    {
+                      "name": "K11803  DCAF12; DDB1- and CUL4-associated factor 12"
+                    },
+                    {
+                      "name": "K11806  DCAF13, WDSOF1; DDB1- and CUL4-associated factor 13"
+                    },
+                    {
+                      "name": "K11797  PHIP, DCAF14; PH-interacting protein"
+                    },
+                    {
+                      "name": "K11791  DCAF15; DDB1- and CUL4-associated factor 15"
+                    },
+                    {
+                      "name": "K23626  DCAF16; DDB1- and CUL4-associated factor 16"
+                    },
+                    {
+                      "name": "K23331  DCAF17; DDB1- and CUL4-associated factor 17"
+                    },
+                    {
+                      "name": "K11798  BRWD1_3; bromodomain and WD repeat domain containing protein 1/3"
+                    },
+                    {
+                      "name": "K22382  WDR26; WD repeat-containing protein 26"
+                    },
+                    {
+                      "name": "K24752  WDR70; WD repeat-containing protein 70"
+                    },
+                    {
+                      "name": "K24755  WDR76, CMR1; WD repeat-containing protein 76"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul5 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K10611  RBX2, ROC2, RNF7; RING-box protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K10612  CUL5; cullin 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adoptor protein",
+                  "children": [
+                    {
+                      "name": "K03872  ELOC, TCEB1; elongin-C"
+                    },
+                    {
+                      "name": "K03873  ELOB, TCEB2; elongin-B"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit",
+                  "children": [
+                    {
+                      "name": "K04701  CISH; cytokine inducible SH2-containing protein"
+                    },
+                    {
+                      "name": "K04694  SOCS1, JAB; suppressor of cytokine signaling 1"
+                    },
+                    {
+                      "name": "K04695  SOCS2, CIS2; suppressor of cytokine signaling 2"
+                    },
+                    {
+                      "name": "K04696  SOCS3, CIS3; suppressor of cytokine signaling 3"
+                    },
+                    {
+                      "name": "K04697  SOCS4; suppressor of cytokine signaling 4"
+                    },
+                    {
+                      "name": "K04698  SOCS5; suppressor of cytokine signaling 5"
+                    },
+                    {
+                      "name": "K04699  SOCS6_7; suppressor of cytokine signaling 6/7"
+                    },
+                    {
+                      "name": "K10323  ASB1; ankyrin repeat and SOCS box protein 1"
+                    },
+                    {
+                      "name": "K10324  ASB2; ankyrin repeat and SOCS box protein 2"
+                    },
+                    {
+                      "name": "K10325  ASB3; ankyrin repeat and SOCS box protein 3"
+                    },
+                    {
+                      "name": "K10326  ASB4; ankyrin repeat and SOCS box protein 4"
+                    },
+                    {
+                      "name": "K10327  ASB5; ankyrin repeat and SOCS box protein 5"
+                    },
+                    {
+                      "name": "K10328  ASB6; ankyrin repeat and SOCS box protein 6"
+                    },
+                    {
+                      "name": "K10329  ASB7; ankyrin repeat and SOCS box protein 7"
+                    },
+                    {
+                      "name": "K10330  ASB8; ankyrin repeat and SOCS box protein 8"
+                    },
+                    {
+                      "name": "K10331  ASB9; ankyrin repeat and SOCS box protein 9"
+                    },
+                    {
+                      "name": "K10332  ASB10; ankyrin repeat and SOCS box protein 10"
+                    },
+                    {
+                      "name": "K10333  ASB11; ankyrin repeat and SOCS box protein 11"
+                    },
+                    {
+                      "name": "K10334  ASB12; ankyrin repeat and SOCS box protein 12"
+                    },
+                    {
+                      "name": "K10335  ASB13; ankyrin repeat and SOCS box protein 13"
+                    },
+                    {
+                      "name": "K10336  ASB14; ankyrin repeat and SOCS box protein 14"
+                    },
+                    {
+                      "name": "K10337  ASB15; ankyrin repeat and SOCS box protein 15"
+                    },
+                    {
+                      "name": "K10338  ASB16; ankyrin repeat and SOCS box protein 16"
+                    },
+                    {
+                      "name": "K10339  ASB17; ankyrin repeat and SOCS box protein 17"
+                    },
+                    {
+                      "name": "K10340  ASB18; ankyrin repeat and SOCS box protein 18"
+                    },
+                    {
+                      "name": "K10341  WSB1; WD repeat and SOCS box-containing protein 1"
+                    },
+                    {
+                      "name": "K10342  WSB2; WD repeat and SOCS box-containing protein 2"
+                    },
+                    {
+                      "name": "K10343  SPSB1_4, SSB1, SSB4; SPRY domain-containing SOCS box protein 1/4"
+                    },
+                    {
+                      "name": "K10344  SPSB2, SSB2; SPRY domain-containing SOCS box protein 2"
+                    },
+                    {
+                      "name": "K10345  SPSB3, SSB3; SPRY domain-containing SOCS box protein 3"
+                    },
+                    {
+                      "name": "K07928  RAB40; Ras-related protein Rab-40"
+                    },
+                    {
+                      "name": "K10347  LRRC41, MUF1; leucine-rich repeat-containing protein 41"
+                    },
+                    {
+                      "name": "K23332  RSPRY1; RING finger and SPRY domain-containing protein 1"
+                    },
+                    {
+                      "name": "K25208  ANKRD9; ankyrin repeat domain-containing protein 9"
+                    },
+                    {
+                      "name": "K25810  KLHDC1; kelch domain-containing protein 1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul7 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K10613  CUL7; cullin 7"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adaptor protein",
+                  "children": [
+                    {
+                      "name": "K03094  SKP1, CBF3D; S-phase kinase-associated protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit",
+                  "children": [
+                    {
+                      "name": "K10264  FBXW8; F-box and WD-40 domain protein 8"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul8 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K26124  RTT101, CUL8; cullin 8"
+                    }
+                  ]
+                },
+                {
+                  "name": "Adaptor protein",
+                  "children": [
+                    {
+                      "name": "K26123  MMS1; E3 ubiquitin-protein ligase linker protein MMS1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit",
+                  "children": [
+                    {
+                      "name": "K26122  MMS22; E3 ubiquitin-protein ligase substrate receptor MMS22"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cul9 complex",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K11970  CUL9, PARC; cullin 9"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "APC/C",
+              "children": [
+                {
+                  "name": "Ring finger protein",
+                  "children": [
+                    {
+                      "name": "K03358  APC11, ANAPC11; anaphase-promoting complex subunit 11"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cullin",
+                  "children": [
+                    {
+                      "name": "K03349  APC2, ANAPC2; anaphase-promoting complex subunit 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Target recognizing subunit",
+                  "children": [
+                    {
+                      "name": "K03363  CDC20; cell division cycle 20, cofactor of APC complex"
+                    },
+                    {
+                      "name": "K03364  CDH1, FZR1; cell division cycle 20-like protein 1, cofactor of APC complex"
+                    },
+                    {
+                      "name": "K12782  AMA1; meiosis-specific APC/C activator protein AMA1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other subunits",
+                  "children": [
+                    {
+                      "name": "K03348  APC1, ANAPC1; anaphase-promoting complex subunit 1"
+                    },
+                    {
+                      "name": "K03350  APC3, CDC27; anaphase-promoting complex subunit 3"
+                    },
+                    {
+                      "name": "K03351  APC4, ANAPC4; anaphase-promoting complex subunit 4"
+                    },
+                    {
+                      "name": "K03352  APC5, ANAPC5; anaphase-promoting complex subunit 5"
+                    },
+                    {
+                      "name": "K03353  APC6, CDC16; anaphase-promoting complex subunit 6"
+                    },
+                    {
+                      "name": "K03354  APC7, ANAPC7; anaphase-promoting complex subunit 7"
+                    },
+                    {
+                      "name": "K03355  APC8, CDC23; anaphase-promoting complex subunit 8"
+                    },
+                    {
+                      "name": "K03356  APC9; anaphase-promoting complex subunit 9"
+                    },
+                    {
+                      "name": "K03357  APC10, ANAPC10, DOC1; anaphase-promoting complex subunit 10"
+                    },
+                    {
+                      "name": "K03359  APC12, CDC26; anaphase-promoting complex subunit 12"
+                    },
+                    {
+                      "name": "K12456  APC13, ANAPC13; anaphase-promoting complex subunit 13"
+                    },
+                    {
+                      "name": "K12416  SWM1, APC13; anaphase-promoting complex subunit SWM1"
+                    },
+                    {
+                      "name": "K25228  APC15, ANAPC15; anaphase-promoting complex subunit 15"
+                    },
+                    {
+                      "name": "K25229  APC16, ANAPC16; anaphase-promoting complex subunit 16"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "BRCC complex",
+              "children": [
+                {
+                  "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K08775  BRCA2, FANCD1; breast cancer 2 susceptibility protein"
+                },
+                {
+                  "name": "K11864  BRCC3, BRCC36; BRCA1/BRCA2-containing complex subunit 3 [EC:3.4.19.-]"
+                },
+                {
+                  "name": "K10683  BARD1; BRCA1-associated RING domain protein 1"
+                },
+                {
+                  "name": "K12173  BRE, BRCC45; BRCA1-A complex subunit BRE"
+                },
+                {
+                  "name": "K04482  RAD51; DNA repair protein RAD51"
+                }
+              ]
+            },
+            {
+              "name": "KPC complex",
+              "children": [
+                {
+                  "name": "K12169  KPC1, RNF123; Kip1 ubiquitination-promoting complex protein 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12174  KPC2, UBAC1; Kip1 ubiquitination-promoting complex protein 2"
+                }
+              ]
+            },
+            {
+              "name": "LUBAC complex",
+              "children": [
+                {
+                  "name": "K20894  SHARPIN; shank-associated RH domain-interacting protein"
+                },
+                {
+                  "name": "K10630  RBCK1, HOIL1; RanBP-type and C3HC4-type zinc finger-containing protein 1 [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11974  RNF31, HOIP; E3 ubiquitin-protein ligase RNF31 [EC:2.3.2.31]"
+                }
+              ]
+            },
+            {
+              "name": "CTLH complex",
+              "children": [
+                {
+                  "name": "K23333  RMND5; E3 ubiquitin-protein transferase RMND5 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K23334  RANBP9_10, RANBPM; Ran-binding protein 9/10"
+                },
+                {
+                  "name": "K23336  ARMC8; armadillo repeat-containing protein 8"
+                },
+                {
+                  "name": "K23337  MKLN1; muskelin"
+                },
+                {
+                  "name": "K18624  MAEA, EMP; macrophage erythroblast attacher"
+                },
+                {
+                  "name": "K23335  GID4; glucose-induced degradation protein 4"
+                },
+                {
+                  "name": "K23338  GID8; glucose-induced degradation protein 8"
+                },
+                {
+                  "name": "K23339  YPEL5; protein yippee-like 5"
+                },
+                {
+                  "name": "K22382  WDR26; WD repeat-containing protein 26"
+                }
+              ]
+            },
+            {
+              "name": "ERAD complex",
+              "children": [
+                {
+                  "name": "K10636  AMFR, GP78; E3 ubiquitin-protein ligase AMFR [EC:2.3.2.36]"
+                },
+                {
+                  "name": "K23340  TMUB; transmembrane and ubiquitin-like domain-containing protein"
+                },
+                {
+                  "name": "K23341  ERLIN; erlin"
+                }
+              ]
+            },
+            {
+              "name": "LMBR1L-GP78-UBAC2 complex",
+              "children": [
+                {
+                  "name": "K25215  LMBR1L; protein LMBR1L"
+                },
+                {
+                  "name": "K10636  AMFR, GP78; E3 ubiquitin-protein ligase AMFR [EC:2.3.2.36]"
+                },
+                {
+                  "name": "K25216  UBAC2; ubiquitin-associated domain-containing protein 2"
+                }
+              ]
+            },
+            {
+              "name": "STUB1-CHIC2  complex",
+              "children": [
+                {
+                  "name": "K09561  STUB1, CHIP; STIP1 homology and U-box containing protein 1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K28185  CHIC2; cysteine-rich hydrophobic domain-containing protein 2"
+                }
+              ]
+            },
+            {
+              "name": "SLX5-SLX8 complex",
+              "children": [
+                {
+                  "name": "K22645  SLX5; E3 ubiquitin-protein ligase complex SLX5-SLX8 subunit SLX5 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K22646  SLX8; E3 ubiquitin-protein ligase complex SLX5-SLX8 subunit SLX8 [EC:2.3.2.27]"
+                }
+              ]
+            },
+            {
+              "name": "Multi subunit type E3 associated proteins",
+              "children": [
+                {
+                  "name": "K17263  CAND1, TIP120A; cullin-associated NEDD8-dissociated protein 1"
+                },
+                {
+                  "name": "K24172  CAND2, TIP120B; cullin-associated NEDD8-dissociated protein 2"
+                },
+                {
+                  "name": "K22557  COMMD1, MURR1; COMM domain containing 1"
+                },
+                {
+                  "name": "K22558  COMMD2; COMM domain containing 2"
+                },
+                {
+                  "name": "K22559  COMMD3, BUP; COMM domain containing 3"
+                },
+                {
+                  "name": "K22560  COMMD4; COMM domain containing 4"
+                },
+                {
+                  "name": "K22561  COMMD5, HCARG; COMM domain containing 5"
+                },
+                {
+                  "name": "K22562  COMMD6; COMM domain containing 6"
+                },
+                {
+                  "name": "K22563  COMMD7; COMM domain containing 7"
+                },
+                {
+                  "name": "K22564  COMMD8; COMM domain containing 8"
+                },
+                {
+                  "name": "K22565  COMMD9; COMM domain containing 9"
+                },
+                {
+                  "name": "K22566  COMMD10; COMM domain containing 10"
+                },
+                {
+                  "name": "K23343  CCDC22; coiled-coil domain-containing protein 22"
+                },
+                {
+                  "name": "K23344  DDRGK1; DDRGK domain-containing protein 1"
+                },
+                {
+                  "name": "K23345  GLMN; glomulin"
+                },
+                {
+                  "name": "K15046  IVNS1ABP, NS1BP; influenza virus NS1A-binding protein"
+                },
+                {
+                  "name": "K24350  UBXN7; UBX domain-containing protein 7"
+                },
+                {
+                  "name": "K26163  PACRG; parkin coregulated gene protein"
+                },
+                {
+                  "name": "K26545  UBAP2; ubiquitin-associated protein 2"
+                },
+                {
+                  "name": "K28518  UEVLD; ubiquitin-conjugating enzyme E2 variant 3"
+                },
+                {
+                  "name": "K26546  Dlish; SH3 domain-containing protein Dlish"
+                },
+                {
+                  "name": "K16240  SPA1_2; protein suppressor of PHYA-105 1 and protein SPA1-related 2"
+                },
+                {
+                  "name": "K26557  SPA3_4; protein SPA1-related 3/4"
+                },
+                {
+                  "name": "K27505  SAMBA; protein SAMBA"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Deubiquitinating enzyme (DUB)",
+      "children": [
+        {
+          "name": "Ubiquitin-specific proteases (UBPs)",
+          "children": [
+            {
+              "name": "UCH",
+              "children": [
+                {
+                  "name": "K05611  UCHL1; ubiquitin carboxyl-terminal hydrolase L1 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K08588  BAP1, UCHL2; ubiquitin carboxyl-terminal hydrolase BAP1 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K05609  UCHL3, YUH1; ubiquitin carboxyl-terminal hydrolase L3 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K05610  UCHL5, UCH37; ubiquitin carboxyl-terminal hydrolase L5 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "UBP/USP",
+              "children": [
+                {
+                  "name": "K08601  CYLD, USLP2; ubiquitin carboxyl-terminal hydrolase CYLD [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11832  USP1; ubiquitin carboxyl-terminal hydrolase 1 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11833  USP2; ubiquitin carboxyl-terminal hydrolase 2 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11986  USP3; ubiquitin carboxyl-terminal hydrolase 3 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11835  USP4_11, UBP12; ubiquitin carboxyl-terminal hydrolase 4/11 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11836  USP5_13, UBP14; ubiquitin carboxyl-terminal hydrolase 5/13 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11837  USP6_32; ubiquitin carboxyl-terminal hydrolase 6/32 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11838  USP7, UBP15; ubiquitin carboxyl-terminal hydrolase 7 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11839  USP8, UBP5; ubiquitin carboxyl-terminal hydrolase 8 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11840  USP9_24; ubiquitin carboxyl-terminal hydrolase 9/24 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11841  USP10, UBP3; ubiquitin carboxyl-terminal hydrolase 10 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11842  USP12_46; ubiquitin carboxyl-terminal hydrolase 12/46 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11843  USP14, UBP6; ubiquitin carboxyl-terminal hydrolase 14 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K21343  USP15; ubiquitin carboxyl-terminal hydrolase 15 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11844  USP16_45; ubiquitin carboxyl-terminal hydrolase 16/45 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11845  USP17, DUB3; ubiquitin carboxyl-terminal hydrolase 17 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11846  USP18_41; ubiquitin carboxyl-terminal hydrolase 18/41 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11847  USP19; ubiquitin carboxyl-terminal hydrolase 19 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11848  USP20_33; ubiquitin carboxyl-terminal hydrolase 20/33 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K21634  USP21; ubiquitin carboxyl-terminal hydrolase 21 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11366  USP22_27_51, UBP8; ubiquitin carboxyl-terminal hydrolase 22/27/51 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11849  USP25; ubiquitin carboxyl-terminal hydrolase 25 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11850  USP26_29_37; ubiquitin carboxyl-terminal hydrolase 26/29/37 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K21122  USP28; ubiquitin carboxyl-terminal hydrolase 28 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11851  USP30; ubiquitin carboxyl-terminal hydrolase 30 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11852  USP31; ubiquitin carboxyl-terminal hydrolase 31 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11853  USP34; ubiquitin carboxyl-terminal hydrolase 34 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11854  USP35_38; ubiquitin carboxyl-terminal hydrolase 35/38 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11855  USP36_42; ubiquitin carboxyl-terminal hydrolase 36/42 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11869  USP40; ubiquitin carboxyl-terminal hydrolase 40 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11856  USP43; ubiquitin carboxyl-terminal hydrolase 43 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11834  USP44_49; ubiquitin carboxyl-terminal hydrolase 44/49 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11857  USP47; ubiquitin carboxyl-terminal hydrolase 47 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11858  USP48; ubiquitin carboxyl-terminal hydrolase 48 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K27920  USP54; ubiquitin carboxyl-terminal hydrolase 54 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11870  UBP1; ubiquitin carboxyl-terminal hydrolase 1 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11871  UBP7_11; ubiquitin carboxyl-terminal hydrolase 7/11 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11872  UBP9_13; ubiquitin carboxyl-terminal hydrolase 9/13 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11873  UBP10; ubiquitin carboxyl-terminal hydrolase 10 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11874  UBP16; ubiquitin carboxyl-terminal hydrolase 16 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "OTU",
+              "children": [
+                {
+                  "name": "K09602  OTUB1; ubiquitin thioesterase protein OTUB1 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K09603  OTUB2; ubiquitin thioesterase protein OTUB2 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K13717  OTUD3; OTU domain-containing protein 3 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K12655  OTUD5, DUBA; OTU domain-containing protein 5 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K18342  OTUD6; OTU domain-containing protein 6 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11860  OTUD7A_B; OTU domain-containing protein 7 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K18343  OTULIN; ubiquitin thioesterase otulin [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11859  TNFAIP3, A20, OTUD7C; tumor necrosis factor, alpha-induced protein 3 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11861  VCPIP1, VCIP135; deubiquitinating protein VCIP135 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11862  ZRANB1, TRABID; ubiquitin thioesterase ZRANB1 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "MJD",
+              "children": [
+                {
+                  "name": "K11863  ATXN3, MJD; ataxin-3 [EC:3.4.22.-]"
+                },
+                {
+                  "name": "K15235  JOSD; josephin [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "MINDY",
+              "children": [
+                {
+                  "name": "K01309  MINDY1_2; ubiquitin carboxyl-terminal hydrolase MINDY-1/2 [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K22647  MINDY3_4; ubiquitin carboxyl-terminal hydrolase MINDY-3/4 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "JAMM",
+              "children": [
+                {
+                  "name": "K11864  BRCC3, BRCC36; BRCA1/BRCA2-containing complex subunit 3 [EC:3.4.19.-]"
+                },
+                {
+                  "name": "K11865  MYSM1; histone H2A deubiquitinase [EC:3.4.19.-]"
+                },
+                {
+                  "name": "K24173  MPND; MPN domain-containing protein"
+                },
+                {
+                  "name": "K03030  PSMD14, RPN11, POH1; 26S proteasome regulatory subunit N11"
+                },
+                {
+                  "name": "K11866  STAMBP, AMSH; STAM-binding protein [EC:3.4.19.12]"
+                },
+                {
+                  "name": "K11867  STAMBPL1; AMSH-like protease [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "PPPDE",
+              "children": [
+                {
+                  "name": "K22763  DESI2, PPPDE1; deubiquitinase DESI2 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "ZUFSP",
+              "children": [
+                {
+                  "name": "K24134  ZUP1, ZUFSP; zinc finger-containing ubiquitin peptidase 1 [EC:3.4.19.12]"
+                }
+              ]
+            },
+            {
+              "name": "BRISC complex",
+              "children": [
+                {
+                  "name": "K20799  FAM175B, ABRO1; BRISC complex subunit Abro1"
+                },
+                {
+                  "name": "K20776  BABAM, NBA1, MERIT40; BRISC and BRCA1-A complex member 1"
+                },
+                {
+                  "name": "K11864  BRCC3, BRCC36; BRCA1/BRCA2-containing complex subunit 3 [EC:3.4.19.-]"
+                },
+                {
+                  "name": "K12173  BRE, BRCC45; BRCA1-A complex subunit BRE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "UBL-specific proteases (ULPs)",
+          "children": [
+            {
+              "name": "K08592  SENP1; sentrin-specific protease 1 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K03345  SENP2, AXAM2; sentrin-specific protease 2 (axin associating molecule) [EC:3.4.22.68]"
+            },
+            {
+              "name": "K08593  SENP3; sentrin-specific protease 3 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K08594  SENP5; sentrin-specific protease 5 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K08595  SENP6; sentrin-specific protease 6 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K08596  SENP7; sentrin-specific protease 7 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K08597  SENP8, NEDP1, DEN1; sentrin-specific protease 8 [EC:3.4.22.68]"
+            },
+            {
+              "name": "K05609  UCHL3, YUH1; ubiquitin carboxyl-terminal hydrolase L3 [EC:3.4.19.12]"
+            },
+            {
+              "name": "K16287  ULP1C_D; ubiquitin-like-specific protease 1C/D [EC:3.4.22.68]"
+            },
+            {
+              "name": "K22762  DESI1, PPPDE2; desumoylating isopeptidase 1 [EC:3.4.-.-]"
+            },
+            {
+              "name": "K23008  USPL1; SUMO-specific isopeptidase USPL1 [EC:3.4.22.-]"
+            },
+            {
+              "name": "COP9 signalosome (CSN) complex",
+              "children": [
+                {
+                  "name": "K12175  GPS1, COPS1, CSN1; COP9 signalosome complex subunit 1"
+                },
+                {
+                  "name": "K12176  COPS2, CSN2, TRIP15; COP9 signalosome complex subunit 2"
+                },
+                {
+                  "name": "K12177  COPS3, CSN3; COP9 signalosome complex subunit 3"
+                },
+                {
+                  "name": "K12178  COPS4, CSN4; COP9 signalosome complex subunit 4"
+                },
+                {
+                  "name": "K09613  COPS5, CSN5; COP9 signalosome complex subunit 5 [EC:3.4.-.-]"
+                },
+                {
+                  "name": "K12179  COPS6, CSN6; COP9 signalosome complex subunit 6"
+                },
+                {
+                  "name": "K12180  COPS7, CSN7; COP9 signalosome complex subunit 7"
+                },
+                {
+                  "name": "K12181  COPS8, CSN8; COP9 signalosome complex subunit 8"
+                },
+                {
+                  "name": "K28062  COPS9, MYEOV2; COP9 signalosome complex subunit 9"
+                },
+                {
+                  "name": "K24365  CSN9; COP9 signalosome complex subunit 9"
+                },
+                {
+                  "name": "K24366  RRI2, CSN10; COP9 signalosome complex subunit 10"
+                },
+                {
+                  "name": "K24367  PCI8, CSN11; COP9 signalosome complex subunit 11"
+                },
+                {
+                  "name": "K24364  CSN12; COP9 signalosome complex subunit 12"
+                },
+                {
+                  "name": "K24368  CSI1; COP9 signalosome-interactor 1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

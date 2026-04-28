@@ -1,0 +1,622 @@
+{
+  "name": "ko01004",
+  "children": [
+    {
+      "name": "Fatty acid synthase",
+      "children": [
+        {
+          "name": "Animal type",
+          "children": [
+            {
+              "name": "K00665  FASN; fatty acid synthase, animal type [EC:2.3.1.85]"
+            }
+          ]
+        },
+        {
+          "name": "Yeast type",
+          "children": [
+            {
+              "name": "K00668  FAS1; fatty acid synthase subunit beta, fungi type [EC:2.3.1.86]"
+            },
+            {
+              "name": "K00667  FAS2; fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]"
+            }
+          ]
+        },
+        {
+          "name": "Bacteria type",
+          "children": [
+            {
+              "name": "K11533  fas; fatty acid synthase, bacteria type [EC:2.3.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "Component type",
+          "children": [
+            {
+              "name": "K00645  fabD, MCAT, MCT1; [acyl-carrier-protein] S-malonyltransferase [EC:2.3.1.39]"
+            },
+            {
+              "name": "K00648  fabH; 3-oxoacyl-[acyl-carrier-protein] synthase III [EC:2.3.1.180]"
+            },
+            {
+              "name": "K18473  fabY; acetoacetyl-[acyl-carrier protein] synthase [EC:2.3.1.180]"
+            },
+            {
+              "name": "K00647  fabB; 3-oxoacyl-[acyl-carrier-protein] synthase I [EC:2.3.1.41]"
+            },
+            {
+              "name": "K09458  fabF, OXSM, CEM1; 3-oxoacyl-[acyl-carrier-protein] synthase II [EC:2.3.1.179]"
+            },
+            {
+              "name": "K00059  fabG, OAR1; 3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]"
+            },
+            {
+              "name": "K01716  fabA; 3-hydroxyacyl-[acyl-carrier protein] dehydratase / trans-2-decenoyl-[acyl-carrier protein] isomerase [EC:4.2.1.59 5.3.3.14]"
+            },
+            {
+              "name": "K02372  fabZ; 3-hydroxyacyl-[acyl-carrier-protein] dehydratase [EC:4.2.1.59]"
+            },
+            {
+              "name": "K16363  lpxC-fabZ; UDP-3-O-[3-hydroxymyristoyl] N-acetylglucosamine deacetylase / 3-hydroxyacyl-[acyl-carrier-protein] dehydratase [EC:3.5.1.108 4.2.1.59]"
+            },
+            {
+              "name": "K00208  fabI; enoyl-[acyl-carrier protein] reductase I [EC:1.3.1.9 1.3.1.10]"
+            },
+            {
+              "name": "K02371  fabK; enoyl-[acyl-carrier protein] reductase II [EC:1.3.1.9]"
+            },
+            {
+              "name": "K10780  fabL; enoyl-[acyl-carrier protein] reductase III [EC:1.3.1.104]"
+            },
+            {
+              "name": "K00209  fabV, ter; enoyl-[acyl-carrier protein] reductase / trans-2-enoyl-CoA reductase (NAD+) [EC:1.3.1.9 1.3.1.44]"
+            },
+            {
+              "name": "K18474  fabM; trans-2-decenoyl-[acyl-carrier protein] isomerase [EC:5.3.3.14]"
+            },
+            {
+              "name": "K10251  HSD17B12, KAR, IFA38; 17beta-estradiol 17-dehydrogenase / very-long-chain 3-oxoacyl-CoA reductase [EC:1.1.1.62 1.1.1.330]"
+            },
+            {
+              "name": "K10703  HACD, PHS1, PAS2; very-long-chain (3R)-3-hydroxyacyl-CoA dehydratase [EC:4.2.1.134]"
+            },
+            {
+              "name": "K07753  PECR; peroxisomal trans-2-enoyl-CoA reductase [EC:1.3.1.38]"
+            },
+            {
+              "name": "K10258  TER, TSC13, CER10; very-long-chain enoyl-CoA reductase [EC:1.3.1.93]"
+            },
+            {
+              "name": "K01071  MCH; medium-chain acyl-[acyl-carrier-protein] hydrolase [EC:3.1.2.21]"
+            },
+            {
+              "name": "K10782  FATA; fatty acyl-ACP thioesterase A [EC:3.1.2.14]"
+            },
+            {
+              "name": "K10781  FATB; fatty acyl-ACP thioesterase B [EC:3.1.2.14 3.1.2.21]"
+            },
+            {
+              "name": "K01074  PPT; palmitoyl-protein thioesterase [EC:3.1.2.22]"
+            },
+            {
+              "name": "K01068  ACOT1_2_4; acyl-coenzyme A thioesterase 1/2/4 [EC:3.1.2.2]"
+            },
+            {
+              "name": "K11993  ACOT6; acyl-CoA thioesterase 6 [EC:3.1.2.-]"
+            },
+            {
+              "name": "K17360  ACOT7; acyl-coenzyme A thioesterase 7 [EC:3.1.2.2]"
+            },
+            {
+              "name": "K17361  ACOT9; acyl-coenzyme A thioesterase 9 [EC:3.1.2.-]"
+            },
+            {
+              "name": "K12417  ACOT11; acyl-CoA thioesteraes 11 [EC:3.1.2.-]"
+            },
+            {
+              "name": "K17362  ACOT13; acyl-coenzyme A thioesterase 13 [EC:3.1.2.-]"
+            },
+            {
+              "name": "K10804  tesA; acyl-CoA thioesterase I [EC:3.1.2.- 3.1.2.2 3.1.1.2 3.1.1.5]"
+            },
+            {
+              "name": "K10805  tesB; acyl-CoA thioesterase II [EC:3.1.2.-]"
+            },
+            {
+              "name": "K10806  yciA; acyl-CoA thioesterase YciA [EC:3.1.2.-]"
+            },
+            {
+              "name": "K12500  tesC; thioesterase III [EC:3.1.2.-]"
+            },
+            {
+              "name": "K11608  mtfabH; mycobacterial beta-ketoacyl-[acyl-carrier protein] synthase III [EC:2.3.1.301]"
+            },
+            {
+              "name": "K11609  kasA; meromycolic acid 3-oxoacyl-[acyl-carrier protein] synthase I [EC:2.3.1.293]"
+            },
+            {
+              "name": "K27070  kasB; meromycolic acid 3-oxoacyl-[acyl-carrier protein] synthase II [EC:2.3.1.294]"
+            },
+            {
+              "name": "K11610  mabA; meromycolic acid 3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.-]"
+            },
+            {
+              "name": "K27071  hadA; meromycolic acid (3R)-3-hydroxyacyl-[acyl-carrier protein] dehydratase HadA [EC:4.2.1.-]"
+            },
+            {
+              "name": "K27072  hadB; meromycolic acid (3R)-3-hydroxyacyl-[acyl-carrier protein] dehydratase HadB [EC:4.2.1.-]"
+            },
+            {
+              "name": "K27689  hadAB; meromycolic acid (3R)-3-hydroxyacyl-[acyl-carrier protein] dehydratase HadAB [EC:4.2.1.-]"
+            },
+            {
+              "name": "K27073  hadC; meromycolic acid (3R)-3-hydroxyacyl-[acyl-carrier protein] dehydratase HadC [EC:4.2.1.-]"
+            },
+            {
+              "name": "K27074  hadD; meromycolic acid (3R)-3-hydroxyacyl-[acyl-carrier protein] dehydratase HadD [EC:4.2.1.-]"
+            },
+            {
+              "name": "K11611  inhA; meromycolic acid enoyl-[acyl-carrier protein] reductase [EC:1.3.1.118]"
+            },
+            {
+              "name": "K27985  nasA; long-chain acyl-[acp]:L-phenylalanine N-acyltransferase [EC:2.3.1.327]"
+            },
+            {
+              "name": "K27986  nasB; branched-chain 2-oxoacid:malonyl-[acyl-carrier protein] acyltransferase [EC:2.3.1.328]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Desaturase",
+      "children": [
+        {
+          "name": "First",
+          "children": [
+            {
+              "name": "K00507  SCD, desC; stearoyl-CoA desaturase (Delta-9 desaturase) [EC:1.14.19.1]"
+            },
+            {
+              "name": "K03921  FAB2, SSI2, desA1; acyl-[acyl-carrier protein] desaturase [EC:1.14.19.2 1.14.19.11 1.14.19.26]"
+            },
+            {
+              "name": "K03922  desA2; acyl-[acyl-carrier protein] desaturase [EC:1.14.19.2 1.14.19.-]"
+            },
+            {
+              "name": "K22769  desA3; NADPH-dependent stearoyl-CoA 9-desaturase [EC:1.14.19.-]"
+            }
+          ]
+        },
+        {
+          "name": "Omega",
+          "children": [
+            {
+              "name": "K10256  FAD2; omega-6 fatty acid desaturase / acyl-lipid omega-6 desaturase (Delta-12 desaturase) [EC:1.14.19.6 1.14.19.22]"
+            },
+            {
+              "name": "K10255  FAD6, desA; acyl-lipid omega-6 desaturase (Delta-12 desaturase) [EC:1.14.19.23 1.14.19.45]"
+            },
+            {
+              "name": "K10257  FAD3, FAD7, FAD8, desB; acyl-lipid omega-3 desaturase [EC:1.14.19.25 1.14.19.35 1.14.19.36]"
+            },
+            {
+              "name": "K10225  FADS3; fatty acid desaturase 3 (Delta-13 desaturase) [EC:1.14.19.-]"
+            }
+          ]
+        },
+        {
+          "name": "Front-end",
+          "children": [
+            {
+              "name": "K00508  E1.14.19.3; linoleoyl-CoA desaturase [EC:1.14.19.3]"
+            },
+            {
+              "name": "K10224  FADS1; acyl-CoA (8-3)-desaturase (Delta-5 desaturase) [EC:1.14.19.44]"
+            },
+            {
+              "name": "K10226  FADS2; acyl-CoA 6-desaturase (Delta-6 desaturase) [EC:1.14.19.3]"
+            },
+            {
+              "name": "K12418  DES4, des1; acyl-lipid (7-3)-desaturase (Delta-4 desaturase) [EC:1.14.19.31]"
+            }
+          ]
+        },
+        {
+          "name": "Sphingolipid",
+          "children": [
+            {
+              "name": "K04712  DEGS; sphingolipid 4-desaturase/C4-monooxygenase [EC:1.14.19.17 1.14.18.5]"
+            }
+          ]
+        },
+        {
+          "name": "Other",
+          "children": [
+            {
+              "name": "K12419  FADS6; fatty acid desaturase 6 [EC:1.14.19.-]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Elongase",
+      "children": [
+        {
+          "name": "LCFA",
+          "children": [
+            {
+              "name": "K10245  ELO2; fatty acid elongase 2 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10246  ELO3; fatty acid elongase 3 [EC:2.3.1.199]"
+            }
+          ]
+        },
+        {
+          "name": "PUFA",
+          "children": [
+            {
+              "name": "K10247  ELOVL1; elongation of very long chain fatty acids protein 1 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10205  ELOVL2; elongation of very long chain fatty acids protein 2 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10249  ELOVL4; elongation of very long chain fatty acids protein 4 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10244  ELOVL5; elongation of very long chain fatty acids protein 5 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10203  ELOVL6; elongation of very long chain fatty acids protein 6 [EC:2.3.1.199]"
+            },
+            {
+              "name": "K10250  ELOVL7; elongation of very long chain fatty acids protein 7 [EC:2.3.1.199]"
+            }
+          ]
+        },
+        {
+          "name": "Unclassified",
+          "children": [
+            {
+              "name": "K10248  ELOVL3; elongation of very long chain fatty acids protein 3 [EC:2.3.1.199]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Polyketide synthase",
+      "children": [
+        {
+          "name": "Modular PKS",
+          "children": [
+            {
+              "name": "K10817  eryAI; 6-deoxyerythronolide-B synthase EryAI [EC:2.3.1.94]"
+            },
+            {
+              "name": "K04786  irp1, HMWP1; yersiniabactin nonribosomal peptide/polyketide synthase"
+            },
+            {
+              "name": "K04784  irp2, HMWP2; yersiniabactin nonribosomal peptide synthetase"
+            },
+            {
+              "name": "K11628  mas; mycocerosic acid synthase [EC:2.3.1.111]"
+            },
+            {
+              "name": "K12430  pks1_15; 4-hydroxyphenylalkanoate synthase [EC:2.3.1.261]"
+            },
+            {
+              "name": "K12431  pks2; phthioceranic/hydroxyphthioceranic acid synthase [EC:2.3.1.287]"
+            },
+            {
+              "name": "K12436  pks12; mycoketide-CoA synthase [EC:2.3.1.295]"
+            },
+            {
+              "name": "K12437  pks13; polyketide synthase 13"
+            },
+            {
+              "name": "K13611  pksJ, baeJ; bacillaene biosynthesis, polyketide synthase / nonribosomal peptide synthetase PksJ/BaeJ"
+            },
+            {
+              "name": "K13612  pksL, baeL; bacillaene polyketide synthase PksL/BaeL"
+            },
+            {
+              "name": "K13613  pksM, baeM; bacillaene polyketide synthase PksM/BaeM"
+            },
+            {
+              "name": "K13614  pksN, baeN; bacillaene biosynthesis, polyketide synthase / nonribosomal peptide synthetase PksN/BaeN"
+            },
+            {
+              "name": "K13615  pksR, baeR; bacillaene polyketide synthase PksR/BaeR"
+            },
+            {
+              "name": "K12440  ppsA; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase A [EC:2.3.1.292]"
+            },
+            {
+              "name": "K12441  ppsB; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase B [EC:2.3.1.292]"
+            },
+            {
+              "name": "K12442  ppsC; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase C [EC:2.3.1.292]"
+            },
+            {
+              "name": "K12443  ppsD; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase D [EC:2.3.1.292]"
+            },
+            {
+              "name": "K12444  ppsE; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase E [EC:2.3.1.292]"
+            }
+          ]
+        },
+        {
+          "name": "Component type",
+          "children": [
+            {
+              "name": "K05551  actI1, oxyA, tcmK, snoa1, aknB, mtmP; minimal PKS ketosynthase (KS/KS alpha) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+            },
+            {
+              "name": "K05552  actI2, oxyB, tcmL, snoa2, aknC, mtmK; minimal PKS chain-length factor (CLF/KS beta) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+            },
+            {
+              "name": "K05553  actI3, oxyC, tcmM, snoa3, aknD, mtmS; minimal PKS acyl carrier protein"
+            },
+            {
+              "name": "K12420  actIII, oxyJ, snoaD, aknA; ketoreductase [EC:1.1.1.-]"
+            },
+            {
+              "name": "K05554  actVII; aromatase [EC:4.2.1.-]"
+            },
+            {
+              "name": "K04790  mbtC; mycobactin polyketide synthetase MbtC"
+            },
+            {
+              "name": "K04791  mbtD; mycobactin polyketide synthetase MbtD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Acyl-CoA ligase",
+      "children": [
+        {
+          "name": "Short/medium chain acyl-CoA ligase",
+          "children": [
+            {
+              "name": "K01895  ACSS1_2, acs; acetyl-CoA synthetase [EC:6.2.1.1]"
+            },
+            {
+              "name": "K01908  ACSS3, prpE; propionyl-CoA synthetase [EC:6.2.1.17]"
+            },
+            {
+              "name": "K01907  AACS, acsA; acetoacetyl-CoA synthetase [EC:6.2.1.16]"
+            },
+            {
+              "name": "K23756  ACSM1, LAE; medium-chain acyl-CoA ligase / lipoate-activating enzyme [EC:6.2.1.2]"
+            },
+            {
+              "name": "K01896  ACSM; medium-chain acyl-CoA synthetase [EC:6.2.1.2]"
+            },
+            {
+              "name": "K23617  ACSF2; medium-chain acyl-CoA ligase, mitochondrial [EC:6.2.1.2]"
+            },
+            {
+              "name": "K01913  AAE7, ACN1; acetate/butyrate---CoA ligase [EC:6.2.1.1 6.2.1.2]"
+            },
+            {
+              "name": "K23618  AAE11_12; acyl-activating enzyme 11/12 [EC:6.2.1.2 6.2.1.-]"
+            },
+            {
+              "name": "K01905  acdA; acetate---CoA ligase (ADP-forming) subunit alpha [EC:6.2.1.13]"
+            },
+            {
+              "name": "K22224  acdB; acetate---CoA ligase (ADP-forming) subunit beta [EC:6.2.1.13]"
+            },
+            {
+              "name": "K24012  acdAB; acetate---CoA ligase (ADP-forming) [EC:6.2.1.13]"
+            },
+            {
+              "name": "K12507  fadK; acyl-CoA synthetase [EC:6.2.1.-]"
+            },
+            {
+              "name": "K13776  atuH; citronellyl-CoA synthetase [EC:6.2.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "Long/very long chain acyl-CoA ligase",
+          "children": [
+            {
+              "name": "K01897  ACSL, fadD; long-chain-fatty-acid---CoA ligase [EC:6.2.1.3]"
+            },
+            {
+              "name": "K15013  ACSBG; long-chain-fatty-acid---CoA ligase [EC:6.2.1.3]"
+            },
+            {
+              "name": "K03822  K03822; putative long chain acyl-CoA synthase [EC:6.2.1.-]"
+            },
+            {
+              "name": "K12429  fadD36; fatty acid CoA ligase FadD36"
+            },
+            {
+              "name": "K08745  SLC27A1_4, FATP1_4; solute carrier family 27 (fatty acid transporter), member 1/4 [EC:6.2.1.-]"
+            },
+            {
+              "name": "K08746  SLC27A2, FACVL1, FATP2; solute carrier family 27 (fatty acid transporter), member 2 [EC:6.2.1.- 6.2.1.3]"
+            },
+            {
+              "name": "K08772  SLC27A3, FATP3; solute carrier family 27 (fatty acid transporter), member 3 [EC:6.2.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "K12421  fadD9; fatty acid CoA ligase FadD9"
+            },
+            {
+              "name": "K12423  fadD21; fatty acid CoA ligase FadD21"
+            },
+            {
+              "name": "K00142  AASDH; acyl-CoA synthetase [EC:6.2.1.-]"
+            },
+            {
+              "name": "K00666  K00666; fatty-acyl-CoA synthase [EC:6.2.1.-]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Acyl-AMP ligase",
+      "children": [
+        {
+          "name": "Fatty acyl-AMP ligase (FAAL)",
+          "children": [
+            {
+              "name": "K12422  fadD10; medium/long-chain-fatty-acid---[acyl-carrier-protein] ligase FadD10 [EC:6.2.1.-]"
+            },
+            {
+              "name": "K12425  fadD23; long-chain fatty acid adenylase/transferase FadD23 [EC:6.2.1.57]"
+            },
+            {
+              "name": "K12426  fadD26; long-chain fatty acid adenylase/transferase FadD26 [EC:6.2.1.59]"
+            },
+            {
+              "name": "K12427  fadD28; long-chain fatty acid adenylyltransferase FadD28 [EC:6.2.1.49]"
+            },
+            {
+              "name": "K21059  fadD29; 4-hydroxyphenylalkanoate adenylyltransferase [EC:6.2.1.51]"
+            },
+            {
+              "name": "K12428  fadD32; fatty acyl-AMP ligase FadD32 [EC:6.2.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "Aryl-AMP ligase",
+          "children": [
+            {
+              "name": "K12424  fadD22; 4-hydroxybenzoate adenylyltransferase [EC:6.2.1.50]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phospholipid acyltransferase",
+      "children": [
+        {
+          "name": "GPAT",
+          "children": [
+            {
+              "name": "K00629  GPAT1_2; glycerol-3-phosphate O-acyltransferase 1/2 [EC:2.3.1.15]"
+            },
+            {
+              "name": "K13506  GPAT3_4, AGPAT9, AGPAT6; glycerol-3-phosphate O-acyltransferase 3/4 [EC:2.3.1.15]"
+            },
+            {
+              "name": "K13507  GAT; glycerol-3-phosphate O-acyltransferase / dihydroxyacetone phosphate acyltransferase [EC:2.3.1.15 2.3.1.42]"
+            },
+            {
+              "name": "K00630  ATS1; glycerol-3-phosphate O-acyltransferase [EC:2.3.1.15]"
+            },
+            {
+              "name": "K13508  GPAT; glycerol-3-phosphate acyltransferase [EC:2.3.1.15 2.3.1.198]"
+            },
+            {
+              "name": "K00631  plsB; glycerol-3-phosphate O-acyltransferase [EC:2.3.1.15]"
+            },
+            {
+              "name": "K03621  plsX; phosphate acyltransferase [EC:2.3.1.274]"
+            },
+            {
+              "name": "K08591  plsY; acyl phosphate:glycerol-3-phosphate acyltransferase [EC:2.3.1.275]"
+            }
+          ]
+        },
+        {
+          "name": "LPAAT/LPLAT",
+          "children": [
+            {
+              "name": "K13509  AGPAT1_2; lysophosphatidate acyltransferase [EC:2.3.1.51]"
+            },
+            {
+              "name": "K13699  ABHD5, CGI-58; abhydrolase domain-containing protein 5 [EC:2.3.1.51]"
+            },
+            {
+              "name": "K13513  LCLAT1, AGPAT8; lysocardiolipin and lysophospholipid acyltransferase [EC:2.3.1.- 2.3.1.51]"
+            },
+            {
+              "name": "K13511  TAZ; monolysocardiolipin acyltransferase [EC:2.3.1.-]"
+            },
+            {
+              "name": "K13517  MBOAT1_2; lysophospholipid acyltransferase 1/2 [EC:2.3.1.51 2.3.1.-]"
+            },
+            {
+              "name": "K13519  LPT1, ALE1; lysophospholipid acyltransferase [EC:2.3.1.51 2.3.1.23 2.3.1.-]"
+            },
+            {
+              "name": "K13523  AGPAT3_4; lysophosphatidic acid acyltransferase / lysophosphatidylinositol acyltransferase [EC:2.3.1.51 2.3.1.-]"
+            },
+            {
+              "name": "K00655  plsC; 1-acyl-sn-glycerol-3-phosphate acyltransferase [EC:2.3.1.51]"
+            },
+            {
+              "name": "K13510  LPCAT1_2; lysophosphatidylcholine acyltransferase / lyso-PAF acetyltransferase [EC:2.3.1.23 2.3.1.67]"
+            },
+            {
+              "name": "K13512  LPCAT4, AGPAT7; lysophospholipid acyltransferase [EC:2.3.1.23 2.3.1.-]"
+            },
+            {
+              "name": "K13514  LPGAT1; lysophosphatidylglycerol acyltransferase 1 [EC:2.3.1.-]"
+            },
+            {
+              "name": "K13515  LPCAT3, MBOAT5; lysophospholipid acyltransferase 5 [EC:2.3.1.23 2.3.1.-]"
+            },
+            {
+              "name": "K13516  MBOAT7; lysophospholipid acyltransferase 7 [EC:2.3.1.-]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Others",
+      "children": [
+        {
+          "name": "Multifunctional type",
+          "children": [
+            {
+              "name": "K12432  pks3_4; mycolipanoate synthase [EC:2.3.1.252]"
+            },
+            {
+              "name": "K12433  pks5; polyketide synthase 5"
+            },
+            {
+              "name": "K12434  pks7; polyketide synthase 7"
+            },
+            {
+              "name": "K12435  pks8; polyketide synthase 8"
+            },
+            {
+              "name": "K12439  pks17; polyketide synthase 17"
+            }
+          ]
+        },
+        {
+          "name": "Component type",
+          "children": [
+            {
+              "name": "K12445  K12445; trans enoyl reductase [EC:1.3.1.-]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

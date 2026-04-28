@@ -1,0 +1,2096 @@
+{
+  "name": "ko03009",
+  "children": [
+    {
+      "name": "Eukaryotic type",
+      "children": [
+        {
+          "name": "Sno RNPs",
+          "children": [
+            {
+              "name": "Box C/D snoRNPs",
+              "children": [
+                {
+                  "name": "K14563  NOP1, FBL; rRNA 2'-O-methyltransferase fibrillarin [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K14564  NOP56; nucleolar protein 56"
+                },
+                {
+                  "name": "K14565  NOP58; nucleolar protein 58"
+                },
+                {
+                  "name": "K12845  SNU13, NHP2L; U4/U6 small nuclear ribonucleoprotein SNU13"
+                },
+                {
+                  "name": "K27833  ZNHIT6; box C/D snoRNA protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Box H/ACA snoRNPs",
+              "children": [
+                {
+                  "name": "K11131  DKC1, NOLA4, CBF5; H/ACA ribonucleoprotein complex subunit 4 [EC:5.4.99.-]"
+                },
+                {
+                  "name": "K11128  GAR1, NOLA1; H/ACA ribonucleoprotein complex subunit 1"
+                },
+                {
+                  "name": "K11129  NHP2, NOLA2; H/ACA ribonucleoprotein complex subunit 2"
+                },
+                {
+                  "name": "K11130  NOP10, NOLA3; H/ACA ribonucleoprotein complex subunit 3"
+                },
+                {
+                  "name": "K14763  NAF1; H/ACA ribonucleoprotein complex non-core subunit NAF1"
+                },
+                {
+                  "name": "K14764  SHQ1; protein SHQ1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "90S particles",
+          "children": [
+            {
+              "name": "U3 small nucleolar RNA-associated proteins",
+              "children": [
+                {
+                  "name": "K14560  IMP3; U3 small nucleolar ribonucleoprotein protein IMP3"
+                },
+                {
+                  "name": "K14561  IMP4; U3 small nucleolar ribonucleoprotein protein IMP4"
+                },
+                {
+                  "name": "K14559  MPP10; U3 small nucleolar RNA-associated protein MPP10"
+                },
+                {
+                  "name": "K14765  NGDN, LCP5; U3 small nucleolar ribonucleoprotein protein LCP5"
+                },
+                {
+                  "name": "K14545  RRP7; ribosomal RNA-processing protein 7"
+                },
+                {
+                  "name": "K14558  PWP2, UTP1; periodic tryptophan protein 2"
+                },
+                {
+                  "name": "K14766  NOP14, UTP2; nucleolar protein 14"
+                },
+                {
+                  "name": "K14767  UTP3, SAS10; U3 small nucleolar RNA-associated protein 3"
+                },
+                {
+                  "name": "K14548  UTP4, CIRH1A; U3 small nucleolar RNA-associated protein 4"
+                },
+                {
+                  "name": "K14546  UTP5, WDR43; U3 small nucleolar RNA-associated protein 5"
+                },
+                {
+                  "name": "K14557  UTP6; U3 small nucleolar RNA-associated protein 6"
+                },
+                {
+                  "name": "K14768  UTP7, WDR46; U3 small nucleolar RNA-associated protein 7"
+                },
+                {
+                  "name": "K14547  UTP8; U3 small nucleolar RNA-associated protein 8"
+                },
+                {
+                  "name": "K14551  UTP9; U3 small nucleolar RNA-associated protein 9"
+                },
+                {
+                  "name": "K14550  UTP10, HEATR1; U3 small nucleolar RNA-associated protein 10"
+                },
+                {
+                  "name": "K14769  UTP11; U3 small nucleolar RNA-associated protein 11"
+                },
+                {
+                  "name": "K14556  DIP2, UTP12, WDR3; U3 small nucleolar RNA-associated protein 12"
+                },
+                {
+                  "name": "K14555  UTP13, TBL3; U3 small nucleolar RNA-associated protein 13"
+                },
+                {
+                  "name": "K14567  UTP14; U3 small nucleolar RNA-associated protein 14"
+                },
+                {
+                  "name": "K14549  UTP15; U3 small nucleolar RNA-associated protein 15"
+                },
+                {
+                  "name": "K27687  NOL7; U3 small nucleolar RNA-associated protein NOL7"
+                },
+                {
+                  "name": "K14770  BUD21, UTP16; U3 small nucleolar RNA-associated protein 16"
+                },
+                {
+                  "name": "K14552  NAN1, UTP17, WDR75; NET1-associated nuclear protein 1 (U3 small nucleolar RNA-associated protein 17)"
+                },
+                {
+                  "name": "K14553  UTP18; U3 small nucleolar RNA-associated protein 18"
+                },
+                {
+                  "name": "K14771  NOC4, UTP19; U3 small nucleolar RNA-associated protein 19"
+                },
+                {
+                  "name": "K14772  UTP20; U3 small nucleolar RNA-associated protein 20"
+                },
+                {
+                  "name": "K14554  UTP21, WDR36; U3 small nucleolar RNA-associated protein 21"
+                },
+                {
+                  "name": "K14544  UTP22, NOL6; U3 small nucleolar RNA-associated protein 22"
+                },
+                {
+                  "name": "K14773  UTP23; U3 small nucleolar RNA-associated protein 23"
+                },
+                {
+                  "name": "K14566  UTP24, FCF1; U3 small nucleolar RNA-associated protein 24"
+                },
+                {
+                  "name": "K14774  UTP25, DEF; U3 small nucleolar RNA-associated protein 25"
+                },
+                {
+                  "name": "K14775  UTP30, RSL1D1; ribosome biogenesis protein UTP30"
+                }
+              ]
+            },
+            {
+              "name": "Helicases",
+              "children": [
+                {
+                  "name": "K14776  DDX10, DBP4; ATP-dependent RNA helicase DDX10/DBP4 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K13179  DDX18, HAS1; ATP-dependent RNA helicase DDX18/HAS1 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14777  DDX47, RRP3; ATP-dependent RNA helicase DDX47/RRP3 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14778  DDX49, DBP8; ATP-dependent RNA helicase DDX49/DBP8 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14779  DDX52, ROK1; ATP-dependent RNA helicase DDX52/ROK1 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K12820  DHX15, PRP43; pre-mRNA-splicing factor ATP-dependent RNA helicase DHX15/PRP43 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K14780  DHX37, DHR1; ATP-dependent RNA helicase DHX37/DHR1 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K14781  DHR2; ATP-dependent RNA helicase DHR2 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K13025  EIF4A3, FAL1; ATP-dependent RNA helicase [EC:5.6.2.7]"
+                }
+              ]
+            },
+            {
+              "name": "GTPase",
+              "children": [
+                {
+                  "name": "K14569  BMS1; ribosome biogenesis protein BMS1"
+                }
+              ]
+            },
+            {
+              "name": "RNase",
+              "children": [
+                {
+                  "name": "K03685  rnc, DROSHA, RNT1; ribonuclease III [EC:3.1.26.3]"
+                },
+                {
+                  "name": "K18327  REXO4, REX4; RNA exonuclease 4 [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K18328  DBR1; lariat debranching enzyme [EC:3.1.-.-]"
+                }
+              ]
+            },
+            {
+              "name": "Kinase",
+              "children": [
+                {
+                  "name": "K03097  CSNK2A; casein kinase II subunit alpha [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K03115  CSNK2B; casein kinase II subunit beta"
+                }
+              ]
+            },
+            {
+              "name": "Other 90S particles",
+              "children": [
+                {
+                  "name": "K14782  AATF, BFR2; protein AATF/BFR2"
+                },
+                {
+                  "name": "K14783  CIC1, NSA3; proteasome-interacting protein CIC1"
+                },
+                {
+                  "name": "K14784  CMS1; protein CMS1"
+                },
+                {
+                  "name": "K14568  EMG1, NEP1; rRNA small subunit pseudouridine methyltransferase Nep1 [EC:2.1.1.260]"
+                },
+                {
+                  "name": "K14785  ESF2, ABT1; ESF2/ABP1 family protein"
+                },
+                {
+                  "name": "K14786  KRI1; protein KRI1"
+                },
+                {
+                  "name": "K06961  KRR1; ribosomal RNA assembly protein"
+                },
+                {
+                  "name": "K14787  MRD1, RBM19; multiple RNA-binding domain-containing protein 1"
+                },
+                {
+                  "name": "K14521  NAT10, KRE33; N-acetyltransferase 10 [EC:2.3.1.-]"
+                },
+                {
+                  "name": "K11294  NCL, NSR1; nucleolin"
+                },
+                {
+                  "name": "K14788  NOL10, ENP2; ribosome biogenesis protein ENP2"
+                },
+                {
+                  "name": "K14789  NOP6; nucleolar protein 6"
+                },
+                {
+                  "name": "K14790  NOP9; nucleolar protein 9"
+                },
+                {
+                  "name": "K11135  PINX1; Pin2-interacting protein X1"
+                },
+                {
+                  "name": "K14791  PWP1; periodic tryptophan protein 1"
+                },
+                {
+                  "name": "K11108  RCL1; RNA 3'-terminal phosphate cyclase-like protein"
+                },
+                {
+                  "name": "K14792  RRP5, PDCD11; rRNA biogenesis protein RRP5"
+                },
+                {
+                  "name": "K14793  RRP9; ribosomal RNA-processing protein 9"
+                },
+                {
+                  "name": "K14794  RRP12; ribosomal RNA-processing protein 12"
+                },
+                {
+                  "name": "K14795  RRP36; ribosomal RNA-processing protein 36"
+                },
+                {
+                  "name": "K14562  TCOF1; Treacher Collins syndrome protein"
+                },
+                {
+                  "name": "K14796  TMA23; nucleolar protein TMA23"
+                },
+                {
+                  "name": "K11806  DCAF13, WDSOF1; DDB1- and CUL4-associated factor 13"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pre-40S particles",
+          "children": [
+            {
+              "name": "Kinases",
+              "children": [
+                {
+                  "name": "K14758  HRR25; casein kinase I homolog HRR25 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K07178  RIOK1; RIO kinase 1 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K07179  RIOK2; RIO kinase 2 [EC:2.7.11.1]"
+                }
+              ]
+            },
+            {
+              "name": "Export and cytoplasmic maturation factors",
+              "children": [
+                {
+                  "name": "K14191  DIM1; 18S rRNA (adenine1779-N6/adenine1780-N6)-dimethyltransferase [EC:2.1.1.183]"
+                },
+                {
+                  "name": "K19306  BUD23; 18S rRNA (guanine1575-N7)-methyltransferase [EC:2.1.1.309]"
+                },
+                {
+                  "name": "K24418  METTL5; rRNA N6-adenosine-methyltransferase METTL5"
+                },
+                {
+                  "name": "K14797  ENP1, BYSL; essential nuclear protein 1"
+                },
+                {
+                  "name": "K14798  LTV1; protein LTV1"
+                },
+                {
+                  "name": "K11883  NOB1; RNA-binding protein NOB1"
+                },
+                {
+                  "name": "K11884  PNO1, DIM2; RNA-binding protein PNO1"
+                },
+                {
+                  "name": "K07936  RAN; GTP-binding nuclear protein Ran"
+                },
+                {
+                  "name": "K18532  AK6, FAP7; adenylate kinase [EC:2.7.4.3]"
+                },
+                {
+                  "name": "K14799  TSR1; pre-rRNA-processing protein TSR1"
+                },
+                {
+                  "name": "K14800  TSR2; pre-rRNA-processing protein TSR2"
+                },
+                {
+                  "name": "K09140  TSR3; rRNA small subunit aminocarboxypropyltransferase [EC:2.5.1.157]"
+                },
+                {
+                  "name": "K14801  TSR4; pre-rRNA-processing protein TSR4"
+                },
+                {
+                  "name": "K26536  RPS19BP1; active regulator of SIRT1"
+                },
+                {
+                  "name": "K14290  XPO1, CRM1; exportin-1"
+                },
+                {
+                  "name": "K14293  KPNB1, IPO1; importin subunit beta-1"
+                },
+                {
+                  "name": "K18752  TNPO1, IPO2, KPNB2; transportin-1"
+                },
+                {
+                  "name": "K20221  IPO4, RANBP4; importin-4"
+                },
+                {
+                  "name": "K20222  IPO5, KPNB3, RANBP5; importin-5"
+                },
+                {
+                  "name": "K20223  IPO7, RANBP7; importin-7"
+                },
+                {
+                  "name": "K20224  IPO9, RANBP9; importin-9"
+                }
+              ]
+            },
+            {
+              "name": "Other pre-40S particles",
+              "children": [
+                {
+                  "name": "K14802  DRS2, ATP8A; phospholipid-transporting ATPase [EC:7.6.2.1]"
+                },
+                {
+                  "name": "K03245  EIF3J; translation initiation factor 3 subunit J"
+                },
+                {
+                  "name": "K14803  PTC2_3; protein phosphatase PTC2/3 [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K14804  SLX9; ribosome biogenesis protein SLX9"
+                },
+                {
+                  "name": "K06174  ABCE1, Rli1; ATP-binding cassette, sub-family E, member 1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pre-60S particles",
+          "children": [
+            {
+              "name": "Helicases",
+              "children": [
+                {
+                  "name": "K12823  DDX5, DBP2; ATP-dependent RNA helicase DDX5/DBP2 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K13179  DDX18, HAS1; ATP-dependent RNA helicase DDX18/HAS1 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K16911  DDX21; ATP-dependent RNA helicase DDX21 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14805  DDX24, MAK5; ATP-dependent RNA helicase DDX24/MAK5 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K13181  DDX27, DRS1; ATP-dependent RNA helicase DDX27 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14806  DDX31, DBP7; ATP-dependent RNA helicase DDX31/DBP7 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14807  DDX51, DBP6; ATP-dependent RNA helicase DDX51/DBP6 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14808  DDX54, DBP10; ATP-dependent RNA helicase DDX54/DBP10 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14809  DDX55, SPB4; ATP-dependent RNA helicase DDX55/SPB4 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14810  DDX56, DBP9; ATP-dependent RNA helicase DDX56/DBP9 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K14811  DBP3; ATP-dependent RNA helicase DBP3 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K12598  MTR4, SKIV2L2; ATP-dependent RNA helicase DOB1 [EC:5.6.2.6]"
+                }
+              ]
+            },
+            {
+              "name": "GTPases",
+              "children": [
+                {
+                  "name": "K14538  NUG1, GNL3; nuclear GTP-binding protein"
+                },
+                {
+                  "name": "K14537  NUG2, GNL2; nuclear GTP-binding protein"
+                },
+                {
+                  "name": "K06943  NOG1; nucleolar GTP-binding protein"
+                },
+                {
+                  "name": "K14539  LSG1; large subunit GTPase 1 [EC:3.6.1.-]"
+                },
+                {
+                  "name": "K14536  RIA1; ribosome assembly protein 1 [EC:3.6.5.-]"
+                }
+              ]
+            },
+            {
+              "name": "RNases",
+              "children": [
+                {
+                  "name": "K14812  NGL2; RNA exonuclease NGL2 [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K13288  orn, REX2, REXO2; oligoribonuclease [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K14570  REX1, REXO1, REXO5, RNH70; RNA exonuclease [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K12618  XRN1, SEP1, KEM1; 5'-3' exoribonuclease 1 [EC:3.1.13.-]"
+                },
+                {
+                  "name": "K12619  XRN2, RAT1; 5'-3' exoribonuclease 2 [EC:3.1.13.-]"
+                },
+                {
+                  "name": "RNase MRP",
+                  "children": [
+                    {
+                      "name": "K01164  POP1; ribonuclease P/MRP protein subunit POP1 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14522  POP3; ribonuclease P/MRP protein subunit POP3 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K03538  POP4, RPP29; ribonuclease P protein subunit POP4 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K03537  POP5; ribonuclease P/MRP protein subunit POP5 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14524  POP6; ribonuclease P/MRP protein subunit POP6 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14526  POP7, RPP2; ribonuclease P/MRP protein subunit POP7 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14528  POP8; ribonuclease P/MRP protein subunit POP8 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K03539  RPP1, RPP30; ribonuclease P/MRP protein subunit RPP1 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14527  RPP20, POP7; ribonuclease P/MRP protein subunit RPP20 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14525  RPP25; ribonucleases P/MRP protein subunit RPP25 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14523  RPP38; ribonucleases P/MRP protein subunit RPP38 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14530  RPP40; ribonucleases P/MRP protein subunit RPP40 [EC:3.1.26.5]"
+                    },
+                    {
+                      "name": "K14532  RMP1; ribonuclease MRP protein subunit RMP1"
+                    },
+                    {
+                      "name": "K14531  SNM1; ribonuclease MRP protein subunit SNM1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Kinases",
+              "children": [
+                {
+                  "name": "K14758  HRR25; casein kinase I homolog HRR25 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K06947  GRC3, NOL9; polynucleotide 5'-hydroxyl-kinase GRC3/NOL9 [EC:2.7.1.-]"
+                }
+              ]
+            },
+            {
+              "name": "Export and cytoplasmic maturation factors",
+              "children": [
+                {
+                  "name": "K06185  ABCF2; ATP-binding cassette, subfamily F, member 2"
+                },
+                {
+                  "name": "K14813  ARX1; metalloprotease ARX1 [EC:3.-.-.-]"
+                },
+                {
+                  "name": "K14814  ALB1; ribosome biogenesis protein ALB1"
+                },
+                {
+                  "name": "K09506  DNAJA5; DnaJ homolog subfamily A member 5"
+                },
+                {
+                  "name": "K03264  EIF6; translation initiation factor 6"
+                },
+                {
+                  "name": "K03283  HSPA1_6_8; heat shock 70kDa protein 1/6/8"
+                },
+                {
+                  "name": "K26598  HSPA2; heat shock 70kDa protein 2"
+                },
+                {
+                  "name": "K14815  MRT4; mRNA turnover protein 4"
+                },
+                {
+                  "name": "K14543  MTR2; mRNA transport regulator MTR2"
+                },
+                {
+                  "name": "K07562  NMD3; 60S ribosomal export protein NMD3"
+                },
+                {
+                  "name": "K14284  NXF, TAP, MEX67; nuclear RNA export factor"
+                },
+                {
+                  "name": "K14285  NXT1_2, P15; NTF2-related export protein 1/2"
+                },
+                {
+                  "name": "K07936  RAN; GTP-binding nuclear protein Ran"
+                },
+                {
+                  "name": "K14816  REI1; pre-60S factor REI1"
+                },
+                {
+                  "name": "K14817  LOC1; 60S ribosomal subunit assembly/export protein LOC1"
+                },
+                {
+                  "name": "K14574  SDO1, SBDS; ribosome maturation protein SDO1"
+                },
+                {
+                  "name": "K14818  SQT1; ribosome assembly protein SQT1"
+                },
+                {
+                  "name": "K14290  XPO1, CRM1; exportin-1"
+                },
+                {
+                  "name": "K14293  KPNB1, IPO1; importin subunit beta-1"
+                },
+                {
+                  "name": "K18752  TNPO1, IPO2, KPNB2; transportin-1"
+                },
+                {
+                  "name": "K20221  IPO4, RANBP4; importin-4"
+                },
+                {
+                  "name": "K20222  IPO5, KPNB3, RANBP5; importin-5"
+                },
+                {
+                  "name": "K20223  IPO7, RANBP7; importin-7"
+                },
+                {
+                  "name": "K20224  IPO9, RANBP9; importin-9"
+                },
+                {
+                  "name": "K14819  DUSP12, YVH1; dual specificity phosphatase 12 [EC:3.1.3.16 3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "55LCC heterohexameric ATPase complex",
+              "children": [
+                {
+                  "name": "K14575  AFG2A, DRG1, SPATA5; ATPase family gene 2 protein homolog A"
+                },
+                {
+                  "name": "K26051  AFG2B, SPATA5L1; ATPase family gene 2 protein homolog B [EC:5.6.1.10]"
+                },
+                {
+                  "name": "K26052  CINP; cyclin-dependent kinase 2-interacting protein"
+                },
+                {
+                  "name": "K26053  AIRIM, C1ORF109; AFG2-interacting ribosome maturation factor"
+                }
+              ]
+            },
+            {
+              "name": "5-FMC complex",
+              "children": [
+                {
+                  "name": "K14827  IPI1, TEX10; pre-rRNA-processing protein IPI1"
+                },
+                {
+                  "name": "K14829  IPI3; pre-rRNA-processing protein IPI3"
+                },
+                {
+                  "name": "K16912  LAS1; ribosomal biogenesis protein LAS1"
+                },
+                {
+                  "name": "K16913  PELP1, MNAR; proline-, glutamic acid- and leucine-rich protein 1"
+                },
+                {
+                  "name": "K08593  SENP3; sentrin-specific protease 3 [EC:3.4.22.68]"
+                }
+              ]
+            },
+            {
+              "name": "Ribosome quality control proteins",
+              "children": [
+                {
+                  "name": "K22377  LTN1; E3 ubiquitin-protein ligase listerin [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K24970  TCF25, RQC1; transcription factor 25"
+                },
+                {
+                  "name": "K24971  NEMF, RQC2; nuclear export mediator factor NEMF"
+                },
+                {
+                  "name": "K13525  VCP, CDC48; transitional endoplasmic reticulum ATPase"
+                },
+                {
+                  "name": "K14015  NPLOC4, NPL4; nuclear protein localization protein 4"
+                },
+                {
+                  "name": "K14016  UFD1; ubiquitin fusion degradation protein 1"
+                },
+                {
+                  "name": "K05969  PTRHD1; peptidyl-tRNA hydrolase PTRHD1 [EC:3.1.1.29]"
+                },
+                {
+                  "name": "K26089  ANKZF1, VMS1; ankyrin repeat and zinc finger domain-containing protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Other pre-60S particles",
+              "children": [
+                {
+                  "name": "K14820  BRX1, BRIX1; ribosome biogenesis protein BRX1"
+                },
+                {
+                  "name": "K14821  BUD20; bud site selection protein 20"
+                },
+                {
+                  "name": "K14783  CIC1, NSA3; proteasome-interacting protein CIC1"
+                },
+                {
+                  "name": "K14822  CGR1; rRNA-processing protein CGR1"
+                },
+                {
+                  "name": "K14823  EBP2, EBNA1BP2; rRNA-processing protein EBP2"
+                },
+                {
+                  "name": "K14824  ERB1, BOP1; ribosome biogenesis protein ERB1"
+                },
+                {
+                  "name": "K14825  TMED5, ERP2, ERP4; p24 family protein gamma-2"
+                },
+                {
+                  "name": "K14826  FPR3_4; FK506-binding nuclear protein [EC:5.2.1.8]"
+                },
+                {
+                  "name": "K14830  MAK11, PAK1IP1; protein MAK11"
+                },
+                {
+                  "name": "K14831  MAK16; protein MAK16"
+                },
+                {
+                  "name": "K14832  MAK21, NOC1, CEBPZ; ribosome biogenesis protein MAK21"
+                },
+                {
+                  "name": "K14572  MDN1, REA1; midasin"
+                },
+                {
+                  "name": "K07565  NIP7; 60S ribosome subunit biogenesis protein NIP7"
+                },
+                {
+                  "name": "K14833  NOC2; nucleolar complex protein 2"
+                },
+                {
+                  "name": "K14834  NOC3; nucleolar complex protein 3"
+                },
+                {
+                  "name": "K14835  NOP2; 25S rRNA (cytosine2870-C5)-methyltransferase [EC:2.1.1.310]"
+                },
+                {
+                  "name": "K14573  NOP4, RBM28; nucleolar protein 4"
+                },
+                {
+                  "name": "K14836  NOP8, NOL8, NOP132; nucleolar protein 8"
+                },
+                {
+                  "name": "K14837  NOP12; nucleolar protein 12"
+                },
+                {
+                  "name": "K14838  NOP15; nucleolar protein 15"
+                },
+                {
+                  "name": "K14839  NOP16; nucleolar protein 16"
+                },
+                {
+                  "name": "K14840  NOP53, GLTSCR2; nucleolar protein 53"
+                },
+                {
+                  "name": "K14841  NSA1, WDR74; ribosome biogenesis protein NSA1"
+                },
+                {
+                  "name": "K14842  NSA2; ribosome biogenesis protein NSA2"
+                },
+                {
+                  "name": "K14843  PES1, NOP7; pescadillo"
+                },
+                {
+                  "name": "K14844  PUF6; pumilio homology domain family member 6"
+                },
+                {
+                  "name": "K14791  PWP1; periodic tryptophan protein 1"
+                },
+                {
+                  "name": "K14845  RAI1, DOM3Z; RAT1-interacting protein"
+                },
+                {
+                  "name": "K16914  RIOX1, NO66; protein-L-histidine (3S)-3-hydroxylase / [histone H3]-trimethyl-L-lysine4/36 demethylase [EC:1.14.11.79 1.14.11.67 1.14.11.69]"
+                },
+                {
+                  "name": "K21760  RIOX2, MINA; protein-L-histidine (3S)-3-hydroxylase / [histone H3]-trimethyl-L-lysine9 demethylase [EC:1.14.11.79 1.14.11.66]"
+                },
+                {
+                  "name": "K14828  RIX1, IPI2; pre-rRNA-processing protein RIX1"
+                },
+                {
+                  "name": "K14571  RIX7, NVL; ribosome biogenesis ATPase"
+                },
+                {
+                  "name": "K14846  RPF1; ribosome production factor 1"
+                },
+                {
+                  "name": "K14847  RPF2; ribosome production factor 2"
+                },
+                {
+                  "name": "K14848  RRB1, GRWD1; ribosome assembly protein RRB1"
+                },
+                {
+                  "name": "K14849  RRP1; ribosomal RNA-processing protein 1"
+                },
+                {
+                  "name": "K14850  RRP8; ribosomal RNA-processing protein 8 [EC:2.1.1.287]"
+                },
+                {
+                  "name": "K14794  RRP12; ribosomal RNA-processing protein 12"
+                },
+                {
+                  "name": "K14851  RRP17, NOL12; ribosomal RNA-processing protein 17"
+                },
+                {
+                  "name": "K14852  RRS1; regulator of ribosome biosynthesis"
+                },
+                {
+                  "name": "K14853  RSA1; ribosome assembly protein 1"
+                },
+                {
+                  "name": "K14854  RSA3; ribosome assembly protein 3"
+                },
+                {
+                  "name": "K14855  RSA4, NLE1; ribosome assembly protein 4"
+                },
+                {
+                  "name": "K14856  SDA1, SDAD1; protein SDA1"
+                },
+                {
+                  "name": "K14857  SPB1, FTSJ3; AdoMet-dependent rRNA methyltransferase SPB1 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K14858  SRD1; pre-rRNA-processing protein SRD1"
+                },
+                {
+                  "name": "K14859  SSF1_2; ribosome biogenesis protein SSF1/2"
+                },
+                {
+                  "name": "K14860  TMA16; translation machinery-associated protein 16"
+                },
+                {
+                  "name": "K14861  URB1; nucleolar pre-ribosomal-associated protein 1"
+                },
+                {
+                  "name": "K14862  URB2; nucleolar pre-ribosomal-associated protein 2"
+                },
+                {
+                  "name": "K14863  WDR12, YTM1; ribosome biogenesis protein"
+                },
+                {
+                  "name": "K23308  NUFIP1; nuclear fragile X mental retardation-interacting protein 1"
+                },
+                {
+                  "name": "K23309  ZNHIT3; zinc finger HIT domain-containing protein 3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Other ribosome biogenesis factors",
+          "children": [
+            {
+              "name": "K15262  BCP1, BCCIP; protein BCP1"
+            },
+            {
+              "name": "K15263  LYER; cell growth-regulating nucleolar protein"
+            },
+            {
+              "name": "K21970  NSUN4; 5-methylcytosine rRNA methyltransferase NSUN4 [EC:2.1.1.-]"
+            },
+            {
+              "name": "K15264  NSUN5, WBSCR20, RCM1; 25S rRNA (cytosine2278-C5)-methyltransferase [EC:2.1.1.311]"
+            },
+            {
+              "name": "K15266  TFB1M; dimethyladenosine transferase 1, mitochondrial [EC:2.1.1.-]"
+            },
+            {
+              "name": "K15507  MRM1, PET56; 21S rRNA (GM2251-2'-O)-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K15508  MRM2; 21S rRNA (uridine2791-2'-O)-methyltransferase [EC:2.1.1.168]"
+            },
+            {
+              "name": "K18849  BMT2; 25S rRNA (adenine2142-N1)-methyltransferase [EC:2.1.1.286]"
+            },
+            {
+              "name": "K19307  BMT5; 25S rRNA (uracil2634-N3)-methyltransferase [EC:2.1.1.313]"
+            },
+            {
+              "name": "K19308  BMT6; 25S rRNA (uracil2843-N3)-methyltransferase [EC:2.1.1.312]"
+            },
+            {
+              "name": "K20095  RNMTL1; 16S rRNA (guanosine(1370)-2'-O)-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K25177  ZCCHC4; rRNA N6-adenosine-methyltransferase ZCCHC4 [EC:2.1.1.-]"
+            },
+            {
+              "name": "K20096  DDX28; ATP-dependent RNA helicase DDX28 [EC:5.6.2.7]"
+            },
+            {
+              "name": "K17820  DHX33; ATP-dependent RNA helicase DHX33 [EC:5.6.2.6]"
+            },
+            {
+              "name": "K19036  IGHMBP2; ATP-dependent RNA/DNA helicase IGHMBP2 [EC:5.6.2.5 5.6.2.3]"
+            },
+            {
+              "name": "K12579  ISG20; interferon-stimulated gene 20 kDa protein [EC:3.1.13.1]"
+            },
+            {
+              "name": "K18329  ISG20L2; interferon-stimulated 20 kDa exonuclease-like 2 [EC:3.1.-.-]"
+            },
+            {
+              "name": "K10277  KDM8, JMJD5; [protein]-arginine 3-hydroxylase / protease [EC:1.14.11.73 3.4.-.-]"
+            },
+            {
+              "name": "K23310  PHF6; PHD finger protein 6"
+            },
+            {
+              "name": "K24445  SLFN14; protein SLFN14 [EC:3.1.-.-]"
+            },
+            {
+              "name": "K03595  era, ERAL1; GTPase"
+            },
+            {
+              "name": "K26142  NOPCHAP1; NOP protein chaperone 1"
+            },
+            {
+              "name": "K26736  PA2G4, EBP1; ERBB-3 binding protein"
+            },
+            {
+              "name": "K27906  METTL17, RSM22; ribosome assembly protein METTL17/RSM22, mitochondrial"
+            },
+            {
+              "name": "K19828  MTG1; mitochondrial GTPase 1"
+            },
+            {
+              "name": "K03979  obgE, cgtA, MTG2; GTPase [EC:3.6.5.-]"
+            },
+            {
+              "name": "K19829  GEP3, MTG3; genetic interactor of prohibitins 3, mitochondrial"
+            },
+            {
+              "name": "K19832  NOA1; nitric oxide-associated protein 1"
+            },
+            {
+              "name": "K13427  NOA1; nitric-oxide synthase, plant [EC:1.14.13.39]"
+            },
+            {
+              "name": "K28430  PSRP1; ribosome-binding factor PSRP1"
+            },
+            {
+              "name": "K15265  PUS5; 21S rRNA pseudouridine2819 synthase [EC:5.4.99.43]"
+            },
+            {
+              "name": "K15267  MTEF1; mitochondrial transcription factor 1"
+            },
+            {
+              "name": "K18803  HPM1; protein-histidine N-methyltransferase [EC:2.1.1.85]"
+            },
+            {
+              "name": "K27349  RKM2; ribosomal lysine N-methyltransferase 2 [EC:2.1.1.-]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prokaryotic type",
+      "children": [
+        {
+          "name": "Sno RNPs",
+          "children": [
+            {
+              "name": "Box C/D snoRNPs",
+              "children": [
+                {
+                  "name": "K14564  NOP56; nucleolar protein 56"
+                },
+                {
+                  "name": "K04795  flpA; fibrillarin-like pre-rRNA processing protein"
+                },
+                {
+                  "name": "K02936  RP-L7Ae, RPL7A; large subunit ribosomal protein L7Ae"
+                }
+              ]
+            },
+            {
+              "name": "Box H/ACA snoRNPs",
+              "children": [
+                {
+                  "name": "K11131  DKC1, NOLA4, CBF5; H/ACA ribonucleoprotein complex subunit 4 [EC:5.4.99.-]"
+                },
+                {
+                  "name": "K07569  gar1; RNA-binding protein"
+                },
+                {
+                  "name": "K11130  NOP10, NOLA3; H/ACA ribonucleoprotein complex subunit 3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rRNA transcription factors",
+          "children": [
+            {
+              "name": "K06204  dksA; RNA polymerase-binding transcription factor"
+            },
+            {
+              "name": "K02600  nusA; transcription termination/antitermination protein NusA"
+            },
+            {
+              "name": "K03625  nusB; transcription antitermination protein NusB"
+            },
+            {
+              "name": "K02601  nusG; transcription termination/antitermination protein NusG"
+            }
+          ]
+        },
+        {
+          "name": "rRNA modification factors",
+          "children": [
+            {
+              "name": "16S rRNA modification factors",
+              "children": [
+                {
+                  "name": "K06183  rsuA; 16S rRNA pseudouridine516 synthase [EC:5.4.99.19]"
+                },
+                {
+                  "name": "K02528  ksgA; 16S rRNA (adenine1518-N6/adenine1519-N6)-dimethyltransferase [EC:2.1.1.182]"
+                },
+                {
+                  "name": "K03500  rsmB, sun; 16S rRNA (cytosine967-C5)-methyltransferase [EC:2.1.1.176]"
+                },
+                {
+                  "name": "K00564  rsmC; 16S rRNA (guanine1207-N2)-methyltransferase [EC:2.1.1.172]"
+                },
+                {
+                  "name": "K08316  rsmD; 16S rRNA (guanine966-N2)-methyltransferase [EC:2.1.1.171]"
+                },
+                {
+                  "name": "K09761  rsmE; 16S rRNA (uracil1498-N3)-methyltransferase [EC:2.1.1.193]"
+                },
+                {
+                  "name": "K11392  rsmF; 16S rRNA (cytosine1407-C5)-methyltransferase [EC:2.1.1.178]"
+                },
+                {
+                  "name": "K03501  gidB, rsmG; 16S rRNA (guanine527-N7)-methyltransferase [EC:2.1.1.170]"
+                },
+                {
+                  "name": "K03438  mraW, rsmH; 16S rRNA (cytosine1402-N4)-methyltransferase [EC:2.1.1.199]"
+                },
+                {
+                  "name": "K07056  rsmI; 16S rRNA (cytidine1402-2'-O)-methyltransferase [EC:2.1.1.198]"
+                },
+                {
+                  "name": "K15984  rsmJ; 16S rRNA (guanine1516-N2)-methyltransferase [EC:2.1.1.242]"
+                },
+                {
+                  "name": "K18845  rmt, armA; 16S rRNA (guanine(1405)-N(7))-methyltransferase [EC:2.1.1.179]"
+                },
+                {
+                  "name": "K18846  npmA; 16S rRNA (adenine(1408)-N(1))-methyltransferase [EC:2.1.1.180]"
+                },
+                {
+                  "name": "K06442  tlyA; 23S rRNA (cytidine1920-2'-O)/16S rRNA (cytidine1409-2'-O)-methyltransferase [EC:2.1.1.226 2.1.1.227]"
+                }
+              ]
+            },
+            {
+              "name": "23S rRNA modification factors",
+              "children": [
+                {
+                  "name": "K00563  rlmA1; 23S rRNA (guanine745-N1)-methyltransferase [EC:2.1.1.187]"
+                },
+                {
+                  "name": "K14336  rlmA2; 23S rRNA (guanine748-N1)-methyltransferase [EC:2.1.1.188]"
+                },
+                {
+                  "name": "K03218  rlmB; 23S rRNA (guanosine2251-2'-O)-methyltransferase [EC:2.1.1.185]"
+                },
+                {
+                  "name": "K02427  rlmE, rrmJ, ftsJ; 23S rRNA (uridine2552-2'-O)-methyltransferase [EC:2.1.1.166]"
+                },
+                {
+                  "name": "K06970  rlmF; 23S rRNA (adenine1618-N6)-methyltransferase [EC:2.1.1.181]"
+                },
+                {
+                  "name": "K11391  rlmG; 23S rRNA (guanine1835-N2)-methyltransferase [EC:2.1.1.174]"
+                },
+                {
+                  "name": "K00783  rlmH; 23S rRNA (pseudouridine1915-N3)-methyltransferase [EC:2.1.1.177]"
+                },
+                {
+                  "name": "K06969  rlmI; 23S rRNA (cytosine1962-C5)-methyltransferase [EC:2.1.1.191]"
+                },
+                {
+                  "name": "K07115  rlmJ; 23S rRNA (adenine2030-N6)-methyltransferase [EC:2.1.1.266]"
+                },
+                {
+                  "name": "K25136  rlmK; 23S rRNA (guanine2069-N7)-methyltransferase [EC:2.1.1.264]"
+                },
+                {
+                  "name": "K25137  rlmL; 23S rRNA (guanine2445-N2)-methyltransferase [EC:2.1.1.173]"
+                },
+                {
+                  "name": "K12297  rlmKL; 23S rRNA (guanine2069-N7)-methyltransferase / 23S rRNA (guanine2445-N2)-methyltransferase [EC:2.1.1.264 2.1.1.173]"
+                },
+                {
+                  "name": "K06968  rlmM; 23S rRNA (cytidine2498-2'-O)-methyltransferase [EC:2.1.1.186]"
+                },
+                {
+                  "name": "K06941  rlmN; 23S rRNA (adenine2503-C2)-methyltransferase [EC:2.1.1.192]"
+                },
+                {
+                  "name": "K15632  cfr; 23S rRNA (adenine-C8)-methyltransferase [EC:2.1.1.224]"
+                },
+                {
+                  "name": "K05926  nhs; 23S rRNA (adenosine1067-2'-O)-methyltransferase [EC:2.1.1.230]"
+                },
+                {
+                  "name": "K06442  tlyA; 23S rRNA (cytidine1920-2'-O)/16S rRNA (cytidine1409-2'-O)-methyltransferase [EC:2.1.1.226 2.1.1.227]"
+                },
+                {
+                  "name": "K03215  rumA; 23S rRNA (uracil1939-C5)-methyltransferase [EC:2.1.1.190]"
+                },
+                {
+                  "name": "K03212  rumB; 23S rRNA (uracil747-C5)-methyltransferase [EC:2.1.1.189]"
+                },
+                {
+                  "name": "K06177  rluA; tRNA pseudouridine32 synthase / 23S rRNA pseudouridine746 synthase [EC:5.4.99.28 5.4.99.29]"
+                },
+                {
+                  "name": "K06178  rluB; 23S rRNA pseudouridine2605 synthase [EC:5.4.99.22]"
+                },
+                {
+                  "name": "K06179  rluC; 23S rRNA pseudouridine955/2504/2580 synthase [EC:5.4.99.24]"
+                },
+                {
+                  "name": "K06180  rluD; 23S rRNA pseudouridine1911/1915/1917 synthase [EC:5.4.99.23]"
+                },
+                {
+                  "name": "K06181  rluE; 23S rRNA pseudouridine2457 synthase [EC:5.4.99.20]"
+                },
+                {
+                  "name": "K06182  rluF; 23S rRNA pseudouridine2604 synthase [EC:5.4.99.21]"
+                },
+                {
+                  "name": "K00561  ermC, ermA; 23S rRNA (adenine-N6)-dimethyltransferase [EC:2.1.1.184]"
+                },
+                {
+                  "name": "K21514  aviRb; 23S rRNA (uridine2479-2'-O)-methyltransferase [EC:2.1.1.208]"
+                },
+                {
+                  "name": "K21515  aviRa; 23S rRNA (guanine2535-N1)-methyltransferase [EC:2.1.1.209]"
+                },
+                {
+                  "name": "K03214  yfiF, trmG; RNA methyltransferase, TrmH family [EC:2.1.1.-]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ribosomal protein modification factors",
+          "children": [
+            {
+              "name": "K03789  rimI; [ribosomal protein S18]-alanine N-acetyltransferase [EC:2.3.1.266]"
+            },
+            {
+              "name": "K03790  rimJ; [ribosomal protein S5]-alanine N-acetyltransferase [EC:2.3.1.267]"
+            },
+            {
+              "name": "K05844  rimK; ribosomal protein S6--L-glutamate ligase [EC:6.3.2.-]"
+            },
+            {
+              "name": "K03817  rimL; ribosomal-protein-serine acetyltransferase [EC:2.3.1.-]"
+            },
+            {
+              "name": "K02860  rimM; 16S rRNA processing protein RimM"
+            },
+            {
+              "name": "K14441  rimO; ribosomal protein S12 methylthiotransferase [EC:2.8.4.4]"
+            },
+            {
+              "name": "K09136  ycaO; ribosomal protein S12 methylthiotransferase accessory factor"
+            },
+            {
+              "name": "K02687  prmA; ribosomal protein L11 methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K07320  prmB; ribosomal protein L3 glutamine methyltransferase [EC:2.1.1.298]"
+            },
+            {
+              "name": "K18850  ycfD; 50S ribosomal protein L16 3-hydroxylase [EC:1.14.11.47]"
+            }
+          ]
+        },
+        {
+          "name": "rRNA processing factors",
+          "children": [
+            {
+              "name": "K03685  rnc, DROSHA, RNT1; ribonuclease III [EC:3.1.26.3]"
+            },
+            {
+              "name": "K08300  rne; ribonuclease E [EC:3.1.26.12]"
+            },
+            {
+              "name": "K08301  rng, cafA; ribonuclease G [EC:3.1.26.-]"
+            },
+            {
+              "name": "K07447  ruvX; putative pre-16S rRNA nuclease [EC:3.1.-.-]"
+            },
+            {
+              "name": "K11145  mrnC; mini-ribonuclease III [EC:3.1.26.-]"
+            },
+            {
+              "name": "K22469  fau-1, aubA; ribonuclease FAU-1 [EC:3.1.26.-]"
+            }
+          ]
+        },
+        {
+          "name": "rRNA helicases",
+          "children": [
+            {
+              "name": "K05591  dbpA; ATP-dependent RNA helicase DbpA [EC:5.6.2.6]"
+            },
+            {
+              "name": "K05592  deaD, cshA; ATP-dependent RNA helicase DeaD [EC:5.6.2.7]"
+            },
+            {
+              "name": "K05590  srmB; ATP-dependent RNA helicase SrmB [EC:5.6.2.7]"
+            },
+            {
+              "name": "K18692  cshB; ATP-dependent RNA helicase CshB [EC:5.6.2.7]"
+            }
+          ]
+        },
+        {
+          "name": "GTPases",
+          "children": [
+            {
+              "name": "K03595  era, ERAL1; GTPase"
+            },
+            {
+              "name": "K06949  rsgA, engC; ribosome biogenesis GTPase / thiamine phosphate phosphatase [EC:3.6.1.- 3.1.3.100]"
+            },
+            {
+              "name": "K03977  engA, der; GTPase"
+            },
+            {
+              "name": "K03979  obgE, cgtA, MTG2; GTPase [EC:3.6.5.-]"
+            },
+            {
+              "name": "K14540  rbgA; ribosome biogenesis GTPase A"
+            },
+            {
+              "name": "K03665  hflX; GTPase"
+            },
+            {
+              "name": "K06948  yqeH; 30S ribosome assembly GTPase"
+            }
+          ]
+        },
+        {
+          "name": "Other maturation factors",
+          "children": [
+            {
+              "name": "K07566  tsaC, rimN, SUA5, YRDC; L-threonylcarbamoyladenylate synthase [EC:2.7.7.87]"
+            },
+            {
+              "name": "K01139  spoT; GTP diphosphokinase / guanosine-3',5'-bis(diphosphate) 3'-diphosphatase [EC:2.7.6.5 3.1.7.2]"
+            },
+            {
+              "name": "K02834  rbfA; ribosome-binding factor A"
+            },
+            {
+              "name": "K09748  rimP; ribosome maturation factor RimP"
+            },
+            {
+              "name": "K14761  rlbA, ybcJ; ribosome-associated protein"
+            },
+            {
+              "name": "K09710  ybeB; ribosome-associated protein"
+            },
+            {
+              "name": "K07042  ybeY, yqfG; probable rRNA maturation factor"
+            },
+            {
+              "name": "K07574  yhbY; RNA-binding protein"
+            },
+            {
+              "name": "K14762  yibL; ribosome-associated protein"
+            },
+            {
+              "name": "K09889  yjgA; ribosome-associated protein"
+            },
+            {
+              "name": "K03812  rmf; ribosome modulation factor"
+            },
+            {
+              "name": "K05808  hpf; ribosome hibernation promoting factor"
+            },
+            {
+              "name": "K05809  raiA; ribosome-associated inhibitor A"
+            },
+            {
+              "name": "K02972  sra; stationary-phase-induced ribosome-associated protein"
+            },
+            {
+              "name": "K06942  ychF; ribosome-binding ATPase"
+            },
+            {
+              "name": "K07040  yceD, ylbN; DUF177 domain-containing protein"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Related small nucleolar RNAs",
+      "children": [
+        {
+          "name": "Box C/D snoRNAs",
+          "children": [
+            {
+              "name": "SnoRNAs involved in processing reactions",
+              "children": [
+                {
+                  "name": "K14483  SNORD3, U3, SNR17; small nucleolar RNA SNORD3"
+                },
+                {
+                  "name": "K14907  SNORD12; small nucleolar RNA SNORD12"
+                },
+                {
+                  "name": "K26291  SNORD13, U13; small nucleolar RNA SNORD13"
+                },
+                {
+                  "name": "K14865  SNORD14, U14, SNR128; small nucleolar RNA SNORD14"
+                },
+                {
+                  "name": "K14921  SNORD15, U15; small nucleolar RNA SNORD15"
+                },
+                {
+                  "name": "K26292  SNORD17; small nucleolar RNA SNORD17"
+                },
+                {
+                  "name": "K14866  SNORD18, U18, SNR18; small nucleolar RNA SNORD18"
+                },
+                {
+                  "name": "K26293  SNORD21, U21; small nucleolar RNA SNORD21"
+                },
+                {
+                  "name": "K26294  SNORD22, U22; small nucleolar RNA SNORD22"
+                },
+                {
+                  "name": "K26295  SNORD23; small nucleolar RNA SNORD23"
+                },
+                {
+                  "name": "K14867  SNORD24, U24, SNR24; small nucleolar RNA SNORD24"
+                },
+                {
+                  "name": "K14881  SNORD32_33, U32_33, SNR55; small nucleolar RNA SNORD32/33"
+                },
+                {
+                  "name": "K14888  SNORD34, U34, SNR62; small nucleolar RNA SNORD34"
+                },
+                {
+                  "name": "K14899  SNORD35, U35; small nucleolar RNA SNORD35"
+                },
+                {
+                  "name": "K14874  SNORD36, U36, SNR47; small nucleolar RNA SNORD36"
+                },
+                {
+                  "name": "K14887  SNORD38, U38, SNR61; small nucleolar RNA SNORD38"
+                },
+                {
+                  "name": "K14880  SNORD59, U59, SNR54; small nucleolar RNA SNORD59"
+                },
+                {
+                  "name": "K14875  SNORD60, U60; small nucleolar RNA SNORD60"
+                },
+                {
+                  "name": "K14919  SNORD62, U62; small nucleolar RNA SNORD62"
+                },
+                {
+                  "name": "K14917  SNORD88; small nucleolar RNA SNORD88"
+                },
+                {
+                  "name": "K14904  SNORD104, U104; small nucleolar RNA SNORD104"
+                },
+                {
+                  "name": "K27110  SNORD118; small nucleolar RNA SNORD118"
+                },
+                {
+                  "name": "K14878  SNR52; small nucleolar RNA SNR52"
+                },
+                {
+                  "name": "K26461  SNR190; small nucleolar RNA SNR190"
+                }
+              ]
+            },
+            {
+              "name": "SnoRNAs act as guides for 2'-O-ribose methylation",
+              "children": [
+                {
+                  "name": "K14869  SNORD1, SNR38; small nucleolar RNA SNORD1"
+                },
+                {
+                  "name": "K14870  SNORD2, SNR39B; small nucleolar RNA SNORD2"
+                },
+                {
+                  "name": "K27197  SNORD4; small nucleolar RNA SNORD4"
+                },
+                {
+                  "name": "K27198  SNORD5; small nucleolar RNA SNORD5"
+                },
+                {
+                  "name": "K27199  SNORD6; small nucleolar RNA SNORD6"
+                },
+                {
+                  "name": "K14896  SNORD11, SNR70; small nucleolar RNA SNORD11"
+                },
+                {
+                  "name": "K14906  SNORD16, U16; small nucleolar RNA SNORD16"
+                },
+                {
+                  "name": "K14934  SNORD19; small nucleolar RNA SNORD19"
+                },
+                {
+                  "name": "K27207  SNORD20, U20; small nucleolar RNA SNORD20"
+                },
+                {
+                  "name": "K14882  SNORD25, U25, SNR56; small nucleolar RNA SNORD25"
+                },
+                {
+                  "name": "K26296  SNORD26, U26; small nucleolar RNA SNORD26"
+                },
+                {
+                  "name": "K14900  SNORD27, U27, SNR74; small nucleolar RNA SNORD27"
+                },
+                {
+                  "name": "K26297  SNORD28, U28; small nucleolar RNA SNORD28"
+                },
+                {
+                  "name": "K14895  SNORD29, U29; small nucleolar RNA SNORD29"
+                },
+                {
+                  "name": "K26298  SNORD30, U30; small nucleolar RNA SNORD30"
+                },
+                {
+                  "name": "K14893  SNORD31, U31, SNR67; small nucleolar RNA SNORD31"
+                },
+                {
+                  "name": "K27210  SNORD37, U37; small nucleolar RNA SNORD37"
+                },
+                {
+                  "name": "K26299  SNORD41, U41; small nucleolar RNA SNORD41"
+                },
+                {
+                  "name": "K14892  SNORD42, U42, SNR66; small nucleolar RNA SNORD42"
+                },
+                {
+                  "name": "K26300  SNORD43, U43; small nucleolar RNA SNORD43"
+                },
+                {
+                  "name": "K26301  SNORD44, U44; small nucleolar RNA SNORD44"
+                },
+                {
+                  "name": "K26302  SNORD45, U45; small nucleolar RNA SNORD45"
+                },
+                {
+                  "name": "K14889  SNORD46, U46; small nucleolar RNA SNORD46"
+                },
+                {
+                  "name": "K14920  SNORD47, U47; small nucleolar RNA SNORD47"
+                },
+                {
+                  "name": "K26303  SNORD48, U48; small nucleolar RNA SNORD48"
+                },
+                {
+                  "name": "K26304  SNORD49, U49; small nucleolar RNA SNORD49"
+                },
+                {
+                  "name": "K26305  SNORD50, U50; small nucleolar RNA SNORD50"
+                },
+                {
+                  "name": "K14885  SNORD51, U51, SNR39_59; small nucleolar RNA SNORD51"
+                },
+                {
+                  "name": "K14884  SNORD52, U52; small nucleolar RNA SNORD52"
+                },
+                {
+                  "name": "K26306  SNORD53_92; small nucleolar RNA SNORD53/92"
+                },
+                {
+                  "name": "K26307  SNORD54, U54; small nucleolar RNA SNORD54"
+                },
+                {
+                  "name": "K26308  SNORD55, U55; small nucleolar RNA SNORD55"
+                },
+                {
+                  "name": "K26309  SNORD56, U56; small nucleolar RNA SNORD56"
+                },
+                {
+                  "name": "K14877  SNORD57, U57, SNR51; small nucleolar RNA SNORD57"
+                },
+                {
+                  "name": "K26310  SNORD58, U58; small nucleolar RNA SNORD58"
+                },
+                {
+                  "name": "K26311  SNORD61, U61; small nucleolar RNA SNORD61"
+                },
+                {
+                  "name": "K27111  SNORD63, U63; small nucleolar RNA SNORD63"
+                },
+                {
+                  "name": "K27112  SNORD64; small nucleolar RNA SNORD64"
+                },
+                {
+                  "name": "K14903  SNORD65, SNR77; small nucleolar RNA SNORD65"
+                },
+                {
+                  "name": "K27211  SNORD66; small nucleolar RNA SNORD66"
+                },
+                {
+                  "name": "K27212  SNORD67; small nucleolar RNA SNORD67"
+                },
+                {
+                  "name": "K27213  SNORD68; small nucleolar RNA SNORD68"
+                },
+                {
+                  "name": "K27214  SNORD69; small nucleolar RNA SNORD69"
+                },
+                {
+                  "name": "K27215  SNORD70; small nucleolar RNA SNORD70"
+                },
+                {
+                  "name": "K27216  SNORD71; small nucleolar RNA SNORD71"
+                },
+                {
+                  "name": "K27181  SNORD72; small nucleolar RNA SNORD72"
+                },
+                {
+                  "name": "K27208  SNORD73, U73; small nucleolar RNA SNORD73"
+                },
+                {
+                  "name": "K14890  SNORD74, U74, SNR64; small nucleolar RNA SNORD74"
+                },
+                {
+                  "name": "K26312  SNORD75, U75; small nucleolar RNA SNORD75"
+                },
+                {
+                  "name": "K14886  SNORD77_80, U77_80, SNR60; small nucleolar RNA SNORD77/80"
+                },
+                {
+                  "name": "K26313  SNORD78, U78; small nucleolar RNA SNORD78"
+                },
+                {
+                  "name": "K26314  SNORD79, U79; small nucleolar RNA SNORD79"
+                },
+                {
+                  "name": "K26315  SNORD81, U81; small nucleolar RNA SNORD81"
+                },
+                {
+                  "name": "K27133  SNORD82, U82; small nucleolar RNA SNORD82"
+                },
+                {
+                  "name": "K27134  SNORD83, U83; small nucleolar RNA SNORD83"
+                },
+                {
+                  "name": "K27176  SNORD86, U86; small nucleolar RNA SNORD86"
+                },
+                {
+                  "name": "K27177  SNORD87, U87; small nucleolar RNA SNORD87"
+                },
+                {
+                  "name": "K27178  SNORD89; small nucleolar RNA SNORD89"
+                },
+                {
+                  "name": "K26474  SNORD90; small nucleolar RNA SNORD90"
+                },
+                {
+                  "name": "K27113  SNORD91; small nucleolar RNA SNORD91"
+                },
+                {
+                  "name": "K27114  SNORD93; small nucleolar RNA SNORD93"
+                },
+                {
+                  "name": "K27115  SNORD94, U94; small nucleolar RNA SNORD94"
+                },
+                {
+                  "name": "K27116  SNORD95, U95; small nucleolar RNA SNORD95"
+                },
+                {
+                  "name": "K27117  SNORD96, U96; small nucleolar RNA SNORD96"
+                },
+                {
+                  "name": "K27118  SNORD97, U97; small nucleolar RNA SNORD97"
+                },
+                {
+                  "name": "K27119  SNORD98; small nucleolar RNA SNORD98"
+                },
+                {
+                  "name": "K27120  SNORD99; small nucleolar RNA SNORD99"
+                },
+                {
+                  "name": "K27121  SNORD100; small nucleolar RNA SNORD100"
+                },
+                {
+                  "name": "K27122  SNORD101, U101, snoR60; small nucleolar RNA SNORD101"
+                },
+                {
+                  "name": "K27123  SNORD102; small nucleolar RNA SNORD102"
+                },
+                {
+                  "name": "K27124  SNORD103, U103; small nucleolar RNA SNORD103"
+                },
+                {
+                  "name": "K27125  SNORD105, U105; small nucleolar RNA SNORD105"
+                },
+                {
+                  "name": "K27126  SNORD107; small nucleolar RNA SNORD107"
+                },
+                {
+                  "name": "K27127  SNORD108; small nucleolar RNA SNORD108"
+                },
+                {
+                  "name": "K27128  SNORD109; small nucleolar RNA SNORD109"
+                },
+                {
+                  "name": "K27129  SNORD110, snoR14; small nucleolar RNA SNORD110"
+                },
+                {
+                  "name": "K27130  SNORD111; small nucleolar RNA SNORD111"
+                },
+                {
+                  "name": "K27131  SNORD112; small nucleolar RNA SNORD112"
+                },
+                {
+                  "name": "K27132  SNORD113_114; small nucleolar RNA SNORD113/114"
+                },
+                {
+                  "name": "K27135  SNORD116; small nucleolar RNA SNORD116"
+                },
+                {
+                  "name": "K27136  SNORD117, SNORD83; small nucleolar RNA SNORD117"
+                },
+                {
+                  "name": "K27137  SNORD121; small nucleolar RNA SNORD121"
+                },
+                {
+                  "name": "K27138  SNORD123; small nucleolar RNA SNORD123"
+                },
+                {
+                  "name": "K27139  SNORD124; small nucleolar RNA SNORD124"
+                },
+                {
+                  "name": "K27140  SNORD125; small nucleolar RNA SNORD125"
+                },
+                {
+                  "name": "K27141  SNORD126; small nucleolar RNA SNORD126"
+                },
+                {
+                  "name": "K27142  SNORD127; small nucleolar RNA SNORD127"
+                },
+                {
+                  "name": "K28452  SNORD135, ZL2; small nucleolar RNA SNORD135"
+                },
+                {
+                  "name": "K28490  SNORD138; small nucleolar RNA SNORD138"
+                },
+                {
+                  "name": "K28491  SNOR1; small nucleolar RNA SNOR1"
+                },
+                {
+                  "name": "K28492  SNOR26; small nucleolar RNA SNOR26"
+                },
+                {
+                  "name": "K28493  SNOR27; small nucleolar RNA SNOR27"
+                },
+                {
+                  "name": "K28494  SNOR28; small nucleolar RNA SNOR28"
+                },
+                {
+                  "name": "K28495  SNOR31; small nucleolar RNA SNOR31"
+                },
+                {
+                  "name": "K28496  SNOR35; small nucleolar RNA SNOR35"
+                },
+                {
+                  "name": "K28497  SNOR101; small nucleolar RNA SNOR101"
+                },
+                {
+                  "name": "K27174  SNOR113; small nucleolar RNA SNOR113"
+                },
+                {
+                  "name": "K27175  SNOR114, SNOR121; small nucleolar RNA SNOR114"
+                },
+                {
+                  "name": "K28498  SNOR115; small nucleolar RNA SNOR115"
+                },
+                {
+                  "name": "K27182  SNOR116; small nucleolar RNA SNOR116"
+                },
+                {
+                  "name": "K27183  SNOR117; small nucleolar RNA SNOR117"
+                },
+                {
+                  "name": "K28499  SNOR120; small nucleolar RNA SNOR120"
+                },
+                {
+                  "name": "K28500  SNOR123; small nucleolar RNA SNOR123"
+                },
+                {
+                  "name": "K28303  SNOR125; small nucleolar RNA SNOR125"
+                },
+                {
+                  "name": "K28304  SNOR126; small nucleolar RNA SNOR126"
+                },
+                {
+                  "name": "K28305  SNOR127; small nucleolar RNA SNOR127"
+                },
+                {
+                  "name": "K28306  SNOR128; small nucleolar RNA SNOR128"
+                },
+                {
+                  "name": "K28307  SNOR130; small nucleolar RNA SNOR130"
+                },
+                {
+                  "name": "K28501  SNOR131_132_133; small nucleolar RNA SNOR131/132/133"
+                },
+                {
+                  "name": "K14868  SNR13; small nucleolar RNA SNR13"
+                },
+                {
+                  "name": "K14871  SNR40; small nucleolar RNA SNR40"
+                },
+                {
+                  "name": "K14872  SNR41; small nucleolar RNA SNR41"
+                },
+                {
+                  "name": "K14873  SNR45; small nucleolar RNA SNR45"
+                },
+                {
+                  "name": "K26462  SNR48; small nucleolar RNA SNR48"
+                },
+                {
+                  "name": "K14876  SNR50; small nucleolar RNA SNR50"
+                },
+                {
+                  "name": "K14883  SNR57; small nucleolar RNA SNR57"
+                },
+                {
+                  "name": "K26475  SNR63; small nucleolar RNA SNR63"
+                },
+                {
+                  "name": "K14891  SNR65; small nucleolar RNA SNR65"
+                },
+                {
+                  "name": "K14894  SNR68; small nucleolar RNA SNR68"
+                },
+                {
+                  "name": "K26476  SNR69; small nucleolar RNA SNR69"
+                },
+                {
+                  "name": "K14897  SNR71; small nucleolar RNA SNR71"
+                },
+                {
+                  "name": "K14898  SNR72; small nucleolar RNA SNR72"
+                },
+                {
+                  "name": "K26463  SNR73; small nucleolar RNA SNR73"
+                },
+                {
+                  "name": "K14901  SNR75; small nucleolar RNA SNR75"
+                },
+                {
+                  "name": "K14902  SNR76; small nucleolar RNA SNR76"
+                },
+                {
+                  "name": "K26464  SNR78; small nucleolar RNA SNR78"
+                },
+                {
+                  "name": "K14905  SNR79; small nucleolar RNA SNR79"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Box H/ACA snoRNAs",
+          "children": [
+            {
+              "name": "SnoRNAs involved in processing reactions",
+              "children": [
+                {
+                  "name": "K14908  SNORA73, U17; small nucleolar RNA SNORA73"
+                },
+                {
+                  "name": "K14923  SNORA5, ACA5; small nucleolar RNA SNORA5"
+                },
+                {
+                  "name": "K14925  SNORA11; small nucleolar RNA SNORA11"
+                },
+                {
+                  "name": "K14927  SNORA16; small nucleolar RNA SNORA16"
+                },
+                {
+                  "name": "K14928  SNORA50_76; small nucleolar RNA SNORA50/76"
+                },
+                {
+                  "name": "K14929  SNORA53, ACA53; small nucleolar RNA SNORA53"
+                },
+                {
+                  "name": "K14931  SNORA54, ACA54; small nucleolar RNA SNORA54"
+                },
+                {
+                  "name": "K28334  SNORA63; small nucleolar RNA SNORA63"
+                },
+                {
+                  "name": "K14932  SNORA74, U19; small nucleolar RNA SNORA74"
+                },
+                {
+                  "name": "K14935  SNORA77, ACA63; small nucleolar RNA SNORA77"
+                },
+                {
+                  "name": "K14936  SNORA78, ACA64; small nucleolar RNA SNORA78"
+                },
+                {
+                  "name": "K26319  SNORA79, ACA65; small nucleolar RNA SNORA79"
+                },
+                {
+                  "name": "K26320  SNORA80, ACA67; small nucleolar RNA SNORA80"
+                }
+              ]
+            },
+            {
+              "name": "SnoRNAs act as guides for pseudouridynation",
+              "children": [
+                {
+                  "name": "K14918  SNORA1, ACA1; small nucleolar RNA SNORA1"
+                },
+                {
+                  "name": "K14922  SNORA2_34, ACA2_34; small nucleolar RNA SNORA2/34"
+                },
+                {
+                  "name": "K14914  SNORA3, ACA3; small nucleolar RNA SNORA3"
+                },
+                {
+                  "name": "K26321  SNORA4, ACA4; small nucleolar RNA SNORA4"
+                },
+                {
+                  "name": "K14910  SNORA6_62; small nucleolar RNA SNORA6/62"
+                },
+                {
+                  "name": "K26322  SNORA7, ACA7; small nucleolar RNA SNORA7"
+                },
+                {
+                  "name": "K26323  SNORA8, ACA8; small nucleolar RNA SNORA8"
+                },
+                {
+                  "name": "K26324  SNORA9, ACA9; small nucleolar RNA SNORA9"
+                },
+                {
+                  "name": "K14924  SNORA10_64; small nucleolar RNA SNORA10/64"
+                },
+                {
+                  "name": "K28392  SNORA12, U108; small nucleolar RNA SNORA12"
+                },
+                {
+                  "name": "K14930  SNORA13, ACA13; small nucleolar RNA SNORA13"
+                },
+                {
+                  "name": "K14916  SNORA14, ACA14, SNR32; small nucleolar RNA SNORA14"
+                },
+                {
+                  "name": "K26325  SNORA15, ACA15; small nucleolar RNA SNORA15"
+                },
+                {
+                  "name": "K26326  SNORA17_43, ACA17_43; small nucleolar RNA SNORA17/43"
+                },
+                {
+                  "name": "K26327  SNORA18, ACA18; small nucleolar RNA SNORA18"
+                },
+                {
+                  "name": "K26328  SNORA19, ACA19; small nucleolar RNA SNORA19"
+                },
+                {
+                  "name": "K14933  SNORA20, ACA20; small nucleolar RNA SNORA20"
+                },
+                {
+                  "name": "K14909  SNORA21, ACA21; small nucleolar RNA SNORA21"
+                },
+                {
+                  "name": "K26329  SNORA22, ACA22; small nucleolar RNA SNORA22"
+                },
+                {
+                  "name": "K26330  SNORA23, ACA23; small nucleolar RNA SNORA23"
+                },
+                {
+                  "name": "K26331  SNORA24, ACA24; small nucleolar RNA SNORA24"
+                },
+                {
+                  "name": "K26332  SNORA25, ACA25; small nucleolar RNA SNORA25"
+                },
+                {
+                  "name": "K28398  SNORA26; small nucleolar RNA SNORA26"
+                },
+                {
+                  "name": "K26333  SNORA27, ACA27; small nucleolar RNA SNORA27"
+                },
+                {
+                  "name": "K26334  SNORA28, ACA28; small nucleolar RNA SNORA28"
+                },
+                {
+                  "name": "K28399  SNORA29, ACA29; small nucleolar RNA SNORA29"
+                },
+                {
+                  "name": "K26335  SNORA30_37, ACA30_37; small nucleolar RNA SNORA30/37"
+                },
+                {
+                  "name": "K26336  SNORA31, ACA31; small nucleolar RNA SNORA31"
+                },
+                {
+                  "name": "K26337  SNORA32, ACA32; small nucleolar RNA SNORA32"
+                },
+                {
+                  "name": "K28335  SNORA33, ACA33; small nucleolar RNA SNORA33"
+                },
+                {
+                  "name": "K28336  SNORA35; small nucleolar RNA SNORA35"
+                },
+                {
+                  "name": "K26338  SNORA36, ACA36; small nucleolar RNA SNORA36"
+                },
+                {
+                  "name": "K28337  SNORA38, ACA38; small nucleolar RNA SNORA38"
+                },
+                {
+                  "name": "K14926  SNORA40, ACA40, SNR49; small nucleolar RNA SNORA40"
+                },
+                {
+                  "name": "K26339  SNORA41, ACA41; small nucleolar RNA SNORA41"
+                },
+                {
+                  "name": "K26340  SNORA44, ACA44; small nucleolar RNA SNORA44"
+                },
+                {
+                  "name": "K26341  SNORA46, ACA46; small nucleolar RNA SNORA46"
+                },
+                {
+                  "name": "K27149  SNORA47; small nucleolar RNA SNORA47"
+                },
+                {
+                  "name": "K26342  SNORA48, ACA48; small nucleolar RNA SNORA48"
+                },
+                {
+                  "name": "K28338  SNORA49, ACA49; small nucleolar RNA SNORA49"
+                },
+                {
+                  "name": "K28339  SNORA51, ACA51; small nucleolar RNA SNORA51"
+                },
+                {
+                  "name": "K14911  SNORA52, ACA52; small nucleolar RNA SNORA52"
+                },
+                {
+                  "name": "K27150  SNORA55, ACA55; small nucleolar RNA SNORA55"
+                },
+                {
+                  "name": "K14912  SNORA56, ACA56; small nucleolar RNA SNORA56"
+                },
+                {
+                  "name": "K28340  SNORA57, U99; small nucleolar RNA SNORA57"
+                },
+                {
+                  "name": "K26343  SNORA58, ACA58; small nucleolar RNA SNORA58"
+                },
+                {
+                  "name": "K28341  SNORA59, ACA59; small nucleolar RNA SNORA59"
+                },
+                {
+                  "name": "K26344  SNORA60_71, ACA60, U71; small nucleolar RNA SNORA60/71"
+                },
+                {
+                  "name": "K26345  SNORA61, ACA61; small nucleolar RNA SNORA61"
+                },
+                {
+                  "name": "K28342  SNORA65, U65; small nucleolar RNA SNORA65"
+                },
+                {
+                  "name": "K26358  SNORA66, U66; small nucleolar RNA SNORA66"
+                },
+                {
+                  "name": "K26359  SNORA67, U67; small nucleolar RNA SNORA67"
+                },
+                {
+                  "name": "K26360  SNORA68, U68; small nucleolar RNA SNORA68"
+                },
+                {
+                  "name": "K26361  SNORA69, U69; small nucleolar RNA SNORA69"
+                },
+                {
+                  "name": "K14879  SNORA70, U70; small nucleolar RNA SNORA70"
+                },
+                {
+                  "name": "K26362  SNORA72, U72; small nucleolar RNA SNORA72"
+                },
+                {
+                  "name": "K26363  SNORA75, U23; small nucleolar RNA SNORA75"
+                },
+                {
+                  "name": "K28343  SNORA81; small nucleolar RNA SNORA81"
+                },
+                {
+                  "name": "K27151  SNORA84; small nucleolar RNA SNORA84"
+                },
+                {
+                  "name": "K28502  SNOR74; small nucleolar RNA SNOR74"
+                },
+                {
+                  "name": "K28503  SNOR77; small nucleolar RNA SNOR77"
+                },
+                {
+                  "name": "K28285  SNOR80; small nucleolar RNA SNOR80"
+                },
+                {
+                  "name": "K28286  SNOR86; small nucleolar RNA SNOR86"
+                },
+                {
+                  "name": "K28287  SNOR97; small nucleolar RNA SNOR97"
+                },
+                {
+                  "name": "K28505  SNOR100; small nucleolar RNA SNOR100"
+                },
+                {
+                  "name": "K28288  SNOR103; small nucleolar RNA SNOR103"
+                },
+                {
+                  "name": "K27173  SNOR105_108; small nucleolar RNA SNOR105/108"
+                },
+                {
+                  "name": "K28289  SNOR111; small nucleolar RNA SNOR111"
+                },
+                {
+                  "name": "K28290  SNOR134; small nucleolar RNA SNOR134"
+                },
+                {
+                  "name": "K28291  SNOR135; small nucleolar RNA SNOR135"
+                },
+                {
+                  "name": "K28292  SNOR136; small nucleolar RNA SNOR136"
+                },
+                {
+                  "name": "K28293  SNOR137; small nucleolar RNA SNOR137"
+                },
+                {
+                  "name": "K28294  SNOR143; small nucleolar RNA SNOR143"
+                },
+                {
+                  "name": "K28295  SNOR144; small nucleolar RNA SNOR144"
+                },
+                {
+                  "name": "K28296  SNOR145; small nucleolar RNA SNOR145"
+                },
+                {
+                  "name": "K26478  SNR8; small nucleolar RNA SNR8"
+                },
+                {
+                  "name": "K26479  SNR10; small nucleolar RNA SNR10"
+                },
+                {
+                  "name": "K26465  SNR35; small nucleolar RNA SNR35"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Other snoRNA",
+          "children": [
+            {
+              "name": "K14576  RMRP; small nucleolar RNA MRP"
+            },
+            {
+              "name": "K26477  NME1; small nucleolar RNA MRP"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1099 @@
+{
+  "name": "ko01504",
+  "children": [
+    {
+      "name": "Gene variants",
+      "children": [
+        {
+          "name": "beta-Lactamase genes",
+          "children": [
+            {
+              "name": "Class A [MT]",
+              "children": [
+                {
+                  "name": "K18698  blaTEM; beta-lactamase class A TEM [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18699  blaSHV; beta-lactamase class A SHV [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18796  blaLEN; beta-lactamase class A LEN [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18767  blaCTX-M; beta-lactamase class A CTX-M [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18797  blaPER; beta-lactamase class A PER [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19097  blaVEB; beta-lactamase class A VEB [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19317  blaBEL; beta-lactamase class A BEL [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18768  blaKPC; beta-lactamase class A KPC [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18970  blaGES; beta-lactamase class A GES [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19316  blaIMI; beta-lactamase class A IMI [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22346  blaSME; beta-lactamase class A SME [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18795  blaCARB-1; beta-lactamase class A CARB-1, PSE family [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19218  blaCARB-5; beta-lactamase class A CARB-5, RTG family [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19217  blaCARB-17; beta-lactamase class A CARB-17 [EC:3.5.2.6]"
+                }
+              ]
+            },
+            {
+              "name": "Class D [MT]",
+              "children": [
+                {
+                  "name": "K18790  blaOXA-1; beta-lactamase class D OXA-1 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18791  blaOXA-2; beta-lactamase class D OXA-2 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19098  blaOXA-9; beta-lactamase class D OXA-9 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18792  blaOXA-10; beta-lactamase class D OXA-10 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19213  blaOXA-12; beta-lactamase class D OXA-12 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K21276  blaOXA-22; beta-lactamase class D OXA-22 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18793  blaOXA-23; beta-lactamase class D OXA-23 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18971  blaOXA-24; beta-lactamase class D OXA-24 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22352  blaOXA-29; beta-lactamase class D OXA-29 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19209  blaOXA-42; beta-lactamase class D OXA-42 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18976  blaOXA-48; beta-lactamase class D OXA-48 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18973  blaOXA-50; beta-lactamase class D OXA-50 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18794  blaOXA-51; beta-lactamase class D OXA-51 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18972  blaOXA-58; beta-lactamase class D OXA-58 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K21277  blaOXA-60; beta-lactamase class D OXA-60 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19210  blaOXA-61; beta-lactamase class D OXA-61 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19211  blaOXA-62; beta-lactamase class D OXA-62 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19212  blaOXA-63; beta-lactamase class D OXA-63 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22335  blaOXA-114; beta-lactamase class D OXA-114 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19319  blaOXA-134; beta-lactamase class D OXA-134 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22331  blaOXA-184; beta-lactamase class D OXA-184 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22351  blaOXA-209; beta-lactamase class D OXA-209 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19320  blaOXA-211; beta-lactamase class D OXA-211 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19318  blaOXA-213; beta-lactamase class D OXA-213 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19321  blaOXA-214; beta-lactamase class D OXA-214 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19322  blaOXA-229; beta-lactamase class D OXA-229 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K21266  blaOXA-286; beta-lactamase class D OXA-286 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22334  blaOXA-464; beta-lactamase class D OXA-464 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22333  blaOXA-493; beta-lactamase class D OXA-493 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K22332  blaOXA-548; beta-lactamase class D OXA-548 [EC:3.5.2.6]"
+                }
+              ]
+            },
+            {
+              "name": "Class C [MT]",
+              "children": [
+                {
+                  "name": "K19095  blaCMY-1; beta-lactamase class C CMY-1 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19096  blaCMY-2; beta-lactamase class C CMY-2 [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19100  blaDHA; beta-lactamase class C DHA [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19101  blaFOX; beta-lactamase class C FOX [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19214  blaACC; beta-lactamase class C ACC [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19215  blaACT_MIR; beta-lactamase class C ACT/MIR [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K20319  blaADC; beta-lactamase class C ADC [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K20320  blaPDC; beta-lactamase class C PDC [EC:3.5.2.6]"
+                }
+              ]
+            },
+            {
+              "name": "Class B [MT]",
+              "children": [
+                {
+                  "name": "K18782  blaIMP; metallo-beta-lactamase class B IMP [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18781  blaVIM; metallo-beta-lactamase class B VIM [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K18780  blaNDM; metallo-beta-lactamase class B NDM [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19099  blaGIM; metallo-beta-lactamase class B GIM [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K19216  blaIND; metallo-beta-lactamase class B IND [EC:3.5.2.6]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Aminoglycoside resistance genes",
+          "children": [
+            {
+              "name": "N-Acetyltransferases",
+              "children": [
+                {
+                  "name": "K17840  aac2-I; aminoglycoside 2'-N-acetyltransferase I [EC:2.3.1.59]"
+                },
+                {
+                  "name": "K03395  aac3-I; aminoglycoside 3-N-acetyltransferase I [EC:2.3.1.60]"
+                },
+                {
+                  "name": "K19275  aac3-II; aminoglycoside 3-N-acetyltransferase II [EC:2.3.1.81]"
+                },
+                {
+                  "name": "K19276  aac3-IV; aminoglycoside 3-N-acetyltransferase IV [EC:2.3.1.81]"
+                },
+                {
+                  "name": "K19277  aac3-VI; aminoglycoside 3-N-acetyltransferase VI [EC:2.3.1.81]"
+                },
+                {
+                  "name": "K00662  aacC; aminoglycoside 3-N-acetyltransferase [EC:2.3.1.81]"
+                },
+                {
+                  "name": "K18815  aac6-I; aminoglycoside 6'-N-acetyltransferase I [EC:2.3.1.82]"
+                },
+                {
+                  "name": "K19278  aac6-Ib; aminoglycoside 6'-N-acetyltransferase Ib [EC:2.3.1.82]"
+                },
+                {
+                  "name": "K18816  aac6-I, aacA7; aminoglycoside 6'-N-acetyltransferase I [EC:2.3.1.82]"
+                },
+                {
+                  "name": "K19301  aac6-II; aminoglycoside 6'-N-acetyltransferase II [EC:2.3.1.82]"
+                },
+                {
+                  "name": "K00663  aacA; aminoglycoside 6'-N-acetyltransferase [EC:2.3.1.82]"
+                },
+                {
+                  "name": "K19883  aacA-aphD; bifunctional aminoglycoside 6'-N-acetyltransferase / aminoglycoside 2''-phosphotransferase [EC:2.3.1.82 2.7.1.190]"
+                }
+              ]
+            },
+            {
+              "name": "Other acetyltransferases",
+              "children": [
+                {
+                  "name": "K19313  apmA; aminocyclitol acetyltransferase [EC:2.3.-.-]"
+                },
+                {
+                  "name": "K19063  sat2; streptothricin acetyltransferase [EC:2.3.-.-]"
+                },
+                {
+                  "name": "K19314  sat3; streptothricin acetyltransferase [EC:2.3.-.-]"
+                },
+                {
+                  "name": "K19273  sat4; streptothricin acetyltransferase [EC:2.3.-.-]"
+                }
+              ]
+            },
+            {
+              "name": "O-Nucleotidyltransferases",
+              "children": [
+                {
+                  "name": "K17881  aadB; aminoglycoside 2''-adenylyltransferase [EC:2.7.7.46]"
+                },
+                {
+                  "name": "K00984  aadA; streptomycin 3\\\"-adenylyltransferase [EC:2.7.7.47]"
+                },
+                {
+                  "name": "K17882  aadD, knt; kanamycin nucleotidyltransferase [EC:2.7.7.-]"
+                },
+                {
+                  "name": "K19544  ant4-II; aminoglycoside 4'-adenylyltransferase [EC:2.7.7.-]"
+                },
+                {
+                  "name": "K05593  aadK; aminoglycoside 6-adenylyltransferase [EC:2.7.7.-]"
+                }
+              ]
+            },
+            {
+              "name": "O-Phosphotransferases",
+              "children": [
+                {
+                  "name": "K19279  ant9; aminoglycoside 9-adenylyltransferase [EC:2.7.7.-]"
+                },
+                {
+                  "name": "K17910  aphD; aminoglycoside 2''-phosphotransferase [EC:2.7.1.190]"
+                },
+                {
+                  "name": "K19883  aacA-aphD; bifunctional aminoglycoside 6'-N-acetyltransferase / aminoglycoside 2''-phosphotransferase [EC:2.3.1.82 2.7.1.190]"
+                },
+                {
+                  "name": "K19272  aph3-I; aminoglycoside 3'-phosphotransferase I [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K19300  aph3-II; aminoglycoside 3'-phosphotransferase II [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K19299  aph3-III; aminoglycoside 3'-phosphotransferase III [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K19274  aph3-VI; aminoglycoside 3'-phosphotransferase VI [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K19543  aph3-VII; aminoglycoside 3'-phosphotransferase [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K19315  aph3-XV; aminoglycoside 3'-phosphotransferase XV [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K00897  aphA; kanamycin kinase [EC:2.7.1.95]"
+                },
+                {
+                  "name": "K10673  strA; streptomycin 3\\\"-kinase [EC:2.7.1.87]"
+                },
+                {
+                  "name": "K18817  hph; hygromycin-B 4-O-kinase [EC:2.7.1.163]"
+                },
+                {
+                  "name": "K12570  aphD, strA; streptomycin 6-kinase [EC:2.7.1.72]"
+                },
+                {
+                  "name": "K04343  strB; streptomycin 6-kinase [EC:2.7.1.72]"
+                },
+                {
+                  "name": "K17880  hyg; hygromycin-B 7''-O-kinase [EC:2.7.1.119]"
+                },
+                {
+                  "name": "K18844  aph, spcN; spectinomycin phosphotransferase"
+                }
+              ]
+            },
+            {
+              "name": "16S rRNA methyltransferases",
+              "children": [
+                {
+                  "name": "K18845  rmt, armA; 16S rRNA (guanine(1405)-N(7))-methyltransferase [EC:2.1.1.179]"
+                },
+                {
+                  "name": "K18846  npmA; 16S rRNA (adenine(1408)-N(1))-methyltransferase [EC:2.1.1.180]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tetracycline resistance genes",
+          "children": [
+            {
+              "name": "Transporters",
+              "children": [
+                {
+                  "name": "K08151  tetA; MFS transporter, DHA1 family, tetracycline resistance protein"
+                },
+                {
+                  "name": "K08168  tetB; MFS transporter, DHA2 family, metal-tetracycline-proton antiporter"
+                },
+                {
+                  "name": "K18214  tetP_A, tet40; MFS transporter, DHA3 family, tetracycline resistance protein"
+                },
+                {
+                  "name": "K18215  tetV; MFS transporter, DHA3 family, tetracycline resistance protein"
+                },
+                {
+                  "name": "K18218  tet35; tetracycline resistance efflux pump"
+                },
+                {
+                  "name": "K18216  steA, tetA46; ATP-binding cassette, subfamily B, tetracycline resistant protein"
+                },
+                {
+                  "name": "K18217  steB, tetB46; ATP-binding cassette, subfamily B, tetracycline resistant protein"
+                },
+                {
+                  "name": "K19542  otrB, tcr; MFS transporter, DHA2 family, tetracycline/oxytetracycline resistance protein"
+                },
+                {
+                  "name": "K18233  oleC5; oleandomycin transport system permease protein"
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "children": [
+                {
+                  "name": "K18220  tetM, tetO; ribosomal protection tetracycline resistance protein"
+                },
+                {
+                  "name": "K18221  tetX; tetracycline 11a-monooxygenase, tetracycline resistance protein [EC:1.14.13.231]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Macrolide resistance genes",
+          "children": [
+            {
+              "name": "23S rRNA methyltransferases",
+              "children": [
+                {
+                  "name": "K00561  ermC, ermA; 23S rRNA (adenine-N6)-dimethyltransferase [EC:2.1.1.184]"
+                },
+                {
+                  "name": "K14336  rlmA2; 23S rRNA (guanine748-N1)-methyltransferase [EC:2.1.1.188]"
+                },
+                {
+                  "name": "K15632  cfr; 23S rRNA (adenine-C8)-methyltransferase [EC:2.1.1.224]"
+                }
+              ]
+            },
+            {
+              "name": "Transporters",
+              "children": [
+                {
+                  "name": "K18230  tylC, oleB, carA, srmB; macrolide transport system ATP-binding/permease protein"
+                },
+                {
+                  "name": "K18231  msr, vmlR; macrolide transport system ATP-binding/permease protein"
+                },
+                {
+                  "name": "K19349  vga; pleuromutilin/lincosamide/streptogramin A transport system ATP-binding/permease protein"
+                },
+                {
+                  "name": "K19350  lsa; lincosamide and streptogramin A transport system ATP-binding/permease protein"
+                },
+                {
+                  "name": "K18232  oleC4; oleandomycin transport system ATP-binding protein"
+                },
+                {
+                  "name": "K19541  lmrA; MFS transporter, DHA2 family, lincomycin resistance protein"
+                },
+                {
+                  "name": "K08217  mef; MFS transporter, DHA3 family, macrolide efflux protein"
+                },
+                {
+                  "name": "K18833  cmr; MFS transporter, DHA3 family, multidrug efflux protein"
+                },
+                {
+                  "name": "K08160  mdfA, cmr; MFS transporter, DHA1 family, multidrug/chloramphenicol efflux transport protein"
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "children": [
+                {
+                  "name": "K06880  ereA_B; erythromycin esterase [EC:3.1.1.-]"
+                },
+                {
+                  "name": "K18235  vgb; virginiamycin B lyase [EC:4.2.99.-]"
+                },
+                {
+                  "name": "K19545  lnuA_C_D_E, lin; lincosamide nucleotidyltransferase A/C/D/E"
+                },
+                {
+                  "name": "K18236  lnuB_F, lin; lincosamide nucleotidyltransferase B/F"
+                },
+                {
+                  "name": "K18234  vat; virginiamycin A acetyltransferase [EC:2.3.1.-]"
+                },
+                {
+                  "name": "K21251  mgt, oleD; macrolide glycosyltransferase"
+                },
+                {
+                  "name": "K06979  mph; macrolide phosphotransferase"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Phenicol resistance genes",
+          "children": [
+            {
+              "name": "Transporters",
+              "children": [
+                {
+                  "name": "K18552  cmlA, cmlB, floR; MFS transporter, DHA1 family, chloramphenicol/florfenicol resistance protein"
+                },
+                {
+                  "name": "K18553  cmlR, cmx; MFS transporter, DHA1 family, chloramphenicol resistance protein"
+                },
+                {
+                  "name": "K19646  fexA_B; MFS transporter, DHA2 family, florfenicol/chloramphenicol resistance protein"
+                }
+              ]
+            },
+            {
+              "name": "Acetyltransferases",
+              "children": [
+                {
+                  "name": "K19271  catA; chloramphenicol O-acetyltransferase type A [EC:2.3.1.28]"
+                },
+                {
+                  "name": "K00638  catB; chloramphenicol O-acetyltransferase type B [EC:2.3.1.28]"
+                }
+              ]
+            },
+            {
+              "name": "Phosphotransferase",
+              "children": [
+                {
+                  "name": "K18554  cpt; chloramphenicol 3-O phosphotransferase [EC:2.7.1.-]"
+                }
+              ]
+            },
+            {
+              "name": "23S rRNA methyltransferase",
+              "children": [
+                {
+                  "name": "K15632  cfr; 23S rRNA (adenine-C8)-methyltransferase [EC:2.1.1.224]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sulfonamide resistance genes",
+          "children": [
+            {
+              "name": "Dihydropteroate synthase",
+              "children": [
+                {
+                  "name": "K18974  sul1; dihydropteroate synthase type 1 [EC:2.5.1.15]"
+                },
+                {
+                  "name": "K18824  sul2; dihydropteroate synthase type 2 [EC:2.5.1.15]"
+                },
+                {
+                  "name": "K18825  sul3; dihydropteroate synthase type 3 [EC:2.5.1.15]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Trimethoprim resistance genes",
+          "children": [
+            {
+              "name": "Dihydrofolate reductases",
+              "children": [
+                {
+                  "name": "K18589  dfrA1, dhfr; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                },
+                {
+                  "name": "K19643  dfrA10, dfr10; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                },
+                {
+                  "name": "K18590  dfrA12, dhfr; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                },
+                {
+                  "name": "K19644  dfrA19, dfrA18; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                },
+                {
+                  "name": "K18591  dfrD, dhfr; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                },
+                {
+                  "name": "K19645  dfrB, dfr2; dihydrofolate reductase (trimethoprim resistance protein) [EC:1.5.1.3]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Quinolone resistance genes",
+          "children": [
+            {
+              "name": "Transporter",
+              "children": [
+                {
+                  "name": "K08167  smvA, qacA, lfrA; MFS transporter, DHA2 family, multidrug resistance protein"
+                }
+              ]
+            },
+            {
+              "name": "Other",
+              "children": [
+                {
+                  "name": "K18555  qnr, mcbG; fluoroquinolone resistance protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Rifamycin resistance genes",
+          "children": [
+            {
+              "name": "ADP-ribosyl transferases",
+              "children": [
+                {
+                  "name": "K19062  arr; rifampin ADP-ribosylating transferase"
+                },
+                {
+                  "name": "K21288  arr2; rifampin ADP-ribosylating transferase"
+                }
+              ]
+            },
+            {
+              "name": "Oxygenases",
+              "children": [
+                {
+                  "name": "K21267  iri, rox; rifampicin monooxygenase [EC:1.14.13.211]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Fosfomycin resistance genes",
+          "children": [
+            {
+              "name": "Transferases",
+              "children": [
+                {
+                  "name": "K21253  fosA; glutathione S-transferase fosA [EC:2.5.1.18]"
+                },
+                {
+                  "name": "K21264  fosA2; glutathione S-transferase fosA2 [EC:2.5.1.18]"
+                },
+                {
+                  "name": "K21265  fosA5; glutathione S-transferase fosA5 [EC:2.5.1.18]"
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "children": [
+                {
+                  "name": "K21252  fosX; fosfomycin resistance protein FosX"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gene sets",
+      "children": [
+        {
+          "name": "beta-Lactam resistance modules",
+          "children": [
+            {
+              "name": "Methicillin resistance [MD:M00625]",
+              "children": [
+                {
+                  "name": "K02547  mecR1; methicillin resistance protein"
+                },
+                {
+                  "name": "K02546  mecI; BlaI family transcriptional regulator, methicillin resistance regulatory protein"
+                },
+                {
+                  "name": "K02545  mecA; penicillin-binding protein 2 prime [EC:3.4.16.4]"
+                }
+              ]
+            },
+            {
+              "name": "beta-Lactam resistance, Bla system [MD:M00627]",
+              "children": [
+                {
+                  "name": "K02172  blaR1; bla regulator protein blaR1"
+                },
+                {
+                  "name": "K02171  blaI; BlaI family transcriptional regulator, penicillinase repressor"
+                },
+                {
+                  "name": "K18766  blaZ; beta-lactamase class A BlaZ [EC:3.5.2.6]"
+                },
+                {
+                  "name": "K17836  penP; beta-lactamase class A [EC:3.5.2.6]"
+                }
+              ]
+            },
+            {
+              "name": "Imipenem resistance, repression of porin OprD [MD:M00745]",
+              "children": [
+                {
+                  "name": "K18072  parS; two-component system, OmpR family, sensor kinase ParS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K18073  parR; two-component system, OmpR family, response regulator ParR"
+                },
+                {
+                  "name": "K07644  cusS, copS, silS; two-component system, OmpR family, heavy metal sensor histidine kinase CusS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K07665  cusR, copR, silR; two-component system, OmpR family, copper resistance phosphate regulon response regulator CusR"
+                },
+                {
+                  "name": "K18297  mexT; LysR family transcriptional regulator, mexEF-oprN operon transcriptional activator"
+                },
+                {
+                  "name": "K18093  oprD; imipenem/basic amino acid-specific outer membrane pore [EC:3.4.21.-]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Vancomycin resistance modules",
+          "children": [
+            {
+              "name": "Vancomycin resistance, D-Ala-D-Lac type [MD:M00651]",
+              "children": [
+                {
+                  "name": "K18345  vanSB, vanS, vanSD; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K18344  vanRB, vanR, vanRD; two-component system, OmpR family, response regulator VanR"
+                },
+                {
+                  "name": "K07260  vanY; zinc D-Ala-D-Ala carboxypeptidase [EC:3.4.17.14]"
+                },
+                {
+                  "name": "K18346  vanW; vancomycin resistance protein VanW"
+                },
+                {
+                  "name": "K18351  vanSAc; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K18352  vanRAc; two-component system, OmpR family, response regulator VanR"
+                },
+                {
+                  "name": "K18354  vanK; vancomycin resistance protein VanK"
+                },
+                {
+                  "name": "K18353  vanJ; vancomycin resistance protein VanJ"
+                },
+                {
+                  "name": "K18347  vanH; D-specific alpha-keto acid dehydrogenase [EC:1.1.1.-]"
+                },
+                {
+                  "name": "K15739  vanB, vanA, vanD; D-alanine---(R)-lactate ligase [EC:6.1.2.1]"
+                },
+                {
+                  "name": "K08641  vanX; zinc D-Ala-D-Ala dipeptidase [EC:3.4.13.22]"
+                }
+              ]
+            },
+            {
+              "name": "Vancomycin resistance, D-Ala-D-Ser type [MD:M00652]",
+              "children": [
+                {
+                  "name": "K18350  vanSC, vanSE, vanSG; two-component system, OmpR family, sensor histidine kinase VanS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K18349  vanRC, vanRE, vanRG; two-component system, OmpR family, response regulator VanR"
+                },
+                {
+                  "name": "K18348  vanT; serine/alanine racemase [EC:5.1.1.18 5.1.1.1]"
+                },
+                {
+                  "name": "K18856  vanC, vanE, vanG; D-alanine---D-serine ligase [EC:6.3.2.35]"
+                },
+                {
+                  "name": "K18866  vanXY; zinc D-Ala-D-Ala dipeptidase/carboxypeptidase [EC:3.4.13.22 3.4.17.14]"
+                },
+                {
+                  "name": "B  Tetracycline resistance"
+                }
+              ]
+            },
+            {
+              "name": "Tetracycline resistance, efflux pump Tet38 [MD:M00704]",
+              "children": [
+                {
+                  "name": "K18906  mgrA; MarR family transcriptional regulator, multiple gene regulator MgrA"
+                },
+                {
+                  "name": "K08168  tetB; MFS transporter, DHA2 family, metal-tetracycline-proton antiporter"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "CAMP resistance modules",
+          "children": [
+            {
+              "name": "Cationic antimicrobial peptide (CAMP) resistance, dltABCD operon [MD:M00725]",
+              "children": [
+                {
+                  "name": "K19077  graS; two-component system, OmpR family, sensor histidine kinase GraS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K19078  graR; two-component system, OmpR family, response regulator protein GraR"
+                },
+                {
+                  "name": "K03367  dltA; D-alanine--poly(phosphoribitol) ligase subunit 1 [EC:6.1.1.13]"
+                },
+                {
+                  "name": "K03739  dltB; membrane protein involved in D-alanine export"
+                },
+                {
+                  "name": "K14188  dltC; D-alanine--poly(phosphoribitol) ligase subunit 2 [EC:6.1.1.13]"
+                },
+                {
+                  "name": "K03740  dltD; D-alanine transfer protein"
+                }
+              ]
+            },
+            {
+              "name": "Cationic antimicrobial peptide (CAMP) resistance, lysyl-phosphatidylglycerol (L-PG) synthase MprF [MD:M00726]",
+              "children": [
+                {
+                  "name": "K19077  graS; two-component system, OmpR family, sensor histidine kinase GraS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K19078  graR; two-component system, OmpR family, response regulator protein GraR"
+                },
+                {
+                  "name": "K14205  mprF, fmtC; phosphatidylglycerol lysyltransferase [EC:2.3.2.3]"
+                }
+              ]
+            },
+            {
+              "name": "Cationic antimicrobial peptide (CAMP) resistance, VraFG transporter [MD:M00730]",
+              "children": [
+                {
+                  "name": "K19077  graS; two-component system, OmpR family, sensor histidine kinase GraS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K19078  graR; two-component system, OmpR family, response regulator protein GraR"
+                },
+                {
+                  "name": "K19079  vraF; cationic antimicrobial peptide transport system ATP-binding protein"
+                },
+                {
+                  "name": "K19080  vraG; cationic antimicrobial peptide transport system permease protein"
+                }
+              ]
+            },
+            {
+              "name": "Cationic antimicrobial peptide (CAMP) resistance, protease PgtE [MD:M00744]",
+              "children": [
+                {
+                  "name": "K07637  phoQ; two-component system, OmpR family, sensor histidine kinase PhoQ [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K07660  phoP; two-component system, OmpR family, response regulator PhoP"
+                },
+                {
+                  "name": "K08477  pgtE; outer membrane protease E [EC:3.4.21.-]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Multipdrug resistance modules",
+          "children": [
+            {
+              "name": "Multidrug resistance, efflux pump MexAB-OprM [MD:M00718]",
+              "children": [
+                {
+                  "name": "K18131  mexR; MarR family transcriptional regulator, repressor of the mexAB-oprM multidrug resistance operon"
+                },
+                {
+                  "name": "K03585  acrA, mexA, adeI, smeD, mtrC, cmeA; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18138  acrB, mexB, adeJ, smeE, mtrD, cmeB; multidrug efflux pump"
+                },
+                {
+                  "name": "K18139  oprM, emhC, ttgC, cusC, adeK, smeF, mtrE, cmeC, gesC; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MexCD-OprJ [MD:M00639]",
+              "children": [
+                {
+                  "name": "K18294  nfxB; TetR/AcrR family transcriptional regulator, mexCD-oprJ operon repressor"
+                },
+                {
+                  "name": "K18295  mexC; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18296  mexD; multidrug efflux pump"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MexEF-OprN [MD:M00641]",
+              "children": [
+                {
+                  "name": "K18297  mexT; LysR family transcriptional regulator, mexEF-oprN operon transcriptional activator"
+                },
+                {
+                  "name": "K18298  mexE; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18299  mexF; multidrug efflux pump"
+                },
+                {
+                  "name": "K18300  oprN; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MexJK-OprM [MD:M00642]",
+              "children": [
+                {
+                  "name": "K18301  mexL; TetR/AcrR family transcriptional regulator, mexJK operon transcriptional repressor"
+                },
+                {
+                  "name": "K18302  mexJ; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18303  mexK; multidrug efflux pump"
+                },
+                {
+                  "name": "K18139  oprM, emhC, ttgC, cusC, adeK, smeF, mtrE, cmeC, gesC; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MexXY-OprM [MD:M00643]",
+              "children": [
+                {
+                  "name": "K18129  mexZ; TetR/AcrR family transcriptional regulator, mexXY operon repressor"
+                },
+                {
+                  "name": "K18094  mexX, amrA; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18095  mexY, amrB; multidrug efflux pump"
+                },
+                {
+                  "name": "K18139  oprM, emhC, ttgC, cusC, adeK, smeF, mtrE, cmeC, gesC; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MexPQ-OpmE [MD:M00769]",
+              "children": [
+                {
+                  "name": "K18304  lasR; LuxR family transcriptional regulator, quorum-sensing system regulator LasR"
+                },
+                {
+                  "name": "K19591  cueR; MerR family transcriptional regulator, copper efflux regulator"
+                },
+                {
+                  "name": "K19595  gesA, mexP; membrane fusion protein, gold/copper resistance efflux system"
+                },
+                {
+                  "name": "K19594  gesB, mexQ; gold/copper resistance efflux pump"
+                },
+                {
+                  "name": "K19593  opmE; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump AdeABC [PATH:map01501] [MD:M00649]",
+              "children": [
+                {
+                  "name": "K18143  adeS; two-component system, OmpR family, sensor histidine kinase AdeS [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K18144  adeR; two-component system, OmpR family, response regulator AdeR"
+                },
+                {
+                  "name": "K18145  adeA; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18146  adeB; multidrug efflux pump"
+                },
+                {
+                  "name": "K18147  adeC; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump AcrEF-TolC [MD:M00696]",
+              "children": [
+                {
+                  "name": "K18140  envR, acrS; TetR/AcrR family transcriptional regulator, acrEF/envCD operon repressor"
+                },
+                {
+                  "name": "K18141  acrE; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18142  acrF; multidrug efflux pump"
+                },
+                {
+                  "name": "K12340  tolC, bepC, cyaE, raxC, sapF, rsaF, hasF; outer membrane protein"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MdtEF-TolC [MD:M00697]",
+              "children": [
+                {
+                  "name": "K07690  evgA, bvgA; two-component system, NarL family, response regulator EvgA"
+                },
+                {
+                  "name": "K18898  mdtE; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18899  mdtF; multidrug efflux pump"
+                },
+                {
+                  "name": "K12340  tolC, bepC, cyaE, raxC, sapF, rsaF, hasF; outer membrane protein"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump BpeEF-OprC [MD:M00698]",
+              "children": [
+                {
+                  "name": "K18900  bpeT; LysR family transcriptional regulator, regulator for bpeEF and oprC"
+                },
+                {
+                  "name": "K18901  bpeE; membrane fusion protein, multidrug efflux system"
+                },
+                {
+                  "name": "K18902  bpeF; multidrug efflux pump"
+                },
+                {
+                  "name": "K18903  oprC, opcM; outer membrane protein, multidrug efflux system"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump AbcA [MD:M00700]",
+              "children": [
+                {
+                  "name": "K18906  mgrA; MarR family transcriptional regulator, multiple gene regulator MgrA"
+                },
+                {
+                  "name": "K18907  norG; GntR family transcriptional regulator, regulator for abcA and norABC"
+                },
+                {
+                  "name": "K18104  abcA, bmrA; ATP-binding cassette, subfamily B, bacterial AbcA/BmrA [EC:7.6.2.2]"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump NorB [MD:M00702]",
+              "children": [
+                {
+                  "name": "K18906  mgrA; MarR family transcriptional regulator, multiple gene regulator MgrA"
+                },
+                {
+                  "name": "K18907  norG; GntR family transcriptional regulator, regulator for abcA and norABC"
+                },
+                {
+                  "name": "K08170  norB, norC; MFS transporter, DHA2 family, multidrug resistance protein"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump QacA [MD:M00714]",
+              "children": [
+                {
+                  "name": "K18938  qacR; TetR/AcrR family transcriptional regulator, repressor for qacA"
+                },
+                {
+                  "name": "K08167  smvA, qacA, lfrA; MFS transporter, DHA2 family, multidrug resistance protein"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, efflux pump MepA [MD:M00705]",
+              "children": [
+                {
+                  "name": "K18909  mepR; MarR family transcriptional regulator, repressor for mepA"
+                },
+                {
+                  "name": "K18908  mepA; MATE family, multidrug efflux pump"
+                }
+              ]
+            },
+            {
+              "name": "Multidrug resistance, repression of porin OmpF [MD:M00746]",
+              "children": [
+                {
+                  "name": "K13632  marA; AraC family transcriptional regulator, mar-sox-rob regulon activator"
+                },
+                {
+                  "name": "K18513  micF; small regulatory RNA MicF"
+                },
+                {
+                  "name": "K09476  ompF; outer membrane pore protein F"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1111 @@
+{
+  "name": "ko04040",
+  "children": [
+    {
+      "name": "Ligand-gated channels",
+      "children": [
+        {
+          "name": "GABA-A",
+          "children": [
+            {
+              "name": "K05175  GABRA; gamma-aminobutyric acid receptor subunit alpha"
+            },
+            {
+              "name": "K05181  GABRB; gamma-aminobutyric acid receptor subunit beta"
+            },
+            {
+              "name": "K05184  GABRD; gamma-aminobutyric acid receptor subunit delta"
+            },
+            {
+              "name": "K05185  GABRE; gamma-aminobutyric acid receptor subunit epsilon"
+            },
+            {
+              "name": "K05186  GABRG; gamma-aminobutyric acid receptor subunit gamma"
+            },
+            {
+              "name": "K05189  GABRP; gamma-aminobutyric acid receptor subunit pi"
+            },
+            {
+              "name": "K05190  GABRR; gamma-aminobutyric acid receptor subunit rho"
+            },
+            {
+              "name": "K05192  GABRQ; gamma-aminobutyric acid receptor subunit theta"
+            }
+          ]
+        },
+        {
+          "name": "Glycine",
+          "children": [
+            {
+              "name": "K05193  GLRA1; glycine receptor alpha-1"
+            },
+            {
+              "name": "K05194  GLRA2; glycine receptor alpha-2"
+            },
+            {
+              "name": "K05195  GLRA3; glycine receptor alpha-3"
+            },
+            {
+              "name": "K05271  GLRA4; glycine receptor alpha-4"
+            },
+            {
+              "name": "K05196  GLRB; glycine receptor beta"
+            }
+          ]
+        },
+        {
+          "name": "Acetylcholine (nicotinic)",
+          "children": [
+            {
+              "name": "K04803  CHRNA1; nicotinic acetylcholine receptor alpha-1"
+            },
+            {
+              "name": "K04804  CHRNA2; nicotinic acetylcholine receptor alpha-2"
+            },
+            {
+              "name": "K04805  CHRNA3; nicotinic acetylcholine receptor alpha-3"
+            },
+            {
+              "name": "K04806  CHRNA4; nicotinic acetylcholine receptor alpha-4"
+            },
+            {
+              "name": "K04807  CHRNA5; nicotinic acetylcholine receptor alpha-5"
+            },
+            {
+              "name": "K04808  CHRNA6; nicotinic acetylcholine receptor alpha-6"
+            },
+            {
+              "name": "K04809  CHRNA7; nicotinic acetylcholine receptor alpha-7"
+            },
+            {
+              "name": "K04810  CHRNA9; nicotinic acetylcholine receptor alpha-9"
+            },
+            {
+              "name": "K04811  CHRNA10; nicotinic acetylcholine receptor alpha-10"
+            },
+            {
+              "name": "K05312  CHRNN; nicotinic acetylcholine receptor, invertebrate"
+            },
+            {
+              "name": "K04812  CHRNB1; nicotinic acetylcholine receptor beta-1"
+            },
+            {
+              "name": "K04813  CHRNB2; nicotinic acetylcholine receptor beta-2"
+            },
+            {
+              "name": "K04814  CHRNB3; nicotinic acetylcholine receptor beta-3"
+            },
+            {
+              "name": "K04815  CHRNB4; nicotinic acetylcholine receptor beta-4"
+            },
+            {
+              "name": "K04816  CHRND; nicotinic acetylcholine receptor delta"
+            },
+            {
+              "name": "K04817  CHRNE; nicotinic acetylcholine receptor epsilon"
+            },
+            {
+              "name": "K04818  CHRNG; nicotinic acetylcholine receptor gamma"
+            }
+          ]
+        },
+        {
+          "name": "Serotonin (5-HT3)",
+          "children": [
+            {
+              "name": "K04819  HTR3; 5-hydroxytryptamine receptor 3"
+            }
+          ]
+        },
+        {
+          "name": "Zinc-activated channel",
+          "children": [
+            {
+              "name": "K16888  ZACN; zinc-activated ligand-gated ion channel"
+            }
+          ]
+        },
+        {
+          "name": "Glutamate (ionotropic)",
+          "children": [
+            {
+              "name": "K05197  GRIA1; glutamate receptor 1"
+            },
+            {
+              "name": "K05198  GRIA2; glutamate receptor 2"
+            },
+            {
+              "name": "K05199  GRIA3; glutamate receptor 3"
+            },
+            {
+              "name": "K05200  GRIA4; glutamate receptor 4"
+            },
+            {
+              "name": "K05201  GRIK1; glutamate receptor, ionotropic kainate 1"
+            },
+            {
+              "name": "K05202  GRIK2; glutamate receptor, ionotropic kainate 2"
+            },
+            {
+              "name": "K05203  GRIK3; glutamate receptor, ionotropic kainate 3"
+            },
+            {
+              "name": "K05204  GRIK4; glutamate receptor, ionotropic kainate 4"
+            },
+            {
+              "name": "K05205  GRIK5; glutamate receptor, ionotropic kainate 5"
+            },
+            {
+              "name": "K05206  GRID1; glutamate receptor delta-1 subunit"
+            },
+            {
+              "name": "K05207  GRID2; glutamate receptor delta-2 subunit"
+            },
+            {
+              "name": "K05313  GRIN; glutamate receptor, ionotropic, invertebrate"
+            },
+            {
+              "name": "K05387  GRIP; glutamate receptor, ionotropic, plant"
+            },
+            {
+              "name": "K05208  GRIN1; glutamate receptor ionotropic, NMDA 1"
+            },
+            {
+              "name": "K05209  GRIN2A; glutamate receptor ionotropic, NMDA 2A"
+            },
+            {
+              "name": "K05210  GRIN2B; glutamate receptor ionotropic, NMDA 2B"
+            },
+            {
+              "name": "K05211  GRIN2C; glutamate receptor ionotropic, NMDA 2C"
+            },
+            {
+              "name": "K05212  GRIN2D; glutamate receptor ionotropic, NMDA 2D"
+            },
+            {
+              "name": "K05213  GRIN3A; glutamate receptor ionotropic, NMDA 3A"
+            },
+            {
+              "name": "K05214  GRIN3B; glutamate receptor ionotropic, NMDA 3B"
+            }
+          ]
+        },
+        {
+          "name": "Histamine",
+          "children": [
+            {
+              "name": "K05397  HCL, HISCL; histamine-gated chloride channel"
+            }
+          ]
+        },
+        {
+          "name": "Anionic glutamate",
+          "children": [
+            {
+              "name": "K05273  GRGLCN; glutamate receptor, anionic"
+            }
+          ]
+        },
+        {
+          "name": "Epithelial sodium channel (ENaC)",
+          "children": [
+            {
+              "name": "K04824  SCNN1A, ENACA; amiloride-sensitive sodium channel subunit alpha"
+            },
+            {
+              "name": "K04825  SCNN1B, ENACB; amiloride-sensitive sodium channel subunit beta"
+            },
+            {
+              "name": "K04826  SCNN1D, ENACD; amiloride-sensitive sodium channel subunit delta"
+            },
+            {
+              "name": "K04827  SCNN1G, ENACG; amiloride-sensitive sodium channel subunit gamma"
+            }
+          ]
+        },
+        {
+          "name": "Acid-sensing ion channel (ASIC)",
+          "children": [
+            {
+              "name": "K04829  ASIC1, ACCN2, BNAC2; acid-sensing ion channel 1"
+            },
+            {
+              "name": "K04828  ASIC2, ACCN1, BNAC1; acid-sensing ion channel 2"
+            },
+            {
+              "name": "K04830  ASIC3, ACCN3; acid-sensing ion channel 3"
+            },
+            {
+              "name": "K04831  ASIC4, ACCN4, BNAC4; acid-sensing ion channel 4"
+            },
+            {
+              "name": "K04832  ASIC5, ACCN5; acid-sensing ion channel 5"
+            },
+            {
+              "name": "K03440  ASICN; acid-sensing ion channel, other"
+            }
+          ]
+        },
+        {
+          "name": "ATP-gated cation channel (P2X)",
+          "children": [
+            {
+              "name": "K05215  P2RX1; P2X purinoceptor 1"
+            },
+            {
+              "name": "K05216  P2RX2; P2X purinoceptor 2"
+            },
+            {
+              "name": "K05217  P2RX3; P2X purinoceptor 3"
+            },
+            {
+              "name": "K05218  P2RX4; P2X purinoceptor 4"
+            },
+            {
+              "name": "K05219  P2RX5; P2X purinoceptor 5"
+            },
+            {
+              "name": "K05221  P2RX6, P2RXL1; P2X purinoceptor 6"
+            },
+            {
+              "name": "K05220  P2RX7; P2X purinoceptor 7"
+            }
+          ]
+        },
+        {
+          "name": "IP3 receptor",
+          "children": [
+            {
+              "name": "K04958  ITPR1; inositol 1,4,5-triphosphate receptor type 1"
+            },
+            {
+              "name": "K04959  ITPR2; inositol 1,4,5-triphosphate receptor type 2"
+            },
+            {
+              "name": "K04960  ITPR3; inositol 1,4,5-triphosphate receptor type 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Voltage-gated cation channels",
+      "children": [
+        {
+          "name": "Sodium channel, voltage-gated (Nav)",
+          "children": [
+            {
+              "name": "K04833  SCN1A, NAV1.1; voltage-gated sodium channel type I alpha"
+            },
+            {
+              "name": "K04834  SCN2A, NAV1.2; voltage-gated sodium channel type II alpha"
+            },
+            {
+              "name": "K04836  SCN3A, NAV1.3; voltage-gated sodium channel type III alpha"
+            },
+            {
+              "name": "K04837  SCN4A, NAV1.4; voltage-gated sodium channel type IV alpha"
+            },
+            {
+              "name": "K04838  SCN5A, NAV1.5; voltage-gated sodium channel type V alpha"
+            },
+            {
+              "name": "K04839  SCN7A, SCN6A; voltage-gated sodium channel type VII alpha"
+            },
+            {
+              "name": "K04840  SCN8A, NAV1.6; voltage-gated sodium channel type VIII alpha"
+            },
+            {
+              "name": "K04841  SCN9A, NAV1.7; voltage-gated sodium channel type IX alpha"
+            },
+            {
+              "name": "K04842  SCN10A, NAV1.8; voltage-gated sodium channel type X alpha"
+            },
+            {
+              "name": "K04843  SCN11A, NAV1.9; voltage-gated sodium channel type XI alpha"
+            },
+            {
+              "name": "K04845  SCN1B; voltage-gated sodium channel type I beta"
+            },
+            {
+              "name": "K04846  SCN2B; voltage-gated sodium channel type II beta"
+            },
+            {
+              "name": "K04847  SCN3B; voltage-gated sodium channel type III beta"
+            },
+            {
+              "name": "K04848  SCN4B; voltage-gated sodium channel type IV beta"
+            }
+          ]
+        },
+        {
+          "name": "Calcium channel, voltage-gated (Cav)",
+          "children": [
+            {
+              "name": "K04344  CACNA1A, CAV2.1; voltage-dependent calcium channel P/Q type alpha-1A"
+            },
+            {
+              "name": "K04849  CACNA1B, CAV2.2; voltage-dependent calcium channel N type alpha-1B"
+            },
+            {
+              "name": "K04850  CACNA1C, CAV1.2; voltage-dependent calcium channel L type alpha-1C"
+            },
+            {
+              "name": "K04851  CACNA1D, CAV1.3; voltage-dependent calcium channel L type alpha-1D"
+            },
+            {
+              "name": "K04852  CACNA1E, CAV2.3; voltage-dependent calcium channel R type alpha-1E"
+            },
+            {
+              "name": "K04853  CACNA1F, CAV1.4; voltage-dependent calcium channel L type alpha-1F"
+            },
+            {
+              "name": "K04854  CACNA1G, CAV3.1; voltage-dependent calcium channel T type alpha-1G"
+            },
+            {
+              "name": "K04855  CACNA1H, CAV3.2; voltage-dependent calcium channel T type alpha-1H"
+            },
+            {
+              "name": "K04856  CACNA1I, CAV3.3; voltage-dependent calcium channel T type alpha-1I"
+            },
+            {
+              "name": "K04857  CACNA1S, CAV1.1; voltage-dependent calcium channel L type alpha-1S"
+            },
+            {
+              "name": "K04858  CACNA2D1; voltage-dependent calcium channel alpha-2/delta-1"
+            },
+            {
+              "name": "K04859  CACNA2D2; voltage-dependent calcium channel alpha-2/delta-2"
+            },
+            {
+              "name": "K04860  CACNA2D3; voltage-dependent calcium channel alpha-2/delta-3"
+            },
+            {
+              "name": "K04861  CACNA2D4; voltage-dependent calcium channel alpha-2/delta-4"
+            },
+            {
+              "name": "K04862  CACNB1; voltage-dependent calcium channel beta-1"
+            },
+            {
+              "name": "K04863  CACNB2; voltage-dependent calcium channel beta-2"
+            },
+            {
+              "name": "K04864  CACNB3; voltage-dependent calcium channel beta-3"
+            },
+            {
+              "name": "K04865  CACNB4; voltage-dependent calcium channel beta-4"
+            },
+            {
+              "name": "K04866  CACNG1; voltage-dependent calcium channel gamma-1"
+            },
+            {
+              "name": "K04867  CACNG2; voltage-dependent calcium channel gamma-2"
+            },
+            {
+              "name": "K04868  CACNG3; voltage-dependent calcium channel gamma-3"
+            },
+            {
+              "name": "K04869  CACNG4; voltage-dependent calcium channel gamma-4"
+            },
+            {
+              "name": "K04870  CACNG5; voltage-dependent calcium channel gamma-5"
+            },
+            {
+              "name": "K04871  CACNG6; voltage-dependent calcium channel gamma-6"
+            },
+            {
+              "name": "K04872  CACNG7; voltage-dependent calcium channel gamma-7"
+            },
+            {
+              "name": "K04873  CACNG8; voltage-dependent calcium channel gamma-8"
+            }
+          ]
+        },
+        {
+          "name": "Calcium channel, sperm-associated (CatSper)",
+          "children": [
+            {
+              "name": "K16889  CATSPER1; cation channel sperm-associated protein 1"
+            },
+            {
+              "name": "K16890  CATSPER2; cation channel sperm-associated protein 2"
+            },
+            {
+              "name": "K16891  CATSPER3; cation channel sperm-associated protein 3"
+            },
+            {
+              "name": "K16892  CATSPER4; cation channel sperm-associated protein 4"
+            },
+            {
+              "name": "K16893  CATSPERB; cation channel sperm-associated protein subunit beta"
+            },
+            {
+              "name": "K16894  CATSPERG; cation channel sperm-associated protein subunit gamma"
+            },
+            {
+              "name": "K16895  CATSPERD; cation channel sperm-associated protein subunit delta"
+            }
+          ]
+        },
+        {
+          "name": "Calcium channel, two-pore (TPC)",
+          "children": [
+            {
+              "name": "K16896  TPCN1; two pore calcium channel protein 1"
+            },
+            {
+              "name": "K14077  TPCN2; two pore calcium channel protein 2"
+            },
+            {
+              "name": "K16897  TPCN3; two pore calcium channel protein 3"
+            },
+            {
+              "name": "K16900  TPC1, CCH1; two pore calcium channel protein, plant"
+            }
+          ]
+        },
+        {
+          "name": "Potassium channel, voltage-gated (Kv)",
+          "children": [
+            {
+              "name": "K04874  KCNA1, KV1.1; potassium voltage-gated channel Shaker-related subfamily A member 1"
+            },
+            {
+              "name": "K04875  KCNA2, KV1.2; potassium voltage-gated channel Shaker-related subfamily A member 2"
+            },
+            {
+              "name": "K04876  KCNA3, KV1.3; potassium voltage-gated channel Shaker-related subfamily A member 3"
+            },
+            {
+              "name": "K04877  KCNA4, KV1.4; potassium voltage-gated channel Shaker-related subfamily A member 4"
+            },
+            {
+              "name": "K04878  KCNA5, KV1.5; potassium voltage-gated channel Shaker-related subfamily A member 5"
+            },
+            {
+              "name": "K04879  KCNA6, KV1.6; potassium voltage-gated channel Shaker-related subfamily A member 6"
+            },
+            {
+              "name": "K04880  KCNA7, KV1.7; potassium voltage-gated channel Shaker-related subfamily A member 7"
+            },
+            {
+              "name": "K04881  KCNA10, KV1.8; potassium voltage-gated channel Shaker-related subfamily A member 10"
+            },
+            {
+              "name": "K04882  KCNAB1; potassium voltage-gated channel Shaker-related subfamily A, beta member 1"
+            },
+            {
+              "name": "K04883  KCNAB2; potassium voltage-gated channel Shaker-related subfamily A, beta member 2"
+            },
+            {
+              "name": "K04884  KCNAB3; potassium voltage-gated channel Shaker-related subfamily A, beta member 3"
+            },
+            {
+              "name": "K04885  KCNB1, KV2.1; potassium voltage-gated channel Shab-related subfamily B member 1"
+            },
+            {
+              "name": "K04886  KCNB2, KV2.2; potassium voltage-gated channel Shab-related subfamily B member 2"
+            },
+            {
+              "name": "K04887  KCNC1, KV3.1; potassium voltage-gated channel Shaw-related subfamily C member 1"
+            },
+            {
+              "name": "K04888  KCNC2, KV3.2; potassium voltage-gated channel Shaw-related subfamily C member 2"
+            },
+            {
+              "name": "K04889  KCNC3, KV3.3; potassium voltage-gated channel Shaw-related subfamily C member 3"
+            },
+            {
+              "name": "K04890  KCNC4, KV3.4; potassium voltage-gated channel Shaw-related subfamily C member 4"
+            },
+            {
+              "name": "K04891  KCND1, KV4.1; potassium voltage-gated channel Shal-related subfamily D member 1"
+            },
+            {
+              "name": "K04892  KCND2, KV4.2; potassium voltage-gated channel Shal-related subfamily D member 2"
+            },
+            {
+              "name": "K04893  KCND3, KV4.3; potassium voltage-gated channel Shal-related subfamily D member 3"
+            },
+            {
+              "name": "K04894  KCNE1; potassium voltage-gated channel Isk-related subfamily E member 1"
+            },
+            {
+              "name": "K04895  KCNE1L; potassium voltage-gated channel Isk-related subfamily E member 1-like"
+            },
+            {
+              "name": "K04896  KCNE2; potassium voltage-gated channel Isk-related subfamily E member 2"
+            },
+            {
+              "name": "K04897  KCNE3; potassium voltage-gated channel Isk-related subfamily E member 3"
+            },
+            {
+              "name": "K04898  KCNE4; potassium voltage-gated channel Isk-related subfamily E member 4"
+            },
+            {
+              "name": "K04899  KCNF1, KV5.1; potassium voltage-gated channel subfamily F member 1"
+            },
+            {
+              "name": "K04900  KCNG1, KV6.1; potassium voltage-gated channel subfamily G member 1"
+            },
+            {
+              "name": "K04901  KCNG2, KV6.2; potassium voltage-gated channel subfamily G member 2"
+            },
+            {
+              "name": "K04902  KCNG3, KV6.3; potassium voltage-gated channel subfamily G member 3"
+            },
+            {
+              "name": "K04903  KCNG4, KV6.4; potassium voltage-gated channel subfamily G member 4"
+            },
+            {
+              "name": "K04904  KCNH1, KV10.1; potassium voltage-gated channel Eag-related subfamily H member 1"
+            },
+            {
+              "name": "K04905  KCNH2, KV11.1; potassium voltage-gated channel Eag-related subfamily H member 2"
+            },
+            {
+              "name": "K04906  KCNH3, KV12.2; potassium voltage-gated channel Eag-related subfamily H member 3"
+            },
+            {
+              "name": "K04907  KCNH4, KV12.3; potassium voltage-gated channel Eag-related subfamily H member 4"
+            },
+            {
+              "name": "K04908  KCNH5, KV10.2; potassium voltage-gated channel Eag-related subfamily H member 5"
+            },
+            {
+              "name": "K04909  KCNH6, KV11.2; potassium voltage-gated channel Eag-related subfamily H member 6"
+            },
+            {
+              "name": "K04910  KCNH7, KV11.3; potassium voltage-gated channel Eag-related subfamily H member 7"
+            },
+            {
+              "name": "K04911  KCNH8, KV12.1; potassium voltage-gated channel Eag-related subfamily H member 8"
+            },
+            {
+              "name": "K04926  KCNQ1, KV7.1; potassium voltage-gated channel KQT-like subfamily member 1"
+            },
+            {
+              "name": "K04927  KCNQ2, KV7.2; potassium voltage-gated channel KQT-like subfamily member 2"
+            },
+            {
+              "name": "K04928  KCNQ3, KV7.3; potassium voltage-gated channel KQT-like subfamily member 3"
+            },
+            {
+              "name": "K04929  KCNQ4, KV7.4; potassium voltage-gated channel KQT-like subfamily member 4"
+            },
+            {
+              "name": "K04930  KCNQ5, KV7.5; potassium voltage-gated channel KQT-like subfamily member 5"
+            },
+            {
+              "name": "K04931  KCNS1, KV9.1; potassium voltage-gated channel delayed-rectifier subfamily S member 1"
+            },
+            {
+              "name": "K04932  KCNS2, KV9.2; potassium voltage-gated channel delayed-rectifier subfamily S member 2"
+            },
+            {
+              "name": "K04933  KCNS3, KV9.3; potassium voltage-gated channel delayed-rectifier subfamily S member 3"
+            },
+            {
+              "name": "K04934  KCNV1, KV8.1; potassium channel subfamily V member 1"
+            },
+            {
+              "name": "K04935  KCNV2, KV8.2; potassium channel subfamily V member 2"
+            }
+          ]
+        },
+        {
+          "name": "Potassium channel, calcium- and sodium-activated (KCa/KNa)",
+          "children": [
+            {
+              "name": "K04936  KCNMA1, KCA1.1; potassium large conductance calcium-activated channel subfamily M alpha member 1"
+            },
+            {
+              "name": "K05274  KCNMA3, KCNU1, KCA5.1; potassium large conductance calcium-activated channel subfamily M alpha member 3"
+            },
+            {
+              "name": "K04937  KCNMB1; potassium large conductance calcium-activated channel subfamily M beta member 1"
+            },
+            {
+              "name": "K04938  KCNMB2; potassium large conductance calcium-activated channel subfamily M beta member 2"
+            },
+            {
+              "name": "K04939  KCNMB3; potassium large conductance calcium-activated channel subfamily M beta member 3"
+            },
+            {
+              "name": "K04941  KCNMB4; potassium large conductance calcium-activated channel subfamily M beta member 4"
+            },
+            {
+              "name": "K04942  KCNN1, KCA2.1; potassium intermediate/small conductance calcium-activated channel subfamily N member 1"
+            },
+            {
+              "name": "K04943  KCNN2, KCA2.2; potassium intermediate/small conductance calcium-activated channel subfamily N member 2"
+            },
+            {
+              "name": "K04944  KCNN3, KCA2.3; potassium intermediate/small conductance calcium-activated channel subfamily N member 3"
+            },
+            {
+              "name": "K04945  KCNN4, KCA3.1; potassium intermediate/small conductance calcium-activated channel subfamily N member 4"
+            },
+            {
+              "name": "K04946  KCNT1, KNA1.1; potassium channel subfamily T member 1"
+            },
+            {
+              "name": "K04947  KCNT2, KNA1.2; potassium channel subfamily T member 2"
+            }
+          ]
+        },
+        {
+          "name": "Potassium channel, two-pore domain (K2P)",
+          "children": [
+            {
+              "name": "K04912  KCNK1, K2P1.1; potassium channel subfamily K member 1"
+            },
+            {
+              "name": "K04913  KCNK2, K2P2.1; potassium channel subfamily K member 2"
+            },
+            {
+              "name": "K04914  KCNK3, K2P3.1; potassium channel subfamily K member 3"
+            },
+            {
+              "name": "K04915  KCNK4, K2P4.1; potassium channel subfamily K member 4"
+            },
+            {
+              "name": "K04916  KCNK5, K2P5.1; potassium channel subfamily K member 5"
+            },
+            {
+              "name": "K04917  KCNK6, K2P6.1; potassium channel subfamily K member 6"
+            },
+            {
+              "name": "K04918  KCNK7, K2P7.1; potassium channel subfamily K member 7"
+            },
+            {
+              "name": "K04919  KCNK9, K2P9.1; potassium channel subfamily K member 9"
+            },
+            {
+              "name": "K04920  KCNK10, K2P10.1; potassium channel subfamily K member 10"
+            },
+            {
+              "name": "K04921  KCNK12, K2P12.1; potassium channel subfamily K member 12"
+            },
+            {
+              "name": "K04922  KCNK13, K2P13.1; potassium channel subfamily K member 13"
+            },
+            {
+              "name": "K04923  KCNK15, K2P15.1; potassium channel subfamily K member 15"
+            },
+            {
+              "name": "K04924  KCNK16, K2P16.1; potassium channel subfamily K member 16"
+            },
+            {
+              "name": "K04925  KCNK17, K2P17.1; potassium channel subfamily K member 17"
+            },
+            {
+              "name": "K20007  KCNK18, K2P18.1; potassium channel subfamily K member 18"
+            },
+            {
+              "name": "K05323  KCNKN; potassium channel subfamily K, invertebrate"
+            },
+            {
+              "name": "K05389  KCNKF; potassium channel subfamily K, other eukaryote"
+            }
+          ]
+        },
+        {
+          "name": "Potassium channel, inwardly-rectifying (Kir)",
+          "children": [
+            {
+              "name": "K04995  KCNJ1, KIR1.1; potassium inwardly-rectifying channel subfamily J member 1"
+            },
+            {
+              "name": "K04996  KCNJ2, KIR2.1; potassium inwardly-rectifying channel subfamily J member 2"
+            },
+            {
+              "name": "K04997  KCNJ3, KIR3.1; potassium inwardly-rectifying channel subfamily J member 3"
+            },
+            {
+              "name": "K04998  KCNJ4, KIR2.3; potassium inwardly-rectifying channel subfamily J member 4"
+            },
+            {
+              "name": "K04999  KCNJ5, KIR3.4; potassium inwardly-rectifying channel subfamily J member 5"
+            },
+            {
+              "name": "K05000  KCNJ6, KIR3.2; potassium inwardly-rectifying channel subfamily J member 6"
+            },
+            {
+              "name": "K05001  KCNJ8, KIR6.1; potassium inwardly-rectifying channel subfamily J member 8"
+            },
+            {
+              "name": "K05002  KCNJ9, KIR3.3; potassium inwardly-rectifying channel subfamily J member 9"
+            },
+            {
+              "name": "K05003  KCNJ10, KIR4.1; potassium inwardly-rectifying channel subfamily J member 10"
+            },
+            {
+              "name": "K05004  KCNJ11, KIR6.2; potassium inwardly-rectifying channel subfamily J member 11"
+            },
+            {
+              "name": "K05005  KCNJ12_18, KIR2.2, KIR2.6; potassium inwardly-rectifying channel subfamily J member 12/18"
+            },
+            {
+              "name": "K05006  KCNJ13, KIR7.1; potassium inwardly-rectifying channel subfamily J member 13"
+            },
+            {
+              "name": "K05007  KCNJ14, KIR2.4; potassium inwardly-rectifying channel subfamily J member 14"
+            },
+            {
+              "name": "K05008  KCNJ15, KIR4.2; potassium inwardly-rectifying channel subfamily J member 15"
+            },
+            {
+              "name": "K05009  KCNJ16, KIR5.1; potassium inwardly-rectifying channel subfamily J member 16"
+            },
+            {
+              "name": "K05330  KCNJN; potassium inwardly-rectifying channel subfamily J, other"
+            }
+          ]
+        },
+        {
+          "name": "Transient receptor potential channel (TRP)",
+          "children": [
+            {
+              "name": "K04984  TRPA1, ANKTM1; transient receptor potential cation channel subfamily A member 1"
+            },
+            {
+              "name": "K04964  TRPC1; transient receptor potential cation channel subfamily C member 1"
+            },
+            {
+              "name": "K04965  TRPC2; transient receptor potential cation channel subfamily C member 2"
+            },
+            {
+              "name": "K04966  TRPC3; transient receptor potential cation channel subfamily C member 3"
+            },
+            {
+              "name": "K04967  TRPC4; transient receptor potential cation channel subfamily C member 4"
+            },
+            {
+              "name": "K04968  TRPC5; transient receptor potential cation channel subfamily C member 5"
+            },
+            {
+              "name": "K04969  TRPC6; transient receptor potential cation channel subfamily C member 6"
+            },
+            {
+              "name": "K04970  TRPC7; transient receptor potential cation channel subfamily C member 7"
+            },
+            {
+              "name": "K13803  TRPL; transient-receptor-potential-like protein"
+            },
+            {
+              "name": "K05222  TRPV1; transient receptor potential cation channel subfamily V member 1"
+            },
+            {
+              "name": "K04971  TRPV2; transient receptor potential cation channel subfamily V member 2"
+            },
+            {
+              "name": "K04972  TRPV3; transient receptor potential cation channel subfamily V member 3"
+            },
+            {
+              "name": "K04973  TRPV4; transient receptor potential cation channel subfamily V member 4"
+            },
+            {
+              "name": "K04974  TRPV5; transient receptor potential cation channel subfamily V member 5"
+            },
+            {
+              "name": "K04975  TRPV6; transient receptor potential cation channel subfamily V member 6"
+            },
+            {
+              "name": "K04976  TRPM1; transient receptor potential cation channel subfamily M member 1"
+            },
+            {
+              "name": "K04977  TRPM2; transient receptor potential cation channel subfamily M member 2 [EC:3.6.1.13]"
+            },
+            {
+              "name": "K04978  TRPM3; transient receptor potential cation channel subfamily M member 3"
+            },
+            {
+              "name": "K04979  TRPM4; transient receptor potential cation channel subfamily M member 4"
+            },
+            {
+              "name": "K04980  TRPM5; transient receptor potential cation channel subfamily M member 5"
+            },
+            {
+              "name": "K04981  TRPM6, CHAK2; transient receptor potential cation channel subfamily M member 6 [EC:2.7.11.1]"
+            },
+            {
+              "name": "K04982  TRPM7, CHAK1; transient receptor potential cation channel subfamily M member 7 [EC:2.7.11.1]"
+            },
+            {
+              "name": "K04983  TRPM8; transient receptor potential cation channel subfamily M member 8"
+            },
+            {
+              "name": "K28613  YVC1, TRPY; calcium channel YVC1"
+            },
+            {
+              "name": "K04992  MCOLN1, TRPML1; mucolipin 1"
+            },
+            {
+              "name": "K04993  MCOLN2, TRPML2; mucolipin 2"
+            },
+            {
+              "name": "K04994  MCOLN3, TRPML3; mucolipin 3"
+            },
+            {
+              "name": "K04986  PKD2; polycystin 2"
+            },
+            {
+              "name": "K04990  PKD2L1; polycystin 2L1"
+            },
+            {
+              "name": "K04991  PKD2L2; polycystin 2L2"
+            },
+            {
+              "name": "K04985  PKD1; polycystin 1"
+            },
+            {
+              "name": "K04987  PKD1L1; polycystin 1L1"
+            },
+            {
+              "name": "K04988  PKD1L2; polycystin 1L2"
+            },
+            {
+              "name": "K04989  PKD1L3; polycystin 1L3"
+            }
+          ]
+        },
+        {
+          "name": "Cyclic nucleotide-gated channel (CNG)",
+          "children": [
+            {
+              "name": "K04948  CNGA1; cyclic nucleotide gated channel alpha 1"
+            },
+            {
+              "name": "K04949  CNGA2; cyclic nucleotide gated channel alpha 2"
+            },
+            {
+              "name": "K04950  CNGA3; cyclic nucleotide gated channel alpha 3"
+            },
+            {
+              "name": "K04951  CNGA4; cyclic nucleotide gated channel alpha 4"
+            },
+            {
+              "name": "K04952  CNGB1; cyclic nucleotide gated channel beta 1"
+            },
+            {
+              "name": "K04953  CNGB3; cyclic nucleotide gated channel beta 3"
+            },
+            {
+              "name": "K27629  CNGC17; cyclic nucleotide gated channel 17"
+            },
+            {
+              "name": "K05391  CNGC; cyclic nucleotide gated channel, plant"
+            }
+          ]
+        },
+        {
+          "name": "Cyclic nucleotide-gated channel (HCN)",
+          "children": [
+            {
+              "name": "K04954  HCN1; hyperpolarization activated cyclic nucleotide-gated potassium channel 1"
+            },
+            {
+              "name": "K04955  HCN2; hyperpolarization activated cyclic nucleotide-gated potassium channel 2"
+            },
+            {
+              "name": "K04956  HCN3; hyperpolarization activated cyclic nucleotide-gated potassium channel 3"
+            },
+            {
+              "name": "K04957  HCN4; hyperpolarization activated cyclic nucleotide-gated potassium channel 4"
+            }
+          ]
+        },
+        {
+          "name": "Sodium leak channel, non-selective",
+          "children": [
+            {
+              "name": "K21863  NALCN; sodium leak channel non-selective protein"
+            },
+            {
+              "name": "K24014  UNC79; protein unc-79"
+            },
+            {
+              "name": "K24015  UNC80; protein unc-80"
+            }
+          ]
+        },
+        {
+          "name": "Proton channel, voltage-gated (Hv)",
+          "children": [
+            {
+              "name": "K22644  HVCN1, HV1; voltage-gated hydrogen channel 1"
+            }
+          ]
+        },
+        {
+          "name": "Ryanodine receptor",
+          "children": [
+            {
+              "name": "K04961  RYR1; ryanodine receptor 1"
+            },
+            {
+              "name": "K04962  RYR2; ryanodine receptor 2"
+            },
+            {
+              "name": "K04963  RYR3; ryanodine receptor 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chloride channels",
+      "children": [
+        {
+          "name": "Chloride channel (CLC)",
+          "children": [
+            {
+              "name": "K05010  CLCN1; chloride channel 1, skeletal muscle"
+            },
+            {
+              "name": "K05011  CLCN2; chloride channel 2"
+            },
+            {
+              "name": "K05012  CLCN3_4_5; chloride channel 3/4/5"
+            },
+            {
+              "name": "K05015  CLCN6; chloride channel 6"
+            },
+            {
+              "name": "K05016  CLCN7; chloride channel 7"
+            },
+            {
+              "name": "K05017  CLCNKA; chloride channel Ka"
+            },
+            {
+              "name": "K05018  CLCNKB; chloride channel Kb"
+            },
+            {
+              "name": "K23863  OSTM1; osteopetrosis-associated transmembrane protein 1 (chloride channel 7 beta subunit)"
+            },
+            {
+              "name": "K19331  BSND; barttin (chloride channel Ka/b beta subunit)"
+            }
+          ]
+        },
+        {
+          "name": "Chloride channel, intracellular (CLIC)",
+          "children": [
+            {
+              "name": "K05021  CLIC1; chloride intracellular channel protein 1"
+            },
+            {
+              "name": "K05022  CLIC2; chloride intracellular channel protein 2"
+            },
+            {
+              "name": "K05023  CLIC3; chloride intracellular channel protein 3"
+            },
+            {
+              "name": "K05024  CLIC4; chloride intracellular channel protein 4"
+            },
+            {
+              "name": "K05025  CLIC5; chloride intracellular channel protein 5"
+            },
+            {
+              "name": "K05026  CLIC6; chloride intracellular channel protein 6"
+            }
+          ]
+        },
+        {
+          "name": "Chloride channel, calcium-activated (CaCC)",
+          "children": [
+            {
+              "name": "K19496  ANO1, DOG1, TMEM16A; anoctamin-1"
+            },
+            {
+              "name": "K19497  ANO2, TMEM16B; anoctamin-2"
+            },
+            {
+              "name": "K19498  ANO3, TMEM16C; anoctamin-3"
+            },
+            {
+              "name": "K19499  ANO4, TMEM16D; anoctamin-4"
+            },
+            {
+              "name": "K19480  ANO5, GDD1, TMEM16E; anoctamin-5"
+            },
+            {
+              "name": "K19500  ANO6, TMEM16F; anoctamin-6"
+            },
+            {
+              "name": "K19501  ANO7, NGEP, TMEM16G; anoctamin-7"
+            },
+            {
+              "name": "K19502  ANO8, TMEM16H; anoctamin-8"
+            },
+            {
+              "name": "K19503  ANO9, TMEM16J; anoctamin-9"
+            },
+            {
+              "name": "K19327  ANO10, TMEM16K; anoctamin-10"
+            },
+            {
+              "name": "K05027  CLCA1; calcium-activated chloride channel regulator 1"
+            },
+            {
+              "name": "K05028  CLCA2; calcium-activated chloride channel regulator 2"
+            },
+            {
+              "name": "K05030  CLCA3_4; calcium-activated chloride channel regulator 3/4"
+            }
+          ]
+        },
+        {
+          "name": "Chloride channel, volume-regulated (VRAC)",
+          "children": [
+            {
+              "name": "K22038  LRRC8; volume-regulated anion channel"
+            }
+          ]
+        },
+        {
+          "name": "Maxi chloride channel (VDAC)",
+          "children": [
+            {
+              "name": "K05862  VDAC1; voltage-dependent anion channel protein 1"
+            },
+            {
+              "name": "K15040  VDAC2; voltage-dependent anion channel protein 2"
+            },
+            {
+              "name": "K15041  VDAC3; voltage-dependent anion channel protein 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Other channels",
+      "children": [
+        {
+          "name": "Calcium channel, calcium release-activated (Orai)",
+          "children": [
+            {
+              "name": "K16056  ORAI1; calcium release-activated calcium channel protein 1"
+            },
+            {
+              "name": "K16057  ORAI2; calcium release-activated calcium channel protein 2"
+            },
+            {
+              "name": "K16058  ORAI3; calcium release-activated calcium channel protein 3"
+            }
+          ]
+        },
+        {
+          "name": "Mechanosensitive channel (Piezo)",
+          "children": [
+            {
+              "name": "K22128  PIEZO1_2, FAM38; piezo-type mechanosensitive ion channel component 1/2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

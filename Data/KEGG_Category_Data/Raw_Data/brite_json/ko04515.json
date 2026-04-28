@@ -1,0 +1,724 @@
+{
+  "name": "ko04515",
+  "children": [
+    {
+      "name": "Immunoglobulin superfamily",
+      "children": [
+        {
+          "name": "NCAM1/2",
+          "children": [
+            {
+              "name": "K06491  NCAM, CD56; neural cell adhesion molecule"
+            }
+          ]
+        },
+        {
+          "name": "ICAM",
+          "children": [
+            {
+              "name": "K06490  ICAM1, CD54; intercellular adhesion molecule 1"
+            },
+            {
+              "name": "K06523  ICAM2, CD102; intercellular adhesion molecule 2"
+            },
+            {
+              "name": "K06486  ICAM3, CD50; intercellular adhesion molecule 3"
+            },
+            {
+              "name": "K06581  ICAM4, CD242; intercellular adhesion molecule 4"
+            },
+            {
+              "name": "K06769  ICAM5, TLCN; intercellular adhesion molecule 5"
+            }
+          ]
+        },
+        {
+          "name": "VCAM",
+          "children": [
+            {
+              "name": "K06527  VCAM1, CD106; vascular cell adhesion molecule 1"
+            }
+          ]
+        },
+        {
+          "name": "MPZ family",
+          "children": [
+            {
+              "name": "K06770  MPZ; myelin protein zero"
+            },
+            {
+              "name": "K27315  MPZL1; myelin protein zero-like protein 1"
+            },
+            {
+              "name": "K27316  MPZL2; myelin protein zero-like protein 2"
+            },
+            {
+              "name": "K27317  MPZL3; myelin protein zero-like protein 3"
+            }
+          ]
+        },
+        {
+          "name": "CTX family",
+          "children": [
+            {
+              "name": "K06788  CXADR, CAR; coxsackievirus and adenovirus receptor"
+            },
+            {
+              "name": "K06791  IGSF11; immunoglobulin superfamily, member 11"
+            },
+            {
+              "name": "K06789  ASAM, CLMP; adipocyte-specific adhesion molecule"
+            },
+            {
+              "name": "K06790  GPA33; cell surface A33 antigen"
+            },
+            {
+              "name": "K06089  F11R, JAM1, CD321; junctional adhesion molecule 1"
+            },
+            {
+              "name": "K06735  JAM2, CD322; junctional adhesion molecule 2"
+            },
+            {
+              "name": "K06785  JAM3; junctional adhesion molecule 3"
+            },
+            {
+              "name": "K06786  JAM4, JCAM; junctional adhesion molecule 4"
+            },
+            {
+              "name": "K28137  JAML; junctional adhesion molecule-like"
+            },
+            {
+              "name": "K06787  ESAM; endothelial cell adhesion molecule"
+            }
+          ]
+        },
+        {
+          "name": "SIRP family",
+          "children": [
+            {
+              "name": "K06551  SIRPA_B1_G, CD172; signal-regulatory protein alpha/beta1/gamma"
+            },
+            {
+              "name": "K16826  SIRPB2; signal-regulatory protein beta 2"
+            }
+          ]
+        },
+        {
+          "name": "Nectin family",
+          "children": [
+            {
+              "name": "K06081  NECTIN1, PVRL1, CD111; poliovirus receptor-related protein 1"
+            },
+            {
+              "name": "K06531  NECTIN2, PVRL2, CD112; poliovirus receptor-related protein 2"
+            },
+            {
+              "name": "K06592  NECTIN3, PVRL3, CD113; poliovirus receptor-related protein 3"
+            },
+            {
+              "name": "K06593  NECTIN4, PVRL4; poliovirus receptor-related 4"
+            },
+            {
+              "name": "K06780  CADM3, IGSF4B, NECL1, TSLL1; cell adhesion molecule 3"
+            },
+            {
+              "name": "K06781  CADM1, IGSF4, NECL2, TSLC1; cell adhesion molecule 1"
+            },
+            {
+              "name": "K06782  CADM2, IGSF4D, NECL3; cell adhesion molecule 2"
+            },
+            {
+              "name": "K06783  CADM4, IGSF4C, TSLL2; cell adhesion molecule 4"
+            },
+            {
+              "name": "K06539  PVR, NECL5, CD155; poliovirus receptor"
+            },
+            {
+              "name": "K06517  CD96; CD96 antigen"
+            },
+            {
+              "name": "K16361  CRTAM, CD355; cytotoxic and regulatory T-cell molecule"
+            }
+          ]
+        },
+        {
+          "name": "IgLON family",
+          "children": [
+            {
+              "name": "K06772  LSAMP, LAMP; limbic system-associated membrane protein"
+            },
+            {
+              "name": "K06773  OPCML, OBCAM; opioid binding protein/cell adhesion molecule-like"
+            },
+            {
+              "name": "K06774  HNT; neurotrimin"
+            },
+            {
+              "name": "K06775  NEGR1; neuronal growth regulator 1"
+            }
+          ]
+        },
+        {
+          "name": "DCC/UNC5 family",
+          "children": [
+            {
+              "name": "K06765  DCC; deleted in colorectal carcinoma"
+            },
+            {
+              "name": "K06766  NEO1; neogenin"
+            },
+            {
+              "name": "K22654  IGDCC3, PUNK; immunoglobulin superfamily DCC subclass member 3"
+            },
+            {
+              "name": "K22657  IGDCC4, NOPE; immunoglobulin superfamily DCC subclass member 4"
+            },
+            {
+              "name": "K07521  UNC5; netrin receptor unc-5"
+            }
+          ]
+        },
+        {
+          "name": "ROBO family",
+          "children": [
+            {
+              "name": "K06753  ROBO1; roundabout, axon guidance receptor 1"
+            },
+            {
+              "name": "K06754  ROBO2; roundabout, axon guidance receptor 2"
+            },
+            {
+              "name": "K06755  ROBO3; roundabout, axon guidance receptor 3"
+            },
+            {
+              "name": "K06784  ROBO4; roundabout, axon guidance receptor 4"
+            }
+          ]
+        },
+        {
+          "name": "Contactins",
+          "children": [
+            {
+              "name": "K06759  CNTN1; contactin 1"
+            },
+            {
+              "name": "K06760  CNTN2; contactin 2"
+            },
+            {
+              "name": "K06761  CNTN3_4_5_6; contactin 3/4/5/6"
+            }
+          ]
+        },
+        {
+          "name": "L1 family",
+          "children": [
+            {
+              "name": "K06550  L1CAM, CD171; L1 cell adhesion molecule"
+            },
+            {
+              "name": "K06758  CHL1; L1 cell adhesion molecule like protein"
+            },
+            {
+              "name": "K06756  NRCAM; neuronal cell adhesion molecule"
+            },
+            {
+              "name": "K16350  TIGIT; T-cell immunoreceptor with Ig and ITIM domains"
+            },
+            {
+              "name": "K06757  NFASC; neurofascin"
+            },
+            {
+              "name": "K06567  CD226, DNAM1; CD226 antigen"
+            }
+          ]
+        },
+        {
+          "name": "NGL family",
+          "children": [
+            {
+              "name": "K16351  LRRC4, NGL2; netrin-G2 ligand"
+            },
+            {
+              "name": "K07523  LRRC4C, NGL1; netrin-G1 ligand"
+            },
+            {
+              "name": "K16360  LRRC4B, NGL3; netrin-G3 ligand"
+            }
+          ]
+        },
+        {
+          "name": "SALM family",
+          "children": [
+            {
+              "name": "K16354  LRFN1, SALM2; leucine-rich repeat and fibronectin type-III domain-containing protein 1"
+            },
+            {
+              "name": "K16355  LRFN2, SALM1; leucine-rich repeat and fibronectin type-III domain-containing protein 2"
+            },
+            {
+              "name": "K16356  LRFN3, SALM4; leucine-rich repeat and fibronectin type-III domain-containing protein 3"
+            },
+            {
+              "name": "K16357  LRFN4, SALM3; leucine-rich repeat and fibronectin type-III domain-containing protein 4"
+            },
+            {
+              "name": "K16358  LRFN5, SALM5; leucine-rich repeat and fibronectin type-III domain-containing protein 5"
+            }
+          ]
+        },
+        {
+          "name": "Type II RPTP family",
+          "children": [
+            {
+              "name": "K05695  PTPRF, LAR; receptor-type tyrosine-protein phosphatase F [EC:3.1.3.48]"
+            },
+            {
+              "name": "K06777  PTPRD; receptor-type tyrosine-protein phosphatase delta [EC:3.1.3.48]"
+            },
+            {
+              "name": "K06778  PTPRS; receptor-type tyrosine-protein phosphatase S [EC:3.1.3.48]"
+            },
+            {
+              "name": "K05693  PTPRM; receptor-type tyrosine-protein phosphatase mu [EC:3.1.3.48]"
+            },
+            {
+              "name": "K06776  PTPRK; receptor-type tyrosine-protein phosphatase kappa [EC:3.1.3.48]"
+            },
+            {
+              "name": "K16662  PTPRU; receptor-type tyrosine-protein phosphatase U [EC:3.1.3.48]"
+            }
+          ]
+        },
+        {
+          "name": "SLAM/CD2 family",
+          "children": [
+            {
+              "name": "K06536  SLAMF1, CD150; signaling lymphocytic activation molecule family member 1"
+            },
+            {
+              "name": "K06479  CD48, BCM1; CD48 antigen"
+            },
+            {
+              "name": "K06570  LY9, CD229; lymphocyte antigen 9"
+            },
+            {
+              "name": "K06582  CD244; natural killer cell receptor 2B4"
+            },
+            {
+              "name": "K06511  CD84; CD84 antigen"
+            },
+            {
+              "name": "K16852  SLAMF6, CD352; SLAM family member 6"
+            },
+            {
+              "name": "K06733  SLAMF7, CD319; SLAM family member 7"
+            },
+            {
+              "name": "K16853  SLAMF8, CD353; SLAM family member 8"
+            },
+            {
+              "name": "K06449  CD2; T-cell surface glycoprotein CD2"
+            },
+            {
+              "name": "K06492  CD58, LFA3; CD58 antigen"
+            }
+          ]
+        },
+        {
+          "name": "SIGLEC family",
+          "children": [
+            {
+              "name": "K06771  MAG, GMA, SIGLEC4; myelin associated glycoprotein"
+            },
+            {
+              "name": "K06548  SN, SIGLEC1, CD169; sialoadhesin"
+            },
+            {
+              "name": "K06467  CD22, SIGLEC2; CD22 antigen"
+            }
+          ]
+        },
+        {
+          "name": "Other",
+          "children": [
+            {
+              "name": "K06547  ALCAM, CD166; activated leukocyte cell adhesion molecule"
+            },
+            {
+              "name": "K06534  MCAM, CD146; melanoma cell adhesion molecule"
+            },
+            {
+              "name": "K06767  DSCAM; Down syndrome cell adhesion molecule"
+            },
+            {
+              "name": "K06768  DSCAML1; Down syndrome cell adhesion molecule-like protein 1"
+            },
+            {
+              "name": "K06578  BCAM, LU, CD239; basal cell adhesion molecule"
+            },
+            {
+              "name": "K06499  CEACAM, CD66; carcinoembryonic antigen-related cell adhesion molecule"
+            },
+            {
+              "name": "K22655  IGSF9; immunoglobulin superfamily member 9"
+            },
+            {
+              "name": "K22656  IGSF9B; immunoglobulin superfamily member 9B"
+            },
+            {
+              "name": "K16353  SDK; protein sidekick"
+            },
+            {
+              "name": "K25874  KIRREL, NEPH; Kirrel/Neph family protein"
+            },
+            {
+              "name": "K22653  NPTN; neuroplastin"
+            },
+            {
+              "name": "K06535  BSG, CD147; basigin"
+            },
+            {
+              "name": "K28348  EMB, GP70; embigin"
+            },
+            {
+              "name": "K06266  CD47; CD47 antigen (Rh-related antigen, integrin-associated signal transducer)"
+            },
+            {
+              "name": "K06264  GP6; platelet glycoprotein VI"
+            },
+            {
+              "name": "K06514  THY1, CD90; Thy-1 cell surface antigen"
+            },
+            {
+              "name": "K06779  MADCAM1; mucosal vascular addressin cell adhesion molecule 1"
+            },
+            {
+              "name": "K06470  CD28; CD28 antigen"
+            },
+            {
+              "name": "K06512  LILR, CD85; leukocyte immunoglobulin-like receptor"
+            },
+            {
+              "name": "K20020  BOC; brother of CDO"
+            },
+            {
+              "name": "K25529  IZUMO1; izumo sperm-egg fusion protein 1"
+            },
+            {
+              "name": "K25530  IZUMO1R, FOLR4; sperm-egg fusion protein Juno"
+            },
+            {
+              "name": "K23116  HEPACAM; hepatocyte cell adhesion molecule"
+            },
+            {
+              "name": "K26107  FGFRL1, FGFR5; fibroblast growth factor receptor-like 1"
+            },
+            {
+              "name": "K22652  TMEM25; transmembrane protein 25"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cadherins",
+      "children": [
+        {
+          "name": "Major cadherins",
+          "children": [
+            {
+              "name": "K05689  CDH1, CDHE, CD324; cadherin 1, type 1, E-cadherin"
+            },
+            {
+              "name": "K06736  CDH2, CDHN, CD325; cadherin 2, type 1, N-cadherin"
+            },
+            {
+              "name": "K06796  CDH3; cadherin 3, type 1, P-cadherin"
+            },
+            {
+              "name": "K06797  CDH4; cadherin 4, type 1, R-cadherin"
+            },
+            {
+              "name": "K06533  CDH5, CD144; cadherin 5, type 2, VE-cadherin"
+            },
+            {
+              "name": "K06798  CDH6; cadherin 6, type 2, K-cadherin"
+            },
+            {
+              "name": "K06799  CDH7; cadherin 7, type 2"
+            },
+            {
+              "name": "K06800  CDH8; cadherin 8, type 2"
+            },
+            {
+              "name": "K06801  CDH9; cadherin 9, type 2, T1-cadherin"
+            },
+            {
+              "name": "K06802  CDH10; cadherin 10, type 2, T2-cadherin"
+            },
+            {
+              "name": "K06803  CDH11; cadherin 11, type 2, OB-cadherin"
+            },
+            {
+              "name": "K06804  CDH12; cadherin 12, type 2, N-cadherin 2"
+            },
+            {
+              "name": "K06808  CDH13; cadherin 13, H-cadherin"
+            },
+            {
+              "name": "K06809  CDH15, CDH3, CDH14; cadherin 15, M-cadherin"
+            },
+            {
+              "name": "K06810  CDH16; cadherin 16, KSP-cadherin"
+            },
+            {
+              "name": "K06811  CDH17; cadherin 17, LI cadherin"
+            },
+            {
+              "name": "K06805  CDH18; cadherin 18, type 2"
+            },
+            {
+              "name": "K06806  CDH19; cadherin 19, type 2"
+            },
+            {
+              "name": "K06807  CDH20; cadherin 20, type 2"
+            },
+            {
+              "name": "K06812  CDH22; cadherin 22"
+            },
+            {
+              "name": "K06813  CDH23, USH1D; cadherin 23"
+            },
+            {
+              "name": "K06814  CDH24; cadherin-like 24"
+            },
+            {
+              "name": "K22658  CDH26; cadherin 26"
+            },
+            {
+              "name": "K07596  DSG1; desmoglein 1"
+            },
+            {
+              "name": "K07597  DSG2; desmoglein 2"
+            },
+            {
+              "name": "K07598  DSG3; desmoglein 3"
+            },
+            {
+              "name": "K07599  DSG4; desmoglein 4"
+            },
+            {
+              "name": "K07600  DSC1; desmocollin 1"
+            },
+            {
+              "name": "K07601  DSC2; desmocollin 2"
+            },
+            {
+              "name": "K07602  DSC3; desmocollin 3"
+            },
+            {
+              "name": "K04600  CELSR1; cadherin EGF LAG seven-pass G-type receptor 1"
+            },
+            {
+              "name": "K04601  CELSR2; cadherin EGF LAG seven-pass G-type receptor 2"
+            },
+            {
+              "name": "K04602  CELSR3; cadherin EGF LAG seven-pass G-type receptor 3"
+            }
+          ]
+        },
+        {
+          "name": "Protocadherins",
+          "children": [
+            {
+              "name": "K16493  PCDHA; protocadherin alpha"
+            },
+            {
+              "name": "K16494  PCDHB; protocadherin beta"
+            },
+            {
+              "name": "K16495  PCDHGA; protocadherin gamma subfamily A"
+            },
+            {
+              "name": "K16496  PCDHGB; protocadherin gamma subfamily B"
+            },
+            {
+              "name": "K16497  PCDHGC; protocadherin gamma subfamily C"
+            },
+            {
+              "name": "K16498  PCDHD1; protocadherin delta 1"
+            },
+            {
+              "name": "K16499  PCDHD2; protocadherin delta 2"
+            },
+            {
+              "name": "K16500  PCDH15, USH1F; protocadherin-15"
+            }
+          ]
+        },
+        {
+          "name": "Cadherin related",
+          "children": [
+            {
+              "name": "K16501  CDHR1, PCDH21; cadherin-related family member 1"
+            },
+            {
+              "name": "K16502  CDHR2, PCDH24, PCLKC; cadherin-related family member 2"
+            },
+            {
+              "name": "K16503  CDHR3, CDH28; cadherin-related family member 3"
+            },
+            {
+              "name": "K16504  CDHR4, CDH29; cadherin-related family member 4"
+            },
+            {
+              "name": "K16505  CDHR5, MUCDHL; cadherin-related family member 5"
+            },
+            {
+              "name": "K16507  DCHS1_2, PCDH16_23; protocadherin-16/23"
+            },
+            {
+              "name": "K16506  FAT1_2_3; protocadherin Fat 1/2/3"
+            },
+            {
+              "name": "K16669  FAT4; protocadherin Fat 4"
+            },
+            {
+              "name": "K22659  CLSTN1; calsyntenin 1"
+            },
+            {
+              "name": "K22660  CLSTN2; calsyntenin 2"
+            },
+            {
+              "name": "K22661  CLSTN3; calsyntenin 3"
+            },
+            {
+              "name": "K27891  SHG; DE-cadherin"
+            },
+            {
+              "name": "K27892  CADN; neural-cadherin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Integrins",
+      "children": [
+        {
+          "name": "Integrin alpha subunits",
+          "children": [
+            {
+              "name": "K06480  ITGA1, CD49a; integrin alpha 1"
+            },
+            {
+              "name": "K06481  ITGA2, CD49b; integrin alpha 2"
+            },
+            {
+              "name": "K06482  ITGA3, CD49c; integrin alpha 3"
+            },
+            {
+              "name": "K06483  ITGA4, CD49d; integrin alpha 4"
+            },
+            {
+              "name": "K06484  ITGA5, CD49e; integrin alpha 5"
+            },
+            {
+              "name": "K06485  ITGA6, CD49f; integrin alpha 6"
+            },
+            {
+              "name": "K06583  ITGA7; integrin alpha 7"
+            },
+            {
+              "name": "K06584  ITGA8; integrin alpha 8"
+            },
+            {
+              "name": "K06585  ITGA9; integrin alpha 9"
+            },
+            {
+              "name": "K06586  ITGA10; integrin alpha 10"
+            },
+            {
+              "name": "K06587  ITGA11; integrin alpha 11"
+            },
+            {
+              "name": "K06594  ITGAD, CD11d; integrin alpha D"
+            },
+            {
+              "name": "K06524  ITGAE, CD103; integrin alpha E"
+            },
+            {
+              "name": "K05718  ITGAL, CD11a; integrin alpha L"
+            },
+            {
+              "name": "K06461  ITGAM, CD11b; integrin alpha M"
+            },
+            {
+              "name": "K06487  ITGAV, CD51; integrin alpha V"
+            },
+            {
+              "name": "K06476  ITGA2B, CD41; integrin alpha 2B"
+            },
+            {
+              "name": "K06462  ITGAX, CD11c; integrin alpha X"
+            }
+          ]
+        },
+        {
+          "name": "Integrin beta subunits",
+          "children": [
+            {
+              "name": "K05719  ITGB1, CD29; integrin beta 1"
+            },
+            {
+              "name": "K06464  ITGB2, CD18; integrin beta 2"
+            },
+            {
+              "name": "K06493  ITGB3, CD61; integrin beta 3"
+            },
+            {
+              "name": "K06525  ITGB4, CD104; integrin beta 4"
+            },
+            {
+              "name": "K06588  ITGB5; integrin beta 5"
+            },
+            {
+              "name": "K06589  ITGB6; integrin beta 6"
+            },
+            {
+              "name": "K06590  ITGB7; integrin beta 7"
+            },
+            {
+              "name": "K06591  ITGB8; integrin beta 8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lectins",
+      "children": [
+        {
+          "name": "Selectins and C-type lectins",
+          "children": [
+            {
+              "name": "K06494  SELE, CD62E; selectin, endothelial cell"
+            },
+            {
+              "name": "K06495  SELL, CD62L; selectin, lymphocyte"
+            },
+            {
+              "name": "K06496  SELP, CD62P; selectin, platelet"
+            },
+            {
+              "name": "K06563  CLEC4L_M, DC-SIGN, CD209, CD299; C-type lectin domain family 4 member L/M"
+            },
+            {
+              "name": "K10070  CLEC1B; C-type lectin domain family 1 member B"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

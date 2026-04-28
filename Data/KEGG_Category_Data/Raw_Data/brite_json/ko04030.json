@@ -1,0 +1,1901 @@
+{
+  "name": "ko04030",
+  "children": [
+    {
+      "name": "Rhodopsin family",
+      "children": [
+        {
+          "name": "Biogenic amine",
+          "children": [
+            {
+              "name": "Acetylcholine (muscarinic)",
+              "children": [
+                {
+                  "name": "K04129  CHRM1; muscarinic acetylcholine receptor M1"
+                },
+                {
+                  "name": "K04130  CHRM2; muscarinic acetylcholine receptor M2"
+                },
+                {
+                  "name": "K04131  CHRM3; muscarinic acetylcholine receptor M3"
+                },
+                {
+                  "name": "K04132  CHRM4; muscarinic acetylcholine receptor M4"
+                },
+                {
+                  "name": "K04133  CHRM5; muscarinic acetylcholine receptor M5"
+                },
+                {
+                  "name": "K04134  CHRMN; muscarinic acetylcholine receptor"
+                }
+              ]
+            },
+            {
+              "name": "Adrenaline",
+              "children": [
+                {
+                  "name": "K04135  ADRA1A; adrenergic receptor alpha-1A"
+                },
+                {
+                  "name": "K04136  ADRA1B; adrenergic receptor alpha-1B"
+                },
+                {
+                  "name": "K04137  ADRA1D; adrenergic receptor alpha-1D"
+                },
+                {
+                  "name": "K04138  ADRA2A; adrenergic receptor alpha-2A"
+                },
+                {
+                  "name": "K04139  ADRA2B; adrenergic receptor alpha-2B"
+                },
+                {
+                  "name": "K04140  ADRA2C; adrenergic receptor alpha-2C"
+                },
+                {
+                  "name": "K04141  ADRB1; adrenergic receptor beta-1"
+                },
+                {
+                  "name": "K04142  ADRB2; adrenergic receptor beta-2"
+                },
+                {
+                  "name": "K04143  ADRB3; adrenergic receptor beta-3"
+                }
+              ]
+            },
+            {
+              "name": "Dopamine",
+              "children": [
+                {
+                  "name": "K04144  DRD1; dopamine receptor D1"
+                },
+                {
+                  "name": "K04145  DRD2; dopamine receptor D2"
+                },
+                {
+                  "name": "K04146  DRD3; dopamine receptor D3"
+                },
+                {
+                  "name": "K04147  DRD4; dopamine receptor D4"
+                },
+                {
+                  "name": "K05840  DRD5; dopamine receptor D5"
+                },
+                {
+                  "name": "K04148  DRD1N; dopamine receptor D1-like"
+                }
+              ]
+            },
+            {
+              "name": "Dopamine and ecdysteroid",
+              "children": [
+                {
+                  "name": "K22919  DopEcR; dopamine/ecdysteroid receptor"
+                }
+              ]
+            },
+            {
+              "name": "Histamine",
+              "children": [
+                {
+                  "name": "K04149  HRH1; histamine receptor H1"
+                },
+                {
+                  "name": "K04150  HRH2; histamine receptor H2"
+                },
+                {
+                  "name": "K04151  HRH3; histamine receptor H3"
+                },
+                {
+                  "name": "K04152  HRH4; histamine receptor H4"
+                }
+              ]
+            },
+            {
+              "name": "Octopamine and tryamine",
+              "children": [
+                {
+                  "name": "K04165  Oamb; octopamine receptor"
+                },
+                {
+                  "name": "K22814  Octalpha; octopamine receptor alpha"
+                },
+                {
+                  "name": "K22790  Octbeta; octopamine receptor beta"
+                },
+                {
+                  "name": "K22791  TyrR; tyramine receptor"
+                },
+                {
+                  "name": "K22815  Oct-TyrR; octopamine/tyramine receptor"
+                }
+              ]
+            },
+            {
+              "name": "Serotonin",
+              "children": [
+                {
+                  "name": "K04153  HTR1; 5-hydroxytryptamine receptor 1"
+                },
+                {
+                  "name": "K04157  HTR2; 5-hydroxytryptamine receptor 2"
+                },
+                {
+                  "name": "K04160  HTR4; 5-hydroxytryptamine receptor 4"
+                },
+                {
+                  "name": "K04161  HTR5; 5-hydroxytryptamine receptor 5"
+                },
+                {
+                  "name": "K04162  HTR6; 5-hydroxytryptamine receptor 6"
+                },
+                {
+                  "name": "K04163  HTR7; 5-hydroxytryptamine receptor 7"
+                }
+              ]
+            },
+            {
+              "name": "Trace amine",
+              "children": [
+                {
+                  "name": "K05051  TAAR; trace amine associated receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Peptide",
+          "children": [
+            {
+              "name": "Adrenomedullin (G10D)",
+              "children": [
+                {
+                  "name": "K04242  ADMR; adrenomedullin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Adropin",
+              "children": [
+                {
+                  "name": "K04316  GPR19; G protein-coupled receptor 19"
+                }
+              ]
+            },
+            {
+              "name": "Apelin",
+              "children": [
+                {
+                  "name": "K04174  APLNR; apelin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Anaphylatoxin",
+              "children": [
+                {
+                  "name": "K04009  C3AR1; C3a anaphylatoxin chemotactic receptor"
+                },
+                {
+                  "name": "K04010  C5AR1, CD88; C5a anaphylatoxin chemotactic receptor 1"
+                },
+                {
+                  "name": "K04171  C5AR2, GPR77; C5a anaphylatoxin chemotactic receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Angiotensin",
+              "children": [
+                {
+                  "name": "K04166  AGTR1; angiotensin II receptor type 1"
+                },
+                {
+                  "name": "K04167  AGTR2; angiotensin II receptor type 2"
+                }
+              ]
+            },
+            {
+              "name": "BigLEN",
+              "children": [
+                {
+                  "name": "K08441  GPR171; G protein-coupled receptor 171"
+                }
+              ]
+            },
+            {
+              "name": "Bombesin",
+              "children": [
+                {
+                  "name": "K04168  NMBR; neuromedin B receptor"
+                },
+                {
+                  "name": "K04169  GRPR; gastrin-releasing peptide receptor"
+                },
+                {
+                  "name": "K04170  BRS3; bombesin receptor subtype-3"
+                }
+              ]
+            },
+            {
+              "name": "Bradykinin",
+              "children": [
+                {
+                  "name": "K03915  BDKRB1; bradykinin receptor B1"
+                },
+                {
+                  "name": "K03916  BDKRB2; bradykinin receptor B2"
+                }
+              ]
+            },
+            {
+              "name": "Cholecystokinin",
+              "children": [
+                {
+                  "name": "K04194  CCKAR; cholecystokinin A receptor"
+                },
+                {
+                  "name": "K04195  CCKBR; cholecystokinin B receptor"
+                },
+                {
+                  "name": "K04196  CCKLR; cholecystokinin-like receptor"
+                }
+              ]
+            },
+            {
+              "name": "Endothelin",
+              "children": [
+                {
+                  "name": "K04197  EDNRA; endothelin receptor type A"
+                },
+                {
+                  "name": "K04198  EDNRB; endothelin receptor type B"
+                }
+              ]
+            },
+            {
+              "name": "fMet-Leu-Phe",
+              "children": [
+                {
+                  "name": "K04172  FPR1; formyl peptide receptor 1"
+                },
+                {
+                  "name": "K04173  FPRL; formyl peptide receptor-like"
+                }
+              ]
+            },
+            {
+              "name": "Follicle stimulating hormone (FSH)",
+              "children": [
+                {
+                  "name": "K04247  FSHR; follicle stimulating hormone receptor"
+                }
+              ]
+            },
+            {
+              "name": "Galanin",
+              "children": [
+                {
+                  "name": "K04230  GALR1; galanin receptor 1"
+                },
+                {
+                  "name": "K04231  GALR2; galanin receptor 2"
+                },
+                {
+                  "name": "K04232  GALR3; galanin receptor 3"
+                },
+                {
+                  "name": "K08374  KISS1R; KISS1 receptor"
+                },
+                {
+                  "name": "K04233  ASTA-R; allatostatin A receptor"
+                }
+              ]
+            },
+            {
+              "name": "Ghrelin",
+              "children": [
+                {
+                  "name": "K04284  GHSR; growth hormone secretagogue receptor"
+                }
+              ]
+            },
+            {
+              "name": "Gonadotropin-releasing hormone (GnRH)",
+              "children": [
+                {
+                  "name": "K04280  GNRHR; gonadotropin-releasing hormone receptor"
+                },
+                {
+                  "name": "K04300  SREB3, GPR173; super conserved receptor expressed in brain 3"
+                },
+                {
+                  "name": "K28250  CrzR; corazonin receptor"
+                },
+                {
+                  "name": "K28251  AkhR; adipokinetic hormone receptor"
+                }
+              ]
+            },
+            {
+              "name": "Lutropin-choriogonadotropic hormone",
+              "children": [
+                {
+                  "name": "K04248  LHCGR; lutropin-choriogonadotropic hormone receptor"
+                }
+              ]
+            },
+            {
+              "name": "Melanin-concentrating hormone (MCH)",
+              "children": [
+                {
+                  "name": "K04320  MCHR1; melanin-concentrating hormone receptor 1"
+                },
+                {
+                  "name": "K05054  MCHR2; melanin-concentrating hormone receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Melanocortin",
+              "children": [
+                {
+                  "name": "K04199  MC1R; melanocortin 1 receptor"
+                },
+                {
+                  "name": "K04200  MC2R; melanocortin 2 receptor"
+                },
+                {
+                  "name": "K04201  MC3R; melanocortin 3 receptor"
+                },
+                {
+                  "name": "K04202  MC4R; melanocortin 4 receptor"
+                },
+                {
+                  "name": "K04203  MC5R; melanocortin 5 receptor"
+                }
+              ]
+            },
+            {
+              "name": "Motilin",
+              "children": [
+                {
+                  "name": "K05266  MLNR; motilin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Neuromedin U",
+              "children": [
+                {
+                  "name": "K05052  NMUR1; neuromedin U receptor 1"
+                },
+                {
+                  "name": "K05053  NMUR2; neuromedin U receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Neuropeptide FF",
+              "children": [
+                {
+                  "name": "K04240  NPFFR1; neuropeptide FF receptor 1"
+                },
+                {
+                  "name": "K08375  NPFFR2; neuropeptide FF receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Neuropeptide S",
+              "children": [
+                {
+                  "name": "K08376  NPSR1, GPR154; neuropeptide S receptor"
+                }
+              ]
+            },
+            {
+              "name": "Neuropeptide W / neuropeptide B",
+              "children": [
+                {
+                  "name": "K05268  NPBWR1; neuropeptides B/W receptor 1"
+                },
+                {
+                  "name": "K08377  NPBWR2; neuropeptides B/W receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Neuropeptide Y",
+              "children": [
+                {
+                  "name": "K04204  NPY1R; neuropeptide Y receptor type 1"
+                },
+                {
+                  "name": "K04205  NPY2R; neuropeptide Y receptor type 2"
+                },
+                {
+                  "name": "K04206  NPY4R; neuropeptide Y receptor type 4"
+                },
+                {
+                  "name": "K04207  NPY5R; neuropeptide Y receptor type 5"
+                },
+                {
+                  "name": "K04208  NPY6R; neuropeptide Y receptor type 6"
+                },
+                {
+                  "name": "K04210  GPR83, GPR72; G protein-coupled receptor 83"
+                },
+                {
+                  "name": "K04209  NPFR; neuropeptide F receptor"
+                }
+              ]
+            },
+            {
+              "name": "Neurotensin",
+              "children": [
+                {
+                  "name": "K04211  NTSR1; neurotensin receptor 1"
+                },
+                {
+                  "name": "K04212  NTSR2; neurotensin receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Opioid",
+              "children": [
+                {
+                  "name": "K04213  OPRD1; delta-type opioid receptor"
+                },
+                {
+                  "name": "K04214  OPRK1; kappa-type opioid receptor"
+                },
+                {
+                  "name": "K04215  OPRM1; mu-type opioid receptor"
+                },
+                {
+                  "name": "K04216  OPRL1; nociceptin receptor"
+                },
+                {
+                  "name": "K27951  OGFR, OGFRL; opioid growth factor receptor"
+                }
+              ]
+            },
+            {
+              "name": "Orexigenic neuropeptide QRFP",
+              "children": [
+                {
+                  "name": "K08378  QRFPR, GPR103; pyroglutamylated RFamide peptide receptor"
+                }
+              ]
+            },
+            {
+              "name": "Orexin",
+              "children": [
+                {
+                  "name": "K04238  HCRTR1; hypocretin (orexin) receptor 1"
+                },
+                {
+                  "name": "K04239  HCRTR2; hypocretin (orexin) receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Oxytocin",
+              "children": [
+                {
+                  "name": "K04229  OXTR; oxytocin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Prokineticin",
+              "children": [
+                {
+                  "name": "K08379  PROKR1; prokineticin receptor 1"
+                },
+                {
+                  "name": "K08380  PROKR2; prokineticin receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Prolactin-releasing peptide (PrRP)",
+              "children": [
+                {
+                  "name": "K04314  PRLHR, GPR10; prolactin releasing hormone receptor"
+                }
+              ]
+            },
+            {
+              "name": "Prosaposin",
+              "children": [
+                {
+                  "name": "K04243  GPR37; prosaposin receptor"
+                },
+                {
+                  "name": "K04244  GPR37L1, ETBRLP2; prosaposin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Relaxin",
+              "children": [
+                {
+                  "name": "K04306  RXFP1, LGR7; relaxin family peptide receptor 1"
+                },
+                {
+                  "name": "K04307  RXFP2, LGR8; relaxin family peptide receptor 2"
+                },
+                {
+                  "name": "K08397  RXFP3, RLN3R1; relaxin family peptide receptor 3"
+                },
+                {
+                  "name": "K08398  RXFP4, RLN3R2; relaxin family peptide receptor 4"
+                }
+              ]
+            },
+            {
+              "name": "Somatostatin",
+              "children": [
+                {
+                  "name": "K04217  SSTR1; somatostatin receptor 1"
+                },
+                {
+                  "name": "K04218  SSTR2; somatostatin receptor 2"
+                },
+                {
+                  "name": "K04219  SSTR3; somatostatin receptor 3"
+                },
+                {
+                  "name": "K04220  SSTR4; somatostatin receptor 4"
+                },
+                {
+                  "name": "K04221  SSTR5; somatostatin receptor 5"
+                },
+                {
+                  "name": "K22872  ASTC-R; allatostatin C receptor"
+                }
+              ]
+            },
+            {
+              "name": "Tachykinin",
+              "children": [
+                {
+                  "name": "K04222  TACR1; tachykinin receptor 1"
+                },
+                {
+                  "name": "K04223  TACR2; tachykinin receptor 2"
+                },
+                {
+                  "name": "K04224  TACR3; tachykinin receptor 3"
+                },
+                {
+                  "name": "K14071  LKR; leucokinin receptor"
+                },
+                {
+                  "name": "K14072  Rya-R, NEPYR; RYamide receptor"
+                }
+              ]
+            },
+            {
+              "name": "Thrombin",
+              "children": [
+                {
+                  "name": "K03914  F2R, PAR1; coagulation factor II (thrombin) receptor"
+                },
+                {
+                  "name": "K04234  F2RL1, PAR2; coagulation factor II (thrombin) receptor-like 1"
+                },
+                {
+                  "name": "K04235  F2RL2, PAR3; coagulation factor II (thrombin) receptor-like 2"
+                },
+                {
+                  "name": "K04236  F2RL3, PAR4; coagulation factor II (thrombin) receptor-like 3"
+                }
+              ]
+            },
+            {
+              "name": "Thyrotropin",
+              "children": [
+                {
+                  "name": "K04249  TSHR; thyrotropin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Thyrotropin-releasing hormone (TRH)",
+              "children": [
+                {
+                  "name": "K04282  TRHR; thyrotropin-releasing hormone receptor"
+                }
+              ]
+            },
+            {
+              "name": "Urotensin II",
+              "children": [
+                {
+                  "name": "K04241  UTS2R; urotensin 2 receptor"
+                }
+              ]
+            },
+            {
+              "name": "Vasopressin",
+              "children": [
+                {
+                  "name": "K04226  AVPR1A; arginine vasopressin receptor 1A"
+                },
+                {
+                  "name": "K04227  AVPR1B; arginine vasopressin receptor 1B"
+                },
+                {
+                  "name": "K04228  AVPR2; arginine vasopressin receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Neuropeptide receptors",
+              "children": [
+                {
+                  "name": "K26200  SPR; sex peptide receptor"
+                },
+                {
+                  "name": "K26201  FMRFaR; FMRFamide receptor"
+                },
+                {
+                  "name": "K26202  Proc-R; proctolin receptor"
+                },
+                {
+                  "name": "K26203  MsR; myosuppressin receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Chemokine",
+          "children": [
+            {
+              "name": "CC Chemokine",
+              "children": [
+                {
+                  "name": "K04176  CCR1, CD191; C-C chemokine receptor type 1"
+                },
+                {
+                  "name": "K04177  CCR2, CD192; C-C chemokine receptor type 2"
+                },
+                {
+                  "name": "K04178  CCR3, CD193; C-C chemokine receptor type 3"
+                },
+                {
+                  "name": "K04179  CCR4, CD194; C-C chemokine receptor type 4"
+                },
+                {
+                  "name": "K04180  CCR5, CD195; C-C chemokine receptor type 5"
+                },
+                {
+                  "name": "K04181  CCR6, CD196; C-C chemokine receptor type 6"
+                },
+                {
+                  "name": "K04182  CCR7, CD197; C-C chemokine receptor type 7"
+                },
+                {
+                  "name": "K04183  CCR8, CDw198; C-C chemokine receptor type 8"
+                },
+                {
+                  "name": "K04184  CCR9, CDw199; C-C chemokine receptor type 9"
+                },
+                {
+                  "name": "K04185  CCR10; C-C chemokine receptor type 10"
+                },
+                {
+                  "name": "K06574  ACKR1, DARC, CD234; atypical chemokine receptor 1"
+                },
+                {
+                  "name": "K04187  ACKR2, CCBP2; atypical chemokine receptor 2"
+                },
+                {
+                  "name": "K04186  ACKR4, CCRL1, CCR11; atypical chemokine receptor 4"
+                },
+                {
+                  "name": "K08373  CCRL2; C-C chemokine receptor-like 2"
+                },
+                {
+                  "name": "K08417  GPR75; G protein-coupled receptor 75"
+                }
+              ]
+            },
+            {
+              "name": "CXC Chemokine",
+              "children": [
+                {
+                  "name": "K04175  CXCR1, IL8RA, CD181; C-X-C chemokine receptor type 1"
+                },
+                {
+                  "name": "K05050  CXCR2, IL8RB, CD182; C-X-C chemokine receptor type 2"
+                },
+                {
+                  "name": "K04188  CXCR3, GPR9, CD183; C-X-C chemokine receptor type 3"
+                },
+                {
+                  "name": "K04189  CXCR4, CD184; C-X-C chemokine receptor type 4"
+                },
+                {
+                  "name": "K04190  CXCR5, BLR1, CD185; C-X-C chemokine receptor type 5"
+                },
+                {
+                  "name": "K04191  CXCR6, CD186; C-X-C chemokine receptor type 6"
+                },
+                {
+                  "name": "K04304  CXCR7, ACKR3, RDC1; C-X-C chemokine receptor type 7 (atypical chemokine receptor 3)"
+                },
+                {
+                  "name": "K04276  CXCR8, GPR35; C-X-C chemokine receptor type 8"
+                }
+              ]
+            },
+            {
+              "name": "CX3C Chemokine",
+              "children": [
+                {
+                  "name": "K04192  CX3CR1; CX3C chemokine receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "C Chemokine",
+              "children": [
+                {
+                  "name": "K04193  XCR1; XC chemokine receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "Chemokine like",
+              "children": [
+                {
+                  "name": "K04245  CMKLR1; chemokine-like receptor 1"
+                },
+                {
+                  "name": "K04310  GPR1; G protein-coupled receptor 1"
+                },
+                {
+                  "name": "K08403  GPR15; G protein-coupled receptor 15"
+                },
+                {
+                  "name": "K08381  GPR32; G protein-coupled receptor 32"
+                },
+                {
+                  "name": "K08382  GPR33; G protein-coupled receptor 33"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Base and nucleoside",
+          "children": [
+            {
+              "name": "Purine / pyrimidine",
+              "children": [
+                {
+                  "name": "K04270  P2RY1; P2Y purinoceptor 1"
+                },
+                {
+                  "name": "K04269  P2RY2; P2Y purinoceptor 2"
+                },
+                {
+                  "name": "K04271  P2RY4; P2Y purinoceptor 4"
+                },
+                {
+                  "name": "K04272  P2RY6; P2Y purinoceptor 6"
+                },
+                {
+                  "name": "K08386  P2RY8; P2Y purinoceptor 8"
+                },
+                {
+                  "name": "K08387  P2RY11; P2Y purinoceptor 11"
+                },
+                {
+                  "name": "K04298  P2RY12; P2Y purinoceptor 12"
+                },
+                {
+                  "name": "K08388  P2RY13; P2Y purinoceptor 13"
+                },
+                {
+                  "name": "K04299  P2RY14; P2Y purinoceptor 14"
+                },
+                {
+                  "name": "K10042  SUCNR1, GPR91; succinate receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "Adenosine",
+              "children": [
+                {
+                  "name": "K04265  ADORA1; adenosine receptor A1"
+                },
+                {
+                  "name": "K04266  ADORA2A, ADOR; adenosine receptor A2a"
+                },
+                {
+                  "name": "K04267  ADORA2B; adenosine receptor A2b"
+                },
+                {
+                  "name": "K04268  ADORA3; adenosine receptor A3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lipid",
+          "children": [
+            {
+              "name": "Arachidonylglycine",
+              "children": [
+                {
+                  "name": "K08410  GPR18; N-arachidonyl glycine receptor"
+                }
+              ]
+            },
+            {
+              "name": "Bile acid",
+              "children": [
+                {
+                  "name": "K08400  GPBAR1; G protein-coupled bile acid receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "Cysteinyl leukotriene",
+              "children": [
+                {
+                  "name": "K04322  CYSLTR1; cysteinyl leukotriene receptor 1"
+                },
+                {
+                  "name": "K04323  CYSLTR2; cysteinyl leukotriene receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Free fatty acid",
+              "children": [
+                {
+                  "name": "K04325  FFAR1, GPR40; free fatty acid receptor 1"
+                },
+                {
+                  "name": "K04328  FFAR2, GPR43; free fatty acid receptor 2"
+                },
+                {
+                  "name": "K04326  FFAR3, GPR41; free fatty acid receptor 3"
+                },
+                {
+                  "name": "K08425  FFAR4, GPR120; free fatty acid receptor 4"
+                },
+                {
+                  "name": "K08421  GPR84; G protein-coupled receptor 84"
+                }
+              ]
+            },
+            {
+              "name": "HETE and oxoETE",
+              "children": [
+                {
+                  "name": "K10043  OXER1, GPR170; oxoeicosanoid receptor 1"
+                },
+                {
+                  "name": "K08406  GPR31; 12-(S)-hydroxy-5,8,10,14-eicosatetraenoic acid receptor"
+                }
+              ]
+            },
+            {
+              "name": "Leukotriene",
+              "children": [
+                {
+                  "name": "K04296  LTB4R1; leukotriene B4 receptor 1"
+                },
+                {
+                  "name": "K04297  LTB4R2; leukotriene B4 receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Lysophosphatidic acid",
+              "children": [
+                {
+                  "name": "K04289  LPAR1, EDG2; lysophosphatidic acid receptor 1"
+                },
+                {
+                  "name": "K04291  LPAR2, EDG4; lysophosphatidic acid receptor 2"
+                },
+                {
+                  "name": "K04294  LPAR3, EDG7; lysophosphatidic acid receptor 3"
+                },
+                {
+                  "name": "K04275  LPAR4, GPR23; lysophosphatidic acid receptor 4"
+                },
+                {
+                  "name": "K08390  LPAR5, GPR92; lysophosphatidic acid receptor 5"
+                },
+                {
+                  "name": "K04273  LPAR6, P2RY5; lysophosphatidic acid receptor 6"
+                },
+                {
+                  "name": "K08389  GPR87; G protein-coupled receptor 87"
+                }
+              ]
+            },
+            {
+              "name": "Lysophosphatidylinositol",
+              "children": [
+                {
+                  "name": "K08413  GPR55; G protein-coupled receptor 55"
+                }
+              ]
+            },
+            {
+              "name": "Lysophosphatidylserine",
+              "children": [
+                {
+                  "name": "K08383  GPR34; G protein-coupled receptor 34"
+                },
+                {
+                  "name": "K04274  P2RY10; P2Y purinoceptor 10"
+                },
+                {
+                  "name": "K08391  GPR174; G protein-coupled receptor 174"
+                }
+              ]
+            },
+            {
+              "name": "Oleoylethanolamide",
+              "children": [
+                {
+                  "name": "K08424  GPR119; glucose-dependent insulinotropic receptor"
+                }
+              ]
+            },
+            {
+              "name": "Prostaglandin",
+              "children": [
+                {
+                  "name": "K04332  PTGDR; prostaglandin D2 receptor"
+                },
+                {
+                  "name": "K06715  PTGDR2, GPR44, CD294; prostaglandin D2 receptor 2"
+                },
+                {
+                  "name": "K04258  PTGER1; prostaglandin E receptor 1"
+                },
+                {
+                  "name": "K04259  PTGER2; prostaglandin E receptor 2"
+                },
+                {
+                  "name": "K04260  PTGER3; prostaglandin E receptor 3"
+                },
+                {
+                  "name": "K04261  PTGER4; prostaglandin E receptor 4"
+                },
+                {
+                  "name": "K04262  PTGFR; prostaglandin F receptor"
+                }
+              ]
+            },
+            {
+              "name": "Prostacyclin",
+              "children": [
+                {
+                  "name": "K04263  PTGIR; prostacyclin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Sphingolipid",
+              "children": [
+                {
+                  "name": "K04288  S1PR1, EDG1, CD363; sphingosine 1-phosphate receptor 1"
+                },
+                {
+                  "name": "K04292  S1PR2, EDG5; sphingosine 1-phosphate receptor 2"
+                },
+                {
+                  "name": "K04290  S1PR3, EDG3; sphingosine 1-phosphate receptor 3"
+                },
+                {
+                  "name": "K04293  S1PR4, EDG6; sphingosine 1-phosphate receptor 4"
+                },
+                {
+                  "name": "K04295  S1PR5, EDG8; sphingosine 1-phosphate receptor 5"
+                }
+              ]
+            },
+            {
+              "name": "Thromboxane",
+              "children": [
+                {
+                  "name": "K04264  TBXA2R; thromboxane A2 receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Vision",
+          "children": [
+            {
+              "name": "Opsin",
+              "children": [
+                {
+                  "name": "K04250  RHO, OPN2; rhodopsin"
+                },
+                {
+                  "name": "K04252  OPN1SW; short wavelength-sensitive opsin"
+                },
+                {
+                  "name": "K04251  OPN1LW, OPN1MW; long/medium wavelength-sensitive opsin"
+                },
+                {
+                  "name": "K04256  OPN3; c-opsin"
+                },
+                {
+                  "name": "K13802  NINAE, Rh1; opsin Rh1"
+                },
+                {
+                  "name": "K04255  OPN4, Rh2_7; r-opsin"
+                },
+                {
+                  "name": "K08385  OPN5; G0-opsin"
+                },
+                {
+                  "name": "K04253  RRH; visual pigment-like receptor peropsin"
+                },
+                {
+                  "name": "K04254  RGR; retinal G protein coupled receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "Alpha-ketoglutarate",
+              "children": [
+                {
+                  "name": "K08419  OXGR1, GPR99; oxoglutarate (alpha-ketoglutarate) receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "Cannabinoid",
+              "children": [
+                {
+                  "name": "K04277  CNR1; cannabinoid receptor 1"
+                },
+                {
+                  "name": "K04278  CNR2; cannabinoid receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Estrogen",
+              "children": [
+                {
+                  "name": "K04246  GPER1, GPR30; G-protein coupled estrogen receptor 1"
+                }
+              ]
+            },
+            {
+              "name": "Hydroxy-carboxylic acid",
+              "children": [
+                {
+                  "name": "K08401  HCAR1, GPR81; hydroxycarboxylic acid receptor 1"
+                },
+                {
+                  "name": "K08402  HCAR2_3, GPR109; hydroxycarboxylic acid receptor 2/3"
+                }
+              ]
+            },
+            {
+              "name": "L-Tryptophan and L-Phenylalanine",
+              "children": [
+                {
+                  "name": "K08428  GPR139; G protein-coupled receptor 139"
+                },
+                {
+                  "name": "K08430  GPR142; G protein-coupled receptor 142"
+                }
+              ]
+            },
+            {
+              "name": "Mas proto-oncogene and Mas-related (MRGs)",
+              "children": [
+                {
+                  "name": "K04303  MAS1; proto-oncogene Mas"
+                },
+                {
+                  "name": "K04324  MAS1L; Mas-related G-protein coupled receptor MRG"
+                },
+                {
+                  "name": "K08392  MRGPRD; Mas-related G protein-coupled receptor member D"
+                },
+                {
+                  "name": "K08393  MRGPRE; Mas-related G protein-coupled receptor member E"
+                },
+                {
+                  "name": "K08394  MRGPRF; Mas-related G protein-coupled receptor member F"
+                },
+                {
+                  "name": "K08395  MRGPRG; Mas-related G protein-coupled receptor member G"
+                },
+                {
+                  "name": "K22793  MRGPRH; Mas-related G protein-coupled receptor member H"
+                },
+                {
+                  "name": "K08396  MRGPRX; Mas-related G protein-coupled receptor member X"
+                }
+              ]
+            },
+            {
+              "name": "Melatonin",
+              "children": [
+                {
+                  "name": "K04285  MTNR1A; melatonin receptor type 1A"
+                },
+                {
+                  "name": "K04286  MTNR1B; melatonin receptor type 1B"
+                }
+              ]
+            },
+            {
+              "name": "Oxysterol",
+              "children": [
+                {
+                  "name": "K04305  EBI2; Epstein-Barr virus induced gene 2"
+                }
+              ]
+            },
+            {
+              "name": "Platelet activating factor",
+              "children": [
+                {
+                  "name": "K04279  PTAFR; platelet-activating factor receptor"
+                }
+              ]
+            },
+            {
+              "name": "Proton-sensing GPCRs",
+              "children": [
+                {
+                  "name": "K04312  GPR4; G protein-coupled receptor 4"
+                },
+                {
+                  "name": "K08416  GPR65, TDAG8; psychosine receptor"
+                },
+                {
+                  "name": "K08408  GPR68, OGR1; ovarian cancer G-protein coupled receptor 1"
+                },
+                {
+                  "name": "K08426  GPR132, G2A; G protein-coupled receptor 132"
+                }
+              ]
+            },
+            {
+              "name": "R-spondin",
+              "children": [
+                {
+                  "name": "K04309  LGR4, GPR48; leucine-rich repeat-containing G protein-coupled receptor 4"
+                },
+                {
+                  "name": "K04308  LGR5, GPR49; leucine-rich repeat-containing G protein-coupled receptor 5"
+                },
+                {
+                  "name": "K08399  LGR6; leucine-rich repeat-containing G protein-coupled receptor 6"
+                }
+              ]
+            },
+            {
+              "name": "Super conserved receptor expressed in brain (SREB)",
+              "children": [
+                {
+                  "name": "K04301  SREB1, GPR27; super conserved receptor expressed in brain 1"
+                },
+                {
+                  "name": "K04302  SREB2, GPR85; super conserved receptor expressed in brain 2"
+                },
+                {
+                  "name": "K04300  SREB3, GPR173; super conserved receptor expressed in brain 3"
+                }
+              ]
+            },
+            {
+              "name": "Trissin",
+              "children": [
+                {
+                  "name": "K22792  TrissinR; trissin receptor"
+                }
+              ]
+            },
+            {
+              "name": "Orphan GPCRs / unclassified GPCRs",
+              "children": [
+                {
+                  "name": "K22873  TRE1; protein trapped in endoderm-1"
+                },
+                {
+                  "name": "K04311  GPR3; G protein-coupled receptor 3"
+                },
+                {
+                  "name": "K04313  GPR6; G protein-coupled receptor 6"
+                },
+                {
+                  "name": "K04315  GPR12; G protein-coupled receptor 12"
+                },
+                {
+                  "name": "K08404  GPR17; G protein-coupled receptor 17"
+                },
+                {
+                  "name": "K04317  GPR20; G protein-coupled receptor 20"
+                },
+                {
+                  "name": "K04318  GPR21; G protein-coupled receptor 21"
+                },
+                {
+                  "name": "K04319  GPR22; G protein-coupled receptor 22"
+                },
+                {
+                  "name": "K08405  GPR25; G protein-coupled receptor 25"
+                },
+                {
+                  "name": "K08411  GPR26; G protein-coupled receptor 26"
+                },
+                {
+                  "name": "K08412  GPR39; G protein-coupled receptor 39"
+                },
+                {
+                  "name": "K08409  GPR45; G protein-coupled receptor 45"
+                },
+                {
+                  "name": "K04287  GPR50; G protein-coupled receptor 50"
+                },
+                {
+                  "name": "K08407  GPR52; G protein-coupled receptor 52"
+                },
+                {
+                  "name": "K08414  GPR61; G protein-coupled receptor 61"
+                },
+                {
+                  "name": "K08415  GPR62; G protein-coupled receptor 62"
+                },
+                {
+                  "name": "K04321  GPR63; G protein-coupled receptor 63"
+                },
+                {
+                  "name": "K08418  GPR78; G protein-coupled receptor 78"
+                },
+                {
+                  "name": "K08420  GPR82; G protein-coupled receptor 82"
+                },
+                {
+                  "name": "K08422  GPR88; G protein-coupled receptor 88"
+                },
+                {
+                  "name": "K08423  GPR101; G protein-coupled receptor 101"
+                },
+                {
+                  "name": "K08427  GPR135; G protein-coupled receptor 135"
+                },
+                {
+                  "name": "K08429  GPR141; G protein-coupled receptor 141"
+                },
+                {
+                  "name": "K08431  GPR146; G protein-coupled receptor 146"
+                },
+                {
+                  "name": "K08432  GPR148; G protein-coupled receptor 148"
+                },
+                {
+                  "name": "K08433  GPR149; G protein-coupled receptor 149"
+                },
+                {
+                  "name": "K08434  GPR150; G protein-coupled receptor 150"
+                },
+                {
+                  "name": "K08435  GPR151; G protein-coupled receptor 151"
+                },
+                {
+                  "name": "K08436  GPR152; G protein-coupled receptor 152"
+                },
+                {
+                  "name": "K08437  GPR153; G protein-coupled receptor 153"
+                },
+                {
+                  "name": "K08438  GPR160; G protein-coupled receptor 160"
+                },
+                {
+                  "name": "K08439  GPR161; G protein-coupled receptor 161"
+                },
+                {
+                  "name": "K08440  GPR162; G protein-coupled receptor 162"
+                },
+                {
+                  "name": "K08442  GPR176; G protein-coupled receptor 176"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Secretin receptor family",
+      "children": [
+        {
+          "name": "Calcium-regulating peptide",
+          "children": [
+            {
+              "name": "Calcitonin",
+              "children": [
+                {
+                  "name": "K04576  CALCR; calcitonin receptor"
+                },
+                {
+                  "name": "K04577  CALCRL; calcitonin receptor-like"
+                }
+              ]
+            },
+            {
+              "name": "Parathyroid hormone",
+              "children": [
+                {
+                  "name": "K04585  PTH1R, PTHR1; parathyroid hormone receptor 1"
+                },
+                {
+                  "name": "K04586  PTHR2; parathyroid hormone receptor 2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Hypothalamic hormone",
+          "children": [
+            {
+              "name": "Corticotropin-releasing hormone (CRH)",
+              "children": [
+                {
+                  "name": "K04578  CRHR1; corticotropin releasing hormone receptor 1"
+                },
+                {
+                  "name": "K04579  CRHR2; corticotropin releasing hormone receptor 2"
+                }
+              ]
+            },
+            {
+              "name": "Growth hormone-releasing hormone (GHRH)",
+              "children": [
+                {
+                  "name": "K04584  GHRHR; growth hormone releasing hormone receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pancreatic peptide",
+          "children": [
+            {
+              "name": "Glucagon",
+              "children": [
+                {
+                  "name": "K04581  GLP1R; glucagon-like peptide 1 receptor"
+                },
+                {
+                  "name": "K04582  GLP2R; glucagon-like peptide 2 receptor"
+                },
+                {
+                  "name": "K04583  GCGR; glucagon receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Gut peptide",
+          "children": [
+            {
+              "name": "Gastric inhibitory peptide (GIP)",
+              "children": [
+                {
+                  "name": "K04580  GIPR; gastric inhibitory polypeptide receptor"
+                }
+              ]
+            },
+            {
+              "name": "Vasoactive intestinal polypeptide (VIP) and pituitary adenyl cyclase-activating peptide (PACAP)",
+              "children": [
+                {
+                  "name": "K04589  VIPR1; vasoactive intestinal peptide receptor 1"
+                },
+                {
+                  "name": "K04590  VIPR2; vasoactive intestinal peptide receptor 2"
+                },
+                {
+                  "name": "K04587  ADCYAP1R1, PACAPRI; pituitary adenylate cyclase-activating polypeptide type I receptor"
+                }
+              ]
+            },
+            {
+              "name": "Secretin",
+              "children": [
+                {
+                  "name": "K04588  SCTR; secretin receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "Receptor activity modifying protein",
+              "children": [
+                {
+                  "name": "K08447  RAMP1; receptor activity modifying protein 1"
+                },
+                {
+                  "name": "K08448  RAMP2; receptor activity modifying protein 2"
+                },
+                {
+                  "name": "K08449  RAMP3; receptor activity modifying protein 3"
+                }
+              ]
+            },
+            {
+              "name": "Methuselah-like proteins (MTH)",
+              "children": [
+                {
+                  "name": "K04599  MTH; G protein-coupled receptor Mth (Methuselah protein)"
+                }
+              ]
+            },
+            {
+              "name": "Pigment dispersing factor (PDF)",
+              "children": [
+                {
+                  "name": "K22738 PDFR; PDF receptor"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Adhesion receptor family",
+      "children": [
+        {
+          "name": "Cadherin EGF LAG (CELSR)",
+          "children": [
+            {
+              "name": "K04600  CELSR1; cadherin EGF LAG seven-pass G-type receptor 1"
+            },
+            {
+              "name": "K04601  CELSR2; cadherin EGF LAG seven-pass G-type receptor 2"
+            },
+            {
+              "name": "K04602  CELSR3; cadherin EGF LAG seven-pass G-type receptor 3"
+            }
+          ]
+        },
+        {
+          "name": "EGF-like module-containing mucin-like hormone receptor-like (EMR)",
+          "children": [
+            {
+              "name": "K04591  ADGRE1, EMR1; adhesion G protein-coupled receptor E1"
+            },
+            {
+              "name": "K08443  ADGRE2, EMR2, CD312; adhesion G protein-coupled receptor E2"
+            },
+            {
+              "name": "K08444  ADGRE3, EMR3; adhesion G protein-coupled receptor E3"
+            },
+            {
+              "name": "K08445  ADGRE4, EMR4; adhesion G protein-coupled receptor E4"
+            },
+            {
+              "name": "K08446  ADGRE5, CD97; CD97 antigen"
+            }
+          ]
+        },
+        {
+          "name": "Latrophilin",
+          "children": [
+            {
+              "name": "K04592  ADGRL1, LPHN1; adhesion G protein-coupled receptor L1"
+            },
+            {
+              "name": "K04593  ADGRL2, LPHN2; adhesion G protein-coupled receptor L2"
+            },
+            {
+              "name": "K04594  ADGRL3, LPHN3; adhesion G protein-coupled receptor L3"
+            },
+            {
+              "name": "K04595  ADGRL4, ELTD1; adhesion G protein-coupled receptor L4"
+            }
+          ]
+        },
+        {
+          "name": "Brain-specific angiogenesis inhibitor (BAI)",
+          "children": [
+            {
+              "name": "K04596  ADGRB1, BAI1; adhesion G protein-coupled receptor B1"
+            },
+            {
+              "name": "K04597  ADGRB2, BAI2; adhesion G protein-coupled receptor B2"
+            },
+            {
+              "name": "K04598  ADGRB3, BAI3; adhesion G protein-coupled receptor B3"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K08460  ADGRA1, GPR123; adhesion G protein-coupled receptor A1"
+            },
+            {
+              "name": "K08461  ADGRA2, GPR124; adhesion G protein-coupled receptor A2"
+            },
+            {
+              "name": "K08462  ADGRA3, GPR125; adhesion G protein-coupled receptor A3"
+            },
+            {
+              "name": "K08465  ADGRD1, GPR133; adhesion G-protein coupled receptor D1"
+            },
+            {
+              "name": "K08466  ADGRD2, GPR144; adhesion G-protein coupled receptor D2"
+            },
+            {
+              "name": "K08453  ADGRF1, GPR110; adhesion G-protein coupled receptor F1"
+            },
+            {
+              "name": "K08454  ADGRF2, GPR111; adhesion G-protein coupled receptor F2"
+            },
+            {
+              "name": "K08456  ADGRF3, GPR113; adhesion G-protein coupled receptor F3"
+            },
+            {
+              "name": "K08457  ADGRF4, GPR115; adhesion G-protein coupled receptor F4"
+            },
+            {
+              "name": "K08458  ADGRF5, GPR116; adhesion G-protein coupled receptor F5"
+            },
+            {
+              "name": "K08450  ADGRG1, GPR56; adhesion G-protein coupled receptor G1"
+            },
+            {
+              "name": "K08451  ADGRG2, GPR64; adhesion G-protein coupled receptor G2"
+            },
+            {
+              "name": "K08452  ADGRG3, GPR97; adhesion G-protein coupled receptor G3"
+            },
+            {
+              "name": "K08455  ADGRG4, GPR112; adhesion G-protein coupled receptor G4"
+            },
+            {
+              "name": "K08459  ADGRG5, GPR114; adhesion G-protein coupled receptor G5"
+            },
+            {
+              "name": "K08463  ADGRG6, GPR126; adhesion G-protein coupled receptor G6"
+            },
+            {
+              "name": "K08464  ADGRG7, GPR128; adhesion G-protein coupled receptor G7"
+            },
+            {
+              "name": "K18263  ADGRV1, GPR98, USH2C; adhesion G-protein coupled receptor V1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Metabotropic glutamate receptor family",
+      "children": [
+        {
+          "name": "Glutamate (metabotropic)",
+          "children": [
+            {
+              "name": "K04603  GRM1; metabotropic glutamate receptor 1"
+            },
+            {
+              "name": "K04605  GRM2; metabotropic glutamate receptor 2"
+            },
+            {
+              "name": "K04606  GRM3; metabotropic glutamate receptor 3"
+            },
+            {
+              "name": "K04607  GRM4; metabotropic glutamate receptor 4"
+            },
+            {
+              "name": "K04604  GRM5; metabotropic glutamate receptor 5"
+            },
+            {
+              "name": "K04608  GRM6; metabotropic glutamate receptor 6"
+            },
+            {
+              "name": "K04609  GRM7; metabotropic glutamate receptor 7"
+            },
+            {
+              "name": "K04610  GRM8; metabotropic glutamate receptor 8"
+            },
+            {
+              "name": "K04611  MXR; metabotropic X receptor"
+            }
+          ]
+        },
+        {
+          "name": "GABA",
+          "children": [
+            {
+              "name": "K04615  GABBR; gamma-aminobutyric acid type B receptor"
+            },
+            {
+              "name": "K04617  GPR156, GABABL; gamma-aminobutyric acid type B receptor-like"
+            }
+          ]
+        },
+        {
+          "name": "Calcium-sensing",
+          "children": [
+            {
+              "name": "K04612  CASR; calcium-sensing receptor"
+            },
+            {
+              "name": "K04622  GPRC6A; G protein-coupled receptor family C group 6 member A"
+            }
+          ]
+        },
+        {
+          "name": "Orphan GPRC5",
+          "children": [
+            {
+              "name": "K08468  GPRC5A; G protein-coupled receptor family C group 5 member A"
+            },
+            {
+              "name": "K04619  GPRC5B; G protein-coupled receptor family C group 5 member B"
+            },
+            {
+              "name": "K04620  GPRC5C; G protein-coupled receptor family C group 5 member C"
+            },
+            {
+              "name": "K04621  GPRC5D; G protein-coupled receptor family C group 5 member D"
+            },
+            {
+              "name": "K04623  BOSS; bride of sevenless protein"
+            }
+          ]
+        },
+        {
+          "name": "Unclassified GPCRs",
+          "children": [
+            {
+              "name": "K08469  GPR158; G protein-coupled receptor 158"
+            },
+            {
+              "name": "K22961  GPR179; G protein-coupled receptor 179"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frizzled / Smoothened family",
+      "children": [
+        {
+          "name": "K02432  FZD1_7, fz; frizzled 1/7"
+        },
+        {
+          "name": "K02235  FZD2; frizzled 2"
+        },
+        {
+          "name": "K02329  FZD3; frizzled 3"
+        },
+        {
+          "name": "K02354  FZD4, fz4, CD344; frizzled 4"
+        },
+        {
+          "name": "K02375  FZD5_8, fz2; frizzled 5/8"
+        },
+        {
+          "name": "K02376  FZD6; frizzled 6"
+        },
+        {
+          "name": "K02842  FZD9_10, CD349_50; frizzled 9/10"
+        },
+        {
+          "name": "K04690  FZDN, fz3; frizzled"
+        },
+        {
+          "name": "K06226  SMO; smoothened"
+        }
+      ]
+    },
+    {
+      "name": "Others",
+      "children": [
+        {
+          "name": "Chemoreception",
+          "children": [
+            {
+              "name": "Olfactory",
+              "children": [
+                {
+                  "name": "K04257  OLFR; olfactory receptor"
+                }
+              ]
+            },
+            {
+              "name": "Taste",
+              "children": [
+                {
+                  "name": "K04624  TAS1R1; taste receptor type 1 member 1"
+                },
+                {
+                  "name": "K04625  TAS1R2; taste receptor type 1 member 2"
+                },
+                {
+                  "name": "K04626  TAS1R3; taste receptor type 1 member 3"
+                },
+                {
+                  "name": "K08474  TAS2R; taste receptor type 2"
+                }
+              ]
+            },
+            {
+              "name": "Vomeronasal pheromone",
+              "children": [
+                {
+                  "name": "K04614  V1R; vomeronasal 1 receptor"
+                },
+                {
+                  "name": "K04613  V2R; vomeronasal 2 receptor"
+                }
+              ]
+            },
+            {
+              "name": "Insect odorant and taste",
+              "children": [
+                {
+                  "name": "K22984  OR; odorant receptor"
+                },
+                {
+                  "name": "K08471  GR; gustatory receptor"
+                }
+              ]
+            },
+            {
+              "name": "Nematode chemoreception",
+              "children": [
+                {
+                  "name": "K08473  K08473; nematode chemoreceptor"
+                }
+              ]
+            },
+            {
+              "name": "Fungal mating pheromone",
+              "children": [
+                {
+                  "name": "K11213  STE2; pheromone alpha factor receptor"
+                },
+                {
+                  "name": "K04627  STE3; pheromone a factor receptor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "Ocular albinism proteins",
+              "children": [
+                {
+                  "name": "K08470  OA1, GPR143; ocular albinism type 1 protein"
+                }
+              ]
+            },
+            {
+              "name": "Neuronostatin",
+              "children": [
+                {
+                  "name": "K22985  GPR107; G protein-coupled receptor 107"
+                }
+              ]
+            },
+            {
+              "name": "Plant Mlo receptors",
+              "children": [
+                {
+                  "name": "K08472  MLO; mlo protein"
+                }
+              ]
+            },
+            {
+              "name": "cAMP signaling",
+              "children": [
+                {
+                  "name": "K12762  GPR1; G protein-coupled receptor GPR1"
+                },
+                {
+                  "name": "K04629  CARN; cAMP receptor"
+                },
+                {
+                  "name": "K22987  GCR1, CRLA; cAMP receptor-like G-protein coupled receptor"
+                }
+              ]
+            },
+            {
+              "name": "Bacterial rhodopsin",
+              "children": [
+                {
+                  "name": "K04641  bop; bacteriorhodopsin"
+                },
+                {
+                  "name": "K04642  hop; halorhodopsin"
+                },
+                {
+                  "name": "K04643  sop; sensory rhodopsin"
+                }
+              ]
+            },
+            {
+              "name": "Orphan GPCRs",
+              "children": [
+                {
+                  "name": "K22988  TPRA1, GPR175; transmembrane protein adipocyte-associated 1"
+                },
+                {
+                  "name": "K22986  GPR108; G protein-coupled receptor 108"
+                },
+                {
+                  "name": "K22989  GPR137; integral membrane protein GPR137"
+                },
+                {
+                  "name": "K08467  GPR157; G protein-coupled receptor 157"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

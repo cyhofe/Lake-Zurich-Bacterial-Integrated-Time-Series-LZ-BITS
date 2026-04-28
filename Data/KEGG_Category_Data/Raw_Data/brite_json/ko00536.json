@@ -1,0 +1,640 @@
+{
+  "name": "ko00536",
+  "children": [
+    {
+      "name": "Heparan sulfate / Heparin",
+      "children": [
+        {
+          "name": "Cytokines",
+          "children": [
+            {
+              "name": "K04519  IL1B; interleukin 1 beta"
+            },
+            {
+              "name": "K05429  IL2; interleukin 2"
+            },
+            {
+              "name": "K04736  IL3; interleukin 3"
+            },
+            {
+              "name": "K05430  IL4; interleukin 4"
+            },
+            {
+              "name": "K05428  IL5; interleukin 5"
+            },
+            {
+              "name": "K05431  IL7; interleukin 7"
+            },
+            {
+              "name": "K05443  IL10, CSIF; interleukin 10"
+            },
+            {
+              "name": "K05406  IL12A; interleukin 12A"
+            },
+            {
+              "name": "K05425  IL12B; interleukin 12B"
+            },
+            {
+              "name": "K05427  CSF2, GMCSF; granulocyte-macrophage colony-stimulating factor"
+            },
+            {
+              "name": "K04687  IFNG; interferon gamma"
+            },
+            {
+              "name": "K03156  TNF, TNFA; tumor necrosis factor superfamily, member 2"
+            }
+          ]
+        },
+        {
+          "name": "Chemokines",
+          "children": [
+            {
+              "name": "K14624  CCL2, MCP1; C-C motif chemokine 2"
+            },
+            {
+              "name": "K05408  CCL3; C-C motif chemokine 3"
+            },
+            {
+              "name": "K12499  CCL5; C-C motif chemokine 5"
+            },
+            {
+              "name": "------  CCL12; C-C motif chemokine 12 [MMU:20293] [KO:K14624]"
+            },
+            {
+              "name": "K16595  CCL13; C-C motif chemokine 13"
+            },
+            {
+              "name": "K05407  PF4, CXCL4; platelet factor 4"
+            },
+            {
+              "name": "K10030  IL8, CXCL8; interleukin 8"
+            },
+            {
+              "name": "K12671  CXCL10, IP10; C-X-C motif chemokine 10"
+            },
+            {
+              "name": "K10031  CXCL12; C-X-C motif chemokine 12"
+            }
+          ]
+        },
+        {
+          "name": "Adhesion molecules of cell surface",
+          "children": [
+            {
+              "name": "K06495  SELL, CD62L; selectin, lymphocyte"
+            },
+            {
+              "name": "K06496  SELP, CD62P; selectin, platelet"
+            },
+            {
+              "name": "K06461  ITGAM, CD11b; integrin alpha M"
+            },
+            {
+              "name": "K06491  NCAM, CD56; neural cell adhesion molecule"
+            },
+            {
+              "name": "K06471  PECAM1, CD31; platelet/endothelial cell adhesion molecule"
+            }
+          ]
+        },
+        {
+          "name": "Morphogens",
+          "children": [
+            {
+              "name": "K21283  BMP2; bone morphogenetic protein 2"
+            },
+            {
+              "name": "K04662  BMP4; bone morphogenetic protein 4"
+            },
+            {
+              "name": "K16621  BMP7; bone morphogenetic protein 7"
+            },
+            {
+              "name": "K06224  HH; hedgehog"
+            },
+            {
+              "name": "K11988  SHH; sonic hedgehog"
+            },
+            {
+              "name": "K03209  WNT1; wingless-type MMTV integration site family, member 1"
+            },
+            {
+              "name": "K00182  WNT2; wingless-type MMTV integration site family, member 2"
+            },
+            {
+              "name": "K00312  WNT3; wingless-type MMTV integration site family, member 3"
+            },
+            {
+              "name": "K00408  WNT4; wingless-type MMTV integration site family, member 4"
+            },
+            {
+              "name": "K00444  WNT5; wingless-type MMTV integration site family, member 5"
+            },
+            {
+              "name": "K00445  WNT6; wingless-type MMTV integration site family, member 6"
+            },
+            {
+              "name": "K00572  WNT7; wingless-type MMTV integration site family, member 7"
+            },
+            {
+              "name": "K00714  WNT8; wingless-type MMTV integration site family, member 8"
+            },
+            {
+              "name": "K01064  WNT9; wingless-type MMTV integration site family, member 9"
+            },
+            {
+              "name": "K01357  WNT10; wingless-type MMTV integration site family, member 10"
+            },
+            {
+              "name": "K01384  WNT11; wingless-type MMTV integration site family, member 11"
+            },
+            {
+              "name": "K01558  WNT16; wingless-type MMTV integration site family, member 16"
+            }
+          ]
+        },
+        {
+          "name": "Growth factors/receptors",
+          "children": [
+            {
+              "name": "K09782  AREG; amphiregulin"
+            },
+            {
+              "name": "K09783  BTC; betacellulin"
+            },
+            {
+              "name": "K18496  FGF1; fibroblast growth factor 1"
+            },
+            {
+              "name": "K18497  FGF2; fibroblast growth factor 2"
+            },
+            {
+              "name": "K04358  FGF; fibroblast growth factor"
+            },
+            {
+              "name": "K22413  FGF11_12_13, FHF3_1_2; fibroblast growth factor 11/12/13"
+            },
+            {
+              "name": "K23920  FGF14, FHF4; fibroblast growth factor 14"
+            },
+            {
+              "name": "K22603  FGF19; fibroblast growth factor 19"
+            },
+            {
+              "name": "K22429  FGF21; fibroblast growth factor 21"
+            },
+            {
+              "name": "K22428  FGF23; fibroblast growth factor 23"
+            },
+            {
+              "name": "K04362  FGFR1, CD331; fibroblast growth factor receptor 1 [EC:2.7.10.1]"
+            },
+            {
+              "name": "K05093  FGFR2, CD332; fibroblast growth factor receptor 2 [EC:2.7.10.1]"
+            },
+            {
+              "name": "K08523  HBEGF; heparin-binding EGF-like growth factor"
+            },
+            {
+              "name": "K05460  HGF; hepatocyte growth factor"
+            },
+            {
+              "name": "K06828  MDK; midkine"
+            },
+            {
+              "name": "K13769  IGF2; insulin-like growth factor 2"
+            },
+            {
+              "name": "K05455  NRG1; neuregulin 1"
+            },
+            {
+              "name": "K16641  HDGF; hepatoma-derived growth factor"
+            },
+            {
+              "name": "K04359  PDGFA; platelet-derived growth factor subunit A"
+            },
+            {
+              "name": "K17386  PDGFB; platelet-derived growth factor subunit B"
+            },
+            {
+              "name": "K13375  TGFB1; transforming growth factor beta-1"
+            },
+            {
+              "name": "K13376  TGFB2; transforming growth factor beta-2"
+            },
+            {
+              "name": "K16642  PTN; pleiotrophin"
+            },
+            {
+              "name": "K05448  VEGFA; vascular endothelial growth factor A"
+            },
+            {
+              "name": "K25640  MPIG6B; megakaryocyte and platelet inhibitory receptor G6b"
+            }
+          ]
+        },
+        {
+          "name": "Extracellular matrix molecules",
+          "children": [
+            {
+              "name": "K03903  FGA; fibrinogen alpha chain"
+            },
+            {
+              "name": "K03904  FGB; fibrinogen beta chain"
+            },
+            {
+              "name": "K03905  FGG; fibrinogen gamma chain"
+            },
+            {
+              "name": "K05717  FN1; fibronectin 1"
+            },
+            {
+              "name": "K06825  FBN1; fibrillin 1"
+            },
+            {
+              "name": "K23342  FBN2_3; fibrillin 2/3"
+            },
+            {
+              "name": "------  LAMA5; laminin, alpha 5 [HSA:3911] [KO:K06240]"
+            },
+            {
+              "name": "K06252  TN; tenascin"
+            },
+            {
+              "name": "K24354  SMOC; SPARC-related modular calcium-binding protein"
+            },
+            {
+              "name": "K16857  THBS1; thrombospondin 1"
+            },
+            {
+              "name": "K04659  THBS2S; thrombospondin 2/3/4/5"
+            },
+            {
+              "name": "K06251  VTN; vitronectin"
+            },
+            {
+              "name": "K06236  COL1A; collagen type I alpha"
+            },
+            {
+              "name": "K19719  COL2A; collagen type II alpha"
+            },
+            {
+              "name": "K19720  COL3A; collagen type III alpha"
+            },
+            {
+              "name": "K06237  COL4A; collagen type IV alpha"
+            },
+            {
+              "name": "K19721  COL5AS; collagen type V/XI/XXIV/XXVII, alpha"
+            },
+            {
+              "name": "K06238  COL6A; collagen type VI alpha"
+            },
+            {
+              "name": "K16617  COL13A; collagen type XIII alpha"
+            },
+            {
+              "name": "K06823  COL18A; collagen type XVIII alpha"
+            },
+            {
+              "name": "K24340  COL19A; collagen type XIX alpha"
+            },
+            {
+              "name": "K24355  COL23A; collagen type XXIII alpha"
+            },
+            {
+              "name": "K24356  COL25A; collagen type XXV alpha"
+            },
+            {
+              "name": "K26586  COLQ; acetylcholinesterase collagenic tail peptide"
+            }
+          ]
+        },
+        {
+          "name": "Axon guidance molecules",
+          "children": [
+            {
+              "name": "K05462  EFNA; ephrin-A"
+            },
+            {
+              "name": "K06843  NTN1; netrin 1"
+            },
+            {
+              "name": "K06838  SLIT1; slit 1"
+            },
+            {
+              "name": "K06839  SLIT2; slit 2"
+            },
+            {
+              "name": "K06850  SLIT3; slit 3"
+            },
+            {
+              "name": "------  SEMA5A; semaphorin 5A [HSA:9037] [KO:K06841]"
+            }
+          ]
+        },
+        {
+          "name": "Coagulation and fibrinolysis",
+          "children": [
+            {
+              "name": "K01313  F2; coagulation factor II (thrombin) [EC:3.4.21.5]"
+            },
+            {
+              "name": "K01314  F10; coagulation factor X [EC:3.4.21.6]"
+            },
+            {
+              "name": "K03913  SERPINA5, PCI; protein C inhibitor"
+            },
+            {
+              "name": "K03911  SERPINC1, AT3; antithrombin III"
+            },
+            {
+              "name": "K03912  SERPIND1, HCF2; heparin cofactor II"
+            },
+            {
+              "name": "K03982  SERPINE1, PAI1; plasminogen activator inhibitor 1"
+            },
+            {
+              "name": "K16643  SERPINE2; glia-derived nexin"
+            },
+            {
+              "name": "K01343  PLAT; tissue plasminogen activator [EC:3.4.21.68]"
+            },
+            {
+              "name": "K01348  PLAU; urokinase plasminogen activator [EC:3.4.21.73]"
+            },
+            {
+              "name": "K03909  TFPI; tissue factor pathway inhibitor"
+            }
+          ]
+        },
+        {
+          "name": "Enzymes",
+          "children": [
+            {
+              "name": "K01327  ELANE; leukocyte elastase [EC:3.4.21.37]"
+            },
+            {
+              "name": "K07964  HPSE; heparanase [EC:3.2.1.166]"
+            },
+            {
+              "name": "K07965  HPSE2; heparanase 2 [EC:3.2.1.-]"
+            },
+            {
+              "name": "K01197  hya; hyaluronoglucosaminidase [EC:3.2.1.35]"
+            },
+            {
+              "name": "K01059  LPL; lipoprotein lipase [EC:3.1.1.34]"
+            },
+            {
+              "name": "K16627  SOD3; superoxide dismutase, Cu-Zn family [EC:1.15.1.1]"
+            }
+          ]
+        },
+        {
+          "name": "Microbial pathogens",
+          "children": [
+            {
+              "name": "K19252  VP1; Dependoparvovirus capsid protein VP1/VP2/VP3"
+            },
+            {
+              "name": "K19255  gB; Herpesviridae envelope glycoprotein B"
+            },
+            {
+              "name": "K19256  gC; Simplexvirus envelope glycoprotein C"
+            },
+            {
+              "name": "K19264  gD; Simplexvirus envelope glycoprotein D"
+            },
+            {
+              "name": "K19257  gM, UL10; Herpesviridae envelope glycoprotein M"
+            },
+            {
+              "name": "K22773  gB, UL55; Betaherpesvirinae envelope glycoprotein B"
+            },
+            {
+              "name": "K19287  env, gp160; HIV envelope glycoprotein gp160"
+            },
+            {
+              "name": "K24266  gp120; HIV envelope glycoprotein gp120"
+            },
+            {
+              "name": "K19258  tat; HIV protein Tat"
+            },
+            {
+              "name": "K19259  env; Deltaretrovirus envelope glycoprotein gp62"
+            },
+            {
+              "name": "K24862  gp46; HTLV envelope surface glycoprotein gp46"
+            },
+            {
+              "name": "K19288  p130; Alphavirus structral polyprotein"
+            },
+            {
+              "name": "------  Dengue virus, envelope protein"
+            },
+            {
+              "name": "------  Foot-and-mouth disease virus - type O, VP3"
+            },
+            {
+              "name": "K19260  L1; Papillomaviridae major capsid protein L1"
+            },
+            {
+              "name": "K19261  F; Pneumoviridae fusion glycoprotein F0"
+            },
+            {
+              "name": "K19262  L5; Mastadenovirus fiber protein"
+            },
+            {
+              "name": "K19263  A27L; Orthopoxvirus protein A27"
+            },
+            {
+              "name": "K13836  CSP; circumsporozoite protein"
+            },
+            {
+              "name": "K15125  fhaB; filamentous hemagglutinin"
+            },
+            {
+              "name": "K16644  actA; actin-assembly inducing protein"
+            },
+            {
+              "name": "K16645  hbhA; heparin binding hemagglutinin HbhA"
+            },
+            {
+              "name": "------  penetrin"
+            },
+            {
+              "name": "------  Borrelia burgdorferi"
+            },
+            {
+              "name": "------  Chlamydia trachomatis"
+            },
+            {
+              "name": "------  Neisseria gonorrhoeae"
+            },
+            {
+              "name": "------  Leishmania amazonensis"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K16631  ANG, RNASE5; angiogenin [EC:3.1.27.-]"
+            },
+            {
+              "name": "K16646  ANXA5; annexin A5"
+            },
+            {
+              "name": "K09025  APOA5; apolipoprotein A-V"
+            },
+            {
+              "name": "K14462  APOB; apolipoprotein B"
+            },
+            {
+              "name": "K04524  APOE; apolipoprotein E"
+            },
+            {
+              "name": "K04520  APP; amyloid beta A4 protein"
+            },
+            {
+              "name": "K01363  CTSB; cathepsin B [EC:3.4.22.1]"
+            },
+            {
+              "name": "K01319  CTSG; cathepsin G [EC:3.4.21.20]"
+            },
+            {
+              "name": "K05634  PRNP, PrP, CD230; prion protein"
+            },
+            {
+              "name": "K05849  SLC8A, NCX; solute carrier family 8 (sodium/calcium exchanger)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hyaluronan",
+      "children": [
+        {
+          "name": "Cell surface receptors",
+          "children": [
+            {
+              "name": "K01242  CD38; ADP-ribosyl cyclase 1 [EC:3.2.2.6 2.4.99.20]"
+            },
+            {
+              "name": "K06256  CD44; CD44 antigen"
+            },
+            {
+              "name": "K06267  HMMR, RHAMM, CD168; hyaluronan-mediated motility receptor"
+            },
+            {
+              "name": "K06490  ICAM1, CD54; intercellular adhesion molecule 1"
+            },
+            {
+              "name": "K10159  TLR2, CD282; toll-like receptor 2"
+            },
+            {
+              "name": "K10160  TLR4, CD284; toll-like receptor 4"
+            },
+            {
+              "name": "K10077  LAYN; layilin"
+            },
+            {
+              "name": "K19012  LYVE1; lymphatic vessel endothelial hyaluronan receptor 1"
+            },
+            {
+              "name": "K19020  STAB1; stabilin-1"
+            },
+            {
+              "name": "K19013  STAB2, HARE; stabilin-2"
+            },
+            {
+              "name": "K19031  CEMIP, KIAA1199; cell migration-inducing and hyaluronan-binding protein [EC:3.2.1.35]"
+            },
+            {
+              "name": "K22144  TEME2; cell surface hyaluronidase [EC:3.2.1.35]"
+            }
+          ]
+        },
+        {
+          "name": "Extracellular matrix or blood plasma proteins",
+          "children": [
+            {
+              "name": "K06792  AGC1, CSPG1; aggrecan 1"
+            },
+            {
+              "name": "K06795  BCAN; brevican"
+            },
+            {
+              "name": "K15414  C1QBP; complement component 1 Q subcomponent-binding protein, mitochondrial"
+            },
+            {
+              "name": "K06238  COL6A; collagen type VI alpha"
+            },
+            {
+              "name": "K03903  FGA; fibrinogen alpha chain"
+            },
+            {
+              "name": "K03904  FGB; fibrinogen beta chain"
+            },
+            {
+              "name": "K03905  FGG; fibrinogen gamma chain"
+            },
+            {
+              "name": "K08648  HABP2; hyaluronan binding protein 2 [EC:3.4.21.-]"
+            },
+            {
+              "name": "K06848  HAPLN1, CRTL1; hyaluronan and proteoglycan link protein 1"
+            },
+            {
+              "name": "K06851  HAPLN2; hyaluronan and proteoglycan link protein 2"
+            },
+            {
+              "name": "K06853  HAPLN4; hyaluronan and proteoglycan link protein 4"
+            },
+            {
+              "name": "K18977  HPX; hemopexin"
+            },
+            {
+              "name": "K19014  ITIH1, SHAP; inter-alpha-trypsin inhibitor heavy chain H1"
+            },
+            {
+              "name": "K19015  ITIH2, SHAP; inter-alpha-trypsin inhibitor heavy chain H2"
+            },
+            {
+              "name": "K24513  ITIH3, SHAP; inter-alpha-trypsin inhibitor heavy chain H3"
+            },
+            {
+              "name": "K06794  NCAN, CSPG3; neurocan core protein"
+            },
+            {
+              "name": "K19016  IMPG1, SPACR; interphotoreceptor matrix proteoglycan 1"
+            },
+            {
+              "name": "K19017  IMPG2, SPACRCAN; interphotoreceptor matrix proteoglycan 2"
+            },
+            {
+              "name": "K19018  TNFAIP6, TSG6; tumor necrosis factor-inducible gene 6 protein"
+            },
+            {
+              "name": "K06793  VCAN, CSPG2; versican core protein"
+            }
+          ]
+        },
+        {
+          "name": "Intracellular proteins",
+          "children": [
+            {
+              "name": "K09554  CDC37; cell division cycle protein 37"
+            },
+            {
+              "name": "K19019  HABP4; intracellular hyaluronan-binding protein 4"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

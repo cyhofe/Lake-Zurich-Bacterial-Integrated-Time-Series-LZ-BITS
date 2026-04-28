@@ -1,0 +1,268 @@
+{
+  "name": "ko00537",
+  "children": [
+    {
+      "name": "Enzymes",
+      "children": [
+        {
+          "name": "K01077  E3.1.3.1, phoA, phoB; alkaline phosphatase [EC:3.1.3.1]"
+        },
+        {
+          "name": "K01513  ENPP1_3, CD203; ectonucleotide pyrophosphatase/phosphodiesterase family member 1/3 [EC:3.1.4.1 3.6.1.9]"
+        },
+        {
+          "name": "K08743  ENPP6; ectonucleotide pyrophosphatase/phosphodiesterase family member 6 [EC:3.1.4.-]"
+        },
+        {
+          "name": "K01194  TREH, treA, treF; alpha,alpha-trehalase [EC:3.2.1.28]"
+        },
+        {
+          "name": "K14208  XPNPEP2; Xaa-Pro aminopeptidase 2 [EC:3.4.11.9]"
+        },
+        {
+          "name": "K19970  NT5E, CD73; 5'-nucleotidase [EC:3.1.3.5]"
+        },
+        {
+          "name": "K01049  ACHE; acetylcholinesterase [EC:3.1.1.7]"
+        },
+        {
+          "name": "K01273  DPEP; membrane dipeptidase [EC:3.4.13.19]"
+        },
+        {
+          "name": "K01296  CPM; carboxypeptidase M [EC:3.4.17.12]"
+        },
+        {
+          "name": "K18246  CA4; carbonic anhydrase 4 [EC:4.2.1.1]"
+        },
+        {
+          "name": "K06716  ART1, CD296; ADP-ribosyltransferase 1 [EC:2.4.2.31]"
+        },
+        {
+          "name": "K19980  ART2, RT6; ADP-ribosyltransferase 2 / NAD+ glycohydrolase [EC:2.4.2.31 3.2.2.5]"
+        },
+        {
+          "name": "K00775  ART3; ADP-ribosyltransferase 3 [EC:2.4.2.31]"
+        },
+        {
+          "name": "K06717  ART4, DO, CD297; ADP-ribosyltransferase 4 [EC:2.4.2.31]"
+        },
+        {
+          "name": "K18152  BST1, CD157; ADP-ribosyl cyclase 2 [EC:3.2.2.6 2.4.99.20]"
+        },
+        {
+          "name": "K08664  PRSS8; prostasin [EC:3.4.21.-]"
+        },
+        {
+          "name": "K01059  LPL; lipoprotein lipase [EC:3.1.1.34]"
+        },
+        {
+          "name": "K01197  hya; hyaluronoglucosaminidase [EC:3.2.1.35]"
+        },
+        {
+          "name": "K19891  GN1_2_3; glucan endo-1,3-beta-glucosidase 1/2/3 [EC:3.2.1.39]"
+        },
+        {
+          "name": "K19892  GN4; glucan endo-1,3-beta-glucosidase 4 [EC:3.2.1.39]"
+        },
+        {
+          "name": "K19893  GN5_6; glucan endo-1,3-beta-glucosidase 5/6 [EC:3.2.1.39]"
+        },
+        {
+          "name": "K01199  EGLC; glucan endo-1,3-beta-D-glucosidase [EC:3.2.1.39]"
+        },
+        {
+          "name": "K08257  E3.2.1.101; mannan endo-1,6-alpha-mannosidase [EC:3.2.1.101]"
+        },
+        {
+          "name": "K06009  YPS1_2; yapsin 1/2 [EC:3.4.23.41]"
+        }
+      ]
+    },
+    {
+      "name": "Receptors",
+      "children": [
+        {
+          "name": "K06463  FCGR3, CD16; low affinity immunoglobulin gamma Fc receptor III"
+        },
+        {
+          "name": "K06479  CD48, BCM1; CD48 antigen"
+        },
+        {
+          "name": "K13649  FOLR; folate receptor"
+        },
+        {
+          "name": "K25530  IZUMO1R, FOLR4; sperm-egg fusion protein Juno"
+        },
+        {
+          "name": "K03985  PLAUR, CD87; plasminogen activator, urokinase receptor"
+        },
+        {
+          "name": "K19894  SPACA4, SAMP14; sperm acrosome membrane-associated protein 4"
+        },
+        {
+          "name": "K05059  CNTFR; ciliary neurotrophic factor receptor"
+        },
+        {
+          "name": "K06542  CD160; CD160 antigen"
+        },
+        {
+          "name": "K19895  GFRA; GDNF family receptor alpha"
+        },
+        {
+          "name": "K16659  RTN4R, NGR; reticulon-4 receptor"
+        },
+        {
+          "name": "K04391  CD14; monocyte differentiation antigen CD14"
+        }
+      ]
+    },
+    {
+      "name": "Antigens",
+      "children": [
+        {
+          "name": "K06514  THY1, CD90; Thy-1 cell surface antigen"
+        },
+        {
+          "name": "K04006  DAF, CD55; decay accelerating factor"
+        },
+        {
+          "name": "K06846  LY6D_E_F_G6_H; lymphocyte antigen 6 complex locus protein D/E/F/G6/H"
+        },
+        {
+          "name": "K20001  GPIHBP1; glycosylphosphatidylinositol-anchored high density lipoprotein-binding protein 1"
+        },
+        {
+          "name": "K04008  CD59; CD59 antigen"
+        },
+        {
+          "name": "K06499  CEACAM, CD66; carcinoembryonic antigen-related cell adhesion molecule"
+        },
+        {
+          "name": "K06469  CD24; CD24 antigen"
+        },
+        {
+          "name": "K06488  CD52; CDW52 antigen"
+        },
+        {
+          "name": "K14473  VSG; variant surface glycoprotein"
+        },
+        {
+          "name": "K14479  EP; procyclin"
+        },
+        {
+          "name": "K14143  SAG; major surface antigen"
+        },
+        {
+          "name": "K13838  MSP1; merozoite surface protein 1"
+        },
+        {
+          "name": "K13839  MSP2; merozoite surface protein 2"
+        },
+        {
+          "name": "K06751  MHC1; MHC class I antigen"
+        },
+        {
+          "name": "K19896  MUCII; mucin TcMUCII"
+        },
+        {
+          "name": "K01404  GP63; leishmanolysin [EC:3.4.24.36]"
+        }
+      ]
+    },
+    {
+      "name": "Others",
+      "children": [
+        {
+          "name": "K05634  PRNP, PrP, CD230; prion protein"
+        },
+        {
+          "name": "K27345  PRND, PrPLP, DPL; prion like protein doppel"
+        },
+        {
+          "name": "K27346  SPRN, SHO; shadow of prion protein"
+        },
+        {
+          "name": "K06491  NCAM, CD56; neural cell adhesion molecule"
+        },
+        {
+          "name": "K06492  CD58, LFA3; CD58 antigen"
+        },
+        {
+          "name": "K03901  F3, CD142; coagulation factor III (tissue factor)"
+        },
+        {
+          "name": "K06759  CNTN1; contactin 1"
+        },
+        {
+          "name": "K06760  CNTN2; contactin 2"
+        },
+        {
+          "name": "K06761  CNTN3_4_5_6; contactin 3/4/5/6"
+        },
+        {
+          "name": "K18274  UMOD; uromodulin"
+        },
+        {
+          "name": "K19897  FAS1; fasciclin 1"
+        },
+        {
+          "name": "K19898  SAG1, AGAL1; alpha-agglutinin"
+        },
+        {
+          "name": "K01365  CTSL; cathepsin L [EC:3.4.22.15]"
+        },
+        {
+          "name": "K08107  GPC1; glypican 1"
+        },
+        {
+          "name": "K08108  GPC2; glypican 2"
+        },
+        {
+          "name": "K08109  GPC3; glypican 3"
+        },
+        {
+          "name": "K08110  GPC4; glypican 4"
+        },
+        {
+          "name": "K08111  GPC5; glypican 5"
+        },
+        {
+          "name": "K08112  GPC6; glypican 6"
+        },
+        {
+          "name": "K02306  DALLY; dally"
+        },
+        {
+          "name": "K19899  GP2; pancreatic secretory granule membrane major glycoprotein GP2"
+        },
+        {
+          "name": "K25029  OTOA; otoancorin"
+        },
+        {
+          "name": "K05462  EFNA; ephrin-A"
+        },
+        {
+          "name": "K25455  TDGF1; teratocarcinoma-derived growth factor 1"
+        },
+        {
+          "name": "K19900  HWP1, RBT1; hyphal wall protein"
+        },
+        {
+          "name": "K22493  ALS; agglutinin-like protein"
+        },
+        {
+          "name": "K22494  K22494; CFEM-containing surface protein"
+        },
+        {
+          "name": "K22832  GAS1; 1,3-beta-glucanosyltransferase GAS1 [EC:2.4.1.-]"
+        },
+        {
+          "name": "K25084  CSAA; contact site A protein"
+        },
+        {
+          "name": "K25085  PSPA; prespore-specific protein A"
+        }
+      ]
+    }
+  ]
+}

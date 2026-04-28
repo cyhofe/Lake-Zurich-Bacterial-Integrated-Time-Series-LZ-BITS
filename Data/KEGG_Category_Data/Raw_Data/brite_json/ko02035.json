@@ -1,0 +1,567 @@
+{
+  "name": "ko02035",
+  "children": [
+    {
+      "name": "Flagellar system",
+      "children": [
+        {
+          "name": "Chemotaxis proteins",
+          "children": [
+            {
+              "name": "Two component system proteins",
+              "children": [
+                {
+                  "name": "K03407  cheA; two-component system, chemotaxis family, sensor kinase CheA [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K03408  cheW; purine-binding chemotaxis protein CheW"
+                },
+                {
+                  "name": "K03409  cheX; chemotaxis protein CheX"
+                },
+                {
+                  "name": "K03410  cheC; chemotaxis protein CheC"
+                },
+                {
+                  "name": "K03411  cheD; chemotaxis protein CheD [EC:3.5.1.44]"
+                },
+                {
+                  "name": "K00575  cheR; chemotaxis protein methyltransferase CheR [EC:2.1.1.80]"
+                },
+                {
+                  "name": "K03412  cheB; two-component system, chemotaxis family, protein-glutamate methylesterase/glutaminase [EC:3.1.1.61 3.5.1.44]"
+                },
+                {
+                  "name": "K13924  cheBR; two-component system, chemotaxis family, CheB/CheR fusion protein [EC:2.1.1.80 3.1.1.61]"
+                },
+                {
+                  "name": "K03413  cheY; two-component system, chemotaxis family, chemotaxis protein CheY"
+                },
+                {
+                  "name": "K03414  cheZ; chemotaxis protein CheZ"
+                },
+                {
+                  "name": "K03415  cheV; two-component system, chemotaxis family, chemotaxis protein CheV"
+                }
+              ]
+            },
+            {
+              "name": "MCPs",
+              "children": [
+                {
+                  "name": "K03406  mcp; methyl-accepting chemotaxis protein"
+                },
+                {
+                  "name": "K05874  tsr; methyl-accepting chemotaxis protein I, serine sensor receptor"
+                },
+                {
+                  "name": "K05875  tar; methyl-accepting chemotaxis protein II, aspartate sensor receptor"
+                },
+                {
+                  "name": "K05876  trg; methyl-accepting chemotaxis protein III, ribose and galactose sensor receptor"
+                },
+                {
+                  "name": "K05877  tap; methyl-accepting chemotaxis protein IV, peptide sensor receptor"
+                },
+                {
+                  "name": "K03776  aer; aerotaxis receptor"
+                },
+                {
+                  "name": "K06595  hemAT; heam-based aerotactic trancducer"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Flagellar assembly proteins",
+          "children": [
+            {
+              "name": "Type-III secretion",
+              "children": [
+                {
+                  "name": "K02411  fliH; flagellar assembly protein FliH"
+                },
+                {
+                  "name": "K02412  fliI; flagellum-specific ATP synthase [EC:7.4.2.8]"
+                },
+                {
+                  "name": "K02413  fliJ; flagellar protein FliJ"
+                },
+                {
+                  "name": "K02418  fliO, fliZ; flagellar protein FliO/FliZ"
+                },
+                {
+                  "name": "K02419  fliP; flagellar biosynthesis protein FliP"
+                },
+                {
+                  "name": "K02420  fliQ; flagellar biosynthesis protein FliQ"
+                },
+                {
+                  "name": "K02421  fliR; flagellar biosynthesis protein FliR"
+                },
+                {
+                  "name": "K13820  fliR-flhB; flagellar biosynthesis protein FliR/FlhB"
+                },
+                {
+                  "name": "K02400  flhA; flagellar biosynthesis protein FlhA"
+                },
+                {
+                  "name": "K02401  flhB; flagellar biosynthesis protein FlhB"
+                },
+                {
+                  "name": "K03516  flhE; flagellar protein FlhE"
+                }
+              ]
+            },
+            {
+              "name": "C ring",
+              "children": [
+                {
+                  "name": "K02410  fliG; flagellar motor switch protein FliG"
+                },
+                {
+                  "name": "K02416  fliM; flagellar motor switch protein FliM"
+                },
+                {
+                  "name": "K02417  fliN; flagellar motor switch protein FliN"
+                }
+              ]
+            },
+            {
+              "name": "M, S, P and L rings",
+              "children": [
+                {
+                  "name": "K02409  fliF; flagellar M-ring protein FliF"
+                },
+                {
+                  "name": "K02394  flgI; flagellar P-ring protein FlgI"
+                },
+                {
+                  "name": "K02386  flgA; flagellar basal body P-ring formation protein FlgA"
+                },
+                {
+                  "name": "K02393  flgH; flagellar L-ring protein FlgH"
+                },
+                {
+                  "name": "K02415  fliL; flagellar protein FliL"
+                }
+              ]
+            },
+            {
+              "name": "Rod and hook",
+              "children": [
+                {
+                  "name": "K02408  fliE; flagellar hook-basal body complex protein FliE"
+                },
+                {
+                  "name": "K02414  fliK; flagellar hook-length control protein FliK"
+                },
+                {
+                  "name": "K02387  flgB; flagellar basal-body rod protein FlgB"
+                },
+                {
+                  "name": "K02388  flgC; flagellar basal-body rod protein FlgC"
+                },
+                {
+                  "name": "K02389  flgD; flagellar basal-body rod modification protein FlgD"
+                },
+                {
+                  "name": "K02391  flgF; flagellar basal-body rod protein FlgF"
+                },
+                {
+                  "name": "K02392  flgG; flagellar basal-body rod protein FlgG"
+                },
+                {
+                  "name": "K02395  flgJ; peptidoglycan hydrolase FlgJ"
+                },
+                {
+                  "name": "K02390  flgE; flagellar hook protein FlgE"
+                },
+                {
+                  "name": "K02396  flgK; flagellar hook-associated protein 1"
+                },
+                {
+                  "name": "K02397  flgL; flagellar hook-associated protein 3 FlgL"
+                },
+                {
+                  "name": "K02399  flgN; flagellar biosynthesis protein FlgN"
+                }
+              ]
+            },
+            {
+              "name": "H and T rings",
+              "children": [
+                {
+                  "name": "K24343  flgT; flagellar H-ring protein FlgT"
+                },
+                {
+                  "name": "K24344  flgO; flagellar H-ring protein FlgO"
+                },
+                {
+                  "name": "K09860  flgP; outer membrane protein FlgP"
+                },
+                {
+                  "name": "K24346  flgQ; flagellar motility protein FlgQ"
+                },
+                {
+                  "name": "K21217  motX; sodium-type polar flagellar protein MotX"
+                },
+                {
+                  "name": "K21218  motY; sodium-type flagellar protein MotY"
+                }
+              ]
+            },
+            {
+              "name": "Filament",
+              "children": [
+                {
+                  "name": "K18475  fliB; lysine-N-methylase [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K02406  fliC, hag; flagellin"
+                },
+                {
+                  "name": "K02407  fliD; flagellar hook-associated protein 2"
+                },
+                {
+                  "name": "K02422  fliS; flagellar secretion chaperone FliS"
+                },
+                {
+                  "name": "K02423  fliT; flagellar protein FliT"
+                }
+              ]
+            },
+            {
+              "name": "Stator",
+              "children": [
+                {
+                  "name": "K02403  flhD; flagellar transcriptional activator FlhD"
+                },
+                {
+                  "name": "K02402  flhC; flagellar transcriptional activator FlhC"
+                },
+                {
+                  "name": "K02405  fliA, whiG; RNA polymerase sigma factor FliA"
+                },
+                {
+                  "name": "K02556  motA; chemotaxis protein MotA"
+                },
+                {
+                  "name": "K02557  motB; chemotaxis protein MotB"
+                },
+                {
+                  "name": "K10564  motC; chemotaxis protein MotC"
+                },
+                {
+                  "name": "K10565  motD; chemotaxis protein MotD"
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "children": [
+                {
+                  "name": "K10941  flrA, fleQ, flaK; sigma-54 dependent transcriptional regulator, flagellar regulatory protein"
+                },
+                {
+                  "name": "K10942  flrB, fleS, flaL; two-component system, sensor histidine kinase FlrB [EC:2.7.13.3]"
+                },
+                {
+                  "name": "K10943  flrC, fleR, flaM; two-component system, response regulator FlrC"
+                },
+                {
+                  "name": "K02424  tcyA, tcyJ, fliY; L-cystine transport system substrate-binding protein"
+                },
+                {
+                  "name": "K02425  fliZ; regulator of sigma S factor FliZ"
+                },
+                {
+                  "name": "K13626  fliW; flagellar assembly factor FliW"
+                },
+                {
+                  "name": "K02398  flgM; negative regulator of flagellin synthesis FlgM"
+                },
+                {
+                  "name": "K06602  flaF; flagellar biosynthesis activator protein FlaF"
+                },
+                {
+                  "name": "K06603  flaG; flagellar protein FlaG"
+                },
+                {
+                  "name": "K06604  flaI; flagellar protein FlaI"
+                },
+                {
+                  "name": "K02382  flbA; flagellar protein FlbA"
+                },
+                {
+                  "name": "K02383  flbB; flagellar protein FlbB"
+                },
+                {
+                  "name": "K02384  flbC; flagellar protein FlbC"
+                },
+                {
+                  "name": "K02385  flbD; flagellar protein FlbD"
+                },
+                {
+                  "name": "K06601  flbT; flagellar biosynthesis repressor protein FlbT"
+                },
+                {
+                  "name": "K02404  flhF; flagellar biosynthesis protein FlhF"
+                },
+                {
+                  "name": "K04562  flhG, fleN; flagellar biosynthesis protein FlhG"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Archaeal flagellar assembly proteins",
+          "children": [
+            {
+              "name": "K07324  flaA; archaeal flagellin FlaA"
+            },
+            {
+              "name": "K07325  flaB; archaeal flagellin FlaB"
+            },
+            {
+              "name": "K07822  flaC; archaeal flagellar protein FlaC"
+            },
+            {
+              "name": "K07327  flaD; archaeal flagellar protein FlaD"
+            },
+            {
+              "name": "K07328  flaE; archaeal flagellar protein FlaE"
+            },
+            {
+              "name": "K23986  flaCE; archaeal flagellar protein FlaCE"
+            },
+            {
+              "name": "K07329  flaF; archaeal flagellar protein FlaF"
+            },
+            {
+              "name": "K07330  flaG; archaeal flagellar protein FlaG"
+            },
+            {
+              "name": "K07331  flaH; archaeal flagellar protein FlaH"
+            },
+            {
+              "name": "K07332  flaI; archaeal flagellar protein FlaI"
+            },
+            {
+              "name": "K07333  flaJ; archaeal flagellar protein FlaJ"
+            },
+            {
+              "name": "K07991  flaK; archaeal preflagellin peptidase FlaK [EC:3.4.23.52]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pilus system",
+      "children": [
+        {
+          "name": "Twitching motility proteins",
+          "children": [
+            {
+              "name": "K02657  pilG; twitching motility two-component system response regulator PilG"
+            },
+            {
+              "name": "K02658  pilH; twitching motility two-component system response regulator PilH"
+            },
+            {
+              "name": "K02659  pilI; twitching motility protein PilI"
+            },
+            {
+              "name": "K02660  pilJ; twitching motility protein PilJ"
+            },
+            {
+              "name": "K02661  pilK; type IV pilus assembly protein PilK"
+            },
+            {
+              "name": "K06596  chpA; chemosensory pili system protein ChpA (sensor histidine kinase/response regulator)"
+            },
+            {
+              "name": "K02667  pilR, pehR; two-component system, NtrC family, response regulator PilR"
+            },
+            {
+              "name": "K02668  pilS, pehS; two-component system, NtrC family, sensor histidine kinase PilS [EC:2.7.13.3]"
+            },
+            {
+              "name": "K02669  pilT; twitching motility protein PilT"
+            },
+            {
+              "name": "K02670  pilU; twitching motility protein PilU"
+            }
+          ]
+        },
+        {
+          "name": "Chemosensory pili system proteins",
+          "children": [
+            {
+              "name": "K06596  chpA; chemosensory pili system protein ChpA (sensor histidine kinase/response regulator)"
+            },
+            {
+              "name": "K06597  chpB; chemosensory pili system protein ChpB (putative protein-glutamate methylesterase)"
+            },
+            {
+              "name": "K06598  chpC; chemosensory pili system protein ChpC"
+            },
+            {
+              "name": "K06599  chpD; AraC family transcriptional regulator, chemosensory pili system protein ChpD"
+            },
+            {
+              "name": "K06600  chpE; chemosensory pili system protein ChpE"
+            }
+          ]
+        },
+        {
+          "name": "Positive phototactic motility proteins",
+          "children": [
+            {
+              "name": "K11522  pixG; two-component system, chemotaxis family, response regulator PixG"
+            },
+            {
+              "name": "K11523  pixH; two-component system, chemotaxis family, response regulator PixH"
+            },
+            {
+              "name": "K11524  pixI; positive phototaxis protein PixI"
+            },
+            {
+              "name": "K11525  pixJ; methyl-accepting chemotaxis protein PixJ"
+            },
+            {
+              "name": "K11526  pixL; two-component system, chemotaxis family, sensor histidine kinase and response regulator PixL"
+            }
+          ]
+        },
+        {
+          "name": "Pilus assembly proteins",
+          "children": [
+            {
+              "name": "K02650  pilA; type IV pilus assembly protein PilA"
+            },
+            {
+              "name": "K02652  pilB; type IV pilus assembly protein PilB"
+            },
+            {
+              "name": "K02653  pilC; type IV pilus assembly protein PilC"
+            },
+            {
+              "name": "K02654  pilD, pppA; leader peptidase (prepilin peptidase) / N-methyltransferase [EC:3.4.23.43 2.1.1.-]"
+            },
+            {
+              "name": "K02656  pilF; type IV pilus assembly protein PilF"
+            },
+            {
+              "name": "K02666  pilQ; type IV pilus assembly protein PilQ"
+            },
+            {
+              "name": "K02665  pilP; type IV pilus assembly protein PilP"
+            },
+            {
+              "name": "K02664  pilO; type IV pilus assembly protein PilO"
+            },
+            {
+              "name": "K23985  pilOP; type IV pilus assembly protein PilOP"
+            },
+            {
+              "name": "K02663  pilN; type IV pilus assembly protein PilN"
+            },
+            {
+              "name": "K02662  pilM; type IV pilus assembly protein PilM"
+            },
+            {
+              "name": "K02676  pilZ; type IV pilus assembly protein PilZ"
+            },
+            {
+              "name": "K02671  pilV; type IV pilus assembly protein PilV"
+            },
+            {
+              "name": "K02672  pilW; type IV pilus assembly protein PilW"
+            },
+            {
+              "name": "K02673  pilX; type IV pilus assembly protein PilX"
+            },
+            {
+              "name": "K02674  pilY1; type IV pilus assembly protein PilY1"
+            },
+            {
+              "name": "K02675  pilY2; type IV pilus assembly protein PilY2"
+            },
+            {
+              "name": "K02655  pilE; type IV pilus assembly protein PilE"
+            },
+            {
+              "name": "K02651  flp, pilA; pilus assembly protein Flp/PilA"
+            },
+            {
+              "name": "K02278  cpaA, tadV; prepilin peptidase CpaA [EC:3.4.23.43]"
+            },
+            {
+              "name": "K02279  cpaB, rcpC; pilus assembly protein CpaB"
+            },
+            {
+              "name": "K02280  cpaC, rcpA; pilus assembly protein CpaC"
+            },
+            {
+              "name": "K02281  cpaD; pilus assembly protein CpaD"
+            },
+            {
+              "name": "K02282  cpaE, tadZ; pilus assembly protein CpaE"
+            },
+            {
+              "name": "K02283  cpaF, tadA; pilus assembly protein CpaF [EC:7.4.2.8]"
+            }
+          ]
+        },
+        {
+          "name": "Fimbrial proteins",
+          "children": [
+            {
+              "name": "K07345  fimA; major type 1 subunit fimbrin (pilin)"
+            },
+            {
+              "name": "K07346  fimC; fimbrial chaperone protein"
+            },
+            {
+              "name": "K07347  fimD, fimC, mrkC, htrE, cssD; outer membrane usher protein"
+            },
+            {
+              "name": "K07348  fimF; minor fimbrial subunit"
+            },
+            {
+              "name": "K07349  fimG; minor fimbrial subunit"
+            },
+            {
+              "name": "K07350  fimH; minor fimbrial subunit"
+            },
+            {
+              "name": "K07351  fimI; fimbrial protein"
+            },
+            {
+              "name": "K07352  sfmA; type 1 fimbrial protein"
+            },
+            {
+              "name": "K07353  sfmC; fimbrial chaperone protein"
+            },
+            {
+              "name": "K07354  sfmD; outer membrane usher protein"
+            },
+            {
+              "name": "K07355  sfmF; fimbrial-like protein"
+            },
+            {
+              "name": "K07356  sfmH; fimbrial protein"
+            },
+            {
+              "name": "K27078  cupE; spore coat protein U domain-containing protein, fimbrial subunit CupE1/2/3/6"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

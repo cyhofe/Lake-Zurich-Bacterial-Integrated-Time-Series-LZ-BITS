@@ -1,0 +1,1932 @@
+{
+  "name": "ko00199",
+  "children": [
+    {
+      "name": "Cytochrome P450, animal type",
+      "children": [
+        {
+          "name": "CYP1 family",
+          "children": [
+            {
+              "name": "K07408  CYP1A1; cytochrome P450 family 1 subfamily A1 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07409  CYP1A2; cytochrome P450 family 1 subfamily A2 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K24532  CYP1A; cytochrome P450 family 1 subfamily A [EC:1.14.-.-]"
+            },
+            {
+              "name": "K07410  CYP1B1; cytochrome P450 family 1 subfamily B1 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17812  CYP1C; cytochrome P450 family 1 subfamily C"
+            },
+            {
+              "name": "K17813  CYP1D; cytochrome P450 family 1 subfamily D"
+            },
+            {
+              "name": "K17814  CYP1; cytochrome P450 family 1, invertebrate"
+            }
+          ]
+        },
+        {
+          "name": "CYP2 family",
+          "children": [
+            {
+              "name": "K17683  CYP2A6; cytochrome P450 family 2 subfamily A6 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K17685  CYP2A13; cytochrome P450 family 2 subfamily A13 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07411  CYP2A; cytochrome P450 family 2 subfamily A [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17709  CYP2B6; cytochrome P450 family 2 subfamily B6 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K07412  CYP2B; cytochrome P450 family 2 subfamily B [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17718  CYP2C8; cytochrome P450 family 2 subfamily C8 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17719  CYP2C9; cytochrome P450 family 2 subfamily C9 [EC:1.14.14.51 1.14.14.52 1.14.14.53 1.14.14.-]"
+            },
+            {
+              "name": "K17720  CYP2C18; cytochrome P450 family 2 subfamily C18 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17721  CYP2C19; cytochrome P450 family 2 subfamily C19 [EC:1.14.14.51 1.14.14.52 1.14.14.53 1.14.14.75 1.14.14.-]"
+            },
+            {
+              "name": "K07413  CYP2C; cytochrome P450 family 2 subfamily C [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17712  CYP2D6; cytochrome P450 family 2 subfamily D6 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07414  CYP2D; cytochrome P450 family 2 subfamily D [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07415  CYP2E1; cytochrome P450 family 2 subfamily E1 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K07416  CYP2F; cytochrome P450 family 2 subfamily F [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07417  CYP2G1; cytochrome P450 family 2 subfamily G1"
+            },
+            {
+              "name": "K17853  CYP2H; cytochrome P450 family 2 subfamily H"
+            },
+            {
+              "name": "K07418  CYP2J; cytochrome P450 family 2 subfamily J [EC:1.14.14.1 1.14.14.73 1.14.14.74 1.14.14.75]"
+            },
+            {
+              "name": "K17854  CYP2K; cytochrome P450 family 2 subfamily K [EC:1.14.-.-]"
+            },
+            {
+              "name": "K07419  CYP2R1; vitamin D 25-hydroxylase [EC:1.14.14.24]"
+            },
+            {
+              "name": "K07420  CYP2S1; cytochrome P450 family 2 subfamily S1 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07422  CYP2U1; long-chain fatty acid omega-monooxygenase [EC:1.14.14.80]"
+            },
+            {
+              "name": "K07423  CYP2W1; cytochrome P450 family 2 subfamily W1 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K17852  CYP2AA; cytochrome P450 family 2 subfamily AA"
+            }
+          ]
+        },
+        {
+          "name": "CYP3 family",
+          "children": [
+            {
+              "name": "K17689  CYP3A4; cytochrome P450 family 3 subfamily A4 [EC:1.14.13.32 1.14.14.55 1.14.14.56 1.14.14.57 1.14.14.73 1.14.14.-]"
+            },
+            {
+              "name": "K17690  CYP3A5; cytochrome P450 family 3 subfamily A5 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17691  CYP3A7; cytochrome P450 family 3 subfamily A7 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17692  CYP3A43; cytochrome P450 family 3 subfamily A43 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07424  CYP3A; cytochrome P450 family 3 subfamily A [EC:1.14.14.1]"
+            }
+          ]
+        },
+        {
+          "name": "CYP4 family",
+          "children": [
+            {
+              "name": "K17687  CYP4A11; cytochrome P450 family 4 subfamily A11 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K18228  CYP4A21; taurochenodeoxycholate 6alpha-hydroxylase [EC:1.14.14.57]"
+            },
+            {
+              "name": "K07425  CYP4A; long-chain fatty acid omega-monooxygenase [EC:1.14.14.80]"
+            },
+            {
+              "name": "K07426  CYP4B1; cytochrome P450 family 4 subfamily B1 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17726  CYP4F2_3; phylloquinone omega-hydroxylase / docosahexaenoic acid omega-hydroxylase / leukotriene-B4 20-monooxygenase [EC:1.14.14.78 1.14.14.79 1.14.14.94]"
+            },
+            {
+              "name": "K17728  CYP4F8; cytochrome P450 family 4 subfamily F8 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17729  CYP4F11; cytochrome P450 family 4 subfamily F11 [EC:1.14.14.1 1.14.14.78]"
+            },
+            {
+              "name": "K17730  CYP4F12; cytochrome P450 family 4 subfamily F12 [EC:1.14.14.1]"
+            },
+            {
+              "name": "K17731  CYP4F22; ultra-long-chain fatty acid omega-hydroxylase [EC:1.14.14.177]"
+            },
+            {
+              "name": "K00490  CYP4F; cytochrome P450 family 4 subfamily F [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07427  CYP4V; docosahexaenoic acid omega-hydroxylase [EC:1.14.14.79]"
+            },
+            {
+              "name": "K07428  CYP4X; cytochrome P450 family 4 subfamily X [EC:1.14.14.1]"
+            },
+            {
+              "name": "K07429  CYP4Z; cytochrome P450 family 4 subfamily Z [EC:1.14.14.1]"
+            },
+            {
+              "name": "K15001  CYP4; cytochrome P450 family 4 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP5 family",
+          "children": [
+            {
+              "name": "K01832  TBXAS1, CYP5A; thromboxane-A synthase [EC:5.3.99.5]"
+            }
+          ]
+        },
+        {
+          "name": "CYP6 family",
+          "children": [
+            {
+              "name": "K14999  CYP6; cytochrome P450 family 6 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP7 family",
+          "children": [
+            {
+              "name": "K00489  CYP7A1; cholesterol 7alpha-monooxygenase [EC:1.14.14.23]"
+            },
+            {
+              "name": "K07430  CYP7B; 25/26-hydroxycholesterol 7alpha-hydroxylase [EC:1.14.14.29]"
+            }
+          ]
+        },
+        {
+          "name": "CYP8 family",
+          "children": [
+            {
+              "name": "K01831  PTGIS, CYP8A; prostacyclin synthase [EC:5.3.99.4]"
+            },
+            {
+              "name": "K07431  CYP8B1; sterol 12-alpha-hydroxylase [EC:1.14.14.139]"
+            }
+          ]
+        },
+        {
+          "name": "CYP9 family",
+          "children": [
+            {
+              "name": "K21069  CYP9T2_3; ipsdienol synthase [EC:1.14.14.31]"
+            },
+            {
+              "name": "K15003  CYP9; cytochrome P450 family 9 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP10 family",
+          "children": [
+            {
+              "name": "K17088  CYP10; cytochrome P450 family 10"
+            }
+          ]
+        },
+        {
+          "name": "CYP11 family",
+          "children": [
+            {
+              "name": "K00498  CYP11A; cholesterol monooxygenase (side-chain-cleaving) [EC:1.14.15.6]"
+            },
+            {
+              "name": "K00497  CYP11B1; steroid 11beta-monooxygenase [EC:1.14.15.4]"
+            },
+            {
+              "name": "K07433  CYP11B2; steroid 11beta-monooxygenase / corticosterone 18-monooxygenase [EC:1.14.15.4 1.14.15.5]"
+            }
+          ]
+        },
+        {
+          "name": "CYP12 family",
+          "children": [
+            {
+              "name": "K15004  CYP12; cytochrome P450 family 12 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP13 family",
+          "children": [
+            {
+              "name": "K17861  CYP13; cytochrome P450 family 13"
+            }
+          ]
+        },
+        {
+          "name": "CYP15 family",
+          "children": [
+            {
+              "name": "K14937  CYP15A1_C1; methyl farnesoate epoxidase / farnesoate epoxidase [EC:1.14.14.127 1.14.14.128]"
+            }
+          ]
+        },
+        {
+          "name": "CYP17 family",
+          "children": [
+            {
+              "name": "K00512  CYP17A; steroid 17alpha-monooxygenase / 17alpha-hydroxyprogesterone deacetylase [EC:1.14.14.19 1.14.14.32]"
+            }
+          ]
+        },
+        {
+          "name": "CYP18 family",
+          "children": [
+            {
+              "name": "K14985  CYP18A1; 26-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP19 family",
+          "children": [
+            {
+              "name": "K07434  CYP19A; aromatase [EC:1.14.14.14]"
+            }
+          ]
+        },
+        {
+          "name": "CYP20 family",
+          "children": [
+            {
+              "name": "K07435  CYP20A; cytochrome P450 family 20 subfamily A [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP21 family",
+          "children": [
+            {
+              "name": "K00513  CYP21A; steroid 21-monooxygenase [EC:1.14.14.16]"
+            }
+          ]
+        },
+        {
+          "name": "CYP23 family",
+          "children": [
+            {
+              "name": "K17946  CYP23A; cytochrome P450 family 23 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP24 family",
+          "children": [
+            {
+              "name": "K07436  CYP24A1; vitamin D3 24-hydroxylase [EC:1.14.15.16]"
+            }
+          ]
+        },
+        {
+          "name": "CYP26 family",
+          "children": [
+            {
+              "name": "K07437  CYP26A; cytochrome P450 family 26 subfamily A [EC:1.14.14.-]"
+            },
+            {
+              "name": "K12664  CYP26B; cytochrome P450 family 26 subfamily B [EC:1.14.14.-]"
+            },
+            {
+              "name": "K12665  CYP26C; cytochrome P450 family 26 subfamily C [EC:1.14.14.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP27 family",
+          "children": [
+            {
+              "name": "K00488  CYP27A1; cholestanetriol 26-monooxygenase [EC:1.14.15.15]"
+            },
+            {
+              "name": "K07438  CYP27B1; calcidiol 1-monooxygenase (25-hydroxyvitamin D3 1alpha-hydroxylase) [EC:1.14.15.18]"
+            },
+            {
+              "name": "K17951  CYP27C1; all-trans-retinol 3,4-desaturase [EC:1.14.19.53]"
+            }
+          ]
+        },
+        {
+          "name": "CYP29 family",
+          "children": [
+            {
+              "name": "K17952  CYP29A; cytochrome P450 family 29 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP31 family",
+          "children": [
+            {
+              "name": "K17953  CYP31A; cytochrome P450 family 31 subfamily A [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP36 family",
+          "children": [
+            {
+              "name": "K17958  CYP36A1; cytochrome P450 family 36 subfamily A1"
+            }
+          ]
+        },
+        {
+          "name": "CYP39 family",
+          "children": [
+            {
+              "name": "K07439  CYP39A1; 24-hydroxycholesterol 7alpha-hydroxylase [EC:1.14.14.26]"
+            }
+          ]
+        },
+        {
+          "name": "CYP46 family",
+          "children": [
+            {
+              "name": "K07440  CYP46A1; cholesterol 24-hydroxylase [EC:1.14.14.25]"
+            }
+          ]
+        },
+        {
+          "name": "CYP49 family",
+          "children": [
+            {
+              "name": "K17960  CYP49A; cytochrome P450 family 49 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP51 family",
+          "children": [
+            {
+              "name": "K05917  CYP51; sterol 14alpha-demethylase [EC:1.14.14.154 1.14.15.36]"
+            }
+          ]
+        },
+        {
+          "name": "CYP302 family",
+          "children": [
+            {
+              "name": "K10721  DIB, CYP302A1; 3-dehydro-2,22-dideoxyecdysone 22-hydroxylase [EC:1.14.15.44]"
+            }
+          ]
+        },
+        {
+          "name": "CYP306 family",
+          "children": [
+            {
+              "name": "K10720  PHM, CYP306A1; ecdysteroid 25-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP307 family",
+          "children": [
+            {
+              "name": "K14939  SPO, SPOK, CYP307A; cytochrome P450 family 307 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP314 family",
+          "children": [
+            {
+              "name": "K10723  SHD, CYP314A1; ecdysone 20-monooxygenase [EC:1.14.99.22]"
+            }
+          ]
+        },
+        {
+          "name": "CYP315 family",
+          "children": [
+            {
+              "name": "K10722  SAD, CYP315A1; ecdysteroid 2-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP521 family",
+          "children": [
+            {
+              "name": "K23813  CYP521A1; cytochrome P450 family 521 subfamily A1 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP3201 family",
+          "children": [
+            {
+              "name": "K22880  CYP3201B1; phenylacetonitrile alpha-monooxygenase [EC:1.14.14.77]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cytochrome P450, plant type",
+      "children": [
+        {
+          "name": "CYP71 family",
+          "children": [
+            {
+              "name": "K20617  CYP71A; cytochrome P450 family 71 subfamily A"
+            },
+            {
+              "name": "K11868  CYP71A13; indoleacetaldoxime dehydratase [EC:4.8.1.3]"
+            },
+            {
+              "name": "K23805  CYP71A16; marneral oxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K21714  CYP71AJ1; psoralen synthase [EC:1.14.14.141]"
+            },
+            {
+              "name": "K21715  CYP71AJ4; angelicin synthase [EC:1.14.14.148]"
+            },
+            {
+              "name": "K00495  CYP71AN24; phenylacetaldehyde oxime monooxygenase [EC:1.14.14.44]"
+            },
+            {
+              "name": "K21716  CYP71AV1; amorpha-4,11-diene 12-monooxygenase [EC:1.14.14.114]"
+            },
+            {
+              "name": "K23494  CYP71AY1; alstonine synthase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K25523  CYP71AZ; cytochrome P450 family 71 subfamily AZ [EC:1.14.14.-]"
+            },
+            {
+              "name": "K20559  CYP71B15; dihydrocamalexate/camalexin synthase [EC:1.14.19.52]"
+            },
+            {
+              "name": "K01773  CYP71B40_41; aldoxime dehydratase [EC:4.99.1.-]"
+            },
+            {
+              "name": "K21717  CYP71BA1; alpha-humulene 10-hydroxylase [EC:1.14.14.113]"
+            },
+            {
+              "name": "K23806  CYP71BE5; alpha-guaiene 2-oxidase"
+            },
+            {
+              "name": "K22634  CYP71BE52; salviol synthase [EC:1.14.14.62]"
+            },
+            {
+              "name": "K20560  CYP71BJ1; tabersonine/lochnericine 19-hydroxylase"
+            },
+            {
+              "name": "K20767  CYP71BL1; germacrene A acid 8beta-hydroxylase [EC:1.14.14.168]"
+            },
+            {
+              "name": "K20561  CYP71BL2; costunolide synthase [EC:1.14.14.150]"
+            },
+            {
+              "name": "K23177  CYP71BL6; germacrene A acid 8beta-hydroxylase / 8-epi-inunolide synthase [EC:1.14.14.168 1.14.14.170]"
+            },
+            {
+              "name": "K13225  BX4, CYP71C1, CYP71C6; 3-hydroxyindolin-2-one monooxygenase [EC:1.14.14.109]"
+            },
+            {
+              "name": "K13224  BX3, CYP71C2, CYP71C7; indolin-2-one monooxygenase [EC:1.14.14.157]"
+            },
+            {
+              "name": "K13226  BX5, CYP71C3, CYP71C8; 2-hydroxy-1,4-benzoxazin-3-one monooxygenase [EC:1.14.14.110]"
+            },
+            {
+              "name": "K13223  BX2, CYP71C4, CYP71C9; indole-2-monooxygenase [EC:1.14.14.153]"
+            },
+            {
+              "name": "K21205  CYP71CU1; bursehernin 5'-monooxygenase [EC:1.14.14.131]"
+            },
+            {
+              "name": "K22365  CYP71D1; tabersonine 3-oxygenase [EC:1.14.14.50]"
+            },
+            {
+              "name": "K13267  CYP71D9, F6H; flavonoid 6-hydroxylase [EC:1.14.13.-]"
+            },
+            {
+              "name": "K12696  CYP71D12; tabersonine 16-hydroxylase [EC:1.14.14.103]"
+            },
+            {
+              "name": "K15089  CYP71D13_15_95; (S)-limonene 3-monooxygenase [EC:1.14.14.99]"
+            },
+            {
+              "name": "K07381  CYP71D18; (S)-limonene 6-monooxygenase [EC:1.14.14.51]"
+            },
+            {
+              "name": "K15805  EAH, CYP71D20; 5-epiaristolochene 1,3-dihydroxylase [EC:1.14.14.149]"
+            },
+            {
+              "name": "K15472  CYP71D55; premnaspirodiene oxygenase [EC:1.14.14.151]"
+            },
+            {
+              "name": "K23807  CYP71D353; cytochrome P450 family 71 subfamily D353"
+            },
+            {
+              "name": "K23178  CYP71DD6; eupatolide synthase [EC:1.14.14.169]"
+            },
+            {
+              "name": "K13029  CYP71E1; 4-hydroxyphenylacetaldehyde oxime monooxygenase [EC:1.14.14.37]"
+            },
+            {
+              "name": "K16265  CYP71E7; (E)-2-methylbutanal oxime monooxygenase [EC:1.14.14.41]"
+            },
+            {
+              "name": "K24541  CYP71P1; tryptamine 5-hydroxylase [EC:1.14.14.186]"
+            },
+            {
+              "name": "K16083  CYP71Z6; ent-isokaurene hydroxylase [EC:1.14.14.76]"
+            },
+            {
+              "name": "K21291  CYP71Z7; ent-cassadiene hydroxylase [EC:1.14.14.69]"
+            },
+            {
+              "name": "K23134  CYP71Z16_18; dolabradiene monooxygenase / zealexin A1 synthase [EC:1.14.14.159 1.14.14.160]"
+            }
+          ]
+        },
+        {
+          "name": "CYP72 family",
+          "children": [
+            {
+              "name": "K13400  CYP72A1; secologanin synthase [EC:1.14.19.62]"
+            },
+            {
+              "name": "K24179  CYP72A61; cytochrome P450 family 72 subfamily A61 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K23808  CYP72A67; cytochrome P450 family 72 subfamily A67 [EC:1.14.13.-]"
+            },
+            {
+              "name": "K23809  CYP72A68; cytochrome P450 family 72 subfamily A68 [EC:1.14.14.-]"
+            },
+            {
+              "name": "K17873  CYP72A; 11-oxo-beta-amyrin 30-oxidase [EC:1.14.14.115]"
+            },
+            {
+              "name": "K25489  PGA2, CYP72A188; cholesterol 22-hydroxylase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K25490  PGA1, CYP72A208; 22-hydroxycholesterol 26-hydroxylase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K23276  CYP72A224; 7-deoxyloganate 7-hydroxylase [EC:1.14.14.85]"
+            },
+            {
+              "name": "K15638  CYP72C1, SOB7; cytochrome P450 family 72 subfamily C1"
+            }
+          ]
+        },
+        {
+          "name": "CYP73 family",
+          "children": [
+            {
+              "name": "K00487  CYP73A; trans-cinnamate 4-monooxygenase [EC:1.14.14.91]"
+            }
+          ]
+        },
+        {
+          "name": "CYP74 family",
+          "children": [
+            {
+              "name": "K01723  AOS,CYP74A; hydroperoxide dehydratase [EC:4.2.1.92]"
+            },
+            {
+              "name": "K10528  HPL, CYP74B24; hydroperoxide lyase [EC:4.1.2.-]"
+            },
+            {
+              "name": "K17874  CYP74D, DES; 9-divinyl ether synthase [EC:4.2.1.121]"
+            },
+            {
+              "name": "K27600  CYP74M3; etheroleic acid synthase [EC:4.2.1.183]"
+            }
+          ]
+        },
+        {
+          "name": "CYP75 family",
+          "children": [
+            {
+              "name": "K13083  CYP75A; flavonoid 3',5'-hydroxylase [EC:1.14.14.81]"
+            },
+            {
+              "name": "K05280  CYP75B1; flavonoid 3'-monooxygenase [EC:1.14.14.82]"
+            }
+          ]
+        },
+        {
+          "name": "CYP76 family",
+          "children": [
+            {
+              "name": "K20618  CYP76A26; nepetalactol monooxygenase [EC:1.14.14.161]"
+            },
+            {
+              "name": "K20564  CYP76AA25; cytochrome P450 family 76 subfamily AA25"
+            },
+            {
+              "name": "K26037  CYP76AD1; tyrosine hydroxylase / L-DOPA oxygenase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20513  CYP76AH1; ferruginol synthase [EC:1.14.14.175]"
+            },
+            {
+              "name": "K22635  CYP76AH3; ferruginol monooxygenase / sugiol synthase [EC:1.14.14.60 1.14.14.65]"
+            },
+            {
+              "name": "K22636  CYP76AH24; ferruginol synthase / ferruginol monooxygenase [EC:1.14.14.175 1.14.14.60]"
+            },
+            {
+              "name": "K22637  CYP76AK1; 11-hydroxysugiol 20-monooxygenase [EC:1.14.14.67]"
+            },
+            {
+              "name": "K22638  CYP76AK6; carnosic acid synthase [EC:1.14.14.61]"
+            },
+            {
+              "name": "K22983  CYP76A; cytochrome P450 family 76 subfamily A"
+            },
+            {
+              "name": "K13404  CYP76B1; 7-ethoxycoumarin O-deethylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K15099  CYP76B6, G10H; geraniol 8-hydroxylase [EC:1.14.14.83]"
+            },
+            {
+              "name": "K24441  CYP76B74; geranylhydroquinone 3''-hydroxylase [EC:1.14.14.174]"
+            },
+            {
+              "name": "K20556  CYP76C; cytochrome P450 family 76 subfamily C"
+            },
+            {
+              "name": "K23810  CYP76F14; (E)-8-carboxylinalool synthase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K25522  CYP76F112; marmesin synthase [EC:1.14.14.66]"
+            },
+            {
+              "name": "K21718  CYP76M6; oryzalexin E synthase [EC:1.14.14.122]"
+            },
+            {
+              "name": "K16084  CYP76M7_8; ent-cassa-12,15-diene 11-hydroxylase / oryzalexin D synthase [EC:1.14.14.112 1.14.14.123]"
+            }
+          ]
+        },
+        {
+          "name": "CYP77 family",
+          "children": [
+            {
+              "name": "K21995  CYP77A; cytochrome P450 family 77 subfamily A [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP78 family",
+          "children": [
+            {
+              "name": "K20619  CYP78A; cytochrome P450 family 78 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP79 family",
+          "children": [
+            {
+              "name": "K13027  CYP79A1; tyrosine N-monooxygenase [EC:1.14.14.36]"
+            },
+            {
+              "name": "K12153  CYP79A2; phenylalanine N-monooxygenase [EC:1.14.14.40]"
+            },
+            {
+              "name": "K11812  CYP79B1_2; tryptophan N-monooxygenase [EC:1.14.14.156]"
+            },
+            {
+              "name": "K11813  CYP79B3; tryptophan N-monooxygenase [EC:1.14.14.156]"
+            },
+            {
+              "name": "K13401  CYP79D1_2; valine N-monooxygenase [EC:1.14.14.38]"
+            },
+            {
+              "name": "K14984  CYP79D3_4; isoleucine N-monooxygenase [EC:1.14.14.39]"
+            },
+            {
+              "name": "K20785  CYP79E1_2; tyrosine N-monooxygenase [EC:1.14.14.36]"
+            },
+            {
+              "name": "K12154  CYP79F1; homomethionine N-monooxygenase [EC:1.14.14.42]"
+            },
+            {
+              "name": "K12155  CYP79F2; homomethionine N-monooxygenase [EC:1.14.14.42]"
+            }
+          ]
+        },
+        {
+          "name": "CYP80 family",
+          "children": [
+            {
+              "name": "K13387  CYP80A1; berbamunine synthase [EC:1.14.19.66]"
+            },
+            {
+              "name": "K13385  CYP80B1; N-methylcoclaurine 3'-monooxygenase [EC:1.14.14.102]"
+            },
+            {
+              "name": "K25584  CYP80F1; littorine mutase [EC:1.14.14.195]"
+            },
+            {
+              "name": "K13389  CYP80G2; (S)-corytuberine synthase [EC:1.14.19.51]"
+            }
+          ]
+        },
+        {
+          "name": "CYP81 family",
+          "children": [
+            {
+              "name": "K28354  CYP81AN15; ecgonone synthase [EC:1.14.14.194]"
+            },
+            {
+              "name": "K20620  CYP81B1; fatty acid hydroxylase"
+            },
+            {
+              "name": "K24542  CYP81D; cytochrome P450 family 81 subfamily D"
+            },
+            {
+              "name": "K13260  CYP81E; isoflavone/4'-methoxyisoflavone 2'-hydroxylase [EC:1.14.14.90 1.14.14.89]"
+            },
+            {
+              "name": "K22932  CYP81E9; isoflavone 3'-hydroxylase [EC:1.14.14.88]"
+            },
+            {
+              "name": "K00517  CYP81F; indol-3-yl-methylglucosinolate hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K22995  CYP81Q; (+)-piperitol/(+)-sesamin synthase [EC:1.14.19.74]"
+            },
+            {
+              "name": "K25487  CYP81Q58; 19-hydroxycucurbitadienol 25-hydroxylase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K25488  CYP81Q59; 11-carbonyl-20beta-hydroxycucurbitadienol 2-hydroxylase [EC:1.14.14.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP82 family",
+          "children": [
+            {
+              "name": "K13405  CYP82B1; (S)-N-methylcoclaurine 3'-hydroxylase"
+            },
+            {
+              "name": "K23137  CYP82C2; indole-3-carbonyl nitrile 4-hydroxylase [EC:1.14.14.165]"
+            },
+            {
+              "name": "K23136  CYP82C4; fraxetin 5-hydroxylase [EC:1.14.14.164]"
+            },
+            {
+              "name": "K21206  CYP82D61; (-)-4'-demethyl-deoxypodophyllotoxin 4-hydroxylase [EC:1.14.14.132]"
+            },
+            {
+              "name": "K25580  CYP82E; nicotine N-demethylase"
+            },
+            {
+              "name": "K17961  CYP82G1; trimethyltridecatetraene/dimethylnonatriene synthase [EC:1.14.14.58 1.14.14.59]"
+            },
+            {
+              "name": "K25581  CYP82M3; ecgonone synthase [EC:1.14.14.194]"
+            },
+            {
+              "name": "K21693  CYP82N2_3; protopine 6-monooxygenase [EC:1.14.14.98]"
+            },
+            {
+              "name": "K21692  CYP82N4; methyltetrahydroprotoberberine 14-monooxygenase [EC:1.14.14.97]"
+            },
+            {
+              "name": "K22096  CYP82X1; (13S,14R)-13-O-acetyl-1-hydroxy-N-methylcanadine 8-hydroxylase [EC:1.14.14.167]"
+            },
+            {
+              "name": "K22094  CYP82X2; (S)-1-hydroxy-N-methylcanadine 13-hydroxylase [EC:1.14.14.163]"
+            },
+            {
+              "name": "K20621  CYP82Y1; (S)-N-methylcanadine 1-hydroxylase [EC:1.14.14.166]"
+            }
+          ]
+        },
+        {
+          "name": "CYP83 family",
+          "children": [
+            {
+              "name": "K12156  CYP83A1; (methylthio)alkanaldoxime N-monooxygenase [EC:1.14.14.43]"
+            },
+            {
+              "name": "K11818  CYP83B1; aromatic aldoxime N-monooxygenase [EC:1.14.14.45]"
+            }
+          ]
+        },
+        {
+          "name": "CYP84 family",
+          "children": [
+            {
+              "name": "K09755  CYP84A, F5H; ferulate-5-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP85 family",
+          "children": [
+            {
+              "name": "K09590  CYP85A1, BR6OX1; brassinosteroid 6-oxygenase [EC:1.14.14.179]"
+            },
+            {
+              "name": "K12640  CYP85A2, BR6OX2; brassinosteroid 6-oxygenase / brassinolide synthase [EC:1.14.14.179 1.14.14.180]"
+            },
+            {
+              "name": "K25959  CYP85A3; brassinosteroid 6-oxygenase / brassinolide synthase [EC:1.14.14.179 1.14.14.180]"
+            }
+          ]
+        },
+        {
+          "name": "CYP86 family",
+          "children": [
+            {
+              "name": "K15401  CYP86A1; long-chain fatty acid omega-monooxygenase [EC:1.14.14.80]"
+            },
+            {
+              "name": "K15398  CYP86A4S; fatty acid omega-hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20544  CYP86A22; long-chain acyl-CoA omega-monooxygenase [EC:1.14.14.129]"
+            },
+            {
+              "name": "K15402  CYP86B1; fatty acid omega-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP87 family",
+          "children": [
+            {
+              "name": "K20622  CYP87D16; beta-amyrin 16alpha-hydroxylase [EC:1.14.14.171]"
+            },
+            {
+              "name": "K25060  CYP87D18_20; cucurbitadienol 11-hydroxylase / 11-oxocucurbitadienol 20-hydroxylase [EC:1.14.14.71 1.14.14.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP88 family",
+          "children": [
+            {
+              "name": "K04123  KAO, CYP88A; ent-kaurenoic acid monooxygenase [EC:1.14.14.107]"
+            },
+            {
+              "name": "K17875  CYP88D6; beta-amyrin 11-oxidase [EC:1.14.14.152]"
+            },
+            {
+              "name": "K25486  CYP88L2; cucurbitadienol 19-hydroxylase [EC:1.14.14.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP89 family",
+          "children": [
+            {
+              "name": "K24184  CYP89A; cytochrome P450 family 89 subfamily A [EC:1.14.-.-]"
+            },
+            {
+              "name": "K24187  CYP89A9; cytochrome P450 family 89 subfamily A9 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP90 family",
+          "children": [
+            {
+              "name": "K09588  CYP90A1, CPD; 3beta,22alpha-dihydroxysteroid 3-dehydrogenase [EC:1.14.19.79]"
+            },
+            {
+              "name": "K09587  CYP90B, DWF4; steroid 22S-hydroxylase [EC:1.14.14.178]"
+            },
+            {
+              "name": "K12637  CYP90C1, ROT3; 3-epi-6-deoxocathasterone 23-monooxygenase [EC:1.14.14.147]"
+            },
+            {
+              "name": "K12638  CYP90D1; 3-epi-6-deoxocathasterone 23-monooxygenase [EC:1.14.14.147]"
+            },
+            {
+              "name": "K09589  CYP90D2, D2; steroid 3-oxidase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP92 family",
+          "children": [
+            {
+              "name": "K20623  CYP92A6; typhasterol/6-deoxotyphasterol 2alpha-hydroxylase"
+            },
+            {
+              "name": "K22639  CYP92C5; trimethyltridecatetraene/dimethylnonatriene synthase [EC:1.14.14.58 1.14.14.59]"
+            },
+            {
+              "name": "K22640  CYP92C6; trimethyltridecatetraene synthase [EC:1.14.14.58]"
+            }
+          ]
+        },
+        {
+          "name": "CYP93 family",
+          "children": [
+            {
+              "name": "K13261  CYP93A1; 3,9-dihydroxypterocarpan 6a-monooxygenase [EC:1.14.14.93]"
+            },
+            {
+              "name": "K24188  CYP93A; cytochrome P450 family 93 subfamily A [EC:1.14.-.-]"
+            },
+            {
+              "name": "K13406  CYP93B1; flavanone 2-hydroxylase [EC:1.14.14.162]"
+            },
+            {
+              "name": "K23179  CYP93B2_16; flavone synthase II [EC:1.14.19.76]"
+            },
+            {
+              "name": "K13257  CYP93C; 2-hydroxyisoflavanone synthase [EC:1.14.14.87]"
+            },
+            {
+              "name": "K15814  CYP93E1; beta-amyrin 24-hydroxylase [EC:1.14.14.134]"
+            },
+            {
+              "name": "K23180  CYP93G1; flavone synthase II [EC:1.14.19.76]"
+            },
+            {
+              "name": "K23135  CYP93G2; flavanone 2-hydroxylase [EC:1.14.14.162]"
+            }
+          ]
+        },
+        {
+          "name": "CYP94 family",
+          "children": [
+            {
+              "name": "K13407  CYP94A1; fatty acid omega-hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20768  CYP94A2; cytochrome P450 family 94 subfamily A2"
+            },
+            {
+              "name": "K20769  CYP94A5; fatty acid omega-hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20665  CYP94B; jasmonoyl-L-amino acid 12-hydroxylase [EC:1.14.14.48]"
+            },
+            {
+              "name": "K20624  CYP94C1; 12-hydroxyjasmonoyl-L-amino acid 12-hydroxylase / fatty acid hydroxylase [EC:1.14.14.49]"
+            }
+          ]
+        },
+        {
+          "name": "CYP96 family",
+          "children": [
+            {
+              "name": "K15405  MAH1, CYP96A15; midchain alkane hydroxylase"
+            },
+            {
+              "name": "K21208  CYP96T1; noroxomaritidine synthase [EC:1.14.19.50 1.14.19.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP97 family",
+          "children": [
+            {
+              "name": "K15747  LUT5, CYP97A3; beta-ring hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K24543  CYP97B3; cytochrome P450 family 97 subfamily B polypeptide 3"
+            },
+            {
+              "name": "K09837  LUT1, CYP97C1; carotenoid epsilon hydroxylase [EC:1.14.14.158]"
+            }
+          ]
+        },
+        {
+          "name": "CYP98 family",
+          "children": [
+            {
+              "name": "K09754  CYP98A, C3'H; 5-O-(4-coumaroyl)-D-quinate 3'-monooxygenase [EC:1.14.14.96]"
+            },
+            {
+              "name": "K15506  CYP98A8; cytochrome P450 family 98 subfamily A8 [EC:1.14.13.-]"
+            },
+            {
+              "name": "K23662  CYP98A9; cytochrome P450 family 98 subfamily A9 [EC:1.14.13.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP99 family",
+          "children": [
+            {
+              "name": "K16085  CYP99A2_3; 9beta-pimara-7,15-diene oxidase [EC:1.14.14.111]"
+            }
+          ]
+        },
+        {
+          "name": "CYP701 family",
+          "children": [
+            {
+              "name": "K04122  GA3, CYP701; ent-kaurene oxidase [EC:1.14.14.86]"
+            },
+            {
+              "name": "K21719  CYP701A8; ent-sandaracopimaradiene 3-hydroxylase / syn-pimaradiene 3-monooxygenase [EC:1.14.14.70 1.14.14.68]"
+            }
+          ]
+        },
+        {
+          "name": "CYP703 family",
+          "children": [
+            {
+              "name": "K20496  CYP703A2; laurate 7-monooxygenase [EC:1.14.14.130]"
+            }
+          ]
+        },
+        {
+          "name": "CYP704 family",
+          "children": [
+            {
+              "name": "K20495  CYP704B1; long-chain fatty acid omega-monooxygenase [EC:1.14.14.80]"
+            }
+          ]
+        },
+        {
+          "name": "CYP705 family",
+          "children": [
+            {
+              "name": "K23814  CYP705A; cytochrome P450 family 705 subfamily A [EC:1.14.-.-]"
+            },
+            {
+              "name": "K22811  CYP705A5; thalian-diol desaturase"
+            }
+          ]
+        },
+        {
+          "name": "CYP706 family",
+          "children": [
+            {
+              "name": "K20770  CYP706B1; (+)-delta-cadinene 8-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP707 family",
+          "children": [
+            {
+              "name": "K09843  CYP707A; (+)-abscisic acid 8'-hydroxylase [EC:1.14.14.137]"
+            }
+          ]
+        },
+        {
+          "name": "CYP708 family",
+          "children": [
+            {
+              "name": "K22812  CYP708A2; thalianol hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP709 family",
+          "children": [
+            {
+              "name": "K20660  CYP709; cytochrome P450 family 709"
+            }
+          ]
+        },
+        {
+          "name": "CYP710 family",
+          "children": [
+            {
+              "name": "K09832  CYP710A; sterol 22-desaturase [EC:1.14.19.41]"
+            }
+          ]
+        },
+        {
+          "name": "CYP711 family",
+          "children": [
+            {
+              "name": "K20771  CYP711A1; carlactone C-19 oxidase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP714 family",
+          "children": [
+            {
+              "name": "K20661  CYP714A1; cytochrome P450 family 714 subfamily A1"
+            },
+            {
+              "name": "K20662  CYP714A2; gibberellin 13-/12alpha-oxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20666  CYP714B; gibberellin 13-oxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K24544  CYP714C; cytochrome P450 family 714 subfamily C"
+            },
+            {
+              "name": "K20663  CYP714D1; gibberellin 16alpha,17-epoxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K26482  CYP714E52; echinocystic acid C23-oxidase"
+            }
+          ]
+        },
+        {
+          "name": "CYP716 family",
+          "children": [
+            {
+              "name": "K20664  CYP716A14; cytochrome P450 family 716 subfamily A14 [EC:1.14.-.-]"
+            },
+            {
+              "name": "K20545  CYP716A47, PPDS; dammarenediol 12-hydroxylase [EC:1.14.14.120]"
+            },
+            {
+              "name": "K20546  CYP716A53; protopanaxadiol 6-hydroxylase [EC:1.14.14.121]"
+            },
+            {
+              "name": "K22620  CYP716A141; beta-amyrin 16beta-monooxygenase [EC:1.14.14.63]"
+            },
+            {
+              "name": "K26481  CYP716A297; oleanolic acid C16alpha-oxidase"
+            },
+            {
+              "name": "K20667  CYP716A; beta-amyrin 28-monooxygenase [EC:1.14.14.126]"
+            },
+            {
+              "name": "K22621  CYP716E26; beta-amyrin 6beta-monooxygenase [EC:1.14.14.64]"
+            }
+          ]
+        },
+        {
+          "name": "CYP719 family",
+          "children": [
+            {
+              "name": "K13395  CYP719A1_2_3_13; (S)-stylopine/(S)-canadine/(S)-nandinine synthase [EC:1.14.19.64 1.14.19.68 1.14.19.73]"
+            },
+            {
+              "name": "K21070  CYP719A14; (S)-cheilanthifoline synthase [EC:1.14.19.65]"
+            },
+            {
+              "name": "K21207  CYP719A23_24; (-)-pluviatolide synthase [EC:1.14.19.72]"
+            },
+            {
+              "name": "K13391  CYP719B1; salutaridine synthase [EC:1.14.19.67]"
+            }
+          ]
+        },
+        {
+          "name": "CYP720 family",
+          "children": [
+            {
+              "name": "K14040  CYP720B, PTAO; abieta-7,13-dien-18-ol hydroxylase [EC:1.14.14.145]"
+            }
+          ]
+        },
+        {
+          "name": "CYP722 family",
+          "children": [
+            {
+              "name": "K28537  CYP722C; 5-deoxystrigol synthase"
+            }
+          ]
+        },
+        {
+          "name": "CYP724 family",
+          "children": [
+            {
+              "name": "K12639  CYP724, D11; steroid 22S-hydroxylase [EC:1.14.14.178]"
+            }
+          ]
+        },
+        {
+          "name": "CYP725 family",
+          "children": [
+            {
+              "name": "K12924  CYP725A1; taxane 10beta-hydroxylase [EC:1.14.14.105]"
+            },
+            {
+              "name": "K12922  CYP725A2; taxane 13alpha-hydroxylase [EC:1.14.14.106]"
+            },
+            {
+              "name": "K20512  CYP725A3; taxoid 14beta-hydroxylase [EC:1.14.13.146]"
+            },
+            {
+              "name": "K27503  CYP725A22; taxane 9alpha-hydroxylase [EC:1.14.14.185]"
+            }
+          ]
+        },
+        {
+          "name": "CYP728 family",
+          "children": [
+            {
+              "name": "K28538  CYP728B35; sorgomol synthase"
+            }
+          ]
+        },
+        {
+          "name": "CYP734 family",
+          "children": [
+            {
+              "name": "K15639  CYP734A1, BAS1; PHYB activation tagged suppressor 1 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP735 family",
+          "children": [
+            {
+              "name": "K10717  CYP735A; cytokinin trans-hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP736 family",
+          "children": [
+            {
+              "name": "K20562  CYP736A; biphenyl-4-hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP750 family",
+          "children": [
+            {
+              "name": "K20563  CYP750B1; cytochrome P450 family 750 subfamily B1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cytochrome P450, fungi type",
+      "children": [
+        {
+          "name": "CYP52 family",
+          "children": [
+            {
+              "name": "K22887  CYP52M1; long-chain fatty acid omega-monooxygenase [EC:1.14.14.80]"
+            }
+          ]
+        },
+        {
+          "name": "CYP53 family",
+          "children": [
+            {
+              "name": "K07824  CYP53A1; benzoate 4-monooxygenase [EC:1.14.14.92]"
+            }
+          ]
+        },
+        {
+          "name": "CYP55 family",
+          "children": [
+            {
+              "name": "K15877  CYP55; fungal nitric oxide reductase [EC:1.7.1.14]"
+            }
+          ]
+        },
+        {
+          "name": "CYP59 family",
+          "children": [
+            {
+              "name": "K24438  AFLN, STCS, CYP59A1; sterigmatocystin biosynthesis cytochrome P450 monooxygenase"
+            }
+          ]
+        },
+        {
+          "name": "CYP60 family",
+          "children": [
+            {
+              "name": "K17645  AVNA, CYP60A1; averantin hydroxylase [EC:1.14.14.116]"
+            },
+            {
+              "name": "K24439  STCL, CYP60B1; versicolorin B desaturase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP61 family",
+          "children": [
+            {
+              "name": "K09831  ERG5, CYP61A; sterol 22-desaturase [EC:1.14.19.41]"
+            }
+          ]
+        },
+        {
+          "name": "CYP62 family",
+          "children": [
+            {
+              "name": "K24440  STCB, CYP62A1; averufin monooxygenase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP64 family",
+          "children": [
+            {
+              "name": "K17651  ORDA, CYP64A; aflatoxin B synthase [EC:1.14.14.117]"
+            }
+          ]
+        },
+        {
+          "name": "CYP68 family",
+          "children": [
+            {
+              "name": "K12917  P450I, CYP68A; cytochrome P450 monooxygenase 1"
+            },
+            {
+              "name": "K12918  P450II, CYP68B; cytochrome P450 monooxygenase 2"
+            },
+            {
+              "name": "K28734  CYP68L; progesterone 11alpha-monooxygenase [EC:1.14.14.197]"
+            },
+            {
+              "name": "K20980  LOVA, CYP68R1; dihydromonacolin L/monacolin L hydroxylase [EC:1.14.14.124 1.14.14.125]"
+            }
+          ]
+        },
+        {
+          "name": "CYP69 family",
+          "children": [
+            {
+              "name": "K12919  P450III, CYP69A; cytochrome P450 monooxygenase 3"
+            }
+          ]
+        },
+        {
+          "name": "CYP503 family",
+          "children": [
+            {
+              "name": "K21292  CYP503; ent-kaurene oxidase [EC:1.14.14.86]"
+            }
+          ]
+        },
+        {
+          "name": "CYP504 family",
+          "children": [
+            {
+              "name": "K10437  PHAA, PHACA, CYP504A1; phenylacetate 2-hydroxylase [EC:1.14.14.54]"
+            },
+            {
+              "name": "K10438  PHACB, CYP504B1; 3-hydroxyphenylacetate 6-hydroxylase [EC:1.14.13.63]"
+            },
+            {
+              "name": "K22005  CYP3; itaconate hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP505 family",
+          "children": [
+            {
+              "name": "K14338  cypD_E, CYP102A, CYP505; cytochrome P450 / NADPH-cytochrome P450 reductase [EC:1.14.14.1 1.6.2.4]"
+            }
+          ]
+        },
+        {
+          "name": "CYP509 family",
+          "children": [
+            {
+              "name": "K28735  CYP509C12; progesterone 11alpha-monooxygenase [EC:1.14.14.197]"
+            }
+          ]
+        },
+        {
+          "name": "CYP619 family",
+          "children": [
+            {
+              "name": "K21293  CYP619; cytochrome P450 family 619"
+            }
+          ]
+        },
+        {
+          "name": "CYP628 family",
+          "children": [
+            {
+              "name": "K22992  CYP628; cytochrome P450 family 628"
+            }
+          ]
+        },
+        {
+          "name": "CYP653 family",
+          "children": [
+            {
+              "name": "K18388  PAXP, ATMP, CYP653C; cytochrome P450 monooxygenase [EC:1.14.13.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP655 family",
+          "children": [
+            {
+              "name": "K15388  APDE, CYP655; cytochrome P450 monooxygenase"
+            }
+          ]
+        },
+        {
+          "name": "CYP685 family",
+          "children": [
+            {
+              "name": "K15386  APDB, CYP685A1; cytochrome P450 monooxygenase"
+            }
+          ]
+        },
+        {
+          "name": "CYP698 family",
+          "children": [
+            {
+              "name": "K18389  PAXQ, ATMQ, CYP698A; cytochrome P450 monooxygenase [EC:1.14.13.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP5066 family",
+          "children": [
+            {
+              "name": "K17827  FTME, CYP5066A; fumitremorgin C synthase [EC:1.14.19.71]"
+            }
+          ]
+        },
+        {
+          "name": "CYP5067 family",
+          "children": [
+            {
+              "name": "K17826  FTMG, CYP5067A; fumitremorgin C monooxygenase [EC:1.14.14.119]"
+            }
+          ]
+        },
+        {
+          "name": "CYP5076 family",
+          "children": [
+            {
+              "name": "K17475  FTMC, CYP5076C; tryprostatin B 6-hydroxylase [EC:1.14.14.118]"
+            }
+          ]
+        },
+        {
+          "name": "CYP5081 family",
+          "children": [
+            {
+              "name": "K21445  CYP5081A1, HELB1; helvolic acid biosynthesis cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K22726  CYP5081B1, HELB2; helvolic acid biosynthesis cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K22727  CYP5081C1, HELB4; helvolic acid biosynthesis cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K22728  CYP5081D1, HELB3; helvolic acid biosynthesis cytochrome P450 monooxygenase"
+            }
+          ]
+        },
+        {
+          "name": "CYP5136 family",
+          "children": [
+            {
+              "name": "K21475  CYP5136A3; alkylphenol/PAH-inducible cytochrome P450 monooxygenase"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cytochrome P450, bacteria type",
+      "children": [
+        {
+          "name": "CYP101 family",
+          "children": [
+            {
+              "name": "K21569  camC, CYP101A1; camphor 5-monooxygenase [EC:1.14.15.1]"
+            }
+          ]
+        },
+        {
+          "name": "CYP102 family",
+          "children": [
+            {
+              "name": "K14338  cypD_E, CYP102A, CYP505; cytochrome P450 / NADPH-cytochrome P450 reductase [EC:1.14.14.1 1.6.2.4]"
+            }
+          ]
+        },
+        {
+          "name": "CYP103 family",
+          "children": [
+            {
+              "name": "K21033  virH1, CYP103; cytochrome P450 family 103"
+            }
+          ]
+        },
+        {
+          "name": "CYP104 family",
+          "children": [
+            {
+              "name": "K21034  virH2, CYP104; cytochrome P450 family 104"
+            }
+          ]
+        },
+        {
+          "name": "CYP105 family",
+          "children": [
+            {
+              "name": "K21146  CYP105A1; vitamin D 1,25-hydroxylase [EC:1.14.15.22]"
+            },
+            {
+              "name": "K17876  CYP105D; pentalenic acid synthase [EC:1.14.15.11]"
+            },
+            {
+              "name": "K21035  fas1, CYP105E1; cytochrome P450 family 105 subfamily E polypeptide 1"
+            },
+            {
+              "name": "K15991  tylHI, CYP105L1; 20-oxo-5-O-mycaminosyltylactone 23-monooxygenase [EC:1.14.15.34]"
+            },
+            {
+              "name": "K24292  mycCI, CYP105L2; mycinamicin VIII C21 methyl hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP106 family",
+          "children": [
+            {
+              "name": "K21114  CYP106A2; steroid 15beta-monooxygenase [EC:1.14.15.8]"
+            },
+            {
+              "name": "K21113  CYP106; cytochrome P450 family 106"
+            }
+          ]
+        },
+        {
+          "name": "CYP107 family",
+          "children": [
+            {
+              "name": "K14366  eryF, CYP107A; 6-deoxyerythronolide B hydroxylase [EC:1.14.15.35]"
+            },
+            {
+              "name": "K21115  CYP107B1; cytochrome P450 family 107 subfamily B1"
+            },
+            {
+              "name": "K24389  vdh, CYP107BR1; vitamin D3 1,25-hydroxylase [EC:1.14.15.-]"
+            },
+            {
+              "name": "K16008  oleP, CYP107D; cytochrome P450 monooxygenase OleP"
+            },
+            {
+              "name": "K24390  mycG, CYP107E1; mycinamicin IV hydroxylase/epoxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K16593  bioI, CYP107H; pimeloyl-[acyl-carrier protein] synthase [EC:1.14.14.46]"
+            },
+            {
+              "name": "K15468  pksS, CYP107K1; cytochrome P450 family 107 subfamily K polypeptide 1"
+            },
+            {
+              "name": "K16006  pikC, CYP107L; pikromycin synthase [EC:1.14.15.33]"
+            }
+          ]
+        },
+        {
+          "name": "CYP108 family",
+          "children": [
+            {
+              "name": "K24391  P450terp, CYP108; alpha-terpineol hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP109 family",
+          "children": [
+            {
+              "name": "K23138  CYP109; cytochrome P450 family 109 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP110 family",
+          "children": [
+            {
+              "name": "K23139  CYP110; cytochrome P450 family 110 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP111 family",
+          "children": [
+            {
+              "name": "K05525  linC, CYP111A; linalool 8-monooxygenase [EC:1.14.14.84]"
+            }
+          ]
+        },
+        {
+          "name": "CYP112 family",
+          "children": [
+            {
+              "name": "K21116  CYP112A; cytochrome P450 family 112 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP113 family",
+          "children": [
+            {
+              "name": "K14370  eryK, CYP113A; erythromycin 12 hydroxylase [EC:1.14.13.154]"
+            },
+            {
+              "name": "K15992  tylI, CYP113B; cytochrome P450 TylI"
+            }
+          ]
+        },
+        {
+          "name": "CYP114 family",
+          "children": [
+            {
+              "name": "K21117  CYP114; cytochrome P450 family 114"
+            }
+          ]
+        },
+        {
+          "name": "CYP117 family",
+          "children": [
+            {
+              "name": "K21118  CYP117A; cytochrome P450 family 117 subfamily A"
+            }
+          ]
+        },
+        {
+          "name": "CYP119 family",
+          "children": [
+            {
+              "name": "K21201  CYP119; cytochrome P450 family 119 [EC:1.11.1.7]"
+            }
+          ]
+        },
+        {
+          "name": "CYP120 family",
+          "children": [
+            {
+              "name": "K24392  CYP120A1; retinoid hydroxylase"
+            }
+          ]
+        },
+        {
+          "name": "CYP121 family",
+          "children": [
+            {
+              "name": "K17483  cyp121, CYP121A; mycocyclosin synthase [EC:1.14.19.70]"
+            }
+          ]
+        },
+        {
+          "name": "CYP124 family",
+          "children": [
+            {
+              "name": "K20497  CYP124; methyl-branched lipid omega-hydroxylase [EC:1.14.15.14]"
+            }
+          ]
+        },
+        {
+          "name": "CYP125 family",
+          "children": [
+            {
+              "name": "K15981  CYP125A; cholest-4-en-3-one 26-monooxygenase [EC:1.14.15.29]"
+            }
+          ]
+        },
+        {
+          "name": "CYP128 family",
+          "children": [
+            {
+              "name": "K21199  CYP128; beta-dihydromenaquinone-9 omega-hydroxylase [EC:1.14.15.27]"
+            }
+          ]
+        },
+        {
+          "name": "CYP129 family",
+          "children": [
+            {
+              "name": "K15955  doxA, CYP129A; 13-deoxydaunorubicin hydroxylase [EC:1.14.13.181]"
+            }
+          ]
+        },
+        {
+          "name": "CYP130 family",
+          "children": [
+            {
+              "name": "K21119  CYP130; cytochrome P450 family 130"
+            }
+          ]
+        },
+        {
+          "name": "CYP134 family",
+          "children": [
+            {
+              "name": "K17474  CYP134A, cypX; pulcherriminic acid synthase [EC:1.14.15.13]"
+            }
+          ]
+        },
+        {
+          "name": "CYP135 family",
+          "children": [
+            {
+              "name": "K24241  CYP135; cytochrome P450 family 135 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP138 family",
+          "children": [
+            {
+              "name": "K24192  CYP138; cytochrome P450 family 138 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP140 family",
+          "children": [
+            {
+              "name": "K20789  CYP140A7; cytochrome P450 hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP142 family",
+          "children": [
+            {
+              "name": "K16046  CYP142; cholest-4-en-3-one 26-monooxygenase [EC:1.14.15.28]"
+            }
+          ]
+        },
+        {
+          "name": "CYP144 family",
+          "children": [
+            {
+              "name": "K21200  CYP144; cytochrome P450 family 144"
+            }
+          ]
+        },
+        {
+          "name": "CYP147 family",
+          "children": [
+            {
+              "name": "K23811  CYP147G1; fatty acid omega-hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP150 family",
+          "children": [
+            {
+              "name": "K23812  CYP150A5; cytochrome P450 family 150 subfamily A5 [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP152 family",
+          "children": [
+            {
+              "name": "K15629  CYP152A; fatty-acid peroxygenase [EC:1.11.2.4]"
+            }
+          ]
+        },
+        {
+          "name": "CYP158 family",
+          "children": [
+            {
+              "name": "K19628  CYP158A1; biflaviolin synthase [EC:1.14.19.69]"
+            },
+            {
+              "name": "K13074  CYP158A2; biflaviolin synthase [EC:1.14.19.69]"
+            }
+          ]
+        },
+        {
+          "name": "CYP161 family",
+          "children": [
+            {
+              "name": "K17476  penM, pntM, CYP161C; pentalenolactone synthase [EC:1.14.19.8]"
+            }
+          ]
+        },
+        {
+          "name": "CYP163 family",
+          "children": [
+            {
+              "name": "K12702  novI, CYP163A; novobiocin biosynthesis protein NovI"
+            }
+          ]
+        },
+        {
+          "name": "CYP165 family",
+          "children": [
+            {
+              "name": "K16445  cepE, oxyA, CYP165A3; oxidation protein CepE"
+            },
+            {
+              "name": "K16446  cepF, oxyB, CYP165B3; oxidation protein CepF"
+            },
+            {
+              "name": "K16447  cepG, oxyC, CYP165C4; oxidation protein CepG"
+            }
+          ]
+        },
+        {
+          "name": "CYP170 family",
+          "children": [
+            {
+              "name": "K12645  CYP170A; epi-isozizaene 5-monooxygenase / beta-farnesene synthase [EC:1.14.15.39 4.2.3.47]"
+            }
+          ]
+        },
+        {
+          "name": "CYP171 family",
+          "children": [
+            {
+              "name": "K14372  aveE, CYP171A; cytochrome P450 hydroxylase [EC:1.14.-.-]"
+            }
+          ]
+        },
+        {
+          "name": "CYP175 family",
+          "children": [
+            {
+              "name": "K22492  CYP175A; beta-carotene 3-hydroxylase [EC:1.14.15.24]"
+            }
+          ]
+        },
+        {
+          "name": "CYP176 family",
+          "children": [
+            {
+              "name": "K21120  P450cin, CYP176A1; 1,8-cineole 2-endo-monooxygenase [EC:1.14.14.133]"
+            }
+          ]
+        },
+        {
+          "name": "CYP183 family",
+          "children": [
+            {
+              "name": "K15907  ptlI, CYP183A; pentalenene oxygenase [EC:1.14.15.32]"
+            }
+          ]
+        },
+        {
+          "name": "CYP199 family",
+          "children": [
+            {
+              "name": "K22553  CYP199A2; 4-methoxybenzoate monooxygenase (O-demethylating) [EC:1.14.99.15]"
+            }
+          ]
+        },
+        {
+          "name": "CYP260 family",
+          "children": [
+            {
+              "name": "K27595  CYP260A1; C-19 steroid 1alpha-hydroxylase [EC:1.14.15.19]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

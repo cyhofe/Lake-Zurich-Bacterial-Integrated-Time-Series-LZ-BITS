@@ -1,0 +1,427 @@
+{
+  "name": "ko04050",
+  "children": [
+    {
+      "name": "Interleukin receptor families",
+      "children": [
+        {
+          "name": "IL2 receptor family",
+          "children": [
+            {
+              "name": "K05068  IL2RA, CD25; interleukin 2 receptor alpha"
+            },
+            {
+              "name": "K05069  IL2RB, CD122; interleukin 2 receptor beta"
+            },
+            {
+              "name": "K05070  IL2RG, CD132; interleukin 2 receptor gamma"
+            },
+            {
+              "name": "K05071  IL4R, CD124; interleukin 4 receptor"
+            },
+            {
+              "name": "K05072  IL7R, CD127; interleukin 7 receptor"
+            },
+            {
+              "name": "K05073  IL9R, CD129; interleukin 9 receptor"
+            },
+            {
+              "name": "K05074  IL15RA, CD215; interleukin 15 receptor alpha"
+            },
+            {
+              "name": "K05075  IL21R, CD360; interleukin 21 receptor"
+            },
+            {
+              "name": "K05078  TSLPR; thymic stromal-derived lymphopoietin receptor"
+            }
+          ]
+        },
+        {
+          "name": "IL3 receptor family",
+          "children": [
+            {
+              "name": "K04737  IL3RA, CD123; interleukin 3 receptor alpha"
+            },
+            {
+              "name": "K05067  IL5RA, CD125; interleukin 5 receptor alpha"
+            },
+            {
+              "name": "K05076  IL13RA1, CD213A1; interleukin 13 receptor alpha-1"
+            },
+            {
+              "name": "K05077  IL13RA2, CD213A2; interleukin 13 receptor alpha-2"
+            },
+            {
+              "name": "K05066  CSF2RA, GMCSFR, CD116; granulocyte-macrophage colony-stimulating factor receptor alpha"
+            },
+            {
+              "name": "K04738  CSF2RB, IL3RB, CD131; cytokine receptor common subunit beta"
+            }
+          ]
+        },
+        {
+          "name": "IL6/12 receptor family",
+          "children": [
+            {
+              "name": "K05055  IL6R, CD126; interleukin 6 receptor"
+            },
+            {
+              "name": "K05060  IL6ST, GP130, CD130; interleukin 6 signal transducer"
+            },
+            {
+              "name": "K05056  IL11RA; interleukin 11 receptor alpha"
+            },
+            {
+              "name": "K05063  IL12RB1, CD212; interleukin 12 receptor beta-1"
+            },
+            {
+              "name": "K05064  IL12RB2; interleukin 12 receptor beta-2"
+            },
+            {
+              "name": "K05065  IL23R; interleukin 23 receptor"
+            },
+            {
+              "name": "K19598  IL27RA; interleukin 27 receptor alpha"
+            },
+            {
+              "name": "K22630  IL31RA; interleukin 31 receptor subunit alpha"
+            },
+            {
+              "name": "K05057  OSMR; oncostatin M receptor"
+            },
+            {
+              "name": "K05059  CNTFR; ciliary neurotrophic factor receptor"
+            },
+            {
+              "name": "K05058  LIFR, CD118; leukemia inhibitory factor receptor"
+            }
+          ]
+        },
+        {
+          "name": "Prolactin receptor family",
+          "children": [
+            {
+              "name": "K05079  EPOR; erythropoietin receptor"
+            },
+            {
+              "name": "K05080  GHR; growth hormone receptor"
+            },
+            {
+              "name": "K05081  PRLR; prolactin receptor"
+            },
+            {
+              "name": "K05082  TPOR, MPL, CD110; thrombopoietin receptor"
+            },
+            {
+              "name": "K05061  CSF3R, CD114; granulocyte colony-stimulating factor receptor"
+            },
+            {
+              "name": "K05062  LEPR, CD295; leptin receptor"
+            }
+          ]
+        },
+        {
+          "name": "IL10/28 receptor family",
+          "children": [
+            {
+              "name": "K05134  IL10RA, CD210A; interleukin 10 receptor alpha"
+            },
+            {
+              "name": "K05135  IL10RB, CD210B; interleukin 10 receptor beta"
+            },
+            {
+              "name": "K05136  IL20RA; interleukin 20 receptor alpha"
+            },
+            {
+              "name": "K05137  IL20RB; interleukin 20 receptor beta"
+            },
+            {
+              "name": "K05138  IL22RA1; interleukin 22 receptor alpha 1"
+            },
+            {
+              "name": "K05139  IL22RA2; interleukin 22 receptor alpha 2"
+            },
+            {
+              "name": "K05140  IFNLR1, IL28RA; interferon lambda receptor 1"
+            }
+          ]
+        },
+        {
+          "name": "IFN receptor family",
+          "children": [
+            {
+              "name": "K05130  IFNAR1; interferon receptor 1"
+            },
+            {
+              "name": "K05131  IFNAR2; interferon receptor 2"
+            },
+            {
+              "name": "K05132  IFNGR1, CD119; interferon gamma receptor 1"
+            },
+            {
+              "name": "K05133  IFNGR2; interferon gamma receptor 2"
+            }
+          ]
+        },
+        {
+          "name": "IL1 receptor family",
+          "children": [
+            {
+              "name": "K04386  IL1R1, CD121a; interleukin 1 receptor type I"
+            },
+            {
+              "name": "K04387  IL1R2, CD121b; interleukin 1 receptor type II"
+            },
+            {
+              "name": "K05171  IL1RL1, ST2; interleukin 1 receptor-like 1"
+            },
+            {
+              "name": "K05172  IL1RL2, IL1RRP2; interleukin 1 receptor-like 2"
+            },
+            {
+              "name": "K04723  IL1RAP; interleukin 1 receptor accessory protein"
+            },
+            {
+              "name": "K05170  IL1RAPL, IL1R8_9; interleukin 1 receptor accessory protein-like"
+            },
+            {
+              "name": "K05173  IL18R1, IL1RRP, CD218a; interleukin 18 receptor 1"
+            },
+            {
+              "name": "K05174  IL18RAP, ACPL, CD218b; interleukin 18 receptor accessory protein"
+            },
+            {
+              "name": "K05169  SIGIRR; single Ig IL-1R-related molecule"
+            }
+          ]
+        },
+        {
+          "name": "IL17 receptor family",
+          "children": [
+            {
+              "name": "K05164  IL17RA, CD217; interleukin 17 receptor A"
+            },
+            {
+              "name": "K05165  IL17RB, IL17RH1; interleukin 17 receptor B"
+            },
+            {
+              "name": "K05166  IL17RC, IL17RL; interleukin 17 receptor C"
+            },
+            {
+              "name": "K05167  IL17RD, SEF; interleukin 17 receptor D"
+            },
+            {
+              "name": "K05168  IL17RE; interleukin 17 receptor E"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chemokine receptors",
+      "children": [
+        {
+          "name": "CC Chemokine",
+          "children": [
+            {
+              "name": "K04176  CCR1, CD191; C-C chemokine receptor type 1"
+            },
+            {
+              "name": "K04177  CCR2, CD192; C-C chemokine receptor type 2"
+            },
+            {
+              "name": "K04178  CCR3, CD193; C-C chemokine receptor type 3"
+            },
+            {
+              "name": "K04179  CCR4, CD194; C-C chemokine receptor type 4"
+            },
+            {
+              "name": "K04180  CCR5, CD195; C-C chemokine receptor type 5"
+            },
+            {
+              "name": "K04181  CCR6, CD196; C-C chemokine receptor type 6"
+            },
+            {
+              "name": "K04182  CCR7, CD197; C-C chemokine receptor type 7"
+            },
+            {
+              "name": "K04183  CCR8, CDw198; C-C chemokine receptor type 8"
+            },
+            {
+              "name": "K04184  CCR9, CDw199; C-C chemokine receptor type 9"
+            },
+            {
+              "name": "K04185  CCR10; C-C chemokine receptor type 10"
+            },
+            {
+              "name": "K06574  ACKR1, DARC, CD234; atypical chemokine receptor 1"
+            },
+            {
+              "name": "K04187  ACKR2, CCBP2; atypical chemokine receptor 2"
+            },
+            {
+              "name": "K04186  ACKR4, CCRL1, CCR11; atypical chemokine receptor 4"
+            },
+            {
+              "name": "K08373  CCRL2; C-C chemokine receptor-like 2"
+            },
+            {
+              "name": "K08417  GPR75; G protein-coupled receptor 75"
+            }
+          ]
+        },
+        {
+          "name": "CXC Chemokine",
+          "children": [
+            {
+              "name": "K04175  CXCR1, IL8RA, CD181; C-X-C chemokine receptor type 1"
+            },
+            {
+              "name": "K05050  CXCR2, IL8RB, CD182; C-X-C chemokine receptor type 2"
+            },
+            {
+              "name": "K04188  CXCR3, GPR9, CD183; C-X-C chemokine receptor type 3"
+            },
+            {
+              "name": "K04189  CXCR4, CD184; C-X-C chemokine receptor type 4"
+            },
+            {
+              "name": "K04190  CXCR5, BLR1, CD185; C-X-C chemokine receptor type 5"
+            },
+            {
+              "name": "K04191  CXCR6, CD186; C-X-C chemokine receptor type 6"
+            },
+            {
+              "name": "K04304  CXCR7, ACKR3, RDC1; C-X-C chemokine receptor type 7 (atypical chemokine receptor 3)"
+            },
+            {
+              "name": "K04276  CXCR8, GPR35; C-X-C chemokine receptor type 8"
+            }
+          ]
+        },
+        {
+          "name": "CX3C Chemokine",
+          "children": [
+            {
+              "name": "K04192  CX3CR1; CX3C chemokine receptor 1"
+            }
+          ]
+        },
+        {
+          "name": "C Chemokine",
+          "children": [
+            {
+              "name": "K04193  XCR1; XC chemokine receptor 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tumor necrosis factor receptors",
+      "children": [
+        {
+          "name": "TNF receptor superfamily",
+          "children": [
+            {
+              "name": "K03158  TNFRSF1A, TNFR1, CD120a; tumor necrosis factor receptor superfamily member 1A"
+            },
+            {
+              "name": "K05141  TNFRSF1B, TNFR2, CD120b; tumor necrosis factor receptor superfamily member 1B"
+            },
+            {
+              "name": "K03159  TNFRSF3, LTBR; lymphotoxin beta receptor TNFR superfamily member 3"
+            },
+            {
+              "name": "K05142  TNFRSF4, OX40, CD134; tumor necrosis factor receptor superfamily member 4"
+            },
+            {
+              "name": "K03160  TNFRSF5, CD40; tumor necrosis factor receptor superfamily member 5"
+            },
+            {
+              "name": "K04390  TNFRSF6, FAS, CD95; tumor necrosis factor receptor superfamily member 6"
+            },
+            {
+              "name": "K05143  TNFRSF6B, DCR3; tumor necrosis factor receptor superfamily member 6B"
+            },
+            {
+              "name": "K05144  TNFRSF7, CD27; tumor necrosis factor receptor superfamily member 7"
+            },
+            {
+              "name": "K05145  TNFRSF8, CD30; tumor necrosis factor receptor superfamily member 8"
+            },
+            {
+              "name": "K05146  TNFRSF9, CD137; tumor necrosis factor receptor superfamily member 9"
+            },
+            {
+              "name": "K04722  TNFRSF10A_B, TRAILR1_2, DR4_5, CD261_2; tumor necrosis factor receptor superfamily member 10A/B"
+            },
+            {
+              "name": "K22701  TNFRSF10C, TRAILR3, DCR1, CD263; tumor necrosis factor receptor superfamily member 10C"
+            },
+            {
+              "name": "K22702  TNFRSF10D, TRAILR4, DCR2, CD264; tumor necrosis factor receptor superfamily member 10D"
+            },
+            {
+              "name": "K05147  TNFRSF11A, RANK, CD265; tumor necrosis factor receptor superfamily member 11A"
+            },
+            {
+              "name": "K05148  TNFRSF11B, OPG; tumor necrosis factor receptor superfamily member 11B"
+            },
+            {
+              "name": "K05149  TNFRSF12A, FN14, TWEAKR, CD266; tumor necrosis factor receptor superfamily member 12A"
+            },
+            {
+              "name": "K05150  TNFRSF13B, TACI, CD267; tumor necrosis factor receptor superfamily member 13B"
+            },
+            {
+              "name": "K05151  TNFRSF13C, BAFFR, CD268; tumor necrosis factor receptor superfamily member 13C"
+            },
+            {
+              "name": "K05152  TNFRSF14, HVEM, CD270; tumor necrosis factor receptor superfamily member 14"
+            },
+            {
+              "name": "K02583  NGFR, TNFRSF16, CD271; tumor necrosis factor receptor superfamily member 16"
+            },
+            {
+              "name": "K05153  TNFRSF17, BCMA, CD269; tumor necrosis factor receptor superfamily member 17"
+            },
+            {
+              "name": "K05154  TNFRSF18, GITR, CD357; tumor necrosis factor receptor superfamily member 18"
+            },
+            {
+              "name": "K05155  TNFRSF19, TROY; tumor necrosis factor receptor superfamily member 19"
+            },
+            {
+              "name": "K05156  RELT, TNFRSF19L; tumor necrosis factor receptor superfamily member 19-like"
+            },
+            {
+              "name": "K26541  RELL; RELT-like protein"
+            },
+            {
+              "name": "K05157  TNFRSF21, DR6, CD358; tumor necrosis factor receptor superfamily member 21"
+            },
+            {
+              "name": "K05158  TNFRSF22; tumor necrosis factor receptor superfamily member 22"
+            },
+            {
+              "name": "K05159  TNFRSF23; tumor necrosis factor receptor superfamily member 23"
+            },
+            {
+              "name": "K05160  TNFRSF25; tumor necrosis factor receptor superfamily member 25"
+            },
+            {
+              "name": "K05161  TNFRSF26; tumor necrosis factor receptor superfamily member 26"
+            },
+            {
+              "name": "K05162  EDAR; tumor necrosis factor receptor superfamily member EDAR"
+            },
+            {
+              "name": "K05163  EDA2R, TNFRSF27, XEDAR; tumor necrosis factor receptor superfamily member 27"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

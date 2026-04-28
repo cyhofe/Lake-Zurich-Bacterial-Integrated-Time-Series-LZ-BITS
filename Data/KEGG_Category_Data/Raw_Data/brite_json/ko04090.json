@@ -1,0 +1,1254 @@
+{
+  "name": "ko04090",
+  "children": [
+    {
+      "name": "Proteins",
+      "children": [
+        {
+          "name": "K06448  CD1a; CD1A antigen, a polypeptide [HSA:909]"
+        },
+        {
+          "name": "K06448  CD1b; CD1B antigen, b polypeptide [HSA:910]"
+        },
+        {
+          "name": "K06448  CD1c; CD1C antigen, c polypeptide [HSA:911]"
+        },
+        {
+          "name": "K06448  CD1d; CD1D antigen, d polypeptide [HSA:912]"
+        },
+        {
+          "name": "K06448  CD1e; CD1E antigen, e polypeptide [HSA:913]"
+        },
+        {
+          "name": "K06449  CD2; CD2 antigen (p50), sheep red blood cell receptor [HSA:914]"
+        },
+        {
+          "name": "K06450  CD3d; CD3D antigen, delta polypeptide (TiT3 complex) [HSA:915]"
+        },
+        {
+          "name": "K06451  CD3e; CD3E antigen, epsilon polypeptide (TiT3 complex) [HSA:916]"
+        },
+        {
+          "name": "K06452  CD3g; CD3G antigen, gamma polypeptide (TiT3 complex) [HSA:917]"
+        },
+        {
+          "name": "K06454  CD4; CD4 antigen (p55) [HSA:920]"
+        },
+        {
+          "name": "K06455  CD5; CD5 antigen (p56-62) [HSA:921]"
+        },
+        {
+          "name": "K06456  CD6; CD6 antigen [HSA:923]"
+        },
+        {
+          "name": "K06457  CD7; CD7 antigen (p41) [HSA:924]"
+        },
+        {
+          "name": "K06458  CD8a; CD8 antigen, alpha polypeptide (p32) [HSA:925]"
+        },
+        {
+          "name": "K06459  CD8b, CD8B1; CD8 antigen, beta polypeptide 1 (p37) [HSA:926]"
+        },
+        {
+          "name": "K06460  CD9; CD9 antigen (p24) [HSA:928]"
+        },
+        {
+          "name": "K01389  CD10, MME; membrane metallo-endopeptidase [HSA:4311]"
+        },
+        {
+          "name": "K05718  CD11a, ITGAL; integrin, alpha L [HSA:3683]"
+        },
+        {
+          "name": "K06461  CD11b, ITGAM; integrin, alpha M [HSA:3684]"
+        },
+        {
+          "name": "K06462  CD11c, ITGAX; integrin, alpha X [HSA:3687]"
+        },
+        {
+          "name": "K06594  CD11d, ITGAD; integrin, alpha D [HSA:3681]"
+        },
+        {
+          "name": "K11140  CD13, ANPEP; alanyl (membrane) aminopeptidase [HSA:290]"
+        },
+        {
+          "name": "K04391  CD14; CD14 antigen [HSA:929]"
+        },
+        {
+          "name": "K06463  CD16a, FCGR3A; Fc fragment of IgG, low affinity IIIa, receptor for (CD16) [HSA:2214]"
+        },
+        {
+          "name": "K06463  CD16b, FCGR3B; Fc fragment of IgG, low affinity IIIb, receptor for (CD16) [HSA:2215]"
+        },
+        {
+          "name": "K06464  CD18, ITGB2; integrin, beta 2 [HSA:3689]"
+        },
+        {
+          "name": "K06465  CD19; CD19 antigen [HSA:930]"
+        },
+        {
+          "name": "K06466  CD20, MS4A1; membrane-spanning 4-domains, subfamily A, member 1 [HSA:931]"
+        },
+        {
+          "name": "K04012  CD21, CR2; complement component (3d/Epstein Barr virus) receptor 2 [HSA:1380]"
+        },
+        {
+          "name": "K06467  CD22; CD22 antigen [HSA:933]"
+        },
+        {
+          "name": "K06468  CD23, FCER2; Fc fragment of IgE, low affinity II, receptor for (CD23A) [HSA:2208]"
+        },
+        {
+          "name": "K06469  CD24; CD24 antigen (small cell lung carcinoma cluster 4 antigen) [HSA:100133941]"
+        },
+        {
+          "name": "K05068  CD25, IL2RA; interleukin 2 receptor, alpha [HSA:3559]"
+        },
+        {
+          "name": "K01278  CD26, DPP4; dipeptidylpeptidase 4 [HSA:1803]"
+        },
+        {
+          "name": "K05144  CD27, TNFRSF7; tumor necrosis factor receptor superfamily, member 7 [HSA:939]"
+        },
+        {
+          "name": "K06470  CD28; CD28 antigen (Tp44) [HSA:940]"
+        },
+        {
+          "name": "K05719  CD29, ITGB1; integrin, beta 1 [HSA:3688]"
+        },
+        {
+          "name": "K05145  CD30, TNFRSF8; tumor necrosis factor receptor superfamily, member 8 [HSA:943]"
+        },
+        {
+          "name": "K06471  CD31, PECAM1; platelet/endothelial cell adhesion molecule (CD31 antigen) [HSA:5175]"
+        },
+        {
+          "name": "K06472  CD32a, FCGR2A; Fc fragment of IgG, low affinity IIa, receptor for (CD32) [HSA:2212]"
+        },
+        {
+          "name": "K12560  CD32b, FCGR2B; Fc fragment of IgG, low affinity IIb, receptor for (CD32) [HSA:2213]"
+        },
+        {
+          "name": "K16824  CD32c, FCGR2C; Fc fragment of IgG, low affinity IIc, receptor for (CD32) [HSA:9103]"
+        },
+        {
+          "name": "K06473  CD33; CD33 antigen (gp67) [HSA:945]"
+        },
+        {
+          "name": "K06474  CD34; CD34 antigen [HSA:947]"
+        },
+        {
+          "name": "K04011  CD35, CR1; complement component (3b/4b) receptor 1 [HSA:1378]"
+        },
+        {
+          "name": "K06259  CD36; CD36 antigen (collagen type I receptor, thrombospondin receptor) [HSA:948]"
+        },
+        {
+          "name": "K06475  CD37; CD37 antigen [HSA:951]"
+        },
+        {
+          "name": "K01242  CD38; CD38 antigen (p45) [HSA:952]"
+        },
+        {
+          "name": "K01510  CD39, ENTPD1; ectonucleoside triphosphate diphosphohydrolase 1 [HSA:953]"
+        },
+        {
+          "name": "K03160  CD40; tumor necrosis factor receptor superfamily, member 5 [HSA:958]"
+        },
+        {
+          "name": "K06476  CD41, ITGA2B; integrin, alpha 2b [HSA:3674]"
+        },
+        {
+          "name": "K06263  CD42a, GP9; glycoprotein IX (platelet) [HSA:2815]"
+        },
+        {
+          "name": "K06261  CD42b, GP1BA; glycoprotein Ib (platelet), alpha polypeptide [HSA:2811]"
+        },
+        {
+          "name": "K06262  CD42c, GP1BB; glycoprotein Ib (platelet), beta polypeptide [HSA:2812]"
+        },
+        {
+          "name": "K06260  CD42d, GP5; glycoprotein V (platelet) [HSA:2814]"
+        },
+        {
+          "name": "K06477  CD43, SPN; sialophorin (gpL115, leukosialin, CD43) [HSA:6693]"
+        },
+        {
+          "name": "K06256  CD44; CD44 antigen (homing function and Indian blood group system) [HSA:960]"
+        },
+        {
+          "name": "K06478  CD45, PTPRC; protein tyrosine phosphatase, receptor type, C [HSA:5788]"
+        },
+        {
+          "name": "K04007  CD46, MCP; membrane cofactor protein [HSA:4179]"
+        },
+        {
+          "name": "K06266  CD47; CD47 antigen (Rh-related antigen, integrin-associated signal transducer) [HSA:961]"
+        },
+        {
+          "name": "K06479  CD48; CD48 antigen (B-cell membrane protein) [HSA:962]"
+        },
+        {
+          "name": "K06480  CD49a, ITGA1; integrin, alpha 1 [HSA:3672]"
+        },
+        {
+          "name": "K06481  CD49b, ITGA2; integrin, alpha 2 [HSA:3673]"
+        },
+        {
+          "name": "K06482  CD49c, ITGA3; integrin, alpha 3 [HSA:3675]"
+        },
+        {
+          "name": "K06483  CD49d, ITGA4; integrin, alpha 4 [HSA:3676]"
+        },
+        {
+          "name": "K06484  CD49e, ITGA5; integrin, alpha 5 [HSA:3678]"
+        },
+        {
+          "name": "K06485  CD49f, ITGA6; integrin, alpha 6 [HSA:3655]"
+        },
+        {
+          "name": "K06486  CD50, ICAM3; intercellular adhesion molecule 3 [HSA:3385]"
+        },
+        {
+          "name": "K06487  CD51, ITGAV; integrin, alpha V [HSA:3685]"
+        },
+        {
+          "name": "K06488  CD52; CDW52 antigen (CAMPATH-1 antigen) [HSA:1043]"
+        },
+        {
+          "name": "K06489  CD53; CD53 antigen [HSA:963]"
+        },
+        {
+          "name": "K06490  CD54, ICAM1; intercellular adhesion molecule 1 [HSA:3383]"
+        },
+        {
+          "name": "K04006  CD55, DAF; decay accelerating factor for complement (CD55, Cromer blood group system) [HSA:1604]"
+        },
+        {
+          "name": "K06491  CD56, NCAM1; neural cell adhesion molecule 1 [HSA:4684]"
+        },
+        {
+          "name": "K06492  CD58; CD58 antigen [HSA:965]"
+        },
+        {
+          "name": "K04008  CD59; CD59 antigen p18-20 [HSA:966]"
+        },
+        {
+          "name": "K06493  CD61, ITGB3; integrin, beta 3 [HSA:3690]"
+        },
+        {
+          "name": "K06494  CD62E, SELE; selectin E [HSA:6401]"
+        },
+        {
+          "name": "K06495  CD62L, SELL; selectin L [HSA:6402]"
+        },
+        {
+          "name": "K06496  CD62P, SELP; selectin P [HSA:6403]"
+        },
+        {
+          "name": "K06497  CD63; CD63 antigen (melanoma 1 antigen) [HSA:967]"
+        },
+        {
+          "name": "K06498  CD64, FCGR1A; Fc fragment of IgG, high affinity Ia, receptor for (CD64) [HSA:2209]"
+        },
+        {
+          "name": "K06499  CD66a, CEACAM1; carcinoembryonic antigen-related cell adhesion molecule 1 [HSA:634]"
+        },
+        {
+          "name": "K06499  CD66b, CEACAM8; carcinoembryonic antigen-related cell adhesion molecule 8 [HSA:1088]"
+        },
+        {
+          "name": "K06499  CD66c, CEACAM6; carcinoembryonic antigen-related cell adhesion molecule 6 [HSA:4680]"
+        },
+        {
+          "name": "K06499  CD66d, CEACAM3; carcinoembryonic antigen-related cell adhesion molecule 3 [HSA:1084]"
+        },
+        {
+          "name": "K06499  CD66e, CEACAM5; carcinoembryonic antigen-related cell adhesion molecule 5 [HSA:1048]"
+        },
+        {
+          "name": "K06500  CD66f, PSG1; pregnancy specific beta-1-glycoprotein 1 [HSA:5669]"
+        },
+        {
+          "name": "K06501  CD68; CD68 antigen [HSA:968]"
+        },
+        {
+          "name": "K06502  CD69; CD69 antigen (p60, early T-cell activation antigen) [HSA:969]"
+        },
+        {
+          "name": "K05470  CD70, TNFSF7; tumor necrosis factor (ligand) superfamily, member 7 [HSA:970]"
+        },
+        {
+          "name": "K06503  CD71, TFRC; transferrin receptor (p90, CD71) [HSA:7037]"
+        },
+        {
+          "name": "K06504  CD72; CD72 antigen [HSA:971]"
+        },
+        {
+          "name": "K19970  CD73, NT5E; 5'-nucleotidase, ecto (CD73) [HSA:4907]"
+        },
+        {
+          "name": "K06505  CD74; CD74 antigen (invariant polypeptide of major histocompatibility complex) [HSA:972]"
+        },
+        {
+          "name": "K06506  CD79a; CD79A antigen (immunoglobulin-associated alpha) [HSA:973]"
+        },
+        {
+          "name": "K06507  CD79b; CD79B antigen (immunoglobulin-associated beta) [HSA:974]"
+        },
+        {
+          "name": "K05412  CD80; CD80 antigen (CD28 antigen ligand 1, B7-1 antigen) [HSA:941]"
+        },
+        {
+          "name": "K06508  CD81; CD81 antigen (target of antiproliferative antibody 1) [HSA:975]"
+        },
+        {
+          "name": "K06509  CD82; kangai 1, suppression of tumorigenicity 6, prostate, CD82 antigen [HSA:3732]"
+        },
+        {
+          "name": "K06510  CD83; CD83 antigen (activated B lymphocytes, immunoglobulin superfamily) [HSA:9308]"
+        },
+        {
+          "name": "K06511  CD84; CD84 antigen (leukocyte antigen) [HSA:8832]"
+        },
+        {
+          "name": "K06512  CD85a, LILRB3; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 3 [HSA:11025]"
+        },
+        {
+          "name": "K06512  CD85b, LILRB6; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 6 [HSA:79168]"
+        },
+        {
+          "name": "K06512  CD85c, LILRB5; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 5 [HSA:10990]"
+        },
+        {
+          "name": "K06512  CD85d, LILRB2; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 2 [HSA:10288]"
+        },
+        {
+          "name": "K06512  CD85e, LILRA3; leukocyte immunoglobulin-like receptor, subfamily A (without TM domain), member 3 [HSA:11026]"
+        },
+        {
+          "name": "K06512  CD85f, LILRB7; leukocyte immunoglobulin-like receptor, subfamily A (with TM domain), member 5 [HSA:353514]"
+        },
+        {
+          "name": "K06512  CD85g, LILRA4; leukocyte immunoglobulin-like receptor, subfamily A (without TM domain), member 4 [HSA:23547]"
+        },
+        {
+          "name": "K06512  CD85h, LILRA2; leukocyte immunoglobulin-like receptor, subfamily A (with TM domain), member 2 [HSA:11027]"
+        },
+        {
+          "name": "K06512  CD85i, LILRA1; leukocyte immunoglobulin-like receptor, subfamily A (with TM domain), member 1 [HSA:11024]"
+        },
+        {
+          "name": "K06512  CD85j, LILRB1; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 1 [HSA:10859]"
+        },
+        {
+          "name": "K06512  CD85k, LILRB4; leukocyte immunoglobulin-like receptor, subfamily B (with TM and ITIM domains), member 4 [HSA:11006]"
+        },
+        {
+          "name": "K05413  CD86; CD86 antigen (CD28 antigen ligand 2, B7-2 antigen) [HSA:942]"
+        },
+        {
+          "name": "K03985  CD87, PLAUR; plasminogen activator, urokinase receptor [HSA:5329]"
+        },
+        {
+          "name": "K04010  CD88, C5R1; complement component 5 receptor 1 (C5a ligand) [HSA:728]"
+        },
+        {
+          "name": "K06513  CD89, FCAR; Fc fragment of IgA, receptor for [HSA:2204]"
+        },
+        {
+          "name": "K06514  CD90, THY1; Thy-1 cell surface antigen [HSA:7070]"
+        },
+        {
+          "name": "K04550  CD91, LRP1; low density lipoprotein-related protein 1 (alpha-2-macroglobulin receptor) [HSA:4035]"
+        },
+        {
+          "name": "K06515  CD92, SLC44A1; solute carrier family 44, member 1 [HSA:23446]"
+        },
+        {
+          "name": "K06702  CD93; CD93 molecule [HSA:22918]"
+        },
+        {
+          "name": "K06516  CD94, KLRD1; killer cell lectin-like receptor subfamily D, member 1 [HSA:3824]"
+        },
+        {
+          "name": "K04390  CD95, FAS; tumor necrosis factor receptor superfamily, member 6 [HSA:355]"
+        },
+        {
+          "name": "K06517  CD96; CD96 antigen [HSA:10225]"
+        },
+        {
+          "name": "K08446  CD97; CD97 antigen [HSA:976]"
+        },
+        {
+          "name": "K06519  CD98, SLC3A2; solute carrier family 3 (activators of dibasic and neutral amino acid transport), member 2 [HSA:6520]"
+        },
+        {
+          "name": "K06520  CD99; CD99 antigen [HSA:4267]"
+        },
+        {
+          "name": "K06521  CD100, SEMA4D; sema domain, immunoglobulin domain (Ig), transmembrane domain (TM) and short cytoplasmic domain, (semaphorin) 4D [HSA:10507]"
+        },
+        {
+          "name": "K06522  CD101, IGSF2; immunoglobulin superfamily, member 2 [HSA:9398]"
+        },
+        {
+          "name": "K06523  CD102, ICAM2; intercellular adhesion molecule 2 [HSA:3384]"
+        },
+        {
+          "name": "K06524  CD103, ITGAE; integrin, alpha E [HSA:3682]"
+        },
+        {
+          "name": "K06525  CD104, ITGB4; integrin, beta 4 [HSA:3691]"
+        },
+        {
+          "name": "K06526  CD105, ENG; endoglin (Osler-Rendu-Weber syndrome 1) [HSA:2022]"
+        },
+        {
+          "name": "K06527  CD106, VCAM1; vascular cell adhesion molecule 1 [HSA:7412]"
+        },
+        {
+          "name": "K06528  CD107a, LAMP1; lysosomal-associated membrane protein 1 [HSA:3916]"
+        },
+        {
+          "name": "K06528  CD107b, LAMP2; lysosomal-associated membrane protein 2 [HSA:3920]"
+        },
+        {
+          "name": "K06529  CD108, SEMA7A; sema domain, immunoglobulin domain (Ig), and GPI membrane anchor, (semaphorin) 7A [HSA:8482]"
+        },
+        {
+          "name": "K06530  CD109; CD109 antigen (Gov platelet alloantigens) [HSA:135228]"
+        },
+        {
+          "name": "K05082  CD110, MPL; myeloproliferative leukemia virus oncogene [HSA:4352]"
+        },
+        {
+          "name": "K06081  CD111, PVRL1; poliovirus receptor-related 1 (herpesvirus entry mediator C, nectin) [HSA:5818]"
+        },
+        {
+          "name": "K06531  CD112, PVRL2; poliovirus receptor-related 2 (herpesvirus entry mediator B) [HSA:5819]"
+        },
+        {
+          "name": "K06592  CD113, PVRL3; poliovirus receptor-related 3 [HSA:25945]"
+        },
+        {
+          "name": "K05061  CD114, CSF3R; colony stimulating factor 3 receptor (granulocyte) [HSA:1441]"
+        },
+        {
+          "name": "K05090  CD115, CSF1R; colony stimulating factor 1 receptor [HSA:1436]"
+        },
+        {
+          "name": "K05066  CD116, CSF2RA; colony stimulating factor 2 receptor, alpha, low-affinity (granulocyte-macrophage) [HSA:1438]"
+        },
+        {
+          "name": "K05091  CD117, KIT; v-kit Hardy-Zuckerman 4 feline sarcoma viral oncogene homolog [HSA:3815]"
+        },
+        {
+          "name": "K05058  CD118, LIFR; leukemia inhibitory factor receptor [HSA:3977]"
+        },
+        {
+          "name": "K05132  CD119, IFNGR1; interferon gamma receptor 1 [HSA:3459]"
+        },
+        {
+          "name": "K03158  CD120a, TNFRSF1A; tumor necrosis factor receptor superfamily, member 1A [HSA:7132]"
+        },
+        {
+          "name": "K05141  CD120b, TNFRSF1B; tumor necrosis factor receptor superfamily, member 1B [HSA:7133]"
+        },
+        {
+          "name": "K04386  CD121a, IL1R1; interleukin 1 receptor, type I [HSA:3554]"
+        },
+        {
+          "name": "K04387  CD121b, IL1R2; interleukin 1 receptor, type II [HSA:7850]"
+        },
+        {
+          "name": "K05069  CD122, IL2RB; interleukin 2 receptor, beta [HSA:3560]"
+        },
+        {
+          "name": "K04737  CD123, IL3RA; interleukin 3 receptor, alpha (low affinity) [HSA:3563]"
+        },
+        {
+          "name": "K05071  CD124, IL4R; interleukin 4 receptor [HSA:3566]"
+        },
+        {
+          "name": "K05067  CD125, IL5RA; interleukin 5 receptor, alpha [HSA:3568]"
+        },
+        {
+          "name": "K05055  CD126, IL6R; interleukin 6 receptor [HSA:3570]"
+        },
+        {
+          "name": "K05072  CD127, IL7R; interleukin 7 receptor [HSA:3575]"
+        },
+        {
+          "name": "K05073  CD129, IL9R; interleukin 9 receptor [HSA:3581]"
+        },
+        {
+          "name": "K05060  CD130, IL6ST; interleukin 6 signal transducer (gp130, oncostatin M receptor) [HSA:3572]"
+        },
+        {
+          "name": "K04738  CD131, CSF2RB; colony stimulating factor 2 receptor, beta, low-affinity (granulocyte-macrophage) [HSA:1439]"
+        },
+        {
+          "name": "K05070  CD132, IL2RG; interleukin 2 receptor, gamma (severe combined immunodeficiency) [HSA:3561]"
+        },
+        {
+          "name": "K06532  CD133, PROM1; prominin 1 [HSA:8842]"
+        },
+        {
+          "name": "K05142  CD134, TNFRSF4; tumor necrosis factor receptor superfamily, member 4 [HSA:7293]"
+        },
+        {
+          "name": "K05092  CD135, FLT3; fms-related tyrosine kinase 3 [HSA:2322]"
+        },
+        {
+          "name": "K05100  CD136, MST1R; macrophage stimulating 1 receptor (c-met-related tyrosine kinase) [HSA:4486]"
+        },
+        {
+          "name": "K05146  CD137, TNFRSF9; tumor necrosis factor receptor superfamily, member 9 [HSA:3604]"
+        },
+        {
+          "name": "K06257  CD138, SDC1; syndecan 1 [HSA:6382]"
+        },
+        {
+          "name": "K04363  CD140a, PDGFRA; platelet-derived growth factor receptor, alpha polypeptide [HSA:5156]"
+        },
+        {
+          "name": "K05089  CD140b, PDGFRB; platelet-derived growth factor receptor, beta polypeptide [HSA:5159]"
+        },
+        {
+          "name": "K03907  CD141, THBD; thrombomodulin [HSA:7056]"
+        },
+        {
+          "name": "K03901  CD142, F3; coagulation factor III (thromboplastin, tissue factor) [HSA:2152]"
+        },
+        {
+          "name": "K01283  CD143, ACE; angiotensin I converting enzyme (peptidyl-dipeptidase A) 1 [HSA:1636]"
+        },
+        {
+          "name": "K06533  CD144, CDH5; cadherin 5, type 2, VE-cadherin (vascular epithelium) [HSA:1003]"
+        },
+        {
+          "name": "K06534  CD146, MCAM; melanoma cell adhesion molecule [HSA:4162]"
+        },
+        {
+          "name": "K06535  CD147, BSG; basigin (OK blood group) [HSA:682]"
+        },
+        {
+          "name": "K05698  CD148, PTPRJ; protein tyrosine phosphatase, receptor type, J [HSA:5795]"
+        },
+        {
+          "name": "K06536  CD150, SLAMF1; signaling lymphocytic activation molecule family member 1 [HSA:6504]"
+        },
+        {
+          "name": "K06537  CD151; CD151 antigen [HSA:977]"
+        },
+        {
+          "name": "K06538  CD152, CTLA4; cytotoxic T-lymphocyte-associated protein 4 [HSA:1493]"
+        },
+        {
+          "name": "K05471  CD153, TNFSF8; tumor necrosis factor (ligand) superfamily, member 8 [HSA:944]"
+        },
+        {
+          "name": "K03161  CD154, CD40LG; tumor necrosis factor (ligand) superfamily, member 5 (hyper-IgM syndrome) [HSA:959]"
+        },
+        {
+          "name": "K06539  CD155, PVR; poliovirus receptor [HSA:5817]"
+        },
+        {
+          "name": "K06540  CD156a, ADAM8; a disintegrin and metalloproteinase domain 8 [HSA:101]"
+        },
+        {
+          "name": "K06059  CD156b, ADAM17; a disintegrin and metalloproteinase domain 17 [HSA:6868]"
+        },
+        {
+          "name": "K06704  CD156c, ADAM10; a disintegrin and metalloproteinase domain 10 [HSA:102]"
+        },
+        {
+          "name": "K18152  CD157, BST1; bone marrow stromal cell antigen 1 [HSA:683]"
+        },
+        {
+          "name": "K07981  CD158a, KIR2DL1; killer cell immunoglobulin-like receptor, two domains, long cytoplasmic tail, 1 [HSA:3802]"
+        },
+        {
+          "name": "K07981  CD158b1, KIR2DL2; killer cell immunoglobulin-like receptor, two domains, long cytoplasmic tail, 2 [HSA:3803]"
+        },
+        {
+          "name": "K07981  CD158b2, KIR2DL3; killer cell immunoglobulin-like receptor, two domains, long cytoplasmic tail, 3 [HSA:3804]"
+        },
+        {
+          "name": "------  CD158c, KIR3DP1; killer cell immunoglobulin-like receptor, three domains, pseudogene 1"
+        },
+        {
+          "name": "K24231  CD158d, KIR2DL4; killer cell immunoglobulin-like receptor, two domains, long cytoplasmic tail, 4 [HSA:3805]"
+        },
+        {
+          "name": "K07980  CD158e, KIR3DL1; killer cell immunoglobulin-like receptor, three domains, long cytoplasmic tail, 1 [HSA:3811]"
+        },
+        {
+          "name": "K24232  CD158f1, KIR2DL5; killer cell immunoglobulin-like receptor, two domains, long cytoplasmic tail, 5 [HSA:57292]"
+        },
+        {
+          "name": "------  CD158f2, KIR2DL5B; killer cell immunoglobulin-like receptor"
+        },
+        {
+          "name": "K07982  CD158g, KIR2DS5; killer cell immunoglobulin-like receptor, two domains, short cytoplasmic tail, 5 [HSA:3810]"
+        },
+        {
+          "name": "K07982  CD158h, KIR2DS1; killer cell immunoglobulin-like receptor, two domains, short cytoplasmic tail, 1 [HSA:3806]"
+        },
+        {
+          "name": "K07982  CD158i, KIR2DS4; killer cell immunoglobulin-like receptor, two domains, short cytoplasmic tail, 4 [HSA:3809]"
+        },
+        {
+          "name": "K07982  CD158j, KIR2DS2; killer cell immunoglobulin-like receptor, two domains, short cytoplasmic tail, 2 [HSA:100132285]"
+        },
+        {
+          "name": "K07980  CD158k, KIR3DL2; killer cell immunoglobulin-like receptor, three domains, long cytoplasmic tail, 3 [HSA:3812]"
+        },
+        {
+          "name": "------  CD158z, KIR3DL3; killer cell immunoglobulin-like receptor"
+        },
+        {
+          "name": "K06541  CD159a, KLRC1; killer cell lectin-like receptor subfamily C, member 1 [HSA:3821]"
+        },
+        {
+          "name": "K24233  CD159c, KLRC2; killer cell lectin-like receptor subfamily C, member 2 [HSA:3822]"
+        },
+        {
+          "name": "K06542  CD160; CD160 antigen [HSA:11126]"
+        },
+        {
+          "name": "K06543  CD161, KLRB1; killer cell lectin-like receptor subfamily B, member 1 [HSA:3820]"
+        },
+        {
+          "name": "K06544  CD162, SELPLG; selectin P ligand [HSA:6404]"
+        },
+        {
+          "name": "K06545  CD163; CD163 antigen [HSA:9332]"
+        },
+        {
+          "name": "K06545  CD163b; Scavenger receptor cysteine-rich type 1 protein M160 [HSA:283316]"
+        },
+        {
+          "name": "K06546  CD164; CD164 antigen, sialomucin [HSA:8763]"
+        },
+        {
+          "name": "K06547  CD166, ALCAM; activated leukocyte cell adhesion molecule [HSA:214]"
+        },
+        {
+          "name": "K05124  CD167a, DDR1; discoidin domain receptor family, member 1 [HSA:780]"
+        },
+        {
+          "name": "K05125  CD167b, DDR2; discoidin domain receptor family, member 2 [HSA:4921]"
+        },
+        {
+          "name": "K06267  CD168, HMMR; hyaluronan-mediated motility receptor (RHAMM) [HSA:3161]"
+        },
+        {
+          "name": "K06548  CD169, SN; sialoadhesin [HSA:6614]"
+        },
+        {
+          "name": "K06549  CD170, SIGLEC5; sialic acid binding Ig-like lectin 5 [HSA:8778]"
+        },
+        {
+          "name": "K06550  CD171, L1CAM; L1 cell adhesion molecule (MASA syndrome, spastic paraplegia 1) [HSA:3897]"
+        },
+        {
+          "name": "K06551  CD172a, PTPNS1; protein tyrosine phosphatase, non-receptor type substrate 1 [HSA:140885]"
+        },
+        {
+          "name": "K06551  CD172b, SIRPB1; signal-regulatory protein beta 1 [HSA:10326]"
+        },
+        {
+          "name": "K06551  CD172g, SIRPB2; signal-regulatory protein beta 2 [HSA:55423]"
+        },
+        {
+          "name": "K06552  CD177; polycythemia rubra vera 1 [HSA:57126]"
+        },
+        {
+          "name": "K04389  CD178, FASLG; tumor necrosis factor (ligand) superfamily, member 6 [HSA:356]"
+        },
+        {
+          "name": "K06553  CD179a, VPREB1; pre-B lymphocyte gene 1 [HSA:7441]"
+        },
+        {
+          "name": "K06554  CD179b, IGLL1; immunoglobulin lambda-like polypeptide 1 [HSA:3543]"
+        },
+        {
+          "name": "K06555  CD180; lymphocyte antigen 64 homolog, radioprotective 105kDa (mouse) [HSA:4064]"
+        },
+        {
+          "name": "K04175  CD181, CXCR1; chemokine (C-X-C motif) receptor 1 [HSA:3577]"
+        },
+        {
+          "name": "K05050  CD182, CXCR2; chemokine (C-X-C motif) receptor 2 [HSA:3579]"
+        },
+        {
+          "name": "K04188  CD183, CXCR3; chemokine (C-X-C motif) receptor 3 [HSA:2833]"
+        },
+        {
+          "name": "K04189  CD184, CXCR4; chemokine (C-X-C motif) receptor 4 [HSA:7852]"
+        },
+        {
+          "name": "K04190  CD185, CXCR5; chemokine (C-X-C motif) receptor 5 [HSA:643]"
+        },
+        {
+          "name": "K04191  CD186, CXCR6; chemokine (C-X-C motif) receptor 6 [HSA:10663]"
+        },
+        {
+          "name": "K04176  CD191, CCR1; chemokine (C-C motif) receptor 1 [HSA:1230]"
+        },
+        {
+          "name": "K04177  CD192, CCR2; chemokine (C-C motif) receptor 2 [HSA:729230]"
+        },
+        {
+          "name": "K04178  CD193, CCR3; chemokine (C-C motif) receptor 3 [HSA:1232]"
+        },
+        {
+          "name": "K04179  CD194, CCR4; chemokine (C-C motif) receptor 4 [HSA:1233]"
+        },
+        {
+          "name": "K04180  CD195, CCR5; chemokine (C-C motif) receptor 5 [HSA:1234]"
+        },
+        {
+          "name": "K04181  CD196, CCR6; chemokine (C-C motif) receptor 6 [HSA:1235]"
+        },
+        {
+          "name": "K04182  CD197, CCR7; chemokine (C-C motif) receptor 7 [HSA:1236]"
+        },
+        {
+          "name": "K04183  CDw198, CCR8; chemokine (C-C motif) receptor 8 [HSA:1237]"
+        },
+        {
+          "name": "K04184  CDw199, CCR9; chemokine (C-C motif) receptor 9 [HSA:10803]"
+        },
+        {
+          "name": "K06556  CD200; antigen identified by monoclonal antibody MRC OX-2 [HSA:4345]"
+        },
+        {
+          "name": "K06557  CD201, PROCR; protein C receptor, endothelial (EPCR) [HSA:10544]"
+        },
+        {
+          "name": "K05121  CD202b, TEK; TEK tyrosine kinase, endothelial [HSA:7010]"
+        },
+        {
+          "name": "K01513  CD203a, ENPP1; ectonucleotide pyrophosphatase/phosphodiesterase 1 [HSA:5167]"
+        },
+        {
+          "name": "K01513  CD203c, ENPP3; ectonucleotide pyrophosphatase/phosphodiesterase 3 [HSA:5169]"
+        },
+        {
+          "name": "K06558  CD204, MSR1; macrophage scavenger receptor 1 [HSA:4481]"
+        },
+        {
+          "name": "K06559  CD205, LY75; lymphocyte antigen 75 [HSA:4065]"
+        },
+        {
+          "name": "K06560  CD206, MRC1; mannose receptor, C type 1 [HSA:4360]"
+        },
+        {
+          "name": "K06561  CD207; CD207 antigen, langerin [HSA:50489]"
+        },
+        {
+          "name": "K06562  CD208, LAMP3; lysosomal-associated membrane protein 3 [HSA:27074]"
+        },
+        {
+          "name": "K06563  CD209; CD209 antigen [HSA:30835]"
+        },
+        {
+          "name": "K05134  CD210, IL10RA; interleukin 10 receptor, alpha [HSA:3587]"
+        },
+        {
+          "name": "K05135  CDw210b, IL10RB; interleukin 10 receptor, beta [HSA:3588]"
+        },
+        {
+          "name": "K05063  CD212, IL12RB1; interleukin 12 receptor, beta 1 [HSA:3594]"
+        },
+        {
+          "name": "K05076  CD213a1, IL13RA1; interleukin 13 receptor, alpha 1 [HSA:3597]"
+        },
+        {
+          "name": "K05077  CD213a2, IL13RA2; interleukin 13 receptor, alpha 2 [HSA:3598]"
+        },
+        {
+          "name": "K05074  CD215, IL15RA; interleukin 15 receptor, alpha [HSA:3601]"
+        },
+        {
+          "name": "K05164  CD217, IL17R; interleukin 17 receptor [HSA:23765]"
+        },
+        {
+          "name": "K05173  CD218a, IL18R1; interleukin 18 receptor 1 [HSA:8809]"
+        },
+        {
+          "name": "K05174  CD218b, IL18RAP; interleukin 18 receptor accessory protein [HSA:8807]"
+        },
+        {
+          "name": "K04527  CD220, INSR; insulin receptor [HSA:3643]"
+        },
+        {
+          "name": "K05087  CD221, IGF1R; insulin-like growth factor 1 receptor [HSA:3480]"
+        },
+        {
+          "name": "K06564  CD222, IGF2R; insulin-like growth factor 2 receptor [HSA:3482]"
+        },
+        {
+          "name": "K06565  CD223, LAG3; lymphocyte-activation gene 3 [HSA:3902]"
+        },
+        {
+          "name": "K18592  CD224, GGT1; gamma-glutamyltransferase 1 [HSA:2678]"
+        },
+        {
+          "name": "K19831  CD225, IFITM1; interferon induced transmembrane protein 1 [HSA:8519]"
+        },
+        {
+          "name": "K06567  CD226; CD226 antigen [HSA:10666]"
+        },
+        {
+          "name": "K06568  CD227, MUC1; mucin 1, transmembrane [HSA:4582]"
+        },
+        {
+          "name": "K06569  CD228, MFI2; antigen p97 (melanoma associated) [HSA:4241]"
+        },
+        {
+          "name": "K06570  CD229, LY9; lymphocyte antigen 9 [HSA:4063]"
+        },
+        {
+          "name": "K05634  CD230, PRNP; prion protein [HSA:5621]"
+        },
+        {
+          "name": "K06571  CD231, TSPAN7; transmembrane 4 superfamily member 2 [HSA:7102]"
+        },
+        {
+          "name": "K06572  CD232, PLXNC1; plexin C1 [HSA:10154]"
+        },
+        {
+          "name": "K06573  CD233, SLC4A1; solute carrier family 4, anion exchanger, member 1 [HSA:6521]"
+        },
+        {
+          "name": "K06574  CD234, DARC; Duffy blood group [HSA:2532]"
+        },
+        {
+          "name": "K06575  CD235a, GYPA; glycophorin A [HSA:2993]"
+        },
+        {
+          "name": "K20925  CD235b, GYPB; glycophorin B [HSA:2994]"
+        },
+        {
+          "name": "K06576  CD236, GYPC; glycophorin C (Gerbich blood group) [HSA:2995]"
+        },
+        {
+          "name": "K06577  CD238, KEL; Kell blood group [HSA:3792]"
+        },
+        {
+          "name": "K06578  CD239, LU; Lutheran blood group (Auberger b antigen included) [HSA:4059]"
+        },
+        {
+          "name": "K06579  CD240CE, RHCE; Rhesus blood group, CcEe antigens [HSA:6006]"
+        },
+        {
+          "name": "K06579  CD240D, RHD; Rhesus blood group, D antigen [HSA:6007]"
+        },
+        {
+          "name": "K06580  CD241, RHAG; Rhesus blood group-associated glycoprotein [HSA:6005]"
+        },
+        {
+          "name": "K06581  CD242, ICAM4; intercellular adhesion molecule 4, Landsteiner-Wiener blood group [HSA:3386]"
+        },
+        {
+          "name": "K05658  CD243, ABCB1; ATP-binding cassette, sub-family B (MDR/TAP), member 1 [HSA:5243]"
+        },
+        {
+          "name": "K06582  CD244; CD244 natural killer cell receptor 2B4 [HSA:51744]"
+        },
+        {
+          "name": "------  CD245; CD245"
+        },
+        {
+          "name": "K05119  CD246, ALK; anaplastic lymphoma kinase (Ki-1) [HSA:238]"
+        },
+        {
+          "name": "K06453  CD247; CD3Z antigen, zeta polypeptide (TiT3 complex) [HSA:919]"
+        },
+        {
+          "name": "K06706  CD248; CD164 sialomucin-like 1 [HSA:57124]"
+        },
+        {
+          "name": "K11141  CD249, ENPEP; glutamyl aminopeptidase (aminopeptidase A) [HSA:2028]"
+        },
+        {
+          "name": "K05469  CD252, TNFSF4; tumor necrosis factor (ligand) superfamily, member 4 [HSA:7292]"
+        },
+        {
+          "name": "K04721  CD253, TNFSF10; tumor necrosis factor (ligand) superfamily, member 10 [HSA:8743]"
+        },
+        {
+          "name": "K05473  CD254, TNFSF11; tumor necrosis factor (ligand) superfamily, member 11 [HSA:8600]"
+        },
+        {
+          "name": "K05475  CD256, TNFSF13; tumor necrosis factor (ligand) superfamily, member 13 [HSA:8741]"
+        },
+        {
+          "name": "K05476  CD257, TNFSF13B; tumor necrosis factor (ligand) superfamily, member 13b [HSA:10673]"
+        },
+        {
+          "name": "K05477  CD258, TNFSF14; tumor necrosis factor (ligand) superfamily, member 14 [HSA:8740]"
+        },
+        {
+          "name": "K04722  CD261, TNFRSF10A; tumor necrosis factor receptor superfamily, member 10a [HSA:8797]"
+        },
+        {
+          "name": "K04722  CD262, TNFRSF10B; tumor necrosis factor receptor superfamily, member 10b [HSA:8795]"
+        },
+        {
+          "name": "K22701  CD263, TNFRSF10C; tumor necrosis factor receptor superfamily, member 10c, decoy without an intracellular domain [HSA:8794]"
+        },
+        {
+          "name": "K22702  CD264, TNFRSF10D; tumor necrosis factor receptor superfamily, member 10d, decoy with truncated death domain [HSA:8793]"
+        },
+        {
+          "name": "K05147  CD265, TNFRSF11A; tumor necrosis factor receptor superfamily, member 11a, activator of NFKB [HSA:8792]"
+        },
+        {
+          "name": "K05149  CD266, TNFRSF12A; tumor necrosis factor receptor superfamily, member 12A [HSA:51330]"
+        },
+        {
+          "name": "K05150  CD267, TNFRSF13B; tumor necrosis factor receptor superfamily, member 13B [HSA:23495]"
+        },
+        {
+          "name": "K05151  CD268, TNFRSF13C; tumor necrosis factor receptor superfamily, member 13C [HSA:115650]"
+        },
+        {
+          "name": "K05153  CD269, TNFRSF17; tumor necrosis factor receptor superfamily, member 17 [HSA:608]"
+        },
+        {
+          "name": "K05152  CD270, TNFRSF14; tumor necrosis factor receptor superfamily, member 14 (herpesvirus entry mediator) [HSA:8764]"
+        },
+        {
+          "name": "K02583  CD271, NGFR; nerve growth factor receptor (TNFR superfamily, member 16) [HSA:4804]"
+        },
+        {
+          "name": "K06707  CD272, BTLA; B and T lymphocyte associated [HSA:151888]"
+        },
+        {
+          "name": "K06708  CD273, PDCD1LG2; programmed cell death 1 ligand 2 [HSA:80380]"
+        },
+        {
+          "name": "K06745  CD274; programmed cell death 1 ligand 1 [HSA:29126]"
+        },
+        {
+          "name": "K06710  CD275, ICOSLG; inducible T-cell co-stimulator ligand [HSA:23308]"
+        },
+        {
+          "name": "K06746  CD276; B7 homolog 3 [HSA:80381]"
+        },
+        {
+          "name": "K06712  CD277, BTN3A1; butyrophilin, subfamily 3, member A1 [HSA:11119]"
+        },
+        {
+          "name": "K06713  CD278, ICOS; inducible T-cell co-stimulator [HSA:29851]"
+        },
+        {
+          "name": "K06744  CD279, PDCD1; programmed cell death 1 [HSA:5133]"
+        },
+        {
+          "name": "K06560  CD280, MRC2; mannose receptor, C type 2 [HSA:9902]"
+        },
+        {
+          "name": "K05398  CD281, TLR1; toll-like receptor 1 [HSA:7096]"
+        },
+        {
+          "name": "K10159  CD282, TLR2; toll-like receptor 2 [HSA:7097]"
+        },
+        {
+          "name": "K05401  CD283, TLR3; toll-like receptor 3 [HSA:7098]"
+        },
+        {
+          "name": "K10160  CD284, TLR4; toll-like receptor 4 [HSA:7099]"
+        },
+        {
+          "name": "K10169  CD286, TLR6; toll-like receptor 6 [HSA:10333]"
+        },
+        {
+          "name": "K10170  CD288, TLR8; toll-like receptor 8 [HSA:51311]"
+        },
+        {
+          "name": "K10161  CD289, TLR9; toll-like receptor 9 [HSA:54106]"
+        },
+        {
+          "name": "K10171  CD290, TLR10; toll-like receptor 10 [HSA:81793]"
+        },
+        {
+          "name": "K04673  CD292, BMPR1A; bone morphogenetic protein receptor, type IA [HSA:657]"
+        },
+        {
+          "name": "K13578  CDw293, BMPR1B; bone morphogenetic protein receptor, type IB [HSA:658]"
+        },
+        {
+          "name": "K06715  CD294, GPR44; G protein-coupled receptor 44 [HSA:11251]"
+        },
+        {
+          "name": "K05062  CD295, LEPR; leptin receptor [HSA:3953]"
+        },
+        {
+          "name": "K06716  CD296, ART1; ADP-ribosyltransferase 1 [HSA:417]"
+        },
+        {
+          "name": "K06717  CD297, ART4; ADP-ribosyltransferase 4, Dombrock blood group [HSA:420]"
+        },
+        {
+          "name": "K01540  CD298, ATP1B3; ATPase, Na+/K+ transporting, beta 3 polypeptide [HSA:483]"
+        },
+        {
+          "name": "K06563  CD299, CLEC4M; CD209 antigen-like [HSA:10332]"
+        },
+        {
+          "name": "K06719  CD300a; leukocyte membrane antigen [HSA:11314]"
+        },
+        {
+          "name": "K06719  CD300c; CMRF35 leukocyte immunoglobulin-like receptor [HSA:10871]"
+        },
+        {
+          "name": "K06721  CD301, CLEC10A; C-type lectin domain family 10, member A [HSA:10462]"
+        },
+        {
+          "name": "K06722  CD302; type I transmembrane C-type lectin receptor DCL-1 [HSA:9936]"
+        },
+        {
+          "name": "K06723  CD303, CLEC4C; C-type lectin, superfamily member 11 [HSA:170482]"
+        },
+        {
+          "name": "K06724  CD304, NRP1; neuropilin 1 [HSA:8829]"
+        },
+        {
+          "name": "K06725  CD305, LAIR1; leukocyte-associated Ig-like receptor 1 [HSA:3903]"
+        },
+        {
+          "name": "K06725  CD306, LAIR2; leukocyte-associated Ig-like receptor 2 [HSA:3904]"
+        },
+        {
+          "name": "K06727  CD307a, FCRL1; Fc receptor-like 1 [HSA:115350]"
+        },
+        {
+          "name": "K06727  CD307b, FCRL2; Fc receptor-like 2 [HSA:79368]"
+        },
+        {
+          "name": "K06727  CD307c, FCRL3; Fc receptor-like 3 [HSA:115352]"
+        },
+        {
+          "name": "K06727  CD307d, FCRL4; Fc receptor-like 4 [HSA:83417]"
+        },
+        {
+          "name": "K06727  CD307e, FCRL5; Fc receptor-like 5 [HSA:83416]"
+        },
+        {
+          "name": "K05098  CD309, KDR; kinase insert domain receptor (a type III receptor tyrosine kinase) [HSA:3791]"
+        },
+        {
+          "name": "K08443  CD312, EMR2; egf-like module containing, mucin-like, hormone receptor-like 2 [HSA:30817]"
+        },
+        {
+          "name": "K06728  CD314, KLRK1; killer cell lectin-like receptor subfamily K, member 1 [HSA:22914]"
+        },
+        {
+          "name": "K06729  CD315, PTGFRN; prostaglandin F2 receptor negative regulator [HSA:5738]"
+        },
+        {
+          "name": "K06730  CD316, IGSF8; immunoglobulin superfamily, member 8 [HSA:93185]"
+        },
+        {
+          "name": "K06731  CD317, BST2; bone marrow stromal cell antigen 2 [HSA:684]"
+        },
+        {
+          "name": "K06732  CD318, CDCP1; CUB domain-containing protein 1 [HSA:64866]"
+        },
+        {
+          "name": "K06733  CD319, SLAMF7; SLAM family member 7 [HSA:57823]"
+        },
+        {
+          "name": "K06734  CD320; 8D6 antigen [HSA:51293]"
+        },
+        {
+          "name": "K06089  CD321, F11R; F11 receptor [HSA:50848]"
+        },
+        {
+          "name": "K06735  CD322, JAM2; junctional adhesion molecule 2 [HSA:58494]"
+        },
+        {
+          "name": "K05689  CD324, CDH1; cadherin 1, type 1, E-cadherin (epithelial) [HSA:999]"
+        },
+        {
+          "name": "K06736  CD325, CDH2; cadherin 2, type 1, N-cadherin (neuronal) [HSA:1000]"
+        },
+        {
+          "name": "K06737  CD326, TACSTD1; tumor-associated calcium signal transducer 1 [HSA:4072]"
+        },
+        {
+          "name": "K06738  CD327, SIGLEC6; sialic acid binding Ig-like lectin 6 [HSA:946]"
+        },
+        {
+          "name": "K06739  CD328, SIGLEC7; sialic acid binding Ig-like lectin 7 [HSA:27036]"
+        },
+        {
+          "name": "K06740  CD329, SIGLEC9; sialic acid binding Ig-like lectin 9 [HSA:27180]"
+        },
+        {
+          "name": "K04362  CD331, FGFR1; fibroblast growth factor receptor 1 [HSA:2260]"
+        },
+        {
+          "name": "K05093  CD332, FGFR2; fibroblast growth factor receptor 2 [HSA:2263]"
+        },
+        {
+          "name": "K05094  CD333, FGFR3; fibroblast growth factor receptor 3 [HSA:2261]"
+        },
+        {
+          "name": "K05095  CD334, FGFR4; fibroblast growth factor receptor 4 [HSA:2264]"
+        },
+        {
+          "name": "K06741  CD335, NCR1; natural cytotoxicity triggering receptor 1 [HSA:9437]"
+        },
+        {
+          "name": "K06742  CD336, NCR2; natural cytotoxicity triggering receptor 2 [HSA:9436]"
+        },
+        {
+          "name": "K06743  CD337, NCR3; natural cytotoxicity triggering receptor 3 [HSA:259197]"
+        },
+        {
+          "name": "K05681  CD338, ABCG2; ATP-binding cassette, sub-family G (WHITE), member 2 [HSA:9429]"
+        },
+        {
+          "name": "K06052  CD339, JAG1; jagged 1 (Alagille syndrome) [HSA:182]"
+        },
+        {
+          "name": "K05083  CD340, ERBB2; v-erb-b2 erythroblastic leukemia viral oncogene homolog 2 [HSA:2064]"
+        },
+        {
+          "name": "K02354  CD344, FZD4; frizzled homolog 4 (Drosophila) [HSA:8322]"
+        },
+        {
+          "name": "K02842  CD349, FZD9; frizzled homolog 9 (Drosophila) [HSA:8326]"
+        },
+        {
+          "name": "K02842  CD350, FZD10; frizzled homolog 10 (Drosophila) [HSA:11211]"
+        },
+        {
+          "name": "K16851  CD351, FCAMR; Fc receptor, IgA, IgM, high affinity [HSA:83953]"
+        },
+        {
+          "name": "K16852  CD352, SLAMF6; SLAM family member 6 [HSA:114836]"
+        },
+        {
+          "name": "K16853  CD353, SLAMF8; SLAM family member 8 [HSA:56833]"
+        },
+        {
+          "name": "K14362  CD354, TREM1; triggering receptor expressed on myeloid cells 1 [HSA:54210]"
+        },
+        {
+          "name": "K16361  CD355, CRTAM; cytotoxic and regulatory T cell molecule [HSA:56253]"
+        },
+        {
+          "name": "K05154  CD357, TNFRSF18; tumor necrosis factor receptor superfamily, member 18 [HSA:8784]"
+        },
+        {
+          "name": "K05157  CD358, TNFRSF21; tumor necrosis factor receptor superfamily, member 21 [HSA:27242]"
+        },
+        {
+          "name": "K05075  CD360, IL21R; interleukin 21 receptor [HSA:50615]"
+        },
+        {
+          "name": "K16854  CD361, EVI2B; ecotropic viral integration site 2B [HSA:2124]"
+        },
+        {
+          "name": "K16336  CD362, SDC2; syndecan 2 [HSA:6383]"
+        },
+        {
+          "name": "K04288  CD363, S1PR1; sphingosine-1-phosphate receptor 1 [HSA:1901]"
+        },
+        {
+          "name": "K20412  CD364, PI16; peptidase inhibitor 16 [HSA:221476]"
+        },
+        {
+          "name": "K20413  CD365, HAVCR1; hepatitis A virus cellular receptor 1 [HSA:26762]"
+        },
+        {
+          "name": "K20414  CD366, HAVCR2; hepatitis A virus cellular receptor 2 [HSA:84868]"
+        },
+        {
+          "name": "K10057  CD367, CLEC4A; C-type lectin domain family 4 member A [HSA:50856]"
+        },
+        {
+          "name": "K10058  CD368, CLEC4D; C-type lectin domain family 4 member D [HSA:338339]"
+        },
+        {
+          "name": "K10074  CD369, CLEC7A; C-type lectin domain family 7 member A [HSA:64581 ]"
+        },
+        {
+          "name": "K17515  CD370, CLEC9A; C-type lectin domain family 9 member A [HSA:283420]"
+        },
+        {
+          "name": "K17516  CD371, CLEC12A; C-type lectin domain family 12 member A [HSA:160364]"
+        }
+      ]
+    },
+    {
+      "name": "Carbohydrates",
+      "children": [
+        {
+          "name": "G00243  CD15; Lewis x"
+        },
+        {
+          "name": "G01078  CD15u; Lewis x-sulfated"
+        },
+        {
+          "name": "G00242  CD15s; Sialyl Lewis x"
+        },
+        {
+          "name": "G13076  CD15su; 6-sulfo-sialyl Lewis x"
+        },
+        {
+          "name": "G00092  CD17; CD17, lactosylceramide, LacCer"
+        },
+        {
+          "name": "G13077  CD57; HNK-1"
+        },
+        {
+          "name": "G00113  CD60a; GD3"
+        },
+        {
+          "name": "G00169  CD60b; 9-O-acetyl-GD3"
+        },
+        {
+          "name": "G00182  CD60c; 7-O-acetyl-GD3"
+        },
+        {
+          "name": "G02706  CD65; ceramide-dodecasaccharide, VIM-2"
+        },
+        {
+          "name": "G00197  CD65s; sialylated-dodecasaccharide, VIM-2"
+        },
+        {
+          "name": "G13078  CD75; lactosamines"
+        },
+        {
+          "name": "G13079  CD75s; alpha-2,6-sialylated lactosamines"
+        },
+        {
+          "name": "G00093  CD77; ceramide trihexoside"
+        },
+        {
+          "name": "G07594  CD173; Blood Group H"
+        },
+        {
+          "name": "G00256  CD174, Lewis y"
+        },
+        {
+          "name": "G00023  CD175; Tn"
+        },
+        {
+          "name": "G00035  CD175s; Sialyl-Tn"
+        },
+        {
+          "name": "G00024  CD176; TF"
+        }
+      ]
+    }
+  ]
+}

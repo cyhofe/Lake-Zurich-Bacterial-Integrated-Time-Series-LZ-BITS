@@ -1,0 +1,1728 @@
+{
+  "name": "ko03029",
+  "children": [
+    {
+      "name": "Mitochondrial DNA transcription, translation, and replication factors",
+      "children": [
+        {
+          "name": "Mitochondrial DNA-encoded proteins",
+          "children": [
+            {
+              "name": "Mitochondrial respiratory chain complex I",
+              "children": [
+                {
+                  "name": "K03878  ND1; NADH-ubiquinone oxidoreductase chain 1 [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03879  ND2; NADH-ubiquinone oxidoreductase chain 2 [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03880  ND3; NADH-ubiquinone oxidoreductase chain 3 [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03881  ND4; NADH-ubiquinone oxidoreductase chain 4 [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03882  ND4L; NADH-ubiquinone oxidoreductase chain 4L [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03883  ND5; NADH-ubiquinone oxidoreductase chain 5 [EC:7.1.1.2]"
+                },
+                {
+                  "name": "K03884  ND6; NADH-ubiquinone oxidoreductase chain 6 [EC:7.1.1.2]"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial respiratory chain complex III",
+              "children": [
+                {
+                  "name": "K00412  CYTB, petB; ubiquinol-cytochrome c reductase cytochrome b subunit"
+                }
+              ]
+            },
+            {
+              "name": "Cytochrome c oxidase",
+              "children": [
+                {
+                  "name": "K02256  COX1; cytochrome c oxidase subunit 1 [EC:7.1.1.9]"
+                },
+                {
+                  "name": "K02261  COX2; cytochrome c oxidase subunit 2"
+                },
+                {
+                  "name": "K02262  COX3; cytochrome c oxidase subunit 3"
+                }
+              ]
+            },
+            {
+              "name": "F-type ATPase",
+              "children": [
+                {
+                  "name": "K02125  ATPeF08, MTATP8, ATP8; F-type H+-transporting ATPase subunit 8"
+                },
+                {
+                  "name": "K02126  ATPeF0A, MTATP6, ATP6; F-type H+-transporting ATPase subunit a"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mitochondrial transcription and translation factors",
+          "children": [
+            {
+              "name": "Mitochondrial RNA polymerase",
+              "children": [
+                {
+                  "name": "K10908  POLRMT, RPO41; DNA-directed RNA polymerase, mitochondrial [EC:2.7.7.6]"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial transcription factors",
+              "children": [
+                {
+                  "name": "K11830  TFAM, MTTFA; transcription factor A, mitochondrial"
+                },
+                {
+                  "name": "K15266  TFB1M; dimethyladenosine transferase 1, mitochondrial [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K17653  TFB2M; dimethyladenosine transferase 2, mitochondrial [EC:2.1.1.-]"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial translation factors",
+              "children": [
+                {
+                  "name": "K02519  infB, MTIF2; translation initiation factor IF-2"
+                },
+                {
+                  "name": "K02520  infC, MTIF3; translation initiation factor IF-3"
+                },
+                {
+                  "name": "K02357  tsf, TSFM; elongation factor Ts"
+                },
+                {
+                  "name": "K02358  tuf, TUFM; elongation factor Tu"
+                },
+                {
+                  "name": "K02355  fusA, GFM, EFG; elongation factor G"
+                },
+                {
+                  "name": "K15031  MTERF; mitochondrial transcription termination factor family protein"
+                },
+                {
+                  "name": "K21594  GUF1; translation factor GUF1, mitochondrial [EC:3.6.5.-]"
+                }
+              ]
+            },
+            {
+              "name": "RNase MRP",
+              "children": [
+                {
+                  "name": "K01164  POP1; ribonuclease P/MRP protein subunit POP1 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14522  POP3; ribonuclease P/MRP protein subunit POP3 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K03538  POP4, RPP29; ribonuclease P protein subunit POP4 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K03537  POP5; ribonuclease P/MRP protein subunit POP5 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14524  POP6; ribonuclease P/MRP protein subunit POP6 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14526  POP7, RPP2; ribonuclease P/MRP protein subunit POP7 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14528  POP8; ribonuclease P/MRP protein subunit POP8 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K03539  RPP1, RPP30; ribonuclease P/MRP protein subunit RPP1 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14527  RPP20, POP7; ribonuclease P/MRP protein subunit RPP20 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14525  RPP25; ribonucleases P/MRP protein subunit RPP25 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14523  RPP38; ribonucleases P/MRP protein subunit RPP38 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14530  RPP40; ribonucleases P/MRP protein subunit RPP40 [EC:3.1.26.5]"
+                },
+                {
+                  "name": "K14531  SNM1; ribonuclease MRP protein subunit SNM1"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial ribonuclease P",
+              "children": [
+                {
+                  "name": "K17654  TRMT10C, MRPP1; mitochondrial ribonuclease P protein 1 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K08683  HSD17B10; 3-hydroxyacyl-CoA dehydrogenase / 3-hydroxy-2-methylbutyryl-CoA dehydrogenase [EC:1.1.1.35 1.1.1.178]"
+                },
+                {
+                  "name": "K17655  MRPP3; mitochondrial ribonuclease P protein 3"
+                },
+                {
+                  "name": "K14533  RPM2; ribonuclease P protein component, mitochondrial [EC:3.1.26.5]"
+                }
+              ]
+            },
+            {
+              "name": "Other mitochondrial DNA transcription and translation factors",
+              "children": [
+                {
+                  "name": "K17656  MSS51; mitochondrial splicing suppressor protein 51"
+                },
+                {
+                  "name": "K17657  MRS1; mitochondrial RNA-splicing protein MRS1"
+                },
+                {
+                  "name": "K17658  TEFM; transcription elongation factor, mitochondrial"
+                },
+                {
+                  "name": "K17710  PTCD1; pentatricopeptide repeat domain-containing protein 1"
+                },
+                {
+                  "name": "K17711  PTCD2; pentatricopeptide repeat domain-containing protein 2"
+                },
+                {
+                  "name": "K17659  PTCD3; pentatricopeptide repeat domain-containing protein 3"
+                },
+                {
+                  "name": "K13185  DHX30; ATP-dependent RNA helicase DHX30 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K17660  CBP1; cytochrome b pre-mRNA-processing protein 1"
+                },
+                {
+                  "name": "K17661  CBP2; cytochrome b pre-mRNA-processing protein 2"
+                },
+                {
+                  "name": "K17662  CBP3, UQCC; cytochrome b pre-mRNA-processing protein 3"
+                },
+                {
+                  "name": "K17663  CBP6; cytochrome b pre-mRNA-processing protein 6"
+                },
+                {
+                  "name": "K17664  CBS1; cytochrome b translational activator protein CBS1, mitochondrial"
+                },
+                {
+                  "name": "K17665  CBS2; cytochrome b translational activator protein CBS2, mitochondrial"
+                },
+                {
+                  "name": "K17666  PET54; protein PET54, mitochondrial"
+                },
+                {
+                  "name": "K17667  PET111; protein PET111, mitochondrial"
+                },
+                {
+                  "name": "K17668  PET122; protein PET122, mitochondrial"
+                },
+                {
+                  "name": "K17669  PET309; pentatricopeptide repeat-containing protein PET309"
+                },
+                {
+                  "name": "K17670  PET494; COX3 mRNA-specific translational activator PET494"
+                },
+                {
+                  "name": "K17671  AEP1; ATPase expression protein 1, mitochondrial"
+                },
+                {
+                  "name": "K17672  AEP2; ATPase expression protein 2, mitochondrial"
+                },
+                {
+                  "name": "K18155  AEP3; ATPase expression protein 3, mitochondrial"
+                },
+                {
+                  "name": "K18798  AFG1, LACE1; peroxisome-assembly ATPase [EC:3.6.4.7]"
+                },
+                {
+                  "name": "K17673  ATP22; mitochondrial translation factor ATP22"
+                },
+                {
+                  "name": "K18156  ATP23, XRCC6BP1; mitochondrial inner membrane protease ATP23 [EC:3.4.24.-]"
+                },
+                {
+                  "name": "K17674  SOV1; protein SOV1, mitochondrial"
+                },
+                {
+                  "name": "K17675  SUPV3L1, SUV3; ATP-dependent RNA helicase SUPV3L1/SUV3 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K19782  DSS1, MSU1; exoribonuclease II, mitochondrial [EC:3.1.13.1]"
+                },
+                {
+                  "name": "K16639  LACTB2; endoribonuclease LACTB2 [EC:3.1.27.-]"
+                },
+                {
+                  "name": "K05863  SLC25A4S, ANT; solute carrier family 25 (mitochondrial adenine nucleotide translocator), member 4/5/6/31"
+                },
+                {
+                  "name": "K15113  SLC25A28_37, MFRN; solute carrier family 25 (mitochondrial iron transporter), member 28/37"
+                },
+                {
+                  "name": "K25803  MALSU1; mitochondrial assembly of ribosomal large subunit protein 1"
+                },
+                {
+                  "name": "K03595  era, ERAL1; GTPase"
+                },
+                {
+                  "name": "K01866  YARS, tyrS; tyrosyl-tRNA synthetase [EC:6.1.1.1]"
+                },
+                {
+                  "name": "K01869  LARS, leuS; leucyl-tRNA synthetase [EC:6.1.1.4]"
+                },
+                {
+                  "name": "K01876  DARS2, aspS; aspartyl-tRNA synthetase [EC:6.1.1.12]"
+                },
+                {
+                  "name": "K01880  GARS, glyS1; glycyl-tRNA synthetase [EC:6.1.1.14]"
+                },
+                {
+                  "name": "K01887  RARS, argS; arginyl-tRNA synthetase [EC:6.1.1.19]"
+                },
+                {
+                  "name": "K02433  gatA, QRSL1; aspartyl-tRNA(Asn)/glutamyl-tRNA(Gln) amidotransferase subunit A [EC:6.3.5.6 6.3.5.7]"
+                },
+                {
+                  "name": "K02434  gatB, PET112; aspartyl-tRNA(Asn)/glutamyl-tRNA(Gln) amidotransferase subunit B [EC:6.3.5.6 6.3.5.7]"
+                },
+                {
+                  "name": "K02435  gatC, GATC; aspartyl-tRNA(Asn)/glutamyl-tRNA(Gln) amidotransferase subunit C [EC:6.3.5.6 6.3.5.7]"
+                },
+                {
+                  "name": "K18060  MTPAP; poly(A) RNA polymerase, mitochondrial [EC:2.7.7.19]"
+                },
+                {
+                  "name": "K19612  PDE12; 2',5'-phosphodiesterase [EC:3.1.13.4 3.1.4.-]"
+                },
+                {
+                  "name": "K19828  MTG1; mitochondrial GTPase 1"
+                },
+                {
+                  "name": "K19832  NOA1; nitric oxide-associated protein 1"
+                },
+                {
+                  "name": "K13427  NOA1; nitric-oxide synthase, plant [EC:1.14.13.39]"
+                },
+                {
+                  "name": "K21969  NSUN3; tRNA (cytosine34-C5)-methyltransferase [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K21970  NSUN4; 5-methylcytosine rRNA methyltransferase NSUN4 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K15452  PUS2; mitochondrial tRNA pseudouridine27/28 synthase [EC:5.4.99.44]"
+                },
+                {
+                  "name": "K22537  RPUSD3; mitochondrial RNA pseudouridine synthase RPUSD3 [EC:5.4.99.-]"
+                },
+                {
+                  "name": "K22538  RPUSD4; mitochondrial RNA pseudouridine synthase RPUSD4 [EC:5.4.99.-]"
+                },
+                {
+                  "name": "K23495  RCC1L; RCC1-like G exchanging factor-like protein"
+                },
+                {
+                  "name": "K23496  NGRN; neugrin"
+                },
+                {
+                  "name": "K23497  TRUB2; mitochondrial mRNA pseudouridine synthase TRUB2 [EC:5.4.99.-]"
+                },
+                {
+                  "name": "K27754  FASTKD1; FAST kinase domain-containing protein 1"
+                },
+                {
+                  "name": "K18190  FASTKD2; FAST kinase domain-containing protein 2"
+                },
+                {
+                  "name": "K27755  FASTKD3; FAST kinase domain-containing protein 3"
+                },
+                {
+                  "name": "K27756  TBRG4, FASTKD4; FAST kinase domain-containing protein 4"
+                },
+                {
+                  "name": "K27757  FASTKD5; FAST kinase domain-containing protein 5"
+                },
+                {
+                  "name": "K23498  COXPD7; peptide chain release factor"
+                },
+                {
+                  "name": "K23499  RMND1; required for meiotic nuclear division protein 1"
+                },
+                {
+                  "name": "K24984  GRSF1; G-rich sequence factor 1"
+                },
+                {
+                  "name": "K25876  METTL15; 12S rRNA N4-methylcytidine (m4C) methyltransferase [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K25877  MYG1; MYG1 exonuclease [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K26186  MTRES1; mitochondrial transcription rescue factor 1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mitochondrial DNA replication factors",
+          "children": [
+            {
+              "name": "Mitochondrial DNA polymerase",
+              "children": [
+                {
+                  "name": "K02332  POLG; DNA polymerase gamma 1 [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K02333  POLG2; DNA polymerase gamma 2"
+                },
+                {
+                  "name": "K22761  PRIMPOL; DNA-directed primase/polymerase protein [EC:2.7.7.102 2.7.7.7]"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial DNA maintenance factors",
+              "children": [
+                {
+                  "name": "K17676  CCE1; cruciform cutting endonuclease 1 [EC:3.1.21.10]"
+                },
+                {
+                  "name": "K01173  ENDOG; endonuclease G, mitochondrial"
+                },
+                {
+                  "name": "K19465  MGME1, DDK1; mitochondrial genome maintenance exonuclease 1 [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K15050  EXOG; nuclease EXOG, mitochondrial"
+                },
+                {
+                  "name": "K17677  IRC3; ATP-dependent helicase IRC3 [EC:5.6.2.-]"
+                },
+                {
+                  "name": "K17678  MRH4; ATP-dependent RNA helicase MRH4, mitochondrial [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K17679  MSS116; ATP-dependent RNA helicase MSS116, mitochondrial [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K17680  TWNK, PEO1; twinkle mtDNA helicase [EC:5.6.2.3]"
+                },
+                {
+                  "name": "K15255  PIF1; ATP-dependent DNA helicase PIF1 [EC:5.6.2.3]"
+                },
+                {
+                  "name": "K19781  HMI1; ATP-dependent DNA helicase HMI1, mitochondrial [EC:5.6.2.4]"
+                }
+              ]
+            },
+            {
+              "name": "Other Mitochondrial DNA replication factors",
+              "children": [
+                {
+                  "name": "K03111  ssb; single-strand DNA-binding protein"
+                },
+                {
+                  "name": "K17681  ATAD3A_B; ATPase family AAA domain-containing protein 3A/B"
+                },
+                {
+                  "name": "K17682  MNF1; mitochondrial nucleoid factor 1"
+                },
+                {
+                  "name": "K27759  MTNAP1; mitochondrial nucleoid-associated protein 1"
+                },
+                {
+                  "name": "K27758  GIMAP1_3_5; GTPase IMAP family member 1/3/5"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mitochondrial protein import machinery",
+      "children": [
+        {
+          "name": "Endoplasmic reticulum membrane and cytosol",
+          "children": [
+            {
+              "name": "ER-mitochondria encounter structure (ERMES) complex",
+              "children": [
+                {
+                  "name": "K17764  MMM1; maintenance of mitochondrial morphology protein 1"
+                },
+                {
+                  "name": "K17765  MDM12; mitochondrial distribution and morphology protein 12"
+                },
+                {
+                  "name": "K17774  MDM10; mitochondrial distribution and morphology protein 10"
+                },
+                {
+                  "name": "K17775  MDM34, MMM2; mitochondrial distribution and morphology protein 34"
+                }
+              ]
+            },
+            {
+              "name": "Other ER-memrane and cytosol factors",
+              "children": [
+                {
+                  "name": "K09503  DNAJA2; DnaJ homolog subfamily A member 2"
+                },
+                {
+                  "name": "K17766  TOM34; mitochondrial import receptor subunit TOM34"
+                },
+                {
+                  "name": "K07870  RHOT1, ARHT1; mitochondrial Rho GTPase 1 [EC:3.6.5.-]"
+                },
+                {
+                  "name": "K03283  HSPA1_6_8; heat shock 70kDa protein 1/6/8"
+                },
+                {
+                  "name": "K17767  AIP, XAP2; AH receptor-interacting protein"
+                },
+                {
+                  "name": "K28235  FATE1; fetal and adult testis-expressed transcript protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Outer membrane",
+          "children": [
+            {
+              "name": "Transporter outer membrane (TOM) complex",
+              "children": [
+                {
+                  "name": "K17773  TOM5; mitochondrial import receptor subunit TOM5"
+                },
+                {
+                  "name": "K17772  TOM6; mitochondrial import receptor subunit TOM6"
+                },
+                {
+                  "name": "K17771  TOM7; mitochondrial import receptor subunit TOM7"
+                },
+                {
+                  "name": "K17770  TOM20; mitochondrial import receptor subunit TOM20"
+                },
+                {
+                  "name": "K17769  TOM22; mitochondrial import receptor subunit TOM22"
+                },
+                {
+                  "name": "K11518  TOM40; mitochondrial import receptor subunit TOM40"
+                },
+                {
+                  "name": "K17768  TOM70; mitochondrial import receptor subunit TOM70"
+                },
+                {
+                  "name": "K28405  TOM5; mitochondrial import receptor subunit TOM5, plant"
+                },
+                {
+                  "name": "K28406  TOM6; mitochondrial import receptor subunit TOM6, plant"
+                },
+                {
+                  "name": "K28407  TOM20; mitochondrial import receptor subunit TOM20, plant"
+                }
+              ]
+            },
+            {
+              "name": "TOB/SAM complex",
+              "children": [
+                {
+                  "name": "K07277  SAM50, TOB55, bamA; outer membrane protein insertion porin family"
+                },
+                {
+                  "name": "K17714  SAM37, TOM37; sorting and assembly machinery component 37"
+                },
+                {
+                  "name": "K17715  SAM35, TOM38; sorting and assembly machinery component 35"
+                }
+              ]
+            },
+            {
+              "name": "MIM complex",
+              "children": [
+                {
+                  "name": "K28711  MIM1; mitochondrial import protein 1"
+                },
+                {
+                  "name": "K28712  MIM2; mitochondrial import protein 2"
+                }
+              ]
+            },
+            {
+              "name": "Porin",
+              "children": [
+                {
+                  "name": "K05862  VDAC1; voltage-dependent anion channel protein 1"
+                },
+                {
+                  "name": "K15040  VDAC2; voltage-dependent anion channel protein 2"
+                },
+                {
+                  "name": "K15041  VDAC3; voltage-dependent anion channel protein 3"
+                }
+              ]
+            },
+            {
+              "name": "Other outer membrane factor",
+              "children": [
+                {
+                  "name": "K17776  MTX; metaxin"
+                },
+                {
+                  "name": "K25838  MYO19; myosin XIX"
+                },
+                {
+                  "name": "K26187  ARMCX1; armadillo repeat-containing X-linked protein 1"
+                },
+                {
+                  "name": "K26188  ARMCX2; armadillo repeat-containing X-linked protein 2"
+                },
+                {
+                  "name": "K26189  ARMCX3; armadillo repeat-containing X-linked protein 3"
+                },
+                {
+                  "name": "K26190  ARMCX6; armadillo repeat-containing X-linked protein 6"
+                },
+                {
+                  "name": "K27318  MTARC; mitochondrial amidoxime-reducing component [EC:1.7.-.-]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Inter membrane space",
+          "children": [
+            {
+              "name": "Transporter inner membrane (TIM) 9/10 complex",
+              "children": [
+                {
+                  "name": "K17777  TIM9; mitochondrial import inner membrane translocase subunit TIM9"
+                },
+                {
+                  "name": "K17778  TIM10; mitochondrial import inner membrane translocase subunit TIM10"
+                },
+                {
+                  "name": "K17779  TIM10B; mitochondrial import inner membrane translocase subunit TIM10B"
+                }
+              ]
+            },
+            {
+              "name": "TIM8/13 complex",
+              "children": [
+                {
+                  "name": "K17780  TIM8; mitochondrial import inner membrane translocase subunit TIM8"
+                },
+                {
+                  "name": "K17781  TIM13; mitochondrial import inner membrane translocase subunit TIM13"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial intermembrane space assembly (MIA) complex",
+              "children": [
+                {
+                  "name": "K17782  MIA40, CHCHD4; mitochondrial intermembrane space import and assembly protein 40"
+                },
+                {
+                  "name": "K17783  ERV1, GFER, ALR; mitochondrial FAD-linked sulfhydryl oxidase [EC:1.8.3.2]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Inner mambrane",
+          "children": [
+            {
+              "name": "MICOS complex",
+              "children": [
+                {
+                  "name": "K17784  MICOS10, MINOS1, MIC10; MICOS complex subunit MIC10"
+                },
+                {
+                  "name": "K17785  IMMT, MIC60; MICOS complex subunit MIC60"
+                },
+                {
+                  "name": "K24624  MICOS13; MICOS complex subunit MIC13"
+                },
+                {
+                  "name": "K17563  CHCHD3; MICOS complex subunit MIC19"
+                },
+                {
+                  "name": "K17564  CHCHD6; MICOS complex subunit MIC25"
+                },
+                {
+                  "name": "K24625  APOO; MICOS complex subunit MIC26"
+                },
+                {
+                  "name": "K24626  APOOL; MICOS complex subunit MIC27"
+                }
+              ]
+            },
+            {
+              "name": "MICOS complex (yeast)",
+              "children": [
+                {
+                  "name": "K17784  MICOS10, MINOS1, MIC10; MICOS complex subunit MIC10"
+                },
+                {
+                  "name": "K17785  IMMT, MIC60; MICOS complex subunit MIC60"
+                },
+                {
+                  "name": "K17787  MIC12; MICOS complex subunit MIC12"
+                },
+                {
+                  "name": "K17788  MIC19; MICOS complex subunit MIC19"
+                },
+                {
+                  "name": "K17786  MIC26; MICOS complex subunit MIC26"
+                },
+                {
+                  "name": "K17789  MIC27; MICOS complex subunit MIC27"
+                }
+              ]
+            },
+            {
+              "name": "TIM22 complex",
+              "children": [
+                {
+                  "name": "K17790  TIM22; mitochondrial import inner membrane translocase subunit TIM22"
+                },
+                {
+                  "name": "K17791  TIM18; mitochondrial import inner membrane translocase subunit TIM18"
+                },
+                {
+                  "name": "K17792  TIM54; mitochondrial import inner membrane translocase subunit TIM54"
+                },
+                {
+                  "name": "K17793  TIM12; mitochondrial import inner membrane translocase subunit TIM12"
+                }
+              ]
+            },
+            {
+              "name": "TIM23 complex",
+              "children": [
+                {
+                  "name": "K17794  TIM23; mitochondrial import inner membrane translocase subunit TIM23"
+                },
+                {
+                  "name": "K17795  TIM17; mitochondrial import inner membrane translocase subunit TIM17"
+                },
+                {
+                  "name": "K17796  TIM21; mitochondrial import inner membrane translocase subunit TIM21"
+                },
+                {
+                  "name": "K17496  TIM50; mitochondrial import inner membrane translocase subunit TIM50"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial calcium uniporter complex",
+              "children": [
+                {
+                  "name": "K20858  MCU; calcium uniporter protein, mitochondrial"
+                },
+                {
+                  "name": "K22827  MICU1; calcium uptake protein 1, mitochondrial"
+                },
+                {
+                  "name": "K22828  MICU2; calcium uptake protein 2, mitochondrial"
+                },
+                {
+                  "name": "K22829  MCUB; calcium uniporter regulatory subunit MCUb, mitochondrial"
+                },
+                {
+                  "name": "K22830  SMDT1, EMRE; essential MCU regulator, mitochondrial"
+                },
+                {
+                  "name": "K22137  MCUR1; mitochondrial calcium uniporter regulator 1"
+                }
+              ]
+            },
+            {
+              "name": "Other inner membrane factors",
+              "children": [
+                {
+                  "name": "K17798  MSS2; mitochondrial protein MSS2"
+                },
+                {
+                  "name": "K17799  PNT1; pentamidine resistance factor, mitochondrial"
+                },
+                {
+                  "name": "K17800  LETM1, MDM38; LETM1 and EF-hand domain-containing protein 1, mitochondrial"
+                },
+                {
+                  "name": "K17801  MBA1; mitochondrial protein MBA1"
+                },
+                {
+                  "name": "K09647  IMP1; mitochondrial inner membrane protease subunit 1 [EC:3.4.21.-]"
+                },
+                {
+                  "name": "K09648  IMP2; mitochondrial inner membrane protease subunit 2 [EC:3.4.21.-]"
+                },
+                {
+                  "name": "K17802  SOM1; mitochondrial inner membrane protease subunit SOM1"
+                },
+                {
+                  "name": "K17803  OMS1; methyltransferase OMS1, mitochondrial [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K18157  TMEM126A; transmembrane protein 126A"
+                },
+                {
+                  "name": "K22138  MPC1; mitochondrial pyruvate carrier 1"
+                },
+                {
+                  "name": "K22139  MPC2; mitochondrial pyruvate carrier 2"
+                },
+                {
+                  "name": "K22759  CHCHD10; coiled-coil-helix-coiled-coil-helix domain-containing protein 10"
+                },
+                {
+                  "name": "K28215  OCIAD1, ASRIJ; OCIA domain-containing protein 1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Matrix",
+          "children": [
+            {
+              "name": "MMC/PAM proteins",
+              "children": [
+                {
+                  "name": "K17804  TIM44; mitochondrial import inner membrane translocase subunit TIM44"
+                },
+                {
+                  "name": "K04043  dnaK, HSPA9; molecular chaperone DnaK"
+                },
+                {
+                  "name": "K03687  GRPE; molecular chaperone GrpE"
+                },
+                {
+                  "name": "K09539  DNAJC19; DnaJ homolog subfamily C member 19"
+                },
+                {
+                  "name": "K17805  PAM16, TIM16; mitochondrial import inner membrane translocase subunit TIM16"
+                },
+                {
+                  "name": "K17806  PAM17, TIM23; mitochondrial import inner membrane translocase subunit TIM23"
+                }
+              ]
+            },
+            {
+              "name": "Other matrix factors",
+              "children": [
+                {
+                  "name": "K01412  PMPCA, MAS2; mitochondrial-processing peptidase subunit alpha [EC:3.4.24.64]"
+                },
+                {
+                  "name": "K17732  PMPCB, MAS1; mitochondrial-processing peptidase subunit beta [EC:3.4.24.64]"
+                },
+                {
+                  "name": "K01410  MIPEP; mitochondrial intermediate peptidase [EC:3.4.24.59]"
+                },
+                {
+                  "name": "K04077  groEL, HSPD1, HSP60, CPN60; chaperonin GroEL [EC:5.6.1.7]"
+                },
+                {
+                  "name": "K04078  groES, HSPE1; chaperonin GroES"
+                },
+                {
+                  "name": "K03686  dnaJ; molecular chaperone DnaJ"
+                },
+                {
+                  "name": "K09504  DNAJA3; DnaJ homolog subfamily A member 3"
+                },
+                {
+                  "name": "K17807  TAM41, MMP37; mitochondrial translocator assembly and maintenance protein 41"
+                },
+                {
+                  "name": "K17808  ZIM17, DNLZ, Tim15; mitochondrial protein import protein ZIM17"
+                },
+                {
+                  "name": "K17725  ETHE1; sulfur dioxygenase [EC:1.13.11.18]"
+                },
+                {
+                  "name": "K17809  POLDIP2; polymerase delta-interacting protein 2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mitochondrial quality control factors",
+      "children": [
+        {
+          "name": "Regulator of mitochondrial biogenesis",
+          "children": [
+            {
+              "name": "Ubiquitas transcription factors",
+              "children": [
+                {
+                  "name": "K05870  CREB1; cyclic AMP-responsive element-binding protein 1"
+                },
+                {
+                  "name": "K02355  fusA, GFM, EFG; elongation factor G"
+                },
+                {
+                  "name": "K04684  SP1; transcription factor Sp1"
+                },
+                {
+                  "name": "K09201  YY; transcription factor YY"
+                },
+                {
+                  "name": "K09454  GABPB; GA-binding protein transcription factor, beta"
+                },
+                {
+                  "name": "K11830  TFAM, MTTFA; transcription factor A, mitochondrial"
+                }
+              ]
+            },
+            {
+              "name": "Nuclear respiratory factors",
+              "children": [
+                {
+                  "name": "K11831  NRF1; nuclear respiratory factor 1"
+                },
+                {
+                  "name": "K05638  NFE2L2, NRF2; nuclear factor erythroid 2-related factor 2"
+                },
+                {
+                  "name": "K14739  MT1_2; metallothionein 1/2"
+                },
+                {
+                  "name": "K14740  MT3; metallothionein 3"
+                },
+                {
+                  "name": "K14741  MT4; metallothionein 4"
+                }
+              ]
+            },
+            {
+              "name": "Coactivators",
+              "children": [
+                {
+                  "name": "K07202  PPARGC1A, PGC1A; alpha peroxisome proliferator-activated receptor gamma coactivator 1-alpha"
+                },
+                {
+                  "name": "K17962  PPARGC1B, PGC1B; peroxisome proliferator-activated receptor gamma coactivator 1-beta"
+                },
+                {
+                  "name": "K17963  PPRC1, PRC; peroxisome proliferator-activated receptor gamma coactivator-related protein 1"
+                },
+                {
+                  "name": "K15309  CRTC1, TORC1; CREB-regulated transcription coactivator 1"
+                },
+                {
+                  "name": "K04498  EP300, CREBBP, KAT3; E1A/CREB-binding protein [EC:2.3.1.48]"
+                }
+              ]
+            },
+            {
+              "name": "Proteins involved in Fe-S cluster biogenesis",
+              "children": [
+                {
+                  "name": "K04487  iscS, NFS1; cysteine desulfurase [EC:2.8.1.7]"
+                },
+                {
+                  "name": "K22068  ISCU; iron-sulfur cluster assembly enzyme ISCU, mitochondrial"
+                },
+                {
+                  "name": "K22069  LYRM4; LYR motif-containing protein 4"
+                },
+                {
+                  "name": "K19054  FXN; frataxin [EC:1.16.3.1]"
+                },
+                {
+                  "name": "K22070  FDX1, ADX; ferredoxin-1, mitochondrial"
+                },
+                {
+                  "name": "K22071  FDX2; ferredoxin-2, mitochondrial"
+                },
+                {
+                  "name": "K18914  FDXR; adrenodoxin-NADP+ reductase [EC:1.18.1.6]"
+                },
+                {
+                  "name": "K04043  dnaK, HSPA9; molecular chaperone DnaK"
+                },
+                {
+                  "name": "K04082  hscB, HSCB, HSC20; molecular chaperone HscB"
+                },
+                {
+                  "name": "K14001  SIL1, SLS1; nucleotide exchange factor SIL1"
+                },
+                {
+                  "name": "K07390  grxD, GLRX5; monothiol glutaredoxin"
+                },
+                {
+                  "name": "K22063  ISCA1; iron-sulfur cluster assembly 1"
+                },
+                {
+                  "name": "K22072  ISCA2; iron-sulfur cluster assembly 2"
+                },
+                {
+                  "name": "K22073  IBA57; transferase CAF17, mitochondrial [EC:2.1.-.-]"
+                },
+                {
+                  "name": "K22074  NFU1, HIRIP5; NFU1 iron-sulfur cluster scaffold homolog, mitochondrial"
+                },
+                {
+                  "name": "K22066  BOLA1; BolA-like protein 1"
+                },
+                {
+                  "name": "K22075  BOLA3; BolA-like protein 3"
+                },
+                {
+                  "name": "K23500  SFXN1_3; sideroflexin-1/3"
+                },
+                {
+                  "name": "K23501  SFXN2; sideroflexin-2"
+                },
+                {
+                  "name": "K23502  SFXN4; sideroflexin-4"
+                },
+                {
+                  "name": "K23503  SFXN5; sideroflexin-5"
+                }
+              ]
+            },
+            {
+              "name": "Other regulator of mitochondrial biogenesis",
+              "children": [
+                {
+                  "name": "K08765  CPT1A; carnitine O-palmitoyltransferase 1, liver isoform [EC:2.3.1.21]"
+                },
+                {
+                  "name": "K19523  CPT1B; carnitine O-palmitoyltransferase 1, muscle isoform [EC:2.3.1.21]"
+                },
+                {
+                  "name": "K19524  CPT1C; carnitine O-palmitoyltransferase 1, brain isoform [EC:2.3.1.21]"
+                },
+                {
+                  "name": "K15791  DHKTD1; 2-oxoadipate dehydrogenase E1 component [EC:1.2.4.-]"
+                },
+                {
+                  "name": "K10270  FBXL4; F-box and leucine-rich repeat protein 4"
+                },
+                {
+                  "name": "K14966  HCFC1; host cell factor 1"
+                },
+                {
+                  "name": "K27390  HCFC2; host cell factor 2"
+                },
+                {
+                  "name": "K04533  HD; huntingtin"
+                },
+                {
+                  "name": "K08552  NR3B1, ESRRA; estrogen-related receptor alpha"
+                },
+                {
+                  "name": "K08553  NR3B2, ESRRB; estrogen-related receptor beta"
+                },
+                {
+                  "name": "K08554  NR3B3, ESRRG; estrogen-related receptor gamma"
+                },
+                {
+                  "name": "K17965  NRIP1; nuclear receptor-interacting protein 1"
+                },
+                {
+                  "name": "K07198  PRKAA, AMPK; 5'-AMP-activated protein kinase, catalytic alpha subunit [EC:2.7.11.31]"
+                },
+                {
+                  "name": "K08675  PRSS15, PIM1; ATP-dependent Lon protease [EC:3.4.21.53]"
+                },
+                {
+                  "name": "K11411  SIRT1, SIR2L1; NAD-dependent protein deacetylase sirtuin 1 [EC:2.3.1.286]"
+                },
+                {
+                  "name": "K23504  SERAC1; protein SERAC1"
+                },
+                {
+                  "name": "K26537  UXT; protein UXT"
+                },
+                {
+                  "name": "K26738  PERM1; PGC-1 and ERR-induced regulator in muscle protein 1"
+                },
+                {
+                  "name": "K27835  GATD3, ES1; glutamine amidotransferase-like class 1 domain-containing protein 3, mitochondrial"
+                },
+                {
+                  "name": "K28098  TANGO2; transport and Golgi organization protein 2"
+                },
+                {
+                  "name": "K28271  C2ORF69; mitochondrial protein C2orf69"
+                },
+                {
+                  "name": "K28528  ATOS, FAM214; protein Atossa"
+                },
+                {
+                  "name": "K14777  DDX47, RRP3; ATP-dependent RNA helicase DDX47/RRP3 [EC:5.6.2.7]"
+                },
+                {
+                  "name": "K18158  NCA2; nuclear control of ATPase protein 2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mitochondrial respiratory chain complex assembly factors",
+          "children": [
+            {
+              "name": "Complex-I assembly factors",
+              "children": [
+                {
+                  "name": "K18159  NDUFAF1, CIA30; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 1"
+                },
+                {
+                  "name": "K18160  NDUFAF2; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 2"
+                },
+                {
+                  "name": "K09008  NDUFAF3; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 3"
+                },
+                {
+                  "name": "K18161  NDUFAF4; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 4"
+                },
+                {
+                  "name": "K18162  NDUFAF5; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 5 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K18163  NDUFAF6; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 6"
+                },
+                {
+                  "name": "K18164  NDUFAF7; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 7"
+                },
+                {
+                  "name": "K24726  NDUFAF8; NADH dehydrogenase [ubiquinone] 1 alpha subcomplex assembly factor 8"
+                },
+                {
+                  "name": "K18165  TMEM126B; complex I assembly factor TMEM126B"
+                },
+                {
+                  "name": "K04405  ECSIT; evolutionarily conserved signaling intermediate in Toll pathway"
+                },
+                {
+                  "name": "K15980  ACAD9; acyl-CoA dehydrogenase family member 9 [EC:1.3.99.-]"
+                },
+                {
+                  "name": "K03593  mrp, NUBPL; ATP-binding protein involved in chromosome partitioning"
+                },
+                {
+                  "name": "K18166  FOXRED1; FAD-dependent oxidoreductase domain-containing protein 1"
+                },
+                {
+                  "name": "K23164  RTN4IP1; reticulon-4-interacting protein 1, mitochondrial"
+                },
+                {
+                  "name": "K23505  TIMMDC1; complex I assembly factor TIMMDC1"
+                }
+              ]
+            },
+            {
+              "name": "Complex-II assembly factors",
+              "children": [
+                {
+                  "name": "K18167  SDHAF1; succinate dehydrogenase assembly factor 1"
+                },
+                {
+                  "name": "K18168  SDHAF2, SDH5; succinate dehydrogenase assembly factor 2"
+                }
+              ]
+            },
+            {
+              "name": "Complex-III assembly factors",
+              "children": [
+                {
+                  "name": "K08900  BCS1; mitochondrial chaperone BCS1"
+                },
+                {
+                  "name": "K18169  TTC19; tetratricopeptide repeat protein 19, mitochondrial"
+                },
+                {
+                  "name": "K18170  LYRM7, MZM1; complex III assembly factor LYRM7"
+                },
+                {
+                  "name": "K17662  CBP3, UQCC; cytochrome b pre-mRNA-processing protein 3"
+                },
+                {
+                  "name": "K17682  MNF1; mitochondrial nucleoid factor 1"
+                },
+                {
+                  "name": "K23165  UQCC3; ubiquinol-cytochrome-c reductase complex assembly factor 3"
+                },
+                {
+                  "name": "K27339  UQCC4; ubiquinol-cytochrome c reductase complex assembly factor 4"
+                },
+                {
+                  "name": "K27340  UQCC5, SMIM4; ubiquinol-cytochrome c reductase complex assembly factor 5"
+                },
+                {
+                  "name": "K27341  UQCC6; ubiquinol-cytochrome c reductase complex assembly factor 6"
+                },
+                {
+                  "name": "K27319  STMP1; short transmembrane mitochondrial protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Complex-IV assembly factors",
+              "children": [
+                {
+                  "name": "K18171  CMC1; COX assembly mitochondrial protein 1"
+                },
+                {
+                  "name": "K18172  CMC2; COX assembly mitochondrial protein 2"
+                },
+                {
+                  "name": "K18173  COA1; cytochrome c oxidase assembly factor 1"
+                },
+                {
+                  "name": "K18174  COA2; cytochrome c oxidase assembly factor 2"
+                },
+                {
+                  "name": "K18175  CCDC56, COA3; cytochrome c oxidase assembly factor 3, animal type"
+                },
+                {
+                  "name": "K18176  COA3; cytochrome c oxidase assembly factor 3, fungi type"
+                },
+                {
+                  "name": "K18177  COA4; cytochrome c oxidase assembly factor 4"
+                },
+                {
+                  "name": "K18178  COA5, PET191; cytochrome c oxidase assembly factor 5"
+                },
+                {
+                  "name": "K18179  COA6; cytochrome c oxidase assembly factor 6"
+                },
+                {
+                  "name": "K18180  COA7, SELRC1, RESA1; cytochrome c oxidase assembly factor 7"
+                },
+                {
+                  "name": "K02257  COX10, ctaB, cyoE; heme o synthase [EC:2.5.1.141]"
+                },
+                {
+                  "name": "K02258  COX11, ctaG; cytochrome c oxidase assembly protein subunit 11"
+                },
+                {
+                  "name": "K18181  COX14; cytochrome c oxidase assembly factor 14"
+                },
+                {
+                  "name": "K02259  COX15, ctaA; heme a synthase [EC:1.17.99.9]"
+                },
+                {
+                  "name": "K18182  COX16; cytochrome c oxidase assembly protein subunit 16"
+                },
+                {
+                  "name": "K02260  COX17; cytochrome c oxidase assembly protein subunit 17"
+                },
+                {
+                  "name": "K17797  COX18; mitochondrial inner membrane protein COX18"
+                },
+                {
+                  "name": "K18183  COX19; cytochrome c oxidase assembly protein subunit 19"
+                },
+                {
+                  "name": "K18184  COX20; cytochrome c oxidase assembly protein subunit 20"
+                },
+                {
+                  "name": "K18185  COX23; cytochrome c oxidase assembly protein subunit 23"
+                },
+                {
+                  "name": "K17801  MBA1; mitochondrial protein MBA1"
+                },
+                {
+                  "name": "K17656  MSS51; mitochondrial splicing suppressor protein 51"
+                },
+                {
+                  "name": "K18186  PET100; protein PET100, animal type"
+                },
+                {
+                  "name": "K18187  PET100F; protein PET100, fungi type"
+                },
+                {
+                  "name": "K18188  PET117; protein PET117"
+                },
+                {
+                  "name": "K03217  yidC, spoIIIJ, OXA1, ccfA; YidC/Oxa1 family membrane protein insertase"
+                },
+                {
+                  "name": "K14998  SURF1, SHY1; surfeit locus 1 family protein"
+                },
+                {
+                  "name": "K07152  SCO1; protein SCO1"
+                },
+                {
+                  "name": "K23755  SCO2; protein SCO2"
+                },
+                {
+                  "name": "K18189  TACO1; translational activator of cytochrome c oxidase 1"
+                },
+                {
+                  "name": "K17964  LRPPRC; leucine-rich PPR motif-containing protein, mitochondrial"
+                },
+                {
+                  "name": "K23506  APOPT1; apoptogenic protein 1"
+                },
+                {
+                  "name": "K27319  STMP1; short transmembrane mitochondrial protein 1"
+                },
+                {
+                  "name": "K27340  UQCC5, SMIM4; ubiquinol-cytochrome c reductase complex assembly factor 5"
+                },
+                {
+                  "name": "K27342  TMEM223; transmembrane protein 223"
+                },
+                {
+                  "name": "K28216  HIGD1A_C, RCF1a; HIG1 domain family member 1A/C, mitochondrial"
+                },
+                {
+                  "name": "K28217  HIGD2A, RCF1b; HIG1 domain family member 2A, mitochondrial"
+                }
+              ]
+            },
+            {
+              "name": "Complex-V assembly factors",
+              "children": [
+                {
+                  "name": "K07555  ATPeAF1, ATPAF1, ATP11; ATP synthase mitochondrial F1 complex assembly factor 1"
+                },
+                {
+                  "name": "K07556  ATPeAF2, ATPAF2, ATP12; ATP synthase mitochondrial F1 complex assembly factor 2"
+                },
+                {
+                  "name": "K18191  FMC1; ATP synthase assembly factor FMC1, mitochondrial"
+                },
+                {
+                  "name": "K17966  TMEM70; transmembrane protein 70, mitochondrial"
+                },
+                {
+                  "name": "K18192  ATP10; mitochondrial ATPase complex subunit ATP10"
+                },
+                {
+                  "name": "K18193  MP68, MLQ; 6.8 kDa mitochondrial proteolipid"
+                },
+                {
+                  "name": "K18194  USMG5, DAPIT; up-regulated during skeletal muscle growth protein 5"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mitochondrial dynamics",
+          "children": [
+            {
+              "name": "Fission and Fusion factors",
+              "children": [
+                {
+                  "name": "K21356  MFN1; mitofusin 1 [EC:3.6.5.-]"
+                },
+                {
+                  "name": "K06030  MFN2, FZO1; mitofusin 2 [EC:3.6.5.-]"
+                },
+                {
+                  "name": "K22140  MGM1; dynamin-like GTPase MGM1, mitochondrial"
+                },
+                {
+                  "name": "K17967  UGO1; mitochondrial fusion and transport protein UGO1"
+                },
+                {
+                  "name": "K17079  OPA1; optic atrophy protein 1 [EC:3.6.5.5]"
+                },
+                {
+                  "name": "K23166  OPA3; optic atrophy 3 protein"
+                },
+                {
+                  "name": "K15070  MDM30; mitochondrial distribution and morphology protein 30"
+                },
+                {
+                  "name": "K17968  TRIAP1, MDM35; TRIAP1/MDM35 family protein"
+                },
+                {
+                  "name": "K09650  PARL, PSARL, PCP1; rhomboid-like protein [EC:3.4.21.105]"
+                },
+                {
+                  "name": "K14021  BAK, BAK1; Bcl-2 homologous antagonist/killer"
+                },
+                {
+                  "name": "K02159  BAX; apoptosis regulator BAX"
+                },
+                {
+                  "name": "K17065  DNM1L; dynamin 1-like protein [EC:3.6.5.5]"
+                },
+                {
+                  "name": "K17969  FIS1, TTC11, MDV2; mitochondrial fission 1 protein"
+                },
+                {
+                  "name": "K17970  MDV1, FIS2; mitochondrial division protein 1"
+                },
+                {
+                  "name": "K12160  SUMO, SMT3; small ubiquitin-related modifier"
+                },
+                {
+                  "name": "K11248  SH3GLB1; endophilin-B1"
+                },
+                {
+                  "name": "K17885  MTCH; mitochondrial carrier"
+                },
+                {
+                  "name": "K22076  MFF; mitochondrial fission factor"
+                },
+                {
+                  "name": "K22077  GDAP1; ganglioside-induced differentiation-associated protein 1"
+                },
+                {
+                  "name": "K23167  VAT1; synaptic vesicle membrane protein VAT-1"
+                },
+                {
+                  "name": "K23507  MIEF1_2; mitochondrial dynamics protein MID51/49"
+                },
+                {
+                  "name": "K16862  PLD6; mitochondrial cardiolipin hydrolase [EC:3.1.4.-]"
+                },
+                {
+                  "name": "K27289  MIGA, FAM73; mitoguardin"
+                },
+                {
+                  "name": "K27836  ELM1; mitochondrial fission protein ELM1"
+                }
+              ]
+            },
+            {
+              "name": "Actin cytoskeleton organization",
+              "children": [
+                {
+                  "name": "K05692  ACTB_G1; actin beta/gamma 1"
+                },
+                {
+                  "name": "K11238  BNI1; cytokinesis protein"
+                },
+                {
+                  "name": "K17971  BNR1; BNI1-related protein 1"
+                },
+                {
+                  "name": "K17945  TPM1_2; tropomyosin, fungi type"
+                },
+                {
+                  "name": "K17972  NAA20, NAT3; N-terminal acetyltransferase B complex catalytic subunit [EC:2.3.1.254]"
+                },
+                {
+                  "name": "K17973  NAA25, MDM20; N-terminal acetyltransferase B complex non-catalytic subunit"
+                }
+              ]
+            },
+            {
+              "name": "Mitochondrial movement",
+              "children": [
+                {
+                  "name": "K17764  MMM1; maintenance of mitochondrial morphology protein 1"
+                },
+                {
+                  "name": "K17774  MDM10; mitochondrial distribution and morphology protein 10"
+                },
+                {
+                  "name": "K17775  MDM34, MMM2; mitochondrial distribution and morphology protein 34"
+                },
+                {
+                  "name": "K17974  JSN1, PUF1; protein JSN1"
+                },
+                {
+                  "name": "K17944  PUF3; mRNA-binding protein PUF3"
+                },
+                {
+                  "name": "K17080  PHB1; prohibitin 1"
+                },
+                {
+                  "name": "K17081  PHB2; prohibitin 2"
+                },
+                {
+                  "name": "K17975  KTN1; kinectin"
+                }
+              ]
+            },
+            {
+              "name": "Retention of mitochondria",
+              "children": [
+                {
+                  "name": "K17976  MMR1; mitochondrial MYO2 receptor-related protein 1"
+                },
+                {
+                  "name": "K17065  DNM1L; dynamin 1-like protein [EC:3.6.5.5]"
+                },
+                {
+                  "name": "K17977  YPT11; GTP-binding protein YPT11"
+                },
+                {
+                  "name": "K10357  MYO5; myosin V"
+                },
+                {
+                  "name": "K17978  NUM1; nuclear migration protein NUM1"
+                },
+                {
+                  "name": "K04725  XIAP, BIRC4; E3 ubiquitin-protein ligase XIAP [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K10522  DIABLO, SMAC; diablo"
+                },
+                {
+                  "name": "K28104  MME1; mitochondrial magnesium exporter 1"
+                },
+                {
+                  "name": "K28103  MME1; mitochondrial magnesium exporter 1"
+                }
+              ]
+            },
+            {
+              "name": "Morphogenesis factors",
+              "children": [
+                {
+                  "name": "K17887  SNX25, MDM1; sorting nexin-25"
+                },
+                {
+                  "name": "K17979  MDM31; mitochondrial distribution and morphology protein 31"
+                },
+                {
+                  "name": "K17980  MDM32; mitochondrial distribution and morphology protein 32"
+                },
+                {
+                  "name": "K07870  RHOT1, ARHT1; mitochondrial Rho GTPase 1 [EC:3.6.5.-]"
+                },
+                {
+                  "name": "K17785  IMMT, MIC60; MICOS complex subunit MIC60"
+                },
+                {
+                  "name": "K17981  MTFP1, MTP18; mitochondrial fission process protein 1"
+                },
+                {
+                  "name": "K17408  DAP3, MRPS29; small subunit ribosomal protein S29"
+                },
+                {
+                  "name": "K10591  NEDD4, RSP5; E3 ubiquitin-protein ligase NEDD4 [EC:2.3.2.26]"
+                },
+                {
+                  "name": "K25437  OXR1; oxidation resistance protein 1"
+                },
+                {
+                  "name": "K27320  MSTO1, MST; protein misato"
+                },
+                {
+                  "name": "K27964  PRELID1, UPS1; PRELI domain-containing protein 1, mitochondrial"
+                },
+                {
+                  "name": "K27965  PRELID2; PRELI domain-containing protein 2 mitochondrial"
+                },
+                {
+                  "name": "K27966  PRELID3, UPS2, UPS3; PRELI domain-containing protein 3, mitochondrial"
+                },
+                {
+                  "name": "K28688  TM2D3, amx; TM2 domain-containing protein 3"
+                },
+                {
+                  "name": "K17983  SHE9; sensitive to high expression protein 9, mitochondrial"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mitophagy factors",
+          "children": [
+            {
+              "name": "Autophagy-related proteins",
+              "children": [
+                {
+                  "name": "K17906  ATG2; autophagy-related protein 2"
+                },
+                {
+                  "name": "K08343  ATG3; ubiquitin-like-conjugating enzyme ATG3"
+                },
+                {
+                  "name": "K08342  ATG4; cysteine protease ATG4 [EC:3.4.22.-]"
+                },
+                {
+                  "name": "K08339  ATG5; autophagy-related protein 5"
+                },
+                {
+                  "name": "K08334  BECN, VPS30, ATG6; beclin"
+                },
+                {
+                  "name": "K08337  ATG7; ubiquitin-like modifier-activating enzyme ATG7"
+                },
+                {
+                  "name": "K08341  GABARAP, ATG8, LC3; GABA(A) receptor-associated protein"
+                },
+                {
+                  "name": "K17907  ATG9; autophagy-related protein 9"
+                },
+                {
+                  "name": "K08338  ATG10; ubiquitin-like-conjugating enzyme ATG10"
+                },
+                {
+                  "name": "K17888  ATG10L, ATG10; ubiquitin-like-conjugating enzyme ATG10"
+                },
+                {
+                  "name": "K08330  ATG11; autophagy-related protein 11"
+                },
+                {
+                  "name": "K08336  ATG12; ubiquitin-like protein ATG12"
+                },
+                {
+                  "name": "K08335  ATG14; autophagy-related protein 14"
+                },
+                {
+                  "name": "K17889  ATG14L, ATG14; beclin 1-associated autophagy-related key regulator"
+                },
+                {
+                  "name": "K17900  ATG15, AUT5; lipase ATG15 [EC:3.1.1.3]"
+                },
+                {
+                  "name": "K08340  ATG16; autophagy-related protein 16"
+                },
+                {
+                  "name": "K17890  ATG16L1; autophagy-related protein 16-1"
+                },
+                {
+                  "name": "K20868  ATG16L2; autophagy-related protein 16-2"
+                },
+                {
+                  "name": "K08329  ATG17; autophagy-related protein 17"
+                },
+                {
+                  "name": "K17908  WIPI1_2, ATG18; autophagy-related protein 18"
+                },
+                {
+                  "name": "K17984  ATG32; autophagy-related protein 32"
+                },
+                {
+                  "name": "K28529  ATG44; mitofissin"
+                },
+                {
+                  "name": "K08332  VAC8; vacuolar protein 8"
+                }
+              ]
+            },
+            {
+              "name": "Parkin-dependent mechanism factors",
+              "children": [
+                {
+                  "name": "K04556  PARK2; parkin [EC:2.3.2.31]"
+                },
+                {
+                  "name": "K11981  RNF41, NRDP1; E3 ubiquitin-protein ligase NRDP1 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K19513  CLEC16A; protein CLEC16A"
+                },
+                {
+                  "name": "K05688  PINK1; PTEN induced putative kinase 1 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K09650  PARL, PSARL, PCP1; rhomboid-like protein [EC:3.4.21.105]"
+                },
+                {
+                  "name": "K14381  SQSTM1; sequestosome 1"
+                },
+                {
+                  "name": "K21347  TAX1BP1; Tax1-binding protein 1"
+                },
+                {
+                  "name": "K21348  CALCOCO2, NDP52; calcium-binding and coiled-coil domain-containing protein 2"
+                },
+                {
+                  "name": "K17985  AMBRA1; activating molecule in BECN1-regulated autophagy protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Parkin-independent mechanism factors",
+              "children": [
+                {
+                  "name": "K08331  ATG13; autophagy-related protein 13"
+                },
+                {
+                  "name": "K21357  ULK1; serine/threonine-protein kinase ULK1 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K08269  ULK2, ATG1; serine/threonine-protein kinase ULK2 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K17589  RB1CC1; RB1-inducible coiled-coil protein 1"
+                },
+                {
+                  "name": "K04079  HSP90A, htpG; molecular chaperone HtpG"
+                },
+                {
+                  "name": "K09554  CDC37; cell division cycle protein 37"
+                },
+                {
+                  "name": "K04678  SMURF; E3 ubiquitin ligase SMURF1/2 [EC:2.3.2.26]"
+                },
+                {
+                  "name": "K15465  BNIP3L; BCL2/adenovirus E1B 19 kDa protein-interacting protein 3-like"
+                },
+                {
+                  "name": "K17986  FUNDC1; FUN14 domain-containing protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Other mitophagy factors",
+              "children": [
+                {
+                  "name": "K07198  PRKAA, AMPK; 5'-AMP-activated protein kinase, catalytic alpha subunit [EC:2.7.11.31]"
+                },
+                {
+                  "name": "K10435  MAP1LC; microtubule-associated protein 1 light chain"
+                },
+                {
+                  "name": "K17987  NBR1; next to BRCA1 gene 1 protein"
+                },
+                {
+                  "name": "K17988  TECPR1; tectonin beta-propeller repeat-containing protein 1"
+                },
+                {
+                  "name": "K17603  ZFYVE1; zinc finger FYVE domain-containing protein 1"
+                },
+                {
+                  "name": "K02318  COASY; phosphopantetheine adenylyltransferase / dephospho-CoA kinase [EC:2.7.7.3 2.7.1.24]"
+                },
+                {
+                  "name": "K16343  PLA2G6, IPLA2; calcium-independent phospholipase A2 [EC:3.1.1.4]"
+                },
+                {
+                  "name": "K23168  MPAN; protein MPAN"
+                },
+                {
+                  "name": "K24308  FUNDC2; FUN14 domain-containing protein 2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

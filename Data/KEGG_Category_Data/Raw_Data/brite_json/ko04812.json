@@ -1,0 +1,1713 @@
+{
+  "name": "ko04812",
+  "children": [
+    {
+      "name": "Eukaryotic cytoskeleton proteins",
+      "children": [
+        {
+          "name": "Actin filaments / Microfilaments",
+          "children": [
+            {
+              "name": "Actins",
+              "children": [
+                {
+                  "name": "Actins",
+                  "children": [
+                    {
+                      "name": "K10354  ACTA1; actin, alpha skeletal muscle"
+                    },
+                    {
+                      "name": "K12313  ACTA2; actin, aortic smooth muscle"
+                    },
+                    {
+                      "name": "K12314  ACTC1; actin, alpha cardiac muscle"
+                    },
+                    {
+                      "name": "K12315  ACTG2; actin, gamma-enteric smooth muscle"
+                    },
+                    {
+                      "name": "K05692  ACTB_G1; actin beta/gamma 1"
+                    },
+                    {
+                      "name": "K10355  ACTF; actin, other eukaryote"
+                    }
+                  ]
+                },
+                {
+                  "name": "Actin-related proteins",
+                  "children": [
+                    {
+                      "name": "K16575  ACTR1, ARP1; centractin"
+                    },
+                    {
+                      "name": "K11662  ACTR6, ARP6; actin-related protein 6"
+                    },
+                    {
+                      "name": "K16576  ACTR10, ARP11; actin-related protein 10"
+                    },
+                    {
+                      "name": "K16615  PARP7; actin-related protein 7, plant"
+                    },
+                    {
+                      "name": "K16616  PARP8; actin-related protein 8, plant"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Actin-binding proteins",
+              "children": [
+                {
+                  "name": "Myosins",
+                  "children": [
+                    {
+                      "name": "K10356  MYO1; myosin I"
+                    },
+                    {
+                      "name": "K08834  MYO3, DFNB30; myosin III [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K10357  MYO5; myosin V"
+                    },
+                    {
+                      "name": "K10358  MYO6; myosin VI"
+                    },
+                    {
+                      "name": "K10359  MYO7A, USH1B; myosin VIIa"
+                    },
+                    {
+                      "name": "K21868  MYO7B; myosin VIIb"
+                    },
+                    {
+                      "name": "K10360  MYO9; myosin IX"
+                    },
+                    {
+                      "name": "K12559  MYO10; myosin X"
+                    },
+                    {
+                      "name": "K10361  MYO15; myosin XV"
+                    },
+                    {
+                      "name": "K17481  MYO16; myosin XVI"
+                    },
+                    {
+                      "name": "K10362  MYO18; myosin XVIII"
+                    },
+                    {
+                      "name": "K25838  MYO19; myosin XIX"
+                    },
+                    {
+                      "name": "K24220  MYH1s; myosin heavy chain 1/2/3/4/8/13/7B/15"
+                    },
+                    {
+                      "name": "K17751  MYH6_7; myosin heavy chain 6/7"
+                    },
+                    {
+                      "name": "K10352  MYH9s; myosin heavy chain 9/10/11/14"
+                    },
+                    {
+                      "name": "K05738  MYL1; myosin light chain 1"
+                    },
+                    {
+                      "name": "K12749  MYL3; myosin light chain 3"
+                    },
+                    {
+                      "name": "K12750  MYL4; myosin light chain 4"
+                    },
+                    {
+                      "name": "K12751  MYL6; myosin light chain 6"
+                    },
+                    {
+                      "name": "K10351  MYL2; myosin regulatory light chain 2"
+                    },
+                    {
+                      "name": "K12753  MYL5; myosin regulatory light chain 5"
+                    },
+                    {
+                      "name": "K12754  MYL7; myosin regulatory light chain 7"
+                    },
+                    {
+                      "name": "K12755  MYL9; myosin regulatory light chain 9"
+                    },
+                    {
+                      "name": "K12756  MYL10; myosin regulatory light chain 10"
+                    },
+                    {
+                      "name": "K12757  MYL12; myosin regulatory light chain 12"
+                    },
+                    {
+                      "name": "K12758  MYLPF; fast skeletal myosin light chain 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Arp2/3 complex",
+                  "children": [
+                    {
+                      "name": "K05757  ARPC1A_B; actin related protein 2/3 complex, subunit 1A/1B"
+                    },
+                    {
+                      "name": "K05758  ARPC2; actin related protein 2/3 complex, subunit 2"
+                    },
+                    {
+                      "name": "K05756  ARPC3; actin related protein 2/3 complex, subunit 3"
+                    },
+                    {
+                      "name": "K05755  ARPC4; actin related protein 2/3 complex, subunit 4"
+                    },
+                    {
+                      "name": "K05754  ARPC5; actin related protein 2/3 complex, subunit 5"
+                    },
+                    {
+                      "name": "K17260  ACTR2, ARP2; actin-related protein 2"
+                    },
+                    {
+                      "name": "K18584  ACTR3, ARP3; actin-related protein 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "WASP / WAVE",
+                  "children": [
+                    {
+                      "name": "K05747  WAS; Wiskott-Aldrich syndrome protein"
+                    },
+                    {
+                      "name": "K23612  WASL; neural Wiskott-Aldrich syndrome protein"
+                    },
+                    {
+                      "name": "K05753  WASF1; WAS protein family, member 1"
+                    },
+                    {
+                      "name": "K05748  WASF2; WAS protein family, member 2"
+                    },
+                    {
+                      "name": "K06083  WASF3; WAS protein family, member 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Formins",
+                  "children": [
+                    {
+                      "name": "K10367  FMN1; formin 1"
+                    },
+                    {
+                      "name": "K02184  FMN2; formin 2"
+                    },
+                    {
+                      "name": "K05740  DIAPH1; diaphanous 1"
+                    },
+                    {
+                      "name": "K05741  DIAPH2; diaphanous 2"
+                    },
+                    {
+                      "name": "K05745  DIAPH3, DRF3; diaphanous 3"
+                    },
+                    {
+                      "name": "K04512  DAAM; dishevelled associated activator of morphogenesis"
+                    },
+                    {
+                      "name": "K23957  FMNL; formic-like protein"
+                    },
+                    {
+                      "name": "K26412  FHDC1, INF1; FH2 domain-containing protein 1"
+                    },
+                    {
+                      "name": "K23938  FHOD1; FH1/FH2 domain-containing protein 1"
+                    },
+                    {
+                      "name": "K23939  FHOD3, FHOS2; FH1/FH2 domain-containing protein 3"
+                    },
+                    {
+                      "name": "K23958  INF2; inverted formin-2"
+                    },
+                    {
+                      "name": "K26413  GRID2IP; delphilin"
+                    },
+                    {
+                      "name": "K28090  FH; formin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Profilin",
+                  "children": [
+                    {
+                      "name": "K05759  PFN; profilin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Thymosin",
+                  "children": [
+                    {
+                      "name": "K05764  TMSB4; thymosin, beta 4"
+                    },
+                    {
+                      "name": "K13785  TMSB10; thymosin beta 10"
+                    },
+                    {
+                      "name": "K24043  TMSB15; thymosin beta 15"
+                    }
+                  ]
+                },
+                {
+                  "name": "ADF / Cofilin",
+                  "children": [
+                    {
+                      "name": "K05765  CFL; cofilin"
+                    },
+                    {
+                      "name": "K10363  DSTN; destrin"
+                    },
+                    {
+                      "name": "SCMC complex",
+                      "children": [
+                        {
+                          "name": "K22626  NLRP5; NACHT, LRR and PYD domains-containing protein 5"
+                        },
+                        {
+                          "name": "K04497  GRO, TLE; groucho"
+                        },
+                        {
+                          "name": "K25076  KHDC3; KH domain-containing protein 3"
+                        },
+                        {
+                          "name": "K25077  OOEP; oocyte-expressed protein"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Gelsolin / villin",
+                  "children": [
+                    {
+                      "name": "K05768  GSN; gelsolin"
+                    },
+                    {
+                      "name": "K05761  VIL; villin"
+                    },
+                    {
+                      "name": "K08017  AVIL; advillin"
+                    },
+                    {
+                      "name": "K10369  SVIL; supervillin"
+                    },
+                    {
+                      "name": "K27496  FLII; flightless I actin remodeling protein"
+                    },
+                    {
+                      "name": "K27697  DMTN; dematin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ezrin/Radixin/Moesin",
+                  "children": [
+                    {
+                      "name": "K08007  EZR, VIL2; ezrin"
+                    },
+                    {
+                      "name": "K05762  RDX; radixin"
+                    },
+                    {
+                      "name": "K05763  MSN; moesin"
+                    },
+                    {
+                      "name": "K16684  NF2; merlin"
+                    },
+                    {
+                      "name": "K06107  EPB41; erythrocyte membrane protein band 4.1"
+                    },
+                    {
+                      "name": "K23971  FRMD7; FERM domain-containing protein 7"
+                    },
+                    {
+                      "name": "K26219  MOE; ezrin-moesin-radixin 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Capping proteins",
+                  "children": [
+                    {
+                      "name": "K10368  CAPG; macrophage-capping protein"
+                    },
+                    {
+                      "name": "K10364  CAPZA; F-actin-capping protein subunit alpha"
+                    },
+                    {
+                      "name": "K10365  CAPZB; F-actin-capping protein subunit beta"
+                    },
+                    {
+                      "name": "K18615  RCSD1, CAPZIP; CapZ-interacting protein"
+                    },
+                    {
+                      "name": "K10370  TMOD; tropomodulin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Tropomyosins",
+                  "children": [
+                    {
+                      "name": "K10373  TPM1; tropomyosin 1"
+                    },
+                    {
+                      "name": "K10374  TPM2; tropomyosin 2"
+                    },
+                    {
+                      "name": "K09290  TPM3; tropomyosin 3"
+                    },
+                    {
+                      "name": "K10375  TPM4; tropomyosin 4"
+                    },
+                    {
+                      "name": "K17945  TPM1_2; tropomyosin, fungi type"
+                    }
+                  ]
+                },
+                {
+                  "name": "Troponins",
+                  "children": [
+                    {
+                      "name": "K05865  TNNC1; troponin C, slow skeletal and cardiac muscles"
+                    },
+                    {
+                      "name": "K12042  TNNC2; troponin C, skeletal muscle"
+                    },
+                    {
+                      "name": "K10371  TNNI1; troponin I, slow skeletal muscle"
+                    },
+                    {
+                      "name": "K12043  TNNI2; troponin I, fast skeletal muscle"
+                    },
+                    {
+                      "name": "K12044  TNNI3; troponin I, cardiac muscle"
+                    },
+                    {
+                      "name": "K10372  TNNT1; troponin T, slow skeletal muscle"
+                    },
+                    {
+                      "name": "K12045  TNNT2; troponin T, cardiac muscle"
+                    },
+                    {
+                      "name": "K12046  TNNT3; troponin T, fast skeletal muscle"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cross-linking proteins",
+                  "children": [
+                    {
+                      "name": "K05699  ACTN1_4; actinin alpha 1/4"
+                    },
+                    {
+                      "name": "K21073  ACTN2_3; actinin alpha 2/3"
+                    },
+                    {
+                      "name": "K05691  CTNNA; catenin alpha"
+                    },
+                    {
+                      "name": "K10366  DMD; dystrophin"
+                    },
+                    {
+                      "name": "K27060  UTRN; utrophin"
+                    },
+                    {
+                      "name": "K04437  FLNA; filamin-A"
+                    },
+                    {
+                      "name": "K27392  FLNB; filamin-B"
+                    },
+                    {
+                      "name": "K27393  FLNC; filamin-C"
+                    },
+                    {
+                      "name": "K27408  SPTA; spectrin alpha, erythrocytic"
+                    },
+                    {
+                      "name": "K06114  SPTAN; spectrin alpha, non-erythrocytic (fodrin)"
+                    },
+                    {
+                      "name": "K27409  SPTB; spectrin beta, erythrocytic"
+                    },
+                    {
+                      "name": "K06115  SPTBN1_4_5; spectrin beta, non-erythrocytic 1/4/5"
+                    },
+                    {
+                      "name": "K23932  SPTBN2; spectrin beta, non-erythrocytic 2"
+                    },
+                    {
+                      "name": "K17493  CAMSAP; calmodulin-regulated spectrin-associated protein"
+                    },
+                    {
+                      "name": "K05700  VCL; vinculin"
+                    },
+                    {
+                      "name": "K18616  AFAP1; actin filament associated protein 1"
+                    },
+                    {
+                      "name": "K18617  AIF1; allograft inflammatory factor 1"
+                    },
+                    {
+                      "name": "K23551  FSCN1; fascin 1"
+                    },
+                    {
+                      "name": "K17455  FSCN2; fascin2"
+                    },
+                    {
+                      "name": "K17456  FSCN3; fascin 3"
+                    },
+                    {
+                      "name": "K18618  GAS7; growth arrest-specific protein 7"
+                    },
+                    {
+                      "name": "K17551  PPP1R9; neurabin"
+                    },
+                    {
+                      "name": "K13882  CORO1A; coronin-1A"
+                    },
+                    {
+                      "name": "K13886  CORO1B_1C_6; coronin-1B/1C/6"
+                    },
+                    {
+                      "name": "K13887  CORO2; coronin-2"
+                    },
+                    {
+                      "name": "K18619  CORO7; coronin-7"
+                    },
+                    {
+                      "name": "K18620  CTXA_B; cortexillin 1/2"
+                    },
+                    {
+                      "name": "K19875  MYOT; myotilin"
+                    },
+                    {
+                      "name": "K22028  MYPN; myopalladin"
+                    },
+                    {
+                      "name": "K22029  PALLD; palladin"
+                    },
+                    {
+                      "name": "K12557  MYBPC1; myosin-binding protein C, slow-type"
+                    },
+                    {
+                      "name": "K12558  MYBPC2; myosin-binding protein C, fast-type"
+                    },
+                    {
+                      "name": "K24627  GAS2, GAS2L; growth arrest-specific protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K18621  ANLN; actin-binding protein anillin"
+                    },
+                    {
+                      "name": "K18622  ADD; adducin"
+                    },
+                    {
+                      "name": "K12327  CALD1; caldesmon"
+                    },
+                    {
+                      "name": "K28562  CNN; calponin"
+                    },
+                    {
+                      "name": "K20526  TAGLN; transgelin"
+                    },
+                    {
+                      "name": "K18623  COBL; protein cordon-bleu"
+                    },
+                    {
+                      "name": "K06106  CTTN, EMS1; cortactin"
+                    },
+                    {
+                      "name": "K16680  ED; echinoid"
+                    },
+                    {
+                      "name": "K25094  EPB42; erythrocyte membrane protein band 4.2"
+                    },
+                    {
+                      "name": "K16848  IQGAP1; Ras GTPase-activating-like protein IQGAP1"
+                    },
+                    {
+                      "name": "K05767  IQGAP2_3; Ras GTPase-activating-like protein IQGAP2/3"
+                    },
+                    {
+                      "name": "K18624  MAEA, EMP; macrophage erythroblast attacher"
+                    },
+                    {
+                      "name": "K06275  PARV; parvin"
+                    },
+                    {
+                      "name": "K17275  PLS1; plastin-1"
+                    },
+                    {
+                      "name": "K17276  LCP1, PLS2; plastin-2"
+                    },
+                    {
+                      "name": "K17336  PLS3; plastin-3"
+                    },
+                    {
+                      "name": "K17579  PPP1R42, LRRC67; protein phosphatase 1 regulatory subunit 42"
+                    },
+                    {
+                      "name": "K18625  SHROOM; protein Shroom"
+                    },
+                    {
+                      "name": "K05701  TJP1, ZO1; tight junction protein 1"
+                    },
+                    {
+                      "name": "K12567  TTN; titin [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K19879  TCAP; telethonin"
+                    },
+                    {
+                      "name": "K17478  FKBP15, WAFL; FK506-binding protein 15"
+                    },
+                    {
+                      "name": "K06274  VASP; vasodilator-stimulated phosphoprotein"
+                    },
+                    {
+                      "name": "K22030  LMOD; leiomodin"
+                    },
+                    {
+                      "name": "K22031  MYZAP; myocardial zonula adherens protein"
+                    },
+                    {
+                      "name": "K23026  LIMA1, EPLIN; LIM domain and actin-binding protein 1"
+                    },
+                    {
+                      "name": "K23027  MYOC; myocilin"
+                    },
+                    {
+                      "name": "K23028  SPECC1; cytospin"
+                    },
+                    {
+                      "name": "K19199  SETD3; protein-histidine N-methyltransferase [EC:2.1.1.85]"
+                    },
+                    {
+                      "name": "K23751  TRIOBP; TRIO and F-actin-binding protein"
+                    },
+                    {
+                      "name": "K23917  POF1B; protein POF1B"
+                    },
+                    {
+                      "name": "K23918  NEXN; nexilin"
+                    },
+                    {
+                      "name": "K24144  NHS; Nance-Horan syndrome protein and NHS-like proteins"
+                    },
+                    {
+                      "name": "K24165  PCARE; photoreceptor cilium actin regulator"
+                    },
+                    {
+                      "name": "K24776  RUFY3; RUN and FYVE domain-containing protein 3"
+                    },
+                    {
+                      "name": "K25865  NEBL; nebulette"
+                    },
+                    {
+                      "name": "K26050  MYOZ; myozenin"
+                    },
+                    {
+                      "name": "K26539  ACTMAP; actin maturation protease [EC:3.4.11.-]"
+                    },
+                    {
+                      "name": "K25509  CRYBG; beta/gamma crystallin domain-containing protein"
+                    },
+                    {
+                      "name": "K27698  FILIP1; filamin-A-interacting protein 1"
+                    },
+                    {
+                      "name": "K27921  NAA80; N-alpha-acetyltransferase 80 [EC:2.3.1.-]"
+                    },
+                    {
+                      "name": "K27922  ARPIN; arpin"
+                    },
+                    {
+                      "name": "K28086  CRMP1, DPYSL1; dihydropyrimidinase-related protein 1"
+                    },
+                    {
+                      "name": "K07528  DPYSL2, CRMP2; dihydropyrimidinase-related protein 2"
+                    },
+                    {
+                      "name": "K28087  DPYSL3, CRMP4; dihydropyrimidinase-related protein 3"
+                    },
+                    {
+                      "name": "K28088  DPYSL4, CRMP3; dihydropyrimidinase-related protein 4"
+                    },
+                    {
+                      "name": "K07529  DPYSL5, CRAM; dihydropyrimidinase-related protein 5"
+                    },
+                    {
+                      "name": "K28102  COTL1, COAA; coactosin"
+                    },
+                    {
+                      "name": "K28168  FAM107A; actin-associated protein FAM107A"
+                    },
+                    {
+                      "name": "K28488  DGCR6, GDL; protein DGCR6"
+                    },
+                    {
+                      "name": "K28539  ECSCR; endothelial cell-specific chemotaxis regulator"
+                    },
+                    {
+                      "name": "K26540  SCAB; stomatal closure-related actin-binding protein"
+                    },
+                    {
+                      "name": "K28540  PLIM2; LIM domain-containing protein PLIM2"
+                    },
+                    {
+                      "name": "K28541  WLIM; LIM domain-containing protein WLIM"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Intermediate filaments",
+          "children": [
+            {
+              "name": "Intermediate filaments",
+              "children": [
+                {
+                  "name": "Types I and II: Acidic and basic keratins",
+                  "children": [
+                    {
+                      "name": "K07604  KRT1; type I keratin, acidic"
+                    },
+                    {
+                      "name": "K07605  KRT2; type II keratin, basic"
+                    }
+                  ]
+                },
+                {
+                  "name": "Type III",
+                  "children": [
+                    {
+                      "name": "K07610  DES; desmin"
+                    },
+                    {
+                      "name": "K05640  GFAP; glial fibrillary acidic protein"
+                    },
+                    {
+                      "name": "K07607  PRPH; peripherin"
+                    },
+                    {
+                      "name": "K07606  VIM; vimentin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Type IV",
+                  "children": [
+                    {
+                      "name": "K07608  NF66, INA; internexin neuronal intermediate filament protein, alpha"
+                    },
+                    {
+                      "name": "K04572  NEFL, NF-L; neurofilament light polypeptide"
+                    },
+                    {
+                      "name": "K04573  NEF3, NF-M; neurofilament medium polypeptide (neurofilament 3)"
+                    },
+                    {
+                      "name": "K04574  NEFH, NF-H; neurofilament heavy polypeptide"
+                    },
+                    {
+                      "name": "K10377  SYNC1; syncoilin 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Type V: Nuclear lamins",
+                  "children": [
+                    {
+                      "name": "K12641  LMNA; lamin A/C"
+                    },
+                    {
+                      "name": "K07611  LMNB; lamin B"
+                    },
+                    {
+                      "name": "K18585  IF; intermediate filament protein if"
+                    }
+                  ]
+                },
+                {
+                  "name": "Type VI",
+                  "children": [
+                    {
+                      "name": "K07609  NES; nestin"
+                    },
+                    {
+                      "name": "K10376  DMN; desmuslin"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K10378  BFSP1; filensin"
+                    },
+                    {
+                      "name": "K10379  BFSP2; phakinin"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Intermediate filament-binding proteins",
+              "children": [
+                {
+                  "name": "K10380  ANK1; ankyrin-1"
+                },
+                {
+                  "name": "K09255  ANK2, ANKB; ankyrin-2"
+                },
+                {
+                  "name": "K09259  ANK3, ANKG; ankyrin-3"
+                },
+                {
+                  "name": "K10381  DSP; desmoplakin"
+                },
+                {
+                  "name": "K10382  DST; dystonin"
+                },
+                {
+                  "name": "K10383  EVPL; envoplakin"
+                },
+                {
+                  "name": "K10384  FLG; filaggrin"
+                },
+                {
+                  "name": "K04437  FLNA; filamin-A"
+                },
+                {
+                  "name": "K27392  FLNB; filamin-B"
+                },
+                {
+                  "name": "K27393  FLNC; filamin-C"
+                },
+                {
+                  "name": "K10385  LOR; loricrin"
+                },
+                {
+                  "name": "K10386  PPL; periplakin"
+                },
+                {
+                  "name": "K10387  PKP1; plakophilin 1"
+                },
+                {
+                  "name": "K10388  PLEC; plectin"
+                },
+                {
+                  "name": "K04985  PKD1; polycystin 1"
+                },
+                {
+                  "name": "K27408  SPTA; spectrin alpha, erythrocytic"
+                },
+                {
+                  "name": "K06114  SPTAN; spectrin alpha, non-erythrocytic (fodrin)"
+                },
+                {
+                  "name": "K27409  SPTB; spectrin beta, erythrocytic"
+                },
+                {
+                  "name": "K06115  SPTBN1_4_5; spectrin beta, non-erythrocytic 1/4/5"
+                },
+                {
+                  "name": "K23932  SPTBN2; spectrin beta, non-erythrocytic 2"
+                },
+                {
+                  "name": "K18626  TCHH; trichohyalin"
+                },
+                {
+                  "name": "K17493  CAMSAP; calmodulin-regulated spectrin-associated protein"
+                },
+                {
+                  "name": "K23931  FAM83H; protein FAM83H"
+                },
+                {
+                  "name": "K24031  TMPO; lamina-associated polypeptide 2"
+                },
+                {
+                  "name": "K24080  LEMD2; LEM domain-contaning protein 2"
+                },
+                {
+                  "name": "K19410  LEMD3; inner nuclear membrane protein Man1"
+                },
+                {
+                  "name": "K27832  MLIP; muscular LMNA-interacting protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Microtubules",
+          "children": [
+            {
+              "name": "Tubulins",
+              "children": [
+                {
+                  "name": "K07374  TUBA; tubulin alpha"
+                },
+                {
+                  "name": "K07375  TUBB; tubulin beta"
+                },
+                {
+                  "name": "K10389  TUBG; tubulin gamma"
+                },
+                {
+                  "name": "K10390  TUBD; tubulin delta"
+                },
+                {
+                  "name": "K10391  TUBE; tubulin epsilon"
+                }
+              ]
+            },
+            {
+              "name": "Tubulin-binding proteins",
+              "children": [
+                {
+                  "name": "Kinesins",
+                  "children": [
+                    {
+                      "name": "K10392  KIF1; kinesin family member 1"
+                    },
+                    {
+                      "name": "K10393  KIF2_24, MCAK; kinesin family member 2/24"
+                    },
+                    {
+                      "name": "K10394  KIF3A; kinesin family member 3A"
+                    },
+                    {
+                      "name": "K20196  KIF3B; kinesin family member 3B"
+                    },
+                    {
+                      "name": "K20197  KIF3C; kinesin family member 3C"
+                    },
+                    {
+                      "name": "K10395  KIF4; kinesin family member 4"
+                    },
+                    {
+                      "name": "K10396  KIF5; kinesin family member 5 (plus-end-directed kinesin ATPase) [EC:5.6.1.3]"
+                    },
+                    {
+                      "name": "K10397  KIF6_9; kinesin family member 6/9"
+                    },
+                    {
+                      "name": "K18806  KIF7; kinesin family member 7"
+                    },
+                    {
+                      "name": "K10398  KIF11, EG5; kinesin family member 11"
+                    },
+                    {
+                      "name": "K10399  KIF12; kinesin family member 12"
+                    },
+                    {
+                      "name": "K17914  KIF13; kinesin family member 13"
+                    },
+                    {
+                      "name": "K17915  KIF14; kinesin family member 14"
+                    },
+                    {
+                      "name": "K10400  KIF15; kinesin family member 15"
+                    },
+                    {
+                      "name": "K17916  KIF16B, SNX23; kinesin family member 16B"
+                    },
+                    {
+                      "name": "K20198  KIF17; kinesin family member 17"
+                    },
+                    {
+                      "name": "K10401  KIF18A; kinesin family member 18A"
+                    },
+                    {
+                      "name": "K26156  KIF18B; kinesin family member 18B"
+                    },
+                    {
+                      "name": "K26157  KIF19; kinesin family member 19"
+                    },
+                    {
+                      "name": "K10402  KIF20; kinesin family member 20"
+                    },
+                    {
+                      "name": "K24185  KIF21; kinesin family member 21"
+                    },
+                    {
+                      "name": "K10403  KIF22; kinesin family member 22"
+                    },
+                    {
+                      "name": "K17387  KIF23; kinesin family member 23"
+                    },
+                    {
+                      "name": "K18627  KIF25; kinesin family member 25"
+                    },
+                    {
+                      "name": "K10404  KIF26; kinesin family member 26"
+                    },
+                    {
+                      "name": "K24186  KIF27; kinesin family member 27"
+                    },
+                    {
+                      "name": "K10405  KIFC1, ncd; kinesin family member C1 (minus-end-directed kinesin ATPase) [EC:5.6.1.4]"
+                    },
+                    {
+                      "name": "K10406  KIFC2_3; kinesin family member C2/C3"
+                    },
+                    {
+                      "name": "K10407  KLC; kinesin light chain"
+                    },
+                    {
+                      "name": "K27887  KIN14; kinesin-like protein KIN-14"
+                    }
+                  ]
+                },
+                {
+                  "name": "Stathmin",
+                  "children": [
+                    {
+                      "name": "K04381  STMN1; stathmin 1"
+                    },
+                    {
+                      "name": "K26158  STMN2_3_4; stathmin 2/3/4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Microtubule severing proteins",
+                  "children": [
+                    {
+                      "name": "K07767  KATNA1; katanin p60 ATPase-containing subunit A1 [EC:5.6.1.1]"
+                    },
+                    {
+                      "name": "K18643  KATNB1; katanin p80 WD40 repeat-containing subunit B1"
+                    },
+                    {
+                      "name": "K13254  SPAST; spastin [EC:5.6.1.1]"
+                    },
+                    {
+                      "name": "K26673  FIGN; fidgetin"
+                    }
+                  ]
+                },
+                {
+                  "name": "EMAP",
+                  "children": [
+                    {
+                      "name": "K18595  EML1_2; echinoderm microtubule-associated protein-like 1/2"
+                    },
+                    {
+                      "name": "K18596  EML3; echinoderm microtubule-associated protein-like 3"
+                    },
+                    {
+                      "name": "K15420  EML4; echinoderm microtubule-associated protein-like 4"
+                    },
+                    {
+                      "name": "K18597  EML5; echinoderm microtubule-associated protein-like 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Dyneins",
+                  "children": [
+                    {
+                      "name": "K10408  DNAH; dynein axonemal heavy chain"
+                    },
+                    {
+                      "name": "K10409  DNAI1; dynein axonemal intermediate chain 1"
+                    },
+                    {
+                      "name": "K11143  DNAI2; dynein axonemal intermediate chain 2"
+                    },
+                    {
+                      "name": "K24722  DNAI3, WDR63; dynein axonemal intermediate chain 3"
+                    },
+                    {
+                      "name": "K24723  DNAI4, WDR78; dynein axonemal intermediate chain 4"
+                    },
+                    {
+                      "name": "K10410  DNALI; dynein axonemal light intermediate chain 1"
+                    },
+                    {
+                      "name": "K10411  DNAL1; dynein axonemal light chain 1"
+                    },
+                    {
+                      "name": "K10412  DNAL4; dynein axonemal light chain 4"
+                    },
+                    {
+                      "name": "K10413  DYNC1H; dynein cytoplasmic 1 heavy chain"
+                    },
+                    {
+                      "name": "K10414  DYNC2H, DNCH2; dynein cytoplasmic 2 heavy chain"
+                    },
+                    {
+                      "name": "K10415  DYNC1I, DNCI; dynein cytoplasmic 1 intermediate chain"
+                    },
+                    {
+                      "name": "K10416  DYNC1LI, DNCLI; dynein cytoplasmic 1 light intermediate chain"
+                    },
+                    {
+                      "name": "K10417  DYNC2LI; dynein cytoplasmic 2 light intermediate chain"
+                    },
+                    {
+                      "name": "K10418  DYNLL; dynein light chain LC8-type"
+                    },
+                    {
+                      "name": "K10419  DYNLRB, DNCL2; dynein light chain roadblock-type"
+                    },
+                    {
+                      "name": "K10420  DYNLT1_3; dynein light chain Tctex-type 1/3"
+                    },
+                    {
+                      "name": "K25419  DYNLT2, TCTE3; dynein light chain Tctex-type 2"
+                    },
+                    {
+                      "name": "K25420  DYNLT4, TCTEX1D4; dynein light chain Tctex-type 4"
+                    },
+                    {
+                      "name": "K25421  DYNLT5, TCTEX1D1; dynein light chain Tctex-type 5"
+                    },
+                    {
+                      "name": "Dynein-related proteins",
+                      "children": [
+                        {
+                          "name": "K19750  DNAAF1, LRRC50, ODA7; dynein axonemal assembly factor 1"
+                        },
+                        {
+                          "name": "K19751  DNAAF2, KTU, PF13; dynein axonemal assembly factor 2"
+                        },
+                        {
+                          "name": "K19752  DNAAF3, PF22; dynein axonemal assembly factor 3"
+                        },
+                        {
+                          "name": "K19758  DNAAF4, DYX1C1; dynein axonemal assembly factor 4"
+                        },
+                        {
+                          "name": "K19759  DNAAF5; dynein axonemal assembly factor 5"
+                        },
+                        {
+                          "name": "K24253  DNAAF6, PIH1D3; dynein axonemal assembly factor 6"
+                        },
+                        {
+                          "name": "K24030  ZMYND10; zinc finger MYND domain-containing protein 10"
+                        },
+                        {
+                          "name": "K25423  DNAAF8; dynein axonemal assembly factor 8"
+                        },
+                        {
+                          "name": "K25424  DNAAF9; dynein axonemal assembly factor 9"
+                        },
+                        {
+                          "name": "K24761  WDR92, DNAAF10; dynein axonemal assembly factor 10"
+                        },
+                        {
+                          "name": "K19753  LRRC6, DNAAF11; dynein axonemal assembly factor 11"
+                        },
+                        {
+                          "name": "K25425  LRRC56; leucine-rich repeat-containing protein 56"
+                        },
+                        {
+                          "name": "K19870  SPAG1; sperm-associated antigen 1"
+                        },
+                        {
+                          "name": "K25426  PIH1D1; PIH1 domain-containing protein 1"
+                        },
+                        {
+                          "name": "K25427  PIH1D2; PIH1 domain-containing protein 2"
+                        },
+                        {
+                          "name": "K19760  DAW1; dynein assembly factor with WDR repeat domains 1"
+                        },
+                        {
+                          "name": "K19754  DRC1; dynein regulatry complex protein 1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Dynactins",
+                  "children": [
+                    {
+                      "name": "K04648  DCTN1; dynactin 1"
+                    },
+                    {
+                      "name": "K10424  DCTN2; dynactin 2"
+                    },
+                    {
+                      "name": "K10425  DCTN3; dynactin 3"
+                    },
+                    {
+                      "name": "K10426  DCTN4; dynactin 4"
+                    },
+                    {
+                      "name": "K10427  DCTN5; dynactin 5"
+                    },
+                    {
+                      "name": "K10428  DCTN6; dynactin 6"
+                    },
+                    {
+                      "name": "K18599  JNM1; nuclear migration protein JNM1"
+                    },
+                    {
+                      "name": "K18600  LDB18; potein LDB18"
+                    }
+                  ]
+                },
+                {
+                  "name": "Gamma-tubulin complex components",
+                  "children": [
+                    {
+                      "name": "K16569  TUBGCP2, GCP2; gamma-tubulin complex component 2"
+                    },
+                    {
+                      "name": "K16570  TUBGCP3, GCP3; gamma-tubulin complex component 3"
+                    },
+                    {
+                      "name": "K16571  TUBGCP4, GCP4; gamma-tubulin complex component 4"
+                    },
+                    {
+                      "name": "K16572  TUBGCP5, GCP5; gamma-tubulin complex component 5"
+                    },
+                    {
+                      "name": "K16573  TUBGCP6, GCP6; gamma-tubulin complex component 6"
+                    },
+                    {
+                      "name": "K16574  MZT2A_B; mitotic-spindle organizing protein 2A/2B"
+                    },
+                    {
+                      "name": "K16547  NEDD1; protein NEDD1"
+                    }
+                  ]
+                },
+                {
+                  "name": "XMAP215",
+                  "children": [
+                    {
+                      "name": "K16803  CKAP5; cytoskeleton-associated protein 5"
+                    },
+                    {
+                      "name": "K24394  STU2; protein STU2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cytoplasmic linker proteins (CLIPs)",
+                  "children": [
+                    {
+                      "name": "K10421  CLIP1, RSN; CAP-Gly domain-containing linker protein 1"
+                    },
+                    {
+                      "name": "K10422  CLIP2, CYLN2; CAP-Gly domain-containing linker protein 2"
+                    },
+                    {
+                      "name": "K10423  CLIP3_4; CAP-Gly domain-containing linker protein 3/4"
+                    },
+                    {
+                      "name": "CLIP-associating proteins",
+                      "children": [
+                        {
+                          "name": "K16578  CLASP1_2; CLIP-associating protein 1/2"
+                        },
+                        {
+                          "name": "K16580  SLAIN1_2; SLAIN motif-containing protein 1/2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Fused toes protein (FTS)",
+                  "children": [
+                    {
+                      "name": "K26419  AKTIP, FTS; AKT-interacting protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Hook proteins",
+                  "children": [
+                    {
+                      "name": "K16612  HOOK1; protein HOOK1"
+                    },
+                    {
+                      "name": "K16611  HOOK2; protein HOOK2"
+                    },
+                    {
+                      "name": "K16536  HOOK3; protein HOOK3"
+                    }
+                  ]
+                },
+                {
+                  "name": "FTS and Hook-interacting proteins (FHIP)",
+                  "children": [
+                    {
+                      "name": "K26420  FHIP1, FAM160A; FHF complex subunit HOOK interacting protein 1"
+                    },
+                    {
+                      "name": "K26421  FHIP2, FAM160B; FHF complex subunit HOOK interacting protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "EB / APC",
+                  "children": [
+                    {
+                      "name": "K10436  MAPRE; microtubule-associated protein, RP/EB family"
+                    },
+                    {
+                      "name": "K02085  APC; adenomatosis polyposis coli protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Microtubule-associated proteins (MAPs)",
+                  "children": [
+                    {
+                      "name": "K10429  MAP1; microtubule-associated protein 1"
+                    },
+                    {
+                      "name": "K10430  MAP2; microtubule-associated protein 2"
+                    },
+                    {
+                      "name": "K10431  MAP4; microtubule-associated protein 4"
+                    },
+                    {
+                      "name": "K10432  MAP6; microtubule-associated protein 6"
+                    },
+                    {
+                      "name": "K10433  MAP7; microtubule-associated protein 7"
+                    },
+                    {
+                      "name": "K10434  MAP9; microtubule-associated protein 9"
+                    },
+                    {
+                      "name": "K28211  MAP10; microtubule-associated protein 10"
+                    },
+                    {
+                      "name": "K24261  MAP11; microtubule-associated protein 11"
+                    },
+                    {
+                      "name": "K10435  MAP1LC; microtubule-associated protein 1 light chain"
+                    },
+                    {
+                      "name": "K04380  MAPT, TAU; microtubule-associated protein tau"
+                    },
+                    {
+                      "name": "K19538  RP1; retinitis pigmentosa 1"
+                    },
+                    {
+                      "name": "K16579  DCX; neuronal migration protein doublecortin"
+                    },
+                    {
+                      "name": "K23029  EFHC1; EF-hand domain-containing protein 1"
+                    },
+                    {
+                      "name": "K23919  NAV3; neuron navigator 3"
+                    },
+                    {
+                      "name": "K25813  CCDC88B; coiled-coil domain-containing protein 88B"
+                    },
+                    {
+                      "name": "K16732  PRC1, ASE1, MAP65; Ase1/PRC1/MAP65 family protein"
+                    },
+                    {
+                      "name": "K28599  SYBU; syntabulin"
+                    },
+                    {
+                      "name": "K28604  MTUS1; microtubule-associated tumor suppressor 1"
+                    },
+                    {
+                      "name": "K28608  MTUS2; microtubule-associated tumor suppressor 2"
+                    },
+                    {
+                      "name": "K28091  PCAP; plasma membrane-associated cation-binding protein"
+                    },
+                    {
+                      "name": "K27854  MAP70; microtubule-associated protein 70"
+                    },
+                    {
+                      "name": "K28092  RUK; protein RUNKEL"
+                    },
+                    {
+                      "name": "K28093  TOR1; microtubule-associated protein TORTIFOLIA1 and related proteins"
+                    },
+                    {
+                      "name": "K28094  MBP2C; microtubule binding protein 2C"
+                    },
+                    {
+                      "name": "K28095  WVD2, WDL; protein WAVE-DAMPENED 2 and related proteins"
+                    },
+                    {
+                      "name": "K28096  AIR9; microtubule-associated protein AIR9"
+                    },
+                    {
+                      "name": "K28097  ICR, RIP; interactor of constitutive active ROPs"
+                    }
+                  ]
+                },
+                {
+                  "name": "Tubulin modification proteins",
+                  "children": [
+                    {
+                      "name": "Tubulin polyglutamylases",
+                      "children": [
+                        {
+                          "name": "K16599  TTLL1; tubulin polyglutamylase TTLL1 [EC:6.3.2.61]"
+                        },
+                        {
+                          "name": "K16600  TTLL2; tubulin polyglutamylase TTLL2 [EC:6.3.2.-]"
+                        },
+                        {
+                          "name": "K16601  TTLL4; tubulin polyglutamylase TTLL4 [EC:6.3.2.62]"
+                        },
+                        {
+                          "name": "K16602  TTLL5; tubulin polyglutamylase TTLL5 [EC:6.3.2.61]"
+                        },
+                        {
+                          "name": "K16582  TTLL6_13; tubulin polyglutamylase TTLL6/13 [EC:6.3.2.61]"
+                        },
+                        {
+                          "name": "K16583  TTLL7; tubulin polyglutamylase TTLL7 [EC:6.3.2.62]"
+                        },
+                        {
+                          "name": "K16603  TTLL9; tubulin polyglutamylase TTLL9 [EC:6.3.2.61]"
+                        },
+                        {
+                          "name": "K16604  TTLL11; tubulin polyglutamylase TTLL11 [EC:6.3.2.-]"
+                        },
+                        {
+                          "name": "K16610  TTLL15; tubulin polyglutamylase TTLL15 [EC:6.3.2.-]"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Tubulin polyglutamylase complex components",
+                      "children": [
+                        {
+                          "name": "K16581  TPGS1; tubulin polyglutamylase complex subunit 1"
+                        },
+                        {
+                          "name": "K16605  TPGS2; tubulin polyglutamylase complex subunit 2"
+                        },
+                        {
+                          "name": "K16599  TTLL1; tubulin polyglutamylase TTLL1 [EC:6.3.2.61]"
+                        },
+                        {
+                          "name": "K16606  LRRC49; leucine-rich repeat-containing protein 49"
+                        },
+                        {
+                          "name": "K16607  NICN1; nicolin-1"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Other tubulin modification proteins",
+                      "children": [
+                        {
+                          "name": "K16608  TTLL3_8; tubulin monoglycylase TTLL3/8 [EC:6.3.2.-]"
+                        },
+                        {
+                          "name": "K23628  TTLL10; tubulin--tyrosine ligase like protein 10 [EC:6.3.2.-]"
+                        },
+                        {
+                          "name": "K16609  TTLL12; tubulin--tyrosine ligase-like protein 12"
+                        },
+                        {
+                          "name": "K06047  TTL; tubulin---tyrosine ligase [EC:6.3.2.25]"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K18628  TEKT1; tektin-1"
+                    },
+                    {
+                      "name": "K18629  TEKT2; tektin-2"
+                    },
+                    {
+                      "name": "K18630  TEKT3; tektin-3"
+                    },
+                    {
+                      "name": "K18631  TEKT4; tektin-4"
+                    },
+                    {
+                      "name": "K18632  TEKT5; tektin-5"
+                    },
+                    {
+                      "name": "K17478  FKBP15, WAFL; FK506-binding protein 15"
+                    },
+                    {
+                      "name": "K08798  MARK; MAP/microtubule affinity-regulating kinase [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K18633  MZT1, GIP1, GIP2; mitotic-spindle organizing protein 1"
+                    },
+                    {
+                      "name": "K17579  PPP1R42, LRRC67; protein phosphatase 1 regulatory subunit 42"
+                    },
+                    {
+                      "name": "K18634  SMRP1; spermatid-specific manchette-related protein 1"
+                    },
+                    {
+                      "name": "K18635  SPR1; protein SPIRAL1 and related proteins"
+                    },
+                    {
+                      "name": "K18636  TAN1; microtubule-binding protein TANGLED1"
+                    },
+                    {
+                      "name": "K19755  RSPH1; radial spoke head protein 1"
+                    },
+                    {
+                      "name": "K19756  RSPH4_6; radial spoke head protein 4/6"
+                    },
+                    {
+                      "name": "K19757  RSPH9; radial spoke head protein 9"
+                    },
+                    {
+                      "name": "K19827  MACF1; microtuble-actin crosslinking factor 1"
+                    },
+                    {
+                      "name": "K06990  MEMO1; MEMO1 family protein"
+                    },
+                    {
+                      "name": "K21387  AJAP1; adherens junction-associated protein 1"
+                    },
+                    {
+                      "name": "K17292  TBCA; tubulin-specific chaperone A"
+                    },
+                    {
+                      "name": "K17262  TBCB, CKAP1, ALF1; tubulin-specific chaperone B"
+                    },
+                    {
+                      "name": "K21766  TBCC; tubulin-specific chaperone C"
+                    },
+                    {
+                      "name": "K21767  TBCD; tubulin-specific chaperone D"
+                    },
+                    {
+                      "name": "K21768  TBCE; tubulin-specific chaperone E"
+                    },
+                    {
+                      "name": "K22449  TBCEL; tubulin-specific chaperone cofactor E-like protein"
+                    },
+                    {
+                      "name": "K23845  KIFBP; KIF-binding protein"
+                    },
+                    {
+                      "name": "K24203  MAP7D2; MAP7 domain-containing protein 2"
+                    },
+                    {
+                      "name": "K24908  DIP2B; disco-interacting protein 2 homolog B"
+                    },
+                    {
+                      "name": "K25762  NAT9; tubulin N-terminal N-acetyltransferase [EC:2.3.1.308]"
+                    },
+                    {
+                      "name": "K26456  TANC; protein TANC"
+                    },
+                    {
+                      "name": "K24345  KIC; calcium-binding protein KIC and related proteins"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Septins",
+          "children": [
+            {
+              "name": "Septins",
+              "children": [
+                {
+                  "name": "Group 1",
+                  "children": [
+                    {
+                      "name": "K16938  SEPT3_9_12; septin 3/9/12"
+                    },
+                    {
+                      "name": "K16939  SEPT6_8_11; septin 6/8/11"
+                    },
+                    {
+                      "name": "K16940  SEPT10; septin 10"
+                    },
+                    {
+                      "name": "K16941  SEPT14; septin 14"
+                    }
+                  ]
+                },
+                {
+                  "name": "Group 2",
+                  "children": [
+                    {
+                      "name": "K13737  SEPT1; septin 1"
+                    },
+                    {
+                      "name": "K16942  SEPT2; septin 2"
+                    },
+                    {
+                      "name": "K16943  SEPT4; septin 4"
+                    },
+                    {
+                      "name": "K04557  SEPT5, PNUTL1, CDCREL1; septin 5"
+                    },
+                    {
+                      "name": "K16944  SEPT7, CDC3; septin 7"
+                    }
+                  ]
+                },
+                {
+                  "name": "Group 3",
+                  "children": [
+                    {
+                      "name": "K16945  CDC11; cell division control protein 11"
+                    },
+                    {
+                      "name": "K16946  SHS1; seventh homolog of septin 1"
+                    },
+                    {
+                      "name": "K16947  SPR28; sporulation-regulated protein 28"
+                    }
+                  ]
+                },
+                {
+                  "name": "Group 4",
+                  "children": [
+                    {
+                      "name": "K16948  CDC12; cell division control protein 12"
+                    },
+                    {
+                      "name": "K12773  SPR3; sporulation-regulated protein 3"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Septin associated proteins",
+              "children": [
+                {
+                  "name": "K18637  AXL2; axial budding pattern protein 2"
+                },
+                {
+                  "name": "K18638  BNI4; protein BNI4"
+                },
+                {
+                  "name": "K02515  HSL1; serine/threonine-protein kinase HSL1, negative regulator of Swe1 kinase [EC:2.7.11.-]"
+                },
+                {
+                  "name": "K18639  KCC4; serine/threonine-protein kinase KCC4 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K06668  GIN4; serine/threonine-protein kinase GIN4 [EC:2.7.11.-]"
+                },
+                {
+                  "name": "K04706  PIAS1; E3 SUMO-protein ligase PIAS1 [EC:2.3.2.-]"
+                },
+                {
+                  "name": "K12160  SUMO, SMT3; small ubiquitin-related modifier"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prokaryotic cytoskeleton proteins",
+      "children": [
+        {
+          "name": "Actin homologs",
+          "children": [
+            {
+              "name": "Actins",
+              "children": [
+                {
+                  "name": "K03569  mreB; rod shape-determining protein MreB and related proteins"
+                },
+                {
+                  "name": "K18640  parM, stbA; plasmid segregation protein ParM"
+                },
+                {
+                  "name": "K18641  K18641; crenactin"
+                }
+              ]
+            },
+            {
+              "name": "Actin-binding proteins",
+              "children": [
+                {
+                  "name": "K13284  sipA, ipaA; invasin A"
+                },
+                {
+                  "name": "K13286  sipC, ipaC, bipC; invasin C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Intermediate filaments homologs",
+          "children": [
+            {
+              "name": "K18642  creS; crescentin"
+            }
+          ]
+        },
+        {
+          "name": "Microtubules homologs",
+          "children": [
+            {
+              "name": "K03531  ftsZ; cell division protein FtsZ"
+            },
+            {
+              "name": "K03590  ftsA; cell division protein FtsA"
+            },
+            {
+              "name": "K22222  cetZ; tubulin-like protein CetZ"
+            }
+          ]
+        },
+        {
+          "name": "MinD / ParA class of bacterial cytoskeletal proteins",
+          "children": [
+            {
+              "name": "K03610  minC; septum site-determining protein MinC"
+            },
+            {
+              "name": "K03609  minD; septum site-determining protein MinD"
+            },
+            {
+              "name": "K03608  minE; cell division topological specificity factor"
+            },
+            {
+              "name": "K03496  parA, soj; chromosome partitioning protein"
+            },
+            {
+              "name": "K03497  parB, spo0J; ParB family transcriptional regulator, chromosome partitioning protein"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

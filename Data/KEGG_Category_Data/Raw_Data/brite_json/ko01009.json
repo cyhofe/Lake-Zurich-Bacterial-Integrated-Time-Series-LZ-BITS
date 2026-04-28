@@ -1,0 +1,1281 @@
+{
+  "name": "ko01009",
+  "children": [
+    {
+      "name": "Protein serine/threonine phosphatases",
+      "children": [
+        {
+          "name": "Phosphoprotein phosphatases (PPPs)",
+          "children": [
+            {
+              "name": "Protein phosphatase-1",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K06269  PPP1C; serine/threonine-protein phosphatase PP1 catalytic subunit [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "PP1-interacting proteins (PIPs)",
+                  "children": [
+                    {
+                      "name": "K08050  PPP1R1A; protein phosphatase 1 regulatory subunit 1A"
+                    },
+                    {
+                      "name": "K15494  PPP1R1B, DARPP32; protein phosphatase 1 regulatory subunit 1B"
+                    },
+                    {
+                      "name": "K17549  PPP1R1C; protein phosphatase 1 regulatory subunit 1C"
+                    },
+                    {
+                      "name": "K16833  PPP1R2, IPP2; protein phosphatase inhibitor 2"
+                    },
+                    {
+                      "name": "K07189  PPP1R3; protein phosphatase 1 regulatory subunit 3A/B/C/D/E"
+                    },
+                    {
+                      "name": "K17453  PPP1R3F, R3F; protein phosphatase 1 regulatory subunit 3F"
+                    },
+                    {
+                      "name": "K17550  PPP1R7, SDS22; protein phosphatase 1 regulatory subunit 7"
+                    },
+                    {
+                      "name": "K13216  PPP1R8, NIPP1; nuclear inhibitor of protein phosphatase 1 [EC:3.1.4.-]"
+                    },
+                    {
+                      "name": "K17551  PPP1R9; neurabin"
+                    },
+                    {
+                      "name": "K17552  PPP1R10; protein phosphatase 1 regulatory subunit 10"
+                    },
+                    {
+                      "name": "K17553  PPP1R11; protein phosphatase 1 regulatory subunit 11"
+                    },
+                    {
+                      "name": "K06270  PPP1R12A, MYPT1; protein phosphatase 1 regulatory subunit 12A"
+                    },
+                    {
+                      "name": "K12329  PPP1R12B, MYPT2; protein phosphatase 1 regulatory subunit 12B"
+                    },
+                    {
+                      "name": "K17457  PPP1R12C, MBS85; protein phosphatase 1 regulatory subunit 12C"
+                    },
+                    {
+                      "name": "K16823  TP53BP2, ASPP2; apoptosis-stimulating of p53 protein 2"
+                    },
+                    {
+                      "name": "K17554  PPP1R13B, ASPP1; apoptosis-stimulating of p53 protein 1"
+                    },
+                    {
+                      "name": "K12328  PPP1R14A, CPI17; protein phosphatase 1 regulatory subunit 14A"
+                    },
+                    {
+                      "name": "K17555  PPP1R14B; protein phosphatase 1 regulatory subunit 14B"
+                    },
+                    {
+                      "name": "K17556  PPP1R14C, KEPI; protein phosphatase 1 regulatory subunit 14C"
+                    },
+                    {
+                      "name": "K17557  PPP1R14D, GBPI; protein phosphatase 1 regulatory subunit 14D"
+                    },
+                    {
+                      "name": "K14019  PPP1R15A, GADD34; protein phosphatase 1 regulatory subunit 15A"
+                    },
+                    {
+                      "name": "K17558  PPP1R15B, CREP; protein phosphatase 1 regulatory subunit 15B"
+                    },
+                    {
+                      "name": "K17458  PPP1R16A, MYPT3; protein phosphatase 1 regulatory subunit 16A"
+                    },
+                    {
+                      "name": "K17459  PPP1R16B, TIMAP; protein phosphatase 1 regulatory inhibitor subunit 16B"
+                    },
+                    {
+                      "name": "K08067  PPP1R17, GSBS; protein phosphatase 1 regulatory subunit 17"
+                    },
+                    {
+                      "name": "K17559  PPP1R18; phostensin"
+                    },
+                    {
+                      "name": "K17560  URI1; unconventional prefoldin RPB5 interactor 1"
+                    },
+                    {
+                      "name": "K17561  CCDC8; coiled-coil domain-containing protein 8"
+                    },
+                    {
+                      "name": "K17562  PPP1R21, CCDC128, KLRAQ1; protein phosphatase 1 regulatory subunit 21"
+                    },
+                    {
+                      "name": "K17563  CHCHD3; MICOS complex subunit MIC19"
+                    },
+                    {
+                      "name": "K17564  CHCHD6; MICOS complex subunit MIC25"
+                    },
+                    {
+                      "name": "K17495  CSMD; CUB and sushi domain-containing protein"
+                    },
+                    {
+                      "name": "K14806  DDX31, DBP7; ATP-dependent RNA helicase DDX31/DBP7 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K17565  PPP1R26; protein phosphatase 1 regulatory subunit 26"
+                    },
+                    {
+                      "name": "K17566  PPP1R27; protein phosphatase 1 regulatory subunit 27"
+                    },
+                    {
+                      "name": "K17567  ELFN1; protein phosphatase 1 regulatory subunit 28"
+                    },
+                    {
+                      "name": "K17568  ELFN2; protein phosphatase 1 regulatory subunit 29"
+                    },
+                    {
+                      "name": "K17569  GPATCH2; G patch domain-containing protein 2"
+                    },
+                    {
+                      "name": "K17570  HYDIN; hydrocephalus-inducing protein"
+                    },
+                    {
+                      "name": "K17571  PPP1R32; protein phosphatase 1 regulatory subunit 32"
+                    },
+                    {
+                      "name": "K17572  ARFGEF3, KEPI; brefeldin A-inhibited guanine nucleotide-exchange protein 3"
+                    },
+                    {
+                      "name": "K17573  LKAP, MARF1; meiosis arrest female protein 1"
+                    },
+                    {
+                      "name": "K17574  PPP1R35; protein phosphatase 1 regulatory subunit 35"
+                    },
+                    {
+                      "name": "K17575  PPP1R36; protein phosphatase 1 regulatory subunit 36"
+                    },
+                    {
+                      "name": "K17576  PPP1R37, LRRC68; protein phosphatase 1 regulatory subunit 37"
+                    },
+                    {
+                      "name": "K17577  SH2D4A; SH2 domain-containing protein 4A"
+                    },
+                    {
+                      "name": "K12171  SH3RF, POSH; E3 ubiquitin-protein ligase SH3RF [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K12018  TRIM42; tripartite motif-containing protein 42"
+                    },
+                    {
+                      "name": "K17578  ZCCHC9; zinc finger CCHC domain-containing protein 9"
+                    },
+                    {
+                      "name": "K17579  PPP1R42, LRRC67; protein phosphatase 1 regulatory subunit 42"
+                    },
+                    {
+                      "name": "K16518  AKAP1; A-kinase anchor protein 1, mitochondrial"
+                    },
+                    {
+                      "name": "K16551  AKAP9, AKAP350; A-kinase anchor protein 9"
+                    },
+                    {
+                      "name": "K16527  AKAP11; A-kinase anchor protein 11"
+                    },
+                    {
+                      "name": "K28129  GSKIP; GSK3B-interacting protein"
+                    },
+                    {
+                      "name": "K02085  APC; adenomatosis polyposis coli protein"
+                    },
+                    {
+                      "name": "K11481  AURKA; aurora kinase A [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K11479  AURKB; aurora kinase B [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K02157  AXIN1; axin 1"
+                    },
+                    {
+                      "name": "K02161  BCL2; apoptosis regulator Bcl-2"
+                    },
+                    {
+                      "name": "K02163  BCLW; apoptosis regulator BCL-W"
+                    },
+                    {
+                      "name": "K04570  BCL2L1, bcl-xL; Bcl-2-like 1 (apoptosis regulator Bcl-X)"
+                    },
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K17580  CASC1; cancer susceptibility candidate protein 1"
+                    },
+                    {
+                      "name": "K11542  CASC5, KNL1; protein CASC5"
+                    },
+                    {
+                      "name": "K04399  CASP9; caspase 9 [EC:3.4.22.62]"
+                    },
+                    {
+                      "name": "K02186  CASP2; caspase 2 [EC:3.4.22.55]"
+                    },
+                    {
+                      "name": "K12075  DLG2; discs large protein 2"
+                    },
+                    {
+                      "name": "K21098  DLG3; discs large protein 3"
+                    },
+                    {
+                      "name": "K13099  CD2BP2, PPP1R59; CD2 antigen cytoplasmic tail-binding protein 2"
+                    },
+                    {
+                      "name": "K05867  CDC25C; M-phase inducer phosphatase 3 [EC:3.1.3.48]"
+                    },
+                    {
+                      "name": "K11498  CENPE, KIF10; centromeric protein E"
+                    },
+                    {
+                      "name": "K16725  CEP192; centrosomal protein CEP192"
+                    },
+                    {
+                      "name": "K05016  CLCN7; chloride channel 7"
+                    },
+                    {
+                      "name": "K17581  CNST; consortin"
+                    },
+                    {
+                      "name": "K15502  ANKRD28; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit A"
+                    },
+                    {
+                      "name": "K10642  DZIP3; E3 ubiquitin-protein ligase DZIP3 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K03238  EIF2S2; translation initiation factor 2 subunit 2"
+                    },
+                    {
+                      "name": "K15183  ELL; RNA polymerase II elongation factor ELL"
+                    },
+                    {
+                      "name": "K04679  MADHIP, SARA; MAD, mothers against decapentaplegic interacting protein"
+                    },
+                    {
+                      "name": "K11248  SH3GLB1; endophilin-B1"
+                    },
+                    {
+                      "name": "K05725  PTK2, FAK; focal adhesion kinase 1 [EC:2.7.10.2]"
+                    },
+                    {
+                      "name": "K17494  CSRNP; cysteine/serine-rich nuclear protein"
+                    },
+                    {
+                      "name": "K08889  FER, TYK3; tyrosine-protein kinase Fer [EC:2.7.10.2]"
+                    },
+                    {
+                      "name": "K17477  FARP1; FERM, RhoGEF and pleckstrin domain-containing protein 1"
+                    },
+                    {
+                      "name": "K17478  FKBP15, WAFL; FK506-binding protein 15"
+                    },
+                    {
+                      "name": "K03504  POLD3; DNA polymerase delta subunit 3"
+                    },
+                    {
+                      "name": "K16198  YWHAG_H; 14-3-3 protein gamma/eta"
+                    },
+                    {
+                      "name": "K04315  GPR12; G protein-coupled receptor 12"
+                    },
+                    {
+                      "name": "K17479  GRXCR1; glutaredoxin domain-containing cysteine-rich protein 1"
+                    },
+                    {
+                      "name": "K14966  HCFC1; host cell factor 1"
+                    },
+                    {
+                      "name": "K11407  HDAC6; histone deacetylase 6 [EC:3.5.1.98]"
+                    },
+                    {
+                      "name": "K09220  IKZF, ZNFN1A; IKAROS family zinc finger protein"
+                    },
+                    {
+                      "name": "K06476  ITGA2B, CD41; integrin alpha 2B"
+                    },
+                    {
+                      "name": "K04958  ITPR1; inositol 1,4,5-triphosphate receptor type 1"
+                    },
+                    {
+                      "name": "K04960  ITPR3; inositol 1,4,5-triphosphate receptor type 3"
+                    },
+                    {
+                      "name": "K01251  AHCY, ahcY; adenosylhomocysteinase [EC:3.13.2.1]"
+                    },
+                    {
+                      "name": "K11446  KDM5, JARID1; [histone H3]-trimethyl-L-lysine4 demethylase [EC:1.14.11.67]"
+                    },
+                    {
+                      "name": "K04879  KCNA6, KV1.6; potassium voltage-gated channel Shaker-related subfamily A member 6"
+                    },
+                    {
+                      "name": "K04920  KCNK10, K2P10.1; potassium channel subfamily K member 10"
+                    },
+                    {
+                      "name": "K08898  LMTK2; lemur tyrosine kinase 2 [EC:2.7.10.1]"
+                    },
+                    {
+                      "name": "K02932  RP-L5e, RPL5; large subunit ribosomal protein L5e"
+                    },
+                    {
+                      "name": "K17480  AATK, LMTK1; lemur tyrosine kinase 1 [EC:2.7.10.1]"
+                    },
+                    {
+                      "name": "K08899  LMTK3; lemur tyrosine kinase 3 [EC:2.7.10.1]"
+                    },
+                    {
+                      "name": "K10429  MAP1; microtubule-associated protein 1"
+                    },
+                    {
+                      "name": "K02210  MCM7, CDC47; DNA replication licensing factor MCM7 [EC:5.6.2.3]"
+                    },
+                    {
+                      "name": "K04603  GRM1; metabotropic glutamate receptor 1"
+                    },
+                    {
+                      "name": "K04608  GRM6; metabotropic glutamate receptor 6"
+                    },
+                    {
+                      "name": "K04609  GRM7; metabotropic glutamate receptor 7"
+                    },
+                    {
+                      "name": "K04610  GRM8; metabotropic glutamate receptor 8"
+                    },
+                    {
+                      "name": "K17582  MKI67; antigen KI-67"
+                    },
+                    {
+                      "name": "K14559  MPP10; U3 small nucleolar RNA-associated protein MPP10"
+                    },
+                    {
+                      "name": "K10356  MYO1; myosin I"
+                    },
+                    {
+                      "name": "K17481  MYO16; myosin XVI"
+                    },
+                    {
+                      "name": "K04650  NCOR1, N-CoR; nuclear receptor co-repressor 1"
+                    },
+                    {
+                      "name": "K20872  NEK2; serine/threonine-protein kinase Nek2 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K04572  NEFL, NF-L; neurofilament light polypeptide"
+                    },
+                    {
+                      "name": "K17493  CAMSAP; calmodulin-regulated spectrin-associated protein"
+                    },
+                    {
+                      "name": "K05742  SLC9A1, NHE1; solute carrier family 9 (sodium/hydrogen exchanger), member 1"
+                    },
+                    {
+                      "name": "K10951  SLC12A2, NKCC1; solute carrier family 12 (sodium/potassium/chloride transporter), member 2"
+                    },
+                    {
+                      "name": "K17583  NOM1; nucleolar MIF4G domain-containing protein 1"
+                    },
+                    {
+                      "name": "K06088  OCLN; occludin"
+                    },
+                    {
+                      "name": "K04256  OPN3; c-opsin"
+                    },
+                    {
+                      "name": "K02607  ORC5; origin recognition complex subunit 5"
+                    },
+                    {
+                      "name": "K04237  PARD3; partitioning defective protein 3"
+                    },
+                    {
+                      "name": "K17584  PCIF1; phosphorylated CTD-interacting factor 1"
+                    },
+                    {
+                      "name": "K00850  pfkA, PFK; 6-phosphofructokinase 1 [EC:2.7.1.11]"
+                    },
+                    {
+                      "name": "K17594  PHACTR; phosphatase and actin regulator"
+                    },
+                    {
+                      "name": "K17586  PHRF1; PHD and RING finger domain-containing protein 1"
+                    },
+                    {
+                      "name": "K06633  PKMYT; membrane-associated tyrosine- and threonine-specific cdc2-inhibitory kinase [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K16195  EIF2AK2; eukaryotic translation initiation factor 2-alpha kinase 2 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K17587  TMEM225; transmembrane protein 225"
+                    },
+                    {
+                      "name": "K17588  PREX2; phosphatidylinositol 3,4,5-trisphosphate-dependent Rac exchanger 2 protein"
+                    },
+                    {
+                      "name": "K15375  PLCL1, PRIP; inactive phospholipase C-like protein 1"
+                    },
+                    {
+                      "name": "K16498  PCDHD1; protocadherin delta 1"
+                    },
+                    {
+                      "name": "K13219  SFPQ, PSF; splicing factor, proline- and glutamine-rich"
+                    },
+                    {
+                      "name": "K06618  RB1; retinoblastoma-associated protein"
+                    },
+                    {
+                      "name": "K17589  RB1CC1; RB1-inducible coiled-coil protein 1"
+                    },
+                    {
+                      "name": "K13192  RBM26; RNA-binding protein 26"
+                    },
+                    {
+                      "name": "K17590  CDCA2; cell division cycle-associated protein 2"
+                    },
+                    {
+                      "name": "K17591  RIMBP2; RIMS-binding protein 2"
+                    },
+                    {
+                      "name": "K16550  RPGRIP1L; protein fantom"
+                    },
+                    {
+                      "name": "K14849  RRP1; ribosomal RNA-processing protein 1"
+                    },
+                    {
+                      "name": "K04961  RYR1; ryanodine receptor 1"
+                    },
+                    {
+                      "name": "K17592  SACS; sacsin"
+                    },
+                    {
+                      "name": "K17593  ANKRD42, SARP; ankyrin repeat domain-containing protein 42"
+                    },
+                    {
+                      "name": "K12866  WBP11, NPWBP; WW domain-binding protein 11"
+                    },
+                    {
+                      "name": "K11648  SMARCB1, SNF5, INI1; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily B member 1"
+                    },
+                    {
+                      "name": "K13871  SLC7A14; solute carrier family 7 (cationic amino acid transporter), member 14"
+                    },
+                    {
+                      "name": "K17595  SPATA2; spermatogenesis-associated protein 2"
+                    },
+                    {
+                      "name": "K17596  SPOCD1; SPOC domain-containing protein 1"
+                    },
+                    {
+                      "name": "K04703  SPRED; sprouty-related, EVH1 domain-containing protein"
+                    },
+                    {
+                      "name": "K17482  SPZ1; spermatogenic leucine zipper protein 1"
+                    },
+                    {
+                      "name": "K12900  SRSF10, FUSIP1; serine/arginine-rich splicing factor 10"
+                    },
+                    {
+                      "name": "K17597  STAU; double-stranded RNA-binding protein Staufen"
+                    },
+                    {
+                      "name": "K17598  SYTL; synaptotagmin-like protein"
+                    },
+                    {
+                      "name": "K04380  MAPT, TAU; microtubule-associated protein tau"
+                    },
+                    {
+                      "name": "K17599  TMEM132; transmembrane protein 132"
+                    },
+                    {
+                      "name": "K12897  TRA2; transformer-2 protein"
+                    },
+                    {
+                      "name": "K11796  TRPC4AP; Trpc4-associated protein"
+                    },
+                    {
+                      "name": "K04968  TRPC5; transient receptor potential cation channel subfamily C member 5"
+                    },
+                    {
+                      "name": "K07207  TSC2; tuberous sclerosis 2"
+                    },
+                    {
+                      "name": "K16492  TSKS; testis-specific serine kinase substrate"
+                    },
+                    {
+                      "name": "K17492  UBN; ubinuclein"
+                    },
+                    {
+                      "name": "K08539  VDR, NR1I1; vitamin D3 receptor"
+                    },
+                    {
+                      "name": "K17600  VPS54; vacuolar protein sorting-associated protein 54"
+                    },
+                    {
+                      "name": "K17601  WDR81; WD repeat-containing protein 81"
+                    },
+                    {
+                      "name": "K08867  WNK, PRKWNK; WNK lysine deficient protein kinase [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K17602  YLPM1; YLP motif-containing protein 1"
+                    },
+                    {
+                      "name": "K10510  ZBTB38; zinc finger and BTB domain-containing protein 38"
+                    },
+                    {
+                      "name": "K17603  ZFYVE1; zinc finger FYVE domain-containing protein 1"
+                    },
+                    {
+                      "name": "K17604  ZSWIM3; zinc finger SWIM domain-containing protein 3"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Protein phosphatase-2 (PP2A)",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K04382  PPP2C; serine/threonine-protein phosphatase 2A catalytic subunit [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Regulatory subunits",
+                  "children": [
+                    {
+                      "name": "K03456  PPP2R1; serine/threonine-protein phosphatase 2A regulatory subunit A"
+                    },
+                    {
+                      "name": "K04354  PPP2R2; serine/threonine-protein phosphatase 2A regulatory subunit B"
+                    },
+                    {
+                      "name": "K11583  PPP2R3; serine/threonine-protein phosphatase 2A regulatory subunit B''"
+                    },
+                    {
+                      "name": "K11584  PPP2R5; serine/threonine-protein phosphatase 2A regulatory subunit B'"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other PP2-interacting proteins",
+                  "children": [
+                    {
+                      "name": "K17605  PPP2R4, PTPA; serine/threonine-protein phosphatase 2A activator"
+                    },
+                    {
+                      "name": "K17606  IGBP1, TAP42; immunoglobulin-binding protein 1"
+                    },
+                    {
+                      "name": "K17607  TIPRL, TIP41; type 2A phosphatase activator TIP41"
+                    },
+                    {
+                      "name": "K17608  STRN1_3_4; striatin 1/3/4"
+                    },
+                    {
+                      "name": "K27960  STRIP, FAR11; striatin-interacting protein"
+                    },
+                    {
+                      "name": "K27961  MOB4; MOB-like protein phocein"
+                    },
+                    {
+                      "name": "K27968  CTTNBP2; cortactin-binding protein 2"
+                    },
+                    {
+                      "name": "K27962  CTTNBP2NL; CTTNBP2 N-terminal-like protein"
+                    },
+                    {
+                      "name": "K27963  SLMAP; sarcolemmal membrane-associated protein"
+                    },
+                    {
+                      "name": "K12656  SIKE; suppressor of IKK-epsilon"
+                    },
+                    {
+                      "name": "K17609  NXN; nucleoredoxin [EC:1.8.1.8]"
+                    },
+                    {
+                      "name": "K18203  LCMT1; [phosphatase 2A protein]-leucine-carboxy methyltransferase [EC:2.1.1.233]"
+                    },
+                    {
+                      "name": "K27491  ENSA, ARPP19; endosulfine family protein"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Calcineurin (PPP3/ PP2B)",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K04348  PPP3C, CNA; serine/threonine-protein phosphatase 2B catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K21814  CPPED1; serine/threonine-protein phosphatase CPPED1 [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Regulatory subunits",
+                  "children": [
+                    {
+                      "name": "K06268  PPP3R, CNB; serine/threonine-protein phosphatase 2B regulatory subunit"
+                    },
+                    {
+                      "name": "K02183  CALM; calmodulin"
+                    },
+                    {
+                      "name": "K17610  CHP, CHP1; calcineurin B homologous protein 1"
+                    },
+                    {
+                      "name": "K17611  CHP2; calcineurin B homologous protein 2"
+                    },
+                    {
+                      "name": "K17612  TESC, CHP3; calcineurin B homologous protein 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other calcineurin-interacting proteins",
+                  "children": [
+                    {
+                      "name": "K17613  CABIN1; calcineurin-binding protein cabin-1"
+                    },
+                    {
+                      "name": "K16522  AKAP5; A-kinase anchor protein 5"
+                    },
+                    {
+                      "name": "K09574  FKBP8; FK506-binding protein 8 [EC:5.2.1.8]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Protein phosphatase-4",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K15423  PPP4C; serine/threonine-protein phosphatase 4 catalytic subunit [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Regulatory subunits",
+                  "children": [
+                    {
+                      "name": "K15424  PPP4R1; serine/threonine-protein phosphatase 4 regulatory subunit 1"
+                    },
+                    {
+                      "name": "K15425  PPP4R2; serine/threonine-protein phosphatase 4 regulatory subunit 2"
+                    },
+                    {
+                      "name": "K17491  SMEK, PPP4R3; protein phosphatase 4 regulatory subunit 3"
+                    },
+                    {
+                      "name": "K15426  PPP4R4; serine/threonine-protein phosphatase 4 regulatory subunit 4"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Protein phosphatase-5",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K04460  PPP5C; serine/threonine-protein phosphatase 5 [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "PP5-interacting proteins",
+                  "children": [
+                    {
+                      "name": "K03350  APC3, CDC27; anaphase-promoting complex subunit 3"
+                    },
+                    {
+                      "name": "K03353  APC6, CDC16; anaphase-promoting complex subunit 6"
+                    },
+                    {
+                      "name": "K04079  HSP90A, htpG; molecular chaperone HtpG"
+                    },
+                    {
+                      "name": "K03283  HSPA1_6_8; heat shock 70kDa protein 1/6/8"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Protein phosphatase-6",
+              "children": [
+                {
+                  "name": "Catalytic subunits",
+                  "children": [
+                    {
+                      "name": "K15498  PPP6C; serine/threonine-protein phosphatase 6 catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K15427  SIT4, PPH1; serine/threonine-protein phosphatase PP1-1 [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K17615  PPG1; serine/threonine-protein phosphatase PPG1 [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Regulatory subunits",
+                  "children": [
+                    {
+                      "name": "K15499  PPP6R1, SAPS1; serine/threonine-protein phosphatase 6 regulatory subunit 1"
+                    },
+                    {
+                      "name": "K15500  PPP6R2, SAPS2; serine/threonine-protein phosphatase 6 regulatory subunit 2"
+                    },
+                    {
+                      "name": "K15501  PPP6R3, SAPS3; serine/threonine-protein phosphatase 6 regulatory subunit 3"
+                    },
+                    {
+                      "name": "K15502  ANKRD28; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit A"
+                    },
+                    {
+                      "name": "K15503  ANKRD44; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B"
+                    },
+                    {
+                      "name": "K15504  ANKRD52; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "PPEF/PP7 protein phosphatases",
+              "children": [
+                {
+                  "name": "K13807  PPEF, PPP7C; serine/threonine-protein phosphatase with EF-hands [EC:3.1.3.16]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mg2+- or Mn2+- dependent protein phosphatases (PPMs)",
+          "children": [
+            {
+              "name": "PPM1 phosphatases (PP2C)",
+              "children": [
+                {
+                  "name": "K04457  PPM1A, PP2CA; protein phosphatase 1A [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K04461  PPM1B, PP2CB; protein phosphatase 1B [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17499  PPM1G, PP2CG; protein phosphatase 1G [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17500  ILKAP; integrin-linked kinase-associated serine/threonine phosphatase 2C [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K10147  PPM1D, WIP1; protein phosphatase 1D [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17501  PPM1E, POPX1; protein phosphatase 1E [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17502  PPM1F, POPX2; protein phosphatase 1F [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17503  PPM1H, ARHCL1; protein phosphatase 1H [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17504  PPM1J, PP2CZ; protein phosphatase 1J [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17505  PPM1K, PP2CM; protein phosphatase 1K [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17506  PPM1L, PP2CE; protein phosphatase 1L [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K17507  PPM1M, PP2CE; protein phosphatase 1M [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K19790  PPM1N; protein phosphatase 1N [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K16340  PHLPP; PH domain and leucine-rich repeat-containing protein phosphatase [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K19704  PTC1; protein phosphatase PTC1 [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K14803  PTC2_3; protein phosphatase PTC2/3 [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K19705  PTC4; protein phosphatase PTC4 [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K19708  PTC6, AUP1; protein phosphatase PTC6 [EC:3.1.3.16 3.1.3.43]"
+                },
+                {
+                  "name": "K17508  PTC7, PPTC7; protein phosphatase PTC7 [EC:3.1.3.16]"
+                },
+                {
+                  "name": "K20074  prpC, phpP; PPM family protein phosphatase [EC:3.1.3.16]"
+                }
+              ]
+            },
+            {
+              "name": "Pyruvate dehydrogenase phosphatases",
+              "children": [
+                {
+                  "name": "Catalytic subunit",
+                  "children": [
+                    {
+                      "name": "K01102  PDP; pyruvate dehydrogenase phosphatase [EC:3.1.3.43]"
+                    },
+                    {
+                      "name": "K19708  PTC6, AUP1; protein phosphatase PTC6 [EC:3.1.3.16 3.1.3.43]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Regulatory subunit",
+                  "children": [
+                    {
+                      "name": "K17509  PDPR; pyruvate dehydrogenase phosphatase regulatory subunit"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Protein tyrosine phosphatases (PTPs)",
+      "children": [
+        {
+          "name": "Class I PTPs (Classical)",
+          "children": [
+            {
+              "name": "Receptor PTPs",
+              "children": [
+                {
+                  "name": "K18032  PTPRA; receptor-type tyrosine-protein phosphatase A [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05694  PTPRB, PTPB; receptor-type tyrosine-protein phosphatase beta [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K06478  PTPRC, CD45; receptor-type tyrosine-protein phosphatase C [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K06777  PTPRD; receptor-type tyrosine-protein phosphatase delta [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18033  PTPRE; receptor-type tyrosine-protein phosphatase epsilon [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05695  PTPRF, LAR; receptor-type tyrosine-protein phosphatase F [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K16667  PTPRG; receptor-type tyrosine-protein phosphatase gamma [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18034  PTPRH, SAP1; receptor-type tyrosine-protein phosphatase H [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05698  PTPRJ, DEP1, CD148; receptor-type tyrosine-protein phosphatase eta [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K06776  PTPRK; receptor-type tyrosine-protein phosphatase kappa [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05693  PTPRM; receptor-type tyrosine-protein phosphatase mu [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K07817  PTPRN; receptor-type tyrosine-protein phosphatase N [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18035  PTPRO; receptor-type tyrosine-protein phosphatase O [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K16910  PTPRQ; receptor-type tyrosine-protein phosphatase Q [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K04458  PTPRR; receptor-type tyrosine-protein phosphatase R [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K06778  PTPRS; receptor-type tyrosine-protein phosphatase S [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K13297  PTPRT; receptor-type tyrosine-protein phosphatase T [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K16662  PTPRU; receptor-type tyrosine-protein phosphatase U [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18036  PTPRV, ESP; receptor-type tyrosine-protein phosphatase V [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K08114  PTPRZ; receptor-type tyrosine-protein phosphatase zeta [EC:3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "Non-receptor PTPs",
+              "children": [
+                {
+                  "name": "K05696  PTPN1, PTP1B; tyrosine-protein phosphatase non-receptor type 1 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18026  PTPN2, PTPT; tyrosine-protein phosphatase non-receptor type 2 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18027  PTPN3, PTPH1; tyrosine-protein phosphatase non-receptor type 3 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18037  PTPN4, MEG; tyrosine-protein phosphatase non-receptor type 4 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18018  PTPN5; tyrosine-protein phosphatase non-receptor type 5 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05697  PTPN6, SHP1; tyrosine-protein phosphatase non-receptor type 6 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18019  PTPN7; tyrosine-protein phosphatase non-receptor type 7 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18038  PTPN9, MEG2; tyrosine-protein phosphatase non-receptor type 9 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K07293  PTPN11, SHP2; tyrosine-protein phosphatase non-receptor type 11 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18024  PTPN12_18_22; tyrosine-protein phosphatase non-receptor type 12/18/22 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K02374  PTPN13, FAP-1; tyrosine-protein phosphatase non-receptor type 13"
+                },
+                {
+                  "name": "K18025  PTPN14_21; tyrosine-protein phosphatase non-receptor type 14/21 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18039  PTPN20; tyrosine-protein phosphatase non-receptor type 20 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18040  PTPN23; tyrosine-protein phosphatase non-receptor type 23 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K20220  PTP-ER; tyrosine-protein phosphatase ERK [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K19806  PTP2_3; tyrosine-protein phosphatase 2/3 [EC:3.1.3.48]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Class I PTPs (Dual specificity phosphatases)",
+          "children": [
+            {
+              "name": "MAPK phosphatases",
+              "children": [
+                {
+                  "name": "K21278  DUSP1; dual specificity protein phosphatase 1 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K04459  DUSP, MKP; dual specificity MAP kinase phosphatase [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K21946  DUSP6; dual specificity phosphatase 6 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K18498  DUSP9, MKP4; dual specificity phosphatase 9 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K20216  DUSP10; dual specificity phosphatase 10 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K11240  MSG5; tyrosine-protein phosphatase MSG5 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K19812  SDP1; dual-specificity protein phosphatase SDP1 [EC:3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "Slingshots",
+              "children": [
+                {
+                  "name": "K05766  SSH; protein phosphatase slingshot [EC:3.1.3.16 3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "Phosphatase of regenerating liver (PRL)",
+              "children": [
+                {
+                  "name": "K18041  PTP4A; protein tyrosine phosphatase type IVA [EC:3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "Atypical DSPs",
+              "children": [
+                {
+                  "name": "K17614  DUSP3, VHR; dual specificity phosphatase 3 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K14819  DUSP12, YVH1; dual specificity phosphatase 12 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K14165  K14165; atypical dual specificity phosphatase [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K18042  STYX; serine/threonine/tyrosine-interacting protein"
+                },
+                {
+                  "name": "K20551  MKP2; dual specificity protein phosphatase 1B [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K18043  OCA1; tyrosine-protein phosphatase OCA1 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18044  OCA2; tyrosine-protein phosphatase-like protein OCA2"
+                },
+                {
+                  "name": "K18045  SIW14, OCA3; tyrosine-protein phosphatase SIW14 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18046  OCA6; tyrosine-protein phosphatase OCA6 [EC:3.1.3.48]"
+                }
+              ]
+            },
+            {
+              "name": "CDC14",
+              "children": [
+                {
+                  "name": "K06639  CDC14; cell division cycle 14 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K14167  CDKN3, KAP; cyclin-dependent kinase inhibitor 3 [EC:3.1.3.16 3.1.3.48]"
+                },
+                {
+                  "name": "K18078  PTPDC1; protein tyrosine phosphatase domain-containing protein 1 [EC:3.1.3.-]"
+                }
+              ]
+            },
+            {
+              "name": "Phosphatase and Tensin homologs (PTEN)",
+              "children": [
+                {
+                  "name": "K01110  PTEN; phosphatidylinositol-3,4,5-trisphosphate 3-phosphatase and dual-specificity protein phosphatase PTEN [EC:3.1.3.16 3.1.3.48 3.1.3.67]"
+                },
+                {
+                  "name": "K18079  TPTE, TPIP; PTEN homologous phosphatase"
+                },
+                {
+                  "name": "K18080  TNS; tensin"
+                }
+              ]
+            },
+            {
+              "name": "Myotubularins",
+              "children": [
+                {
+                  "name": "K01108  MTM1; myotubularin [EC:3.1.3.64 3.1.3.95]"
+                },
+                {
+                  "name": "K18081  MTMR1_2; myotubularin-related protein 1/2 [EC:3.1.3.64 3.1.3.95]"
+                },
+                {
+                  "name": "K18082  MTMR3_4, ZFYVE10_11; myotubularin-related protein 3/4 [EC:3.1.3.48 3.1.3.64 3.1.3.95]"
+                },
+                {
+                  "name": "K18061  SBF1_2, MTMR5_13; myotubularin-related protein 5/13"
+                },
+                {
+                  "name": "K18083  MTMR6_7_8; myotubularin-related protein 6/7/8 [EC:3.1.3.64 3.1.3.95]"
+                },
+                {
+                  "name": "K18084  MTMR9; myotubularin-related protein 9"
+                },
+                {
+                  "name": "K18085  MTMR10_11_12; myotubularin-related protein 10/11/12"
+                },
+                {
+                  "name": "K18086  MTMR14; myotubularin-related protein 14 [EC:3.1.3.64 3.1.3.95]"
+                }
+              ]
+            },
+            {
+              "name": "Suppressors of T-cell receptor signaling",
+              "children": [
+                {
+                  "name": "K18993  UBASH3, STS; ubiquitin-associated and SH3 domain-containing protein [EC:3.1.3.48]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Class II PTPs",
+          "children": [
+            {
+              "name": "Low molecular weight PTPs (LMWPTPs)",
+              "children": [
+                {
+                  "name": "K14394  ACP1; low molecular weight phosphotyrosine protein phosphatase [EC:3.1.3.2 3.1.3.48]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Class III PTPs",
+          "children": [
+            {
+              "name": "CDC25s",
+              "children": [
+                {
+                  "name": "K06645  CDC25A; M-phase inducer phosphatase 1 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05866  CDC25B; M-phase inducer phosphatase 2 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05867  CDC25C; M-phase inducer phosphatase 3 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K18065  CDC25; Cdc25 family phosphatase [EC:3.1.3.48 1.20.4.1]"
+                },
+                {
+                  "name": "K02555  MIH1; M-phase inducer tyrosine phosphatase [EC:3.1.3.48]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HAD phosphatases",
+      "children": [
+        {
+          "name": "Fcp/Scp phosphatases",
+          "children": [
+            {
+              "name": "K15732  CTDP1, FCP1; RNA polymerase II subunit A C-terminal domain phosphatase [EC:3.1.3.16]"
+            },
+            {
+              "name": "K15731  CTDSP; carboxy-terminal domain RNA polymerase II polypeptide A small phosphatase [EC:3.1.3.16]"
+            },
+            {
+              "name": "K17616  CTDSPL2; CTD small phosphatase-like protein 2 [EC:3.1.3.-]"
+            },
+            {
+              "name": "K17617  CTDNEP1, DULLARD, NEM1; CTD nuclear envelope phosphatase 1 [EC:3.1.3.16]"
+            },
+            {
+              "name": "K18998  CPL1_2; RNA polymerase II C-terminal domain phosphatase-like 1/2 [EC:3.1.3.16]"
+            },
+            {
+              "name": "K18999  CPL3_4; RNA polymerase II C-terminal domain phosphatase-like 3/4 [EC:3.1.3.16]"
+            },
+            {
+              "name": "K17618  UBLCP1; ubiquitin-like domain-containing CTD phosphatase 1 [EC:3.1.3.16]"
+            },
+            {
+              "name": "K20827  RPAP2; RNA polymerase II-associated protein 2 [EC:3.1.3.16]"
+            }
+          ]
+        },
+        {
+          "name": "MDP-1",
+          "children": [
+            {
+              "name": "K17619  MDP1; magnesium-dependent phosphatase 1 [EC:3.1.3.48 3.1.3.-]"
+            }
+          ]
+        },
+        {
+          "name": "EYAs",
+          "children": [
+            {
+              "name": "K15616  EYA1; eyes absent homolog 1 [EC:3.1.3.48]"
+            },
+            {
+              "name": "K17620  EYA2; eyes absent homolog 2 [EC:3.1.3.48]"
+            },
+            {
+              "name": "K17621  EYA3; eyes absent homolog 3 [EC:3.1.3.48]"
+            },
+            {
+              "name": "K17622  EYA4; eyes absent homolog 4 [EC:3.1.3.48]"
+            }
+          ]
+        },
+        {
+          "name": "Other HAD phosphatases",
+          "children": [
+            {
+              "name": "K07758  PDXP; pyridoxal phosphatase [EC:3.1.3.74]"
+            },
+            {
+              "name": "K19269  PGP, PGLP; phosphoglycolate phosphatase [EC:3.1.3.18 3.1.3.48]"
+            },
+            {
+              "name": "K08073  PNKP; bifunctional polynucleotide phosphatase/kinase [EC:3.1.3.32 2.7.1.78]"
+            },
+            {
+              "name": "K08726  EPHX2; soluble epoxide hydrolase / lipid-phosphate phosphatase [EC:3.3.2.10 3.1.3.76]"
+            },
+            {
+              "name": "K01079  serB, PSPH; phosphoserine phosphatase [EC:3.1.3.3]"
+            },
+            {
+              "name": "K06124  PHOSPHO1; phosphoethanolamine/phosphocholine phosphatase [EC:3.1.3.75]"
+            },
+            {
+              "name": "K13248  PHOSPHO2; pyridoxal phosphate phosphatase PHOSPHO2 [EC:3.1.3.74]"
+            },
+            {
+              "name": "K17623  PUDP, HDHD1; pseudouridine 5'-phosphatase [EC:3.1.3.96]"
+            },
+            {
+              "name": "K01097  NANP; N-acylneuraminate-9-phosphatase [EC:3.1.3.29]"
+            },
+            {
+              "name": "K11725  LHPP; phospholysine phosphohistidine inorganic pyrophosphate phosphatase [EC:3.6.1.1 3.1.3.-]"
+            },
+            {
+              "name": "K15728  LPIN; phosphatidate phosphatase LPIN [EC:3.1.3.4]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

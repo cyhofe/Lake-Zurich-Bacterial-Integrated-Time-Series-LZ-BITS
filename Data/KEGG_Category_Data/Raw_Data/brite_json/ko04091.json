@@ -1,0 +1,545 @@
+{
+  "name": "ko04091",
+  "children": [
+    {
+      "name": "C-Type lectins",
+      "children": [
+        {
+          "name": "Lecticans",
+          "children": [
+            {
+              "name": "K06792  AGC1, CSPG1; aggrecan 1"
+            },
+            {
+              "name": "K06795  BCAN; brevican"
+            },
+            {
+              "name": "K06793  VCAN, CSPG2; versican core protein"
+            },
+            {
+              "name": "K06794  NCAN, CSPG3; neurocan core protein"
+            },
+            {
+              "name": "K23380  FREM1_2; FRAS1-related extracelluar matrix protein 1/2"
+            }
+          ]
+        },
+        {
+          "name": "Asialoglycoprotein and DC receptors",
+          "children": [
+            {
+              "name": "K10063  ASGR1; asialoglycoprotein receptor 1"
+            },
+            {
+              "name": "K10064  ASGR2; asialoglycoprotein receptor 2"
+            },
+            {
+              "name": "K06721  CLEC10A, CLECSF13, CLECSF14, CD301; C-type lectin domain family 10 member A"
+            },
+            {
+              "name": "K06563  CLEC4L_M, DC-SIGN, CD209, CD299; C-type lectin domain family 4 member L/M"
+            },
+            {
+              "name": "K06468  FCER2, CD23; low affinity immunoglobulin epsilon Fc receptor"
+            },
+            {
+              "name": "K10061  CLEC4G; C-type lectin superfamily 4 member G"
+            },
+            {
+              "name": "K17513  CLEC17A; C-type lectin superfamily 17 member A"
+            },
+            {
+              "name": "K10057  CLEC4A, CD367; C-type lectin domain family 4 member A"
+            },
+            {
+              "name": "K06723  CLEC4C, CLECSF11, CLECSF7, CD303; C-type lectin domain family 4 member C"
+            },
+            {
+              "name": "K10058  CLEC4D, MCL, CD368; C-type lectin domain family 4 member D"
+            },
+            {
+              "name": "K10059  CLEC4E, MINCLE; C-type lectin domain family 4 member E"
+            },
+            {
+              "name": "K17514  CLEC6A, DECTIN2; C-type lectin domain family 6 member A"
+            },
+            {
+              "name": "K10060  CLEC4F, CLECSF13; C-type lectin domain family 4 member F"
+            },
+            {
+              "name": "K06561  CD207; CD207 antigen"
+            },
+            {
+              "name": "K10062  COLEC12; collectin sub-family member 12"
+            }
+          ]
+        },
+        {
+          "name": "Collectins",
+          "children": [
+            {
+              "name": "K10065  COLEC10; collectin sub-family member 10"
+            },
+            {
+              "name": "K10066  COLEC11; collectin sub-family member 11"
+            },
+            {
+              "name": "K03991  MBL; mannose-binding lectin"
+            },
+            {
+              "name": "K10067  SFTPA; pulmonary surfactant-associated protein A"
+            },
+            {
+              "name": "K10068  SFTPD, SFTP4; pulmonary surfactant-associated protein D"
+            }
+          ]
+        },
+        {
+          "name": "Selectins",
+          "children": [
+            {
+              "name": "K06494  SELE, CD62E; selectin, endothelial cell"
+            },
+            {
+              "name": "K06495  SELL, CD62L; selectin, lymphocyte"
+            },
+            {
+              "name": "K06496  SELP, CD62P; selectin, platelet"
+            }
+          ]
+        },
+        {
+          "name": "NK cell receptors",
+          "children": [
+            {
+              "name": "K06504  CD72; CD72 antigen"
+            },
+            {
+              "name": "K23459  KLRA, LY49; killer cell lectin-like receptor subfamily A"
+            },
+            {
+              "name": "K06543  KLRB, CD161; killer cell lectin-like receptor subfamily B"
+            },
+            {
+              "name": "K06541  KLRC1, NKG2A; killer cell lectin-like receptor subfamily C1"
+            },
+            {
+              "name": "K24233  KLRC2_3, NKG2C_E; killer cell lectin-like receptor subfamily C2/3"
+            },
+            {
+              "name": "K24234  KLRC4, NKG2F; killer cell lectin-like receptor subfamily C4"
+            },
+            {
+              "name": "K06516  KLRD1, CD94; killer cell lectin-like receptor subfamily D member 1"
+            },
+            {
+              "name": "K27938  KLRE1, NKG2I; killer cell lectin-like receptor subfamily E memeber 1"
+            },
+            {
+              "name": "K10075  KLRF1; killer cell lectin-like receptor subfamily F member 1"
+            },
+            {
+              "name": "K10076  KLRG1; killer cell lectin-like receptor subfamily G member 1"
+            },
+            {
+              "name": "K27937  KLRG2, CLEC15B; killer cell lectin-like receptor subfamily G member 2"
+            },
+            {
+              "name": "K27939  KLRI; killer cell lectin-like receptor subfamily I"
+            },
+            {
+              "name": "K06728  KLRK1, CD314; killer cell lectin-like receptor subfamily K member 1"
+            },
+            {
+              "name": "K08763  OLR1; oxidised low-density lipoprotein receptor 1"
+            },
+            {
+              "name": "K10069  CLEC1A; C-type lectin domain family 1 member A"
+            },
+            {
+              "name": "K10070  CLEC1B; C-type lectin domain family 1 member B"
+            },
+            {
+              "name": "K22680  CLEC2A; C-type lectin domain family 2 member A"
+            },
+            {
+              "name": "K10071  CLEC2B; C-type lectin domain family 2 member B"
+            },
+            {
+              "name": "K06502  CD69; CD69 antigen"
+            },
+            {
+              "name": "K10072  CLEC2D; C-type lectin domain family 2 member D"
+            },
+            {
+              "name": "K22681  CLEC2L; C-type lectin domain family 2 member L"
+            },
+            {
+              "name": "K10073  CLEC5A; C-type lectin domain family 5 member A"
+            },
+            {
+              "name": "K10074  CLEC7A, DECTIN1, CD369; C-type lectin domain family 7 member A"
+            },
+            {
+              "name": "K17515  CLEC9A, CD370; C-type lectin domain family 9 member A"
+            },
+            {
+              "name": "K17516  CLEC12A, CD371; C-type lectin domain family 12 member A"
+            },
+            {
+              "name": "K17517  CLEC12B; C-type lectin domain family 12 member B"
+            },
+            {
+              "name": "K17518  CLECL1; C-type lectin-like domain family 1"
+            },
+            {
+              "name": "K24585  BZLF2; Lymphocryptovirus glycoprotein 42"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K06560  MRC, CD206, CD280; mannose receptor, C type"
+            },
+            {
+              "name": "K06559  LY75, CD205; lymphocyte antigen 75"
+            },
+            {
+              "name": "K27940  CLEC19A; C-type lectin domain family 19 member A"
+            },
+            {
+              "name": "K25727  REG1_2_3; regenerating islet-derived protein 1/2/3"
+            },
+            {
+              "name": "K22244  REG4; regenerating islet-derived protein 4"
+            },
+            {
+              "name": "K10077  LAYN; layilin"
+            },
+            {
+              "name": "K10078  CHODL; chondrolectin"
+            },
+            {
+              "name": "K17519  CLEC3A; C-type lectin domain family 3 member A"
+            },
+            {
+              "name": "K17520  CLEC3B; C-type lectin domain family 3 member B"
+            },
+            {
+              "name": "K17521  CLEC11A; C-type lectin domain family 11 member A"
+            },
+            {
+              "name": "K04985  PKD1; polycystin 1"
+            },
+            {
+              "name": "K04988  PKD1L2; polycystin 1L2"
+            },
+            {
+              "name": "K04989  PKD1L3; polycystin 1L3"
+            },
+            {
+              "name": "K24332  ATRN; attractin"
+            },
+            {
+              "name": "K06722  CD302; CD302 antigen"
+            },
+            {
+              "name": "K10786  PRG2, MBP; bone marrow proteoglycan"
+            },
+            {
+              "name": "K25722  PRG3; proteoglycan 3"
+            },
+            {
+              "name": "K27941  DGCR2, IDD; integral membrane protein DGCR2/IDD"
+            },
+            {
+              "name": "K17528  CLEC14A; C-type lectin domain family 14 member A"
+            },
+            {
+              "name": "K03907  THBD, CD141; thrombomodulin"
+            },
+            {
+              "name": "K06706  CD248, CD164L1; CD248 antigen, endosialin"
+            },
+            {
+              "name": "K06702  CD93; CDW93 antigen"
+            },
+            {
+              "name": "K22682  CLEC18; c-type lectin domain family 18"
+            },
+            {
+              "name": "K08115  CSPG4; chondroitin sulfate proteoglycan 4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "I-type lectins (Siglecs)",
+      "children": [
+        {
+          "name": "K06548  SN, SIGLEC1, CD169; sialoadhesin"
+        },
+        {
+          "name": "K06467  CD22, SIGLEC2; CD22 antigen"
+        },
+        {
+          "name": "K06473  CD33, SIGLEC3; CD33 antigen"
+        },
+        {
+          "name": "K06771  MAG, GMA, SIGLEC4; myelin associated glycoprotein"
+        },
+        {
+          "name": "K06549  SIGLEC5, CD170; sialic acid binding Ig-like lectin 5"
+        },
+        {
+          "name": "K06738  SIGLEC6, CD327; sialic acid binding Ig-like lectin 6"
+        },
+        {
+          "name": "K06739  SIGLEC7, CD328; sialic acid binding Ig-like lectin 7"
+        },
+        {
+          "name": "K06748  SIGLEC8; sialic acid binding Ig-like lectin 8"
+        },
+        {
+          "name": "K06740  SIGLEC9, CD329; sialic acid binding Ig-like lectin 9"
+        },
+        {
+          "name": "K06749  SIGLEC10; sialic acid binding Ig-like lectin 10"
+        },
+        {
+          "name": "K06750  SIGLEC11; sialic acid binding Ig-like lectin 11"
+        },
+        {
+          "name": "K10079  SIGLEC12, SIGLECL1; sialic acid binding Ig-like lectin 12"
+        },
+        {
+          "name": "K24328  SIGLEC13; sialic acid binding Ig-like lectin 13"
+        },
+        {
+          "name": "K24329  SIGLEC14; sialic acid binding Ig-like lectin 14"
+        },
+        {
+          "name": "K16352  SIGLEC15; sialic acid binding Ig-like lectin 15"
+        },
+        {
+          "name": "K24330  SIGLEC16; sialic acid binding Ig-like lectin 16"
+        },
+        {
+          "name": "K06490  ICAM1, CD54; intercellular adhesion molecule 1"
+        },
+        {
+          "name": "K06523  ICAM2, CD102; intercellular adhesion molecule 2"
+        },
+        {
+          "name": "K06486  ICAM3, CD50; intercellular adhesion molecule 3"
+        },
+        {
+          "name": "K06471  PECAM1, CD31; platelet/endothelial cell adhesion molecule"
+        },
+        {
+          "name": "K06527  VCAM1, CD106; vascular cell adhesion molecule 1"
+        },
+        {
+          "name": "K06550  L1CAM, CD171; L1 cell adhesion molecule"
+        },
+        {
+          "name": "K06491  NCAM, CD56; neural cell adhesion molecule"
+        },
+        {
+          "name": "K06449  CD2; T-cell surface glycoprotein CD2"
+        },
+        {
+          "name": "K06510  CD83; CD83 antigen"
+        },
+        {
+          "name": "K06770  MPZ; myelin protein zero"
+        },
+        {
+          "name": "K27942  K27942; hemolin"
+        }
+      ]
+    },
+    {
+      "name": "L-type lectins",
+      "children": [
+        {
+          "name": "K10080  LMAN1, ERGIC53; lectin, mannose-binding 1"
+        },
+        {
+          "name": "K10081  LMAN1L, ERGL; lectin, mannose-binding 1-like"
+        },
+        {
+          "name": "K10082  LMAN2, VIP36; lectin, mannose-binding 2"
+        },
+        {
+          "name": "K10083  LMAN2L, VIPL; lectin, mannose-binding 2-like"
+        },
+        {
+          "name": "K08054  CANX; calnexin"
+        },
+        {
+          "name": "K09551  CLGN; calmegin"
+        },
+        {
+          "name": "K08057  CALR; calreticulin"
+        },
+        {
+          "name": "K10098  CALR3; calreticulin 3"
+        },
+        {
+          "name": "K23267  APCS, SAP; serum amyloid P component"
+        },
+        {
+          "name": "K16143  CRP; C-reactive protein"
+        }
+      ]
+    },
+    {
+      "name": "M-type lectins",
+      "children": [
+        {
+          "name": "K10084  EDEM1; ER degradation enhancer, mannosidase alpha-like 1"
+        },
+        {
+          "name": "K10085  EDEM2; ER degradation enhancer, mannosidase alpha-like 2"
+        },
+        {
+          "name": "K10086  EDEM3; ER degradation enhancer, mannosidase alpha-like 3"
+        }
+      ]
+    },
+    {
+      "name": "P-type lectins",
+      "children": [
+        {
+          "name": "K08288  PRKCSH; protein kinase C substrate 80K-H"
+        },
+        {
+          "name": "K10087  GNPTG, GNPTAG; N-acetylglucosamine-1-phosphate transferase, gamma subunit"
+        },
+        {
+          "name": "K10088  OS9; protein OS-9"
+        },
+        {
+          "name": "K10089  M6PR; cation-dependent mannose-6-phosphate receptor"
+        },
+        {
+          "name": "K06564  IGF2R, CD222; insulin-like growth factor 2 receptor"
+        }
+      ]
+    },
+    {
+      "name": "S-type lectins (Galectins)",
+      "children": [
+        {
+          "name": "K06830  LGALS1; galectin-1"
+        },
+        {
+          "name": "K10090  LGALS2; galectin-2"
+        },
+        {
+          "name": "K06831  LGALS3; galectin-3"
+        },
+        {
+          "name": "K10091  LGALS4; galectin-4"
+        },
+        {
+          "name": "K17522  LGALS5; galectin-5"
+        },
+        {
+          "name": "K10092  LGALS7; galectin-7"
+        },
+        {
+          "name": "K06832  LGALS8; galectin-8"
+        },
+        {
+          "name": "K10093  LGALS9; galectin-9"
+        },
+        {
+          "name": "K13334  CLC, LGALS10; eosinophil lysophospholipase (galectin-10) [EC:3.1.1.5]"
+        },
+        {
+          "name": "K10095  LGALS12; galectin-12"
+        },
+        {
+          "name": "K10096  LGALS13_14_16; galectin-13/14/16"
+        }
+      ]
+    },
+    {
+      "name": "F-box lectins",
+      "children": [
+        {
+          "name": "K10099  FBXO2, NFB42; F-box protein 2"
+        },
+        {
+          "name": "K10100  FBXO6; F-box protein 6"
+        },
+        {
+          "name": "K10101  FBXO17, FBXO26; F-box protein 17"
+        },
+        {
+          "name": "K10102  FBXO27; F-box protein 27"
+        },
+        {
+          "name": "K10103  FBXO44; F-box protein 44"
+        }
+      ]
+    },
+    {
+      "name": "Ficolins",
+      "children": [
+        {
+          "name": "K10104  FCN; ficolin"
+        }
+      ]
+    },
+    {
+      "name": "Chitinase-like lectins",
+      "children": [
+        {
+          "name": "K17523  CHI3L1_2; chitinase-3-like protein 1/2"
+        },
+        {
+          "name": "K17524  CHI3L3_4; chitinase 3-like 3/4"
+        },
+        {
+          "name": "K17525  CHID1; chitinase domain-containing protein 1"
+        },
+        {
+          "name": "K17526  OVGP1; oviduct-specific glycoprotein"
+        }
+      ]
+    },
+    {
+      "name": "F-type lectins",
+      "children": [
+        {
+          "name": "----- Fucolectin"
+        },
+        {
+          "name": "----- European eel agglutinin, Anguilla anguilla agglutinin (AAA)"
+        }
+      ]
+    },
+    {
+      "name": "Intelectins",
+      "children": [
+        {
+          "name": "K17527  ITLN; intelectin"
+        }
+      ]
+    },
+    {
+      "name": "R-type lectins",
+      "children": [
+        {
+          "name": "K10948  hlyA; hemolysin"
+        }
+      ]
+    }
+  ]
+}

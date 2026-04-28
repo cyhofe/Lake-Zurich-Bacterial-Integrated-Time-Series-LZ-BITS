@@ -1,0 +1,579 @@
+{
+  "name": "ko00194",
+  "children": [
+    {
+      "name": "Photosystem and electron transport system",
+      "children": [
+        {
+          "name": "Photosystem II (P680 chlorophyll a) [OT]",
+          "children": [
+            {
+              "name": "Main subunits",
+              "children": [
+                {
+                  "name": "K02703  psbA; photosystem II P680 reaction center D1 protein [EC:1.10.3.9]"
+                },
+                {
+                  "name": "K02706  psbD; photosystem II P680 reaction center D2 protein [EC:1.10.3.9]"
+                },
+                {
+                  "name": "K02705  psbC; photosystem II CP43 chlorophyll apoprotein"
+                },
+                {
+                  "name": "K02704  psbB; photosystem II CP47 chlorophyll apoprotein"
+                },
+                {
+                  "name": "K02707  psbE; photosystem II cytochrome b559 subunit alpha"
+                },
+                {
+                  "name": "K02708  psbF; photosystem II cytochrome b559 subunit beta"
+                }
+              ]
+            },
+            {
+              "name": "Other common subunits",
+              "children": [
+                {
+                  "name": "K02713  psbL; photosystem II PsbL protein"
+                },
+                {
+                  "name": "K02711  psbJ; photosystem II PsbJ protein"
+                },
+                {
+                  "name": "K02709  psbH; photosystem II PsbH protein"
+                },
+                {
+                  "name": "K02710  psbI; photosystem II PsbI protein"
+                },
+                {
+                  "name": "K02712  psbK; photosystem II PsbK protein"
+                },
+                {
+                  "name": "K02714  psbM; photosystem II PsbM protein"
+                },
+                {
+                  "name": "K02718  psbT; photosystem II PsbT protein"
+                },
+                {
+                  "name": "K02724  psbZ; photosystem II PsbZ protein"
+                },
+                {
+                  "name": "K02723  psbY; photosystem II PsbY protein"
+                },
+                {
+                  "name": "K08902  psb27; photosystem II Psb27 protein"
+                },
+                {
+                  "name": "K08903  psb28; photosystem II 13kDa protein"
+                },
+                {
+                  "name": "K02716  psbO; photosystem II oxygen-evolving enhancer protein 1"
+                },
+                {
+                  "name": "K02717  psbP; photosystem II oxygen-evolving enhancer protein 2"
+                }
+              ]
+            },
+            {
+              "name": "Other subunits in plants",
+              "children": [
+                {
+                  "name": "K08901  psbQ; photosystem II oxygen-evolving enhancer protein 3"
+                },
+                {
+                  "name": "K03541  psbR; photosystem II 10kDa protein"
+                },
+                {
+                  "name": "K03542  psbS; photosystem II 22kDa protein"
+                },
+                {
+                  "name": "K02721  psbW; photosystem II PsbW protein"
+                }
+              ]
+            },
+            {
+              "name": "Other subunits in cyanobacteria",
+              "children": [
+                {
+                  "name": "K02720  psbV; photosystem II cytochrome c550"
+                },
+                {
+                  "name": "K02719  psbU; photosystem II PsbU protein"
+                },
+                {
+                  "name": "K02722  psbX; photosystem II PsbX protein"
+                },
+                {
+                  "name": "K08904  psb28-2; photosystem II Psb28-2 protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Photosystem I (P700 chlorophyll a) [OT]",
+          "children": [
+            {
+              "name": "Main subunits",
+              "children": [
+                {
+                  "name": "K02689  psaA; photosystem I P700 chlorophyll a apoprotein A1 [EC:1.97.1.12]"
+                },
+                {
+                  "name": "K02690  psaB; photosystem I P700 chlorophyll a apoprotein A2 [EC:1.97.1.12]"
+                },
+                {
+                  "name": "K02691  psaC; photosystem I iron-sulfur center [EC:1.97.1.12]"
+                },
+                {
+                  "name": "K02692  psaD; photosystem I subunit II"
+                },
+                {
+                  "name": "K02693  psaE; photosystem I subunit IV"
+                },
+                {
+                  "name": "K02694  psaF; photosystem I subunit III"
+                }
+              ]
+            },
+            {
+              "name": "Other common subunits",
+              "children": [
+                {
+                  "name": "K02696  psaI; photosystem I subunit VIII"
+                },
+                {
+                  "name": "K02697  psaJ; photosystem I subunit IX"
+                },
+                {
+                  "name": "K02698  psaK; photosystem I subunit X"
+                },
+                {
+                  "name": "K02699  psaL; photosystem I subunit XI"
+                }
+              ]
+            },
+            {
+              "name": "Other subunits in plants",
+              "children": [
+                {
+                  "name": "K08905  psaG; photosystem I subunit V"
+                },
+                {
+                  "name": "K02695  psaH; photosystem I subunit VI"
+                },
+                {
+                  "name": "K02701  psaN; photosystem I subunit PsaN"
+                },
+                {
+                  "name": "K14332  psaO; photosystem I subunit PsaO"
+                }
+              ]
+            },
+            {
+              "name": "Other subunits in cyanobacteria",
+              "children": [
+                {
+                  "name": "K02700  psaM; photosystem I subunit XII"
+                },
+                {
+                  "name": "K02702  psaX; photosystem I 4.8kDa protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cytochrome b6/f complex [OT]",
+          "children": [
+            {
+              "name": "K02634  petA; apocytochrome f"
+            },
+            {
+              "name": "K02635  petB; cytochrome b6"
+            },
+            {
+              "name": "K02636  petC; cytochrome b6-f complex iron-sulfur subunit [EC:7.1.1.6]"
+            },
+            {
+              "name": "K02637  petD; cytochrome b6-f complex subunit 4"
+            },
+            {
+              "name": "K02640  petG; cytochrome b6-f complex subunit 5"
+            },
+            {
+              "name": "K02642  petL; cytochrome b6-f complex subunit 6"
+            },
+            {
+              "name": "K02643  petM; cytochrome b6-f complex subunit 7"
+            },
+            {
+              "name": "K03689  petN; cytochrome b6-f complex subunit 8"
+            }
+          ]
+        },
+        {
+          "name": "Photosynthetic electron transport",
+          "children": [
+            {
+              "name": "K02638  petE; plastocyanin"
+            },
+            {
+              "name": "K02639  petF; ferredoxin"
+            },
+            {
+              "name": "K02641  petH; ferredoxin--NADP+ reductase [EC:1.18.1.2]"
+            },
+            {
+              "name": "K08906  petJ; cytochrome c6"
+            }
+          ]
+        },
+        {
+          "name": "F-type ATPase [OT]",
+          "children": [
+            {
+              "name": "K02114  ATPF1E, atpC; F-type H+-transporting ATPase subunit epsilon"
+            },
+            {
+              "name": "K02112  ATPF1B, atpD; F-type H+/Na+-transporting ATPase subunit beta [EC:7.1.2.2 7.2.2.1]"
+            },
+            {
+              "name": "K02115  ATPF1G, atpG; F-type H+-transporting ATPase subunit gamma"
+            },
+            {
+              "name": "K02111  ATPF1A, atpA; F-type H+/Na+-transporting ATPase subunit alpha [EC:7.1.2.2 7.2.2.1]"
+            },
+            {
+              "name": "K02113  ATPF1D, atpH; F-type H+-transporting ATPase subunit delta"
+            },
+            {
+              "name": "K02109  ATPF0B, atpF; F-type H+-transporting ATPase subunit b"
+            },
+            {
+              "name": "K02110  ATPF0C, atpE; F-type H+-transporting ATPase subunit c"
+            },
+            {
+              "name": "K02108  ATPF0A, atpB; F-type H+-transporting ATPase subunit a"
+            },
+            {
+              "name": "K02116  atpI; ATP synthase protein I"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Antenna proteins",
+      "children": [
+        {
+          "name": "Phycobilisome - Cyanobacteria, Red alga [OT]",
+          "children": [
+            {
+              "name": "Allophycocyanin (AP)",
+              "children": [
+                {
+                  "name": "K02092  apcA; allophycocyanin alpha subunit"
+                },
+                {
+                  "name": "K02093  apcB; allophycocyanin beta subunit"
+                },
+                {
+                  "name": "K02094  apcC; phycobilisome core linker protein"
+                },
+                {
+                  "name": "K02095  apcD; allophycocyanin-B"
+                },
+                {
+                  "name": "K02096  apcE; phycobilisome core-membrane linker protein"
+                },
+                {
+                  "name": "K02097  apcF; phycobilisome core component"
+                }
+              ]
+            },
+            {
+              "name": "Phycocyanin (PC)",
+              "children": [
+                {
+                  "name": "K02284  cpcA; phycocyanin alpha chain"
+                },
+                {
+                  "name": "K02285  cpcB; phycocyanin beta chain"
+                },
+                {
+                  "name": "K02286  cpcC; phycocyanin-associated rod linker protein"
+                },
+                {
+                  "name": "K02287  cpcD; phycocyanin-associated, rod"
+                },
+                {
+                  "name": "K02288  cpcE; phycocyanobilin lyase subunit alpha [EC:4.4.1.32]"
+                },
+                {
+                  "name": "K02289  cpcF; phycocyanobilin lyase subunit beta [EC:4.4.1.32]"
+                },
+                {
+                  "name": "K20713  rpcG; R-phycocyanin alpha-cysteine-84 phycourobilin lyase/isomerase [EC:4.4.1.33]"
+                },
+                {
+                  "name": "K02290  cpcG; phycobilisome rod-core linker protein"
+                }
+              ]
+            },
+            {
+              "name": "Phycoerythrocyanin (PEC)",
+              "children": [
+                {
+                  "name": "K02628  pecA; phycoerythrocyanin alpha chain"
+                },
+                {
+                  "name": "K02629  pecB; phycoerythrocyanin beta chain"
+                },
+                {
+                  "name": "K02630  pecC; phycoerythrocyanin-associated rod linker protein"
+                },
+                {
+                  "name": "K02631  pecE; phycoerythrocyanin alpha-cysteine-84 phycoviolobilin lyase/isomerase subunit PecE [EC:4.4.1.31]"
+                },
+                {
+                  "name": "K02632  pecF; phycoerythrocyanin alpha-cysteine-84 phycoviolobilin lyase/isomerase subunit PecF [EC:4.4.1.31]"
+                }
+              ]
+            },
+            {
+              "name": "Phycoerythrin (PE)",
+              "children": [
+                {
+                  "name": "K05376  cpeA, mpeA; phycoerythrin alpha chain"
+                },
+                {
+                  "name": "K05377  cpeB, mpeB; phycoerythrin beta chain"
+                },
+                {
+                  "name": "K05378  cpeC, mpeC; phycoerythrin-associated linker protein"
+                },
+                {
+                  "name": "K05379  cpeD, mpeD; phycoerythrin-associated linker protein"
+                },
+                {
+                  "name": "K05380  cpeE; phycoerythrin-associated linker protein"
+                },
+                {
+                  "name": "K05381  cpeR; phycoerythrin-associated linker protein"
+                },
+                {
+                  "name": "K05382  cpeS; phycoerythrin-associated linker protein"
+                },
+                {
+                  "name": "K05383  cpeT; CpeT protein"
+                },
+                {
+                  "name": "K05384  cpeU, mpeU; bilin biosynthesis protein"
+                },
+                {
+                  "name": "K05385  cpeY; bilin biosynthesis protein"
+                },
+                {
+                  "name": "K05386  cpeZ; bilin biosynthesis protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Light-harvesting chlorophyll-protein complex (LHC) - Plant, Green alga [OT]",
+          "children": [
+            {
+              "name": "LHCI",
+              "children": [
+                {
+                  "name": "K08907  LHCA1; light-harvesting complex I chlorophyll a/b binding protein 1"
+                },
+                {
+                  "name": "K08908  LHCA2; light-harvesting complex I chlorophyll a/b binding protein 2"
+                },
+                {
+                  "name": "K08909  LHCA3; light-harvesting complex I chlorophyll a/b binding protein 3"
+                },
+                {
+                  "name": "K08910  LHCA4; light-harvesting complex I chlorophyll a/b binding protein 4"
+                },
+                {
+                  "name": "K08911  LHCA5; light-harvesting complex I chlorophyll a/b binding protein 5"
+                }
+              ]
+            },
+            {
+              "name": "LHCII",
+              "children": [
+                {
+                  "name": "K08912  LHCB1; light-harvesting complex II chlorophyll a/b binding protein 1"
+                },
+                {
+                  "name": "K08913  LHCB2; light-harvesting complex II chlorophyll a/b binding protein 2"
+                },
+                {
+                  "name": "K08914  LHCB3; light-harvesting complex II chlorophyll a/b binding protein 3"
+                },
+                {
+                  "name": "K08915  LHCB4; light-harvesting complex II chlorophyll a/b binding protein 4"
+                },
+                {
+                  "name": "K08916  LHCB5; light-harvesting complex II chlorophyll a/b binding protein 5"
+                },
+                {
+                  "name": "K08917  LHCB6; light-harvesting complex II chlorophyll a/b binding protein 6"
+                },
+                {
+                  "name": "K14172  LHCB7; light-harvesting complex II chlorophyll a/b binding protein 7"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Chlorophyll a/b binding light-harvesting protein (PCB) - Prochlorophyta [OT]",
+          "children": [
+            {
+              "name": "K08918  pcbA; chlorophyll a/b binding light-harvesting protein PcbA"
+            },
+            {
+              "name": "K08919  pcbB; chlorophyll a/b binding light-harvesting protein PcbB"
+            },
+            {
+              "name": "K08920  pcbC; chlorophyll a/b binding light-harvesting protein PcbC"
+            },
+            {
+              "name": "K08921  pcbD; chlorophyll a/b binding light-harvesting protein PcbD"
+            },
+            {
+              "name": "K08922  pcbE; chlorophyll a/b binding light-harvesting protein PcbE"
+            },
+            {
+              "name": "K08923  pcbF; chlorophyll a/b binding light-harvesting protein PcbF"
+            },
+            {
+              "name": "K08924  pcbG; chlorophyll a/b binding light-harvesting protein PcbG"
+            },
+            {
+              "name": "K08925  pcbH; chlorophyll a/b binding light-harvesting protein PcbH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Anoxygenic photosystem",
+      "children": [
+        {
+          "name": "Purple bacteria - Photosystem II related [OT]",
+          "children": [
+            {
+              "name": "RC-LH1 complex",
+              "children": [
+                {
+                  "name": "K08928  pufL; photosynthetic reaction center L subunit"
+                },
+                {
+                  "name": "K08929  pufM; photosynthetic reaction center M subunit"
+                },
+                {
+                  "name": "K13991  puhA; photosynthetic reaction center H subunit"
+                },
+                {
+                  "name": "K13994  pufX; photosynthetic reaction center PufX protein"
+                },
+                {
+                  "name": "K13992  pufC; photosynthetic reaction center cytochrome c subunit"
+                },
+                {
+                  "name": "K08926  pufA; light-harvesting complex 1 alpha chain"
+                },
+                {
+                  "name": "K08927  pufB; light-harvesting complex 1 beta chain"
+                }
+              ]
+            },
+            {
+              "name": "LH2",
+              "children": [
+                {
+                  "name": "K08930  pucA; light-harvesting protein B-800-850 alpha chain"
+                },
+                {
+                  "name": "K08939  pucB; light-harvesting protein B-800-850 beta chain"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Green sulfur bacteria - Photosystem I related [OT]",
+          "children": [
+            {
+              "name": "Reaction center",
+              "children": [
+                {
+                  "name": "K08940  pscA; photosystem P840 reaction center large subunit"
+                },
+                {
+                  "name": "K08941  pscB; photosystem P840 reaction center iron-sulfur protein"
+                },
+                {
+                  "name": "K08942  pscC; photosystem P840 reaction center cytochrome c551"
+                },
+                {
+                  "name": "K08943  pscD; photosystem P840 reaction center protein PscD"
+                }
+              ]
+            },
+            {
+              "name": "FMO Protein",
+              "children": [
+                {
+                  "name": "K08944  fmoA; bacteriochlorophyll A protein"
+                }
+              ]
+            },
+            {
+              "name": "Chlorosome",
+              "children": [
+                {
+                  "name": "K08945  csmA; chlorosome envelope protein A"
+                },
+                {
+                  "name": "K08946  csmB; chlorosome envelope protein B"
+                },
+                {
+                  "name": "K08947  csmC; chlorosome envelope protein C"
+                },
+                {
+                  "name": "K08948  csmD; chlorosome envelope protein D"
+                },
+                {
+                  "name": "K08949  csmE; chlorosome envelope protein E"
+                },
+                {
+                  "name": "K08950  csmF; chlorosome envelope protein F"
+                },
+                {
+                  "name": "K08951  csmH; chlorosome envelope protein H"
+                },
+                {
+                  "name": "K08952  csmI; chlorosome envelope protein I"
+                },
+                {
+                  "name": "K08953  csmJ; chlorosome envelope protein J"
+                },
+                {
+                  "name": "K08954  csmX; chlorosome envelope protein X"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

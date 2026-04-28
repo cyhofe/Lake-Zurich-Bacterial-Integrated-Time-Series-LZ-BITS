@@ -1,0 +1,2421 @@
+{
+  "name": "ko03400",
+  "children": [
+    {
+      "name": "Eukaryotic type",
+      "children": [
+        {
+          "name": "SSBR (single strand breaks repair)",
+          "children": [
+            {
+              "name": "Direct repair",
+              "children": [
+                {
+                  "name": "K00567  ogt, MGMT; methylated-DNA-[protein]-cysteine S-methyltransferase [EC:2.1.1.63]"
+                },
+                {
+                  "name": "K10859  ALKBH2; DNA oxidative demethylase [EC:1.14.11.33]"
+                },
+                {
+                  "name": "K10860  ALKBH3, DEPC1; mRNA N1-methyladenine demethylase [EC:1.14.11.54]"
+                },
+                {
+                  "name": "K18663  ASCC3; activating signal cointegrator complex subunit 3 [EC:5.6.2.4]"
+                },
+                {
+                  "name": "K01669  phr, PHR1; deoxyribodipyrimidine photo-lyase [EC:4.1.99.3]"
+                }
+              ]
+            },
+            {
+              "name": "BER (base exicision repair)",
+              "children": [
+                {
+                  "name": "DNA glycosylases",
+                  "children": [
+                    {
+                      "name": "K03648  UNG, UDG; uracil-DNA glycosylase [EC:3.2.2.27]"
+                    },
+                    {
+                      "name": "K10861  UDG2, CCNO; uracil-DNA glycosylase 2 [EC:3.2.2.-]"
+                    },
+                    {
+                      "name": "K20813  TDG; thymine-DNA glycosylase [EC:3.2.2.29]"
+                    },
+                    {
+                      "name": "K03652  MPG; DNA-3-methyladenine glycosylase [EC:3.2.2.21]"
+                    },
+                    {
+                      "name": "K10800  SMUG1; single-strand selective monofunctional uracil DNA glycosylase [EC:3.2.2.-]"
+                    },
+                    {
+                      "name": "K03575  mutY; A/G-specific adenine glycosylase [EC:3.2.2.31]"
+                    },
+                    {
+                      "name": "K10801  MBD4; methyl-CpG-binding domain protein 4 [EC:3.2.2.-]"
+                    },
+                    {
+                      "name": "K03660  OGG1; N-glycosylase/DNA lyase [EC:3.2.2.- 4.2.99.18]"
+                    },
+                    {
+                      "name": "K10567  NEIL1; endonuclease VIII-like 1 [EC:3.2.2.- 4.2.99.18]"
+                    },
+                    {
+                      "name": "K10568  NEIL2; endonuclease VIII-like 2 [EC:3.2.2.- 4.2.99.18]"
+                    },
+                    {
+                      "name": "K10569  NEIL3; endonuclease VIII-like 3 [EC:3.2.2.- 4.2.99.18]"
+                    },
+                    {
+                      "name": "K10773  NTHL1, nth; endonuclease III [EC:3.2.2.- 4.2.99.18]"
+                    }
+                  ]
+                },
+                {
+                  "name": "AP endonucleases",
+                  "children": [
+                    {
+                      "name": "K10771  APEX1; AP endonuclease 1 [EC:3.1.11.2]"
+                    },
+                    {
+                      "name": "K10772  APEX2; AP endonuclease 2 [EC:3.1.11.2]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Long Patch-BER factors",
+                  "children": [
+                    {
+                      "name": "DNA polymerase delta complex",
+                      "children": [
+                        {
+                          "name": "K02327  POLD1; DNA polymerase delta subunit 1 [EC:2.7.7.7]"
+                        },
+                        {
+                          "name": "K02328  POLD2; DNA polymerase delta subunit 2"
+                        },
+                        {
+                          "name": "K03504  POLD3; DNA polymerase delta subunit 3"
+                        },
+                        {
+                          "name": "K03505  POLD4; DNA polymerase delta subunit 4"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "DNA polymerase epsilon complex",
+                      "children": [
+                        {
+                          "name": "K02324  POLE; DNA polymerase epsilon subunit 1 [EC:2.7.7.7]"
+                        },
+                        {
+                          "name": "K02325  POLE2; DNA polymerase epsilon subunit 2 [EC:2.7.7.7]"
+                        },
+                        {
+                          "name": "K02326  POLE3; DNA polymerase epsilon subunit 3 [EC:2.7.7.7]"
+                        },
+                        {
+                          "name": "K03506  POLE4; DNA polymerase epsilon subunit 4 [EC:2.7.7.7]"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "K04802  PCNA; proliferating cell nuclear antigen"
+                    },
+                    {
+                      "name": "K04799  FEN1, RAD2; flap endonuclease-1 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K10747  LIG1; DNA ligase 1 [EC:6.5.1.1 6.5.1.6 6.5.1.7]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Short Patch-BER factors",
+                  "children": [
+                    {
+                      "name": "K02330  POLB; DNA polymerase beta [EC:2.7.7.7 4.2.99.-]"
+                    },
+                    {
+                      "name": "K10803  XRCC1; DNA-repair protein XRCC1"
+                    },
+                    {
+                      "name": "K10776  LIG3; DNA ligase 3 [EC:6.5.1.1]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other BER factors",
+                  "children": [
+                    {
+                      "name": "K10862  TDP1; tyrosyl-DNA phosphodiesterase 1 [EC:3.1.4.-]"
+                    },
+                    {
+                      "name": "K10863  APTX; aprataxin [EC:3.6.1.70 3.6.1.71 3.6.1.72]"
+                    },
+                    {
+                      "name": "K13295  APLF; aprataxin and PNK-like factor [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K08073  PNKP; bifunctional polynucleotide phosphatase/kinase [EC:3.1.3.32 2.7.1.78]"
+                    },
+                    {
+                      "name": "K08075  E3.1.3.32; polynucleotide 3'-phosphatase [EC:3.1.3.32]"
+                    },
+                    {
+                      "name": "K10802  HMGB1; high mobility group protein B1"
+                    },
+                    {
+                      "name": "K03512  POLL; DNA polymerase lambda [EC:2.7.7.7 4.2.99.-]"
+                    },
+                    {
+                      "name": "K24070  PARP1; poly [ADP-ribose] polymerase 1 [EC:2.4.2.30]"
+                    },
+                    {
+                      "name": "K28005  PARP2; poly [ADP-ribose] polymerase 2 [EC:2.4.2.30]"
+                    },
+                    {
+                      "name": "K10798  PARP3_4; protein mono-ADP-ribosyltransferase 3/4 [EC:2.4.2.-]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "NER (nucleotide excision repair)",
+              "children": [
+                {
+                  "name": "GGR (global genome repair) factors",
+                  "children": [
+                    {
+                      "name": "XPC-HR23B-CETN2 complex",
+                      "children": [
+                        {
+                          "name": "K10838  XPC; xeroderma pigmentosum group C-complementing protein"
+                        },
+                        {
+                          "name": "K10839  RAD23, HR23; UV excision repair protein RAD23"
+                        },
+                        {
+                          "name": "K10840  CETN2; centrin-2"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Cul4-DDB2 complex",
+                      "children": [
+                        {
+                          "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                        },
+                        {
+                          "name": "K10609  CUL4; cullin 4"
+                        },
+                        {
+                          "name": "K10610  DDB1; DNA damage-binding protein 1"
+                        },
+                        {
+                          "name": "K10140  DDB2; DNA damage-binding protein 2"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "NER4 complex",
+                      "children": [
+                        {
+                          "name": "K15082  RAD7; DNA repair protein RAD7"
+                        },
+                        {
+                          "name": "K15083  RAD16; DNA repair protein RAD16"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "TCR (transcription coupled repair) factors",
+                  "children": [
+                    {
+                      "name": "DNA-directed RNA polymerase II complex",
+                      "children": [
+                        {
+                          "name": "K03006  RPB1, POLR2A; DNA-directed RNA polymerase II subunit RPB1 [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K03010  RPB2, POLR2B; DNA-directed RNA polymerase II subunit RPB2 [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K03011  RPB3, POLR2C; DNA-directed RNA polymerase II subunit RPB3"
+                        },
+                        {
+                          "name": "K03012  RPB4, POLR2D; DNA-directed RNA polymerase II subunit RPB4"
+                        },
+                        {
+                          "name": "K03013  RPABC1, RPB5, POLR2E; DNA-directed RNA polymerases I, II, and III subunit RPABC1"
+                        },
+                        {
+                          "name": "K03014  RPABC2, RPB6, POLR2F; DNA-directed RNA polymerases I, II, and III subunit RPABC2"
+                        },
+                        {
+                          "name": "K03015  RPB7, POLR2G; DNA-directed RNA polymerase II subunit RPB7"
+                        },
+                        {
+                          "name": "K03016  RPABC3, RPB8, POLR2H; DNA-directed RNA polymerases I, II, and III subunit RPABC3"
+                        },
+                        {
+                          "name": "K03017  RPB9, POLR2I; DNA-directed RNA polymerase II subunit RPB9"
+                        },
+                        {
+                          "name": "K03007  RPABC5, RPB10, POLR2L; DNA-directed RNA polymerases I, II, and III subunit RPABC5"
+                        },
+                        {
+                          "name": "K03008  RPB11, POLR2J; DNA-directed RNA polymerase II subunit RPB11"
+                        },
+                        {
+                          "name": "K03009  RPABC4, RPB12, POLR2K; DNA-directed RNA polymerases I, II, and III subunit RPABC4"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Cul4-CSA complex",
+                      "children": [
+                        {
+                          "name": "K03868  RBX1, ROC1; E3 ubiquitin-protein ligase RBX1 [EC:2.3.2.32]"
+                        },
+                        {
+                          "name": "K10609  CUL4; cullin 4"
+                        },
+                        {
+                          "name": "K10610  DDB1; DNA damage-binding protein 1"
+                        },
+                        {
+                          "name": "K10570  ERCC8, CKN1, CSA; DNA excision repair protein ERCC-8"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Other TCR factor",
+                      "children": [
+                        {
+                          "name": "K10841  ERCC6, CSB, RAD26; DNA excision repair protein ERCC-6"
+                        },
+                        {
+                          "name": "K23720  UVSSA; UV-stimulated scaffold protein A"
+                        },
+                        {
+                          "name": "K25829  ELOF1, ELF1; transcription elongation factor 1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIH complex",
+                  "children": [
+                    {
+                      "name": "K10843  ERCC3, XPB; DNA excision repair protein ERCC-3 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10844  ERCC2, XPD; DNA excision repair protein ERCC-2 [EC:5.6.2.3]"
+                    },
+                    {
+                      "name": "K03141  TFIIH1, GTF2H1, TFB1; transcription initiation factor TFIIH subunit 1"
+                    },
+                    {
+                      "name": "K03142  TFIIH2, GTF2H2, SSL1; transcription initiation factor TFIIH subunit 2"
+                    },
+                    {
+                      "name": "K03143  TFIIH3, GTF2H3, TFB4; transcription initiation factor TFIIH subunit 3"
+                    },
+                    {
+                      "name": "K03144  TFIIH4, GTF2H4, TFB2; transcription initiation factor TFIIH subunit 4"
+                    },
+                    {
+                      "name": "K10845  TTDA, GTF2H5, TFB5; TFIIH basal transcription factor complex TTD-A subunit"
+                    },
+                    {
+                      "name": "K02202  CDK7; cyclin-dependent kinase 7 [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K06634  CCNH; cyclin H"
+                    },
+                    {
+                      "name": "K10842  MNAT1; CDK-activating kinase assembly factor MAT1"
+                    }
+                  ]
+                },
+                {
+                  "name": "RPA (replication factor A)",
+                  "children": [
+                    {
+                      "name": "K07466  RFA1, RPA1, rpa; replication factor A1"
+                    },
+                    {
+                      "name": "K10739  RFA2, RPA2; replication factor A2"
+                    },
+                    {
+                      "name": "K10740  RPA3; replication factor A3"
+                    },
+                    {
+                      "name": "K10741  RPA4; replication factor A4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other NER factors",
+                  "children": [
+                    {
+                      "name": "K10847  XPA; DNA-repair protein complementing XP-A cells"
+                    },
+                    {
+                      "name": "K10849  ERCC1; DNA excision repair protein ERCC-1"
+                    },
+                    {
+                      "name": "K10848  ERCC4, XPF; DNA excision repair protein ERCC-4 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K10846  ERCC5, XPG, RAD2; DNA excision repair protein ERCC-5"
+                    },
+                    {
+                      "name": "K10747  LIG1; DNA ligase 1 [EC:6.5.1.1 6.5.1.6 6.5.1.7]"
+                    },
+                    {
+                      "name": "K15075  MET18, MMS19; DNA repair/transcription protein MET18/MMS19"
+                    },
+                    {
+                      "name": "K27967  CCDC117; coiled-coil domain-containing protein 117"
+                    },
+                    {
+                      "name": "K24730  CIAO1, CIA1; cytosolic iron-sulfur protein assembly protein CIAO1"
+                    },
+                    {
+                      "name": "K26403  CIAO2, CIA2, FAM96; cytosolic iron-sulfur assembly component 2"
+                    },
+                    {
+                      "name": "K03869  CUL3; cullin 3"
+                    },
+                    {
+                      "name": "K10612  CUL5; cullin 5"
+                    },
+                    {
+                      "name": "K03872  ELOC, TCEB1; elongin-C"
+                    },
+                    {
+                      "name": "K03873  ELOB, TCEB2; elongin-B"
+                    },
+                    {
+                      "name": "K15076  ELOA, TCEB3; elongin-A"
+                    },
+                    {
+                      "name": "K15077  ELA1; elongin-A"
+                    },
+                    {
+                      "name": "K26545  UBAP2; ubiquitin-associated protein 2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "MMR (mismatch excision repair)",
+              "children": [
+                {
+                  "name": "Mismatch and loop recognition factors",
+                  "children": [
+                    {
+                      "name": "K08735  MSH2; DNA mismatch repair protein MSH2"
+                    },
+                    {
+                      "name": "K08736  MSH3; DNA mismatch repair protein MSH3"
+                    },
+                    {
+                      "name": "K08737  MSH6; DNA mismatch repair protein MSH6"
+                    }
+                  ]
+                },
+                {
+                  "name": "MutL homologs",
+                  "children": [
+                    {
+                      "name": "K10864  PMS1; DNA mismatch repair protein PMS1"
+                    },
+                    {
+                      "name": "K08734  MLH1; DNA mismatch repair protein MLH1"
+                    },
+                    {
+                      "name": "K10858  PMS2; DNA mismatch repair protein PMS2"
+                    },
+                    {
+                      "name": "K08739  MLH3; DNA mismatch repair protein MLH3"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA polymerase delta complex",
+                  "children": [
+                    {
+                      "name": "K02327  POLD1; DNA polymerase delta subunit 1 [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02328  POLD2; DNA polymerase delta subunit 2"
+                    },
+                    {
+                      "name": "K03504  POLD3; DNA polymerase delta subunit 3"
+                    },
+                    {
+                      "name": "K03505  POLD4; DNA polymerase delta subunit 4"
+                    }
+                  ]
+                },
+                {
+                  "name": "RPA (replication factor A)",
+                  "children": [
+                    {
+                      "name": "K07466  RFA1, RPA1, rpa; replication factor A1"
+                    },
+                    {
+                      "name": "K10739  RFA2, RPA2; replication factor A2"
+                    },
+                    {
+                      "name": "K10740  RPA3; replication factor A3"
+                    },
+                    {
+                      "name": "K10741  RPA4; replication factor A4"
+                    }
+                  ]
+                },
+                {
+                  "name": "RFC (replication factor C)",
+                  "children": [
+                    {
+                      "name": "K10754  RFC1; replication factor C subunit 1"
+                    },
+                    {
+                      "name": "K10755  RFC2_4; replication factor C subunit 2/4"
+                    },
+                    {
+                      "name": "K10756  RFC3_5; replication factor C subunit 3/5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other MMR factors",
+                  "children": [
+                    {
+                      "name": "K04802  PCNA; proliferating cell nuclear antigen"
+                    },
+                    {
+                      "name": "K10746  EXO1; exonuclease 1 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K10802  HMGB1; high mobility group protein B1"
+                    },
+                    {
+                      "name": "K10747  LIG1; DNA ligase 1 [EC:6.5.1.1 6.5.1.6 6.5.1.7]"
+                    },
+                    {
+                      "name": "K24755  WDR76, CMR1; WD repeat-containing protein 76"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DSBR (double strand breaks repair)",
+          "children": [
+            {
+              "name": "HR (homologous recombination)",
+              "children": [
+                {
+                  "name": "MRN(MRX) complex",
+                  "children": [
+                    {
+                      "name": "K10865  MRE11; double-strand break repair protein MRE11"
+                    },
+                    {
+                      "name": "K10866  RAD50; DNA repair protein RAD50 [EC:3.6.-.-]"
+                    },
+                    {
+                      "name": "K10867  NBN, NBS1; nibrin"
+                    },
+                    {
+                      "name": "K10868  XRS2; DNA repair protein XRS2"
+                    }
+                  ]
+                },
+                {
+                  "name": "BRCA1-core complex",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K10683  BARD1; BRCA1-associated RING domain protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "BRCA1-A complex",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K20774  FAM175A, ABRA1; BRCA1-A complex subunit Abraxas"
+                    },
+                    {
+                      "name": "K20775  UIMC1, RAP80; BRCA1-A complex subunit RAP80"
+                    },
+                    {
+                      "name": "K20776  BABAM, NBA1, MERIT40; BRISC and BRCA1-A complex member 1"
+                    },
+                    {
+                      "name": "K12173  BRE, BRCC45; BRCA1-A complex subunit BRE"
+                    },
+                    {
+                      "name": "K11864  BRCC3, BRCC36; BRCA1/BRCA2-containing complex subunit 3 [EC:3.4.19.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "BRCA1-B complex",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K15362  BRIP1, BACH1, FANCJ; fanconi anemia group J protein [EC:5.6.2.3]"
+                    },
+                    {
+                      "name": "K10728  TOPBP1; topoisomerase (DNA) II binding protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "BRCA1-C complex",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K20773  RBBP8, CTIP; DNA endonuclease RBBP8 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K10865  MRE11; double-strand break repair protein MRE11"
+                    },
+                    {
+                      "name": "K10866  RAD50; DNA repair protein RAD50 [EC:3.6.-.-]"
+                    },
+                    {
+                      "name": "K10867  NBN, NBS1; nibrin"
+                    }
+                  ]
+                },
+                {
+                  "name": "BRCA complex",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K08775  BRCA2, FANCD1; breast cancer 2 susceptibility protein"
+                    },
+                    {
+                      "name": "K10897  PALB2, FANCN; partner and localizer of BRCA2"
+                    },
+                    {
+                      "name": "K04482  RAD51; DNA repair protein RAD51"
+                    }
+                  ]
+                },
+                {
+                  "name": "RecA family proteins",
+                  "children": [
+                    {
+                      "name": "K04482  RAD51; DNA repair protein RAD51"
+                    },
+                    {
+                      "name": "K10869  RAD51L1, RAD51B; RAD51-like protein 1"
+                    },
+                    {
+                      "name": "K10870  RAD51L2, RAD51C; RAD51-like protein 2"
+                    },
+                    {
+                      "name": "K10871  RAD51L3, RAD51D; RAD51-like protein 3"
+                    },
+                    {
+                      "name": "K10879  XRCC2; DNA-repair protein XRCC2"
+                    },
+                    {
+                      "name": "K10880  XRCC3; DNA-repair protein XRCC3"
+                    },
+                    {
+                      "name": "K10957  RAD55; DNA repair protein RAD55"
+                    },
+                    {
+                      "name": "K10958  RAD57; DNA repair protein RAD57"
+                    }
+                  ]
+                },
+                {
+                  "name": "Rad52 family proteins",
+                  "children": [
+                    {
+                      "name": "K10873  RAD52; DNA repair and recombination protein RAD52"
+                    },
+                    {
+                      "name": "K10874  RDM1, RAD52B; RAD52 motif-containing protein 1"
+                    },
+                    {
+                      "name": "K26556  RAD52-1; DNA repair RAD52-like protein 1, mitochondrial"
+                    },
+                    {
+                      "name": "K26558  RAD52-2; DNA repair RAD52-like protein 2, chloroplastic"
+                    },
+                    {
+                      "name": "K10959  RAD59; DNA repair protein RAD59"
+                    }
+                  ]
+                },
+                {
+                  "name": "Rad54 family proteins",
+                  "children": [
+                    {
+                      "name": "K10875  RAD54L, RAD54; DNA repair and recombination protein RAD54 and RAD54-like protein [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K10876  RAD54L2; RAD54-like protein 2 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K10877  RAD54B; DNA repair and recombination protein RAD54B [EC:5.6.2.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "RecQ family DNA helicases",
+                  "children": [
+                    {
+                      "name": "K10899  RECQL; ATP-dependent DNA helicase Q1 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10900  WRN, RECQL2; werner syndrome ATP-dependent helicase [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10901  BLM, RECQL3, SGS1; bloom syndrome protein [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10730  RECQL4; ATP-dependent DNA helicase Q4 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10902  RECQL5; ATP-dependent DNA helicase Q5 [EC:5.6.2.4]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Bloom's syndrome complex (BTR)",
+                  "children": [
+                    {
+                      "name": "K10901  BLM, RECQL3, SGS1; bloom syndrome protein [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K03165  TOP3; DNA topoisomerase III [EC:5.6.2.1]"
+                    },
+                    {
+                      "name": "K10990  RMI1, BRAP75; RecQ-mediated genome instability protein 1"
+                    },
+                    {
+                      "name": "K15364  NCE4, RMI1; RecQ-mediated genome instability protein 1"
+                    },
+                    {
+                      "name": "K15365  RMI2; RecQ-mediated genome instability protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "RPA (replication factor A)",
+                  "children": [
+                    {
+                      "name": "K07466  RFA1, RPA1, rpa; replication factor A1"
+                    },
+                    {
+                      "name": "K10739  RFA2, RPA2; replication factor A2"
+                    },
+                    {
+                      "name": "K10740  RPA3; replication factor A3"
+                    },
+                    {
+                      "name": "K10741  RPA4; replication factor A4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Protein phosphatase 4",
+                  "children": [
+                    {
+                      "name": "K15423  PPP4C; serine/threonine-protein phosphatase 4 catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K15424  PPP4R1; serine/threonine-protein phosphatase 4 regulatory subunit 1"
+                    },
+                    {
+                      "name": "K15425  PPP4R2; serine/threonine-protein phosphatase 4 regulatory subunit 2"
+                    },
+                    {
+                      "name": "K17491  SMEK, PPP4R3; protein phosphatase 4 regulatory subunit 3"
+                    },
+                    {
+                      "name": "K15426  PPP4R4; serine/threonine-protein phosphatase 4 regulatory subunit 4"
+                    }
+                  ]
+                },
+                {
+                  "name": "AP-5 complex",
+                  "children": [
+                    {
+                      "name": "K19022  AP5B1; AP-5 complex subunit beta-1"
+                    },
+                    {
+                      "name": "K19023  AP5M1, MUDENG; AP-5 complex subunit mu-1"
+                    },
+                    {
+                      "name": "K19024  AP5S1; AP-5 complex subunit sigma-1"
+                    },
+                    {
+                      "name": "K19025  AP5Z1, SPG48; AP-5 complex subunit zeta-1"
+                    }
+                  ]
+                },
+                {
+                  "name": "SMC5-SMC6 complex",
+                  "children": [
+                    {
+                      "name": "K22803  SMC5; structural maintenance of chromosomes protein 5"
+                    },
+                    {
+                      "name": "K22804  SMC6; structural maintenance of chromosomes protein 6"
+                    },
+                    {
+                      "name": "K22805  FAM84A, NSE1; protein FAM84A"
+                    },
+                    {
+                      "name": "K22817  NSMCE1, NSE1; non-structural maintenance of chromosomes element 1 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K22756  NSMCE2, NSE2; E3 SUMO-protein ligase NSE2 [EC:2.3.2.-]"
+                    },
+                    {
+                      "name": "K22823  NSMCE3, NSE3; non-structural maintenance of chromosomes element 3"
+                    },
+                    {
+                      "name": "K22825  NSMCE4, NSE4; non-structural maintenance of chromosomes element 4"
+                    },
+                    {
+                      "name": "K22826  EID3, NSMCE4B; EP300-interacting inhibitor of differentiation 3"
+                    },
+                    {
+                      "name": "K26126  SLF1; SMC5-SMC6 complex localization factor protein 1"
+                    },
+                    {
+                      "name": "K26127  SLF2; SMC5-SMC6 complex localization factor protein 2"
+                    },
+                    {
+                      "name": "K28408  SIMC1; SUMO-interacting motif-containing protein 1"
+                    },
+                    {
+                      "name": "K28409  NSE5; non-structural maintenance of chromosome element 5"
+                    },
+                    {
+                      "name": "K28410  KRE29; DNA repair protein KRE29"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other HR factors",
+                  "children": [
+                    {
+                      "name": "K10882  EME1, MMS4; crossover junction endonuclease EME1 [EC:3.1.22.-]"
+                    },
+                    {
+                      "name": "K10883  EME2; crossover junction endonuclease EME2"
+                    },
+                    {
+                      "name": "K20777  EXD2; exonuclease 3'-5' domain-containing protein 2 [EC:3.1.11.1]"
+                    },
+                    {
+                      "name": "K08991  MUS81; crossover junction endonuclease MUS81 [EC:3.1.22.-]"
+                    },
+                    {
+                      "name": "K10881  SHFM1, DSS1, RPN15; 26 proteasome complex subunit DSS1"
+                    },
+                    {
+                      "name": "K10991  SWI5, SAE3; DNA repair protein Swi5/Sae3"
+                    },
+                    {
+                      "name": "K10992  SFR1; Swi5-dependent recombination DNA repair protein 1"
+                    },
+                    {
+                      "name": "K15078  SLX1; structure-specific endonuclease subunit SLX1 [EC:3.6.1.-]"
+                    },
+                    {
+                      "name": "K10484  BTBD12, SLX4; structure-specific endonuclease subunit SLX4 (BTB/POZ domain-containing protein 12)"
+                    },
+                    {
+                      "name": "K15079  SLX4; structure-specific endonuclease subunit SLX4"
+                    },
+                    {
+                      "name": "K15338  GEN1, YEN1; holliday junction resolvase GEN1/YEN1 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K19026  SPG11; spatacsin"
+                    },
+                    {
+                      "name": "K19027  ZFYVE26; zinc finger FYVE domain-containing protein 26"
+                    },
+                    {
+                      "name": "K20778  RAD51AP1; RAD51-associated protein 1"
+                    },
+                    {
+                      "name": "K11339  MORF4L1, MRG15, EAF3; mortality factor 4-like protein 1"
+                    },
+                    {
+                      "name": "K22544  SAMHD1; deoxynucleoside triphosphate triphosphohydrolase SAMHD1 [EC:3.1.5.-]"
+                    },
+                    {
+                      "name": "K22766  FIGNL1; fidgetin-like protein 1 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K22806  SPIDR; DNA repair-scaffolding protein"
+                    },
+                    {
+                      "name": "K22810  FAM84B; protein FAM84B"
+                    },
+                    {
+                      "name": "K23112  BRAT1; BRCA1-associated ATM activator 1"
+                    },
+                    {
+                      "name": "K23456  CFAP410, C21ORF2; cilla- and flagella-associated protein"
+                    },
+                    {
+                      "name": "K25065  HDGFL2; hepatoma-derived growth factor-related protein 2"
+                    },
+                    {
+                      "name": "K25770  ZSWIM7, SWS1; zinc finger SWIM domain-containing protein 7"
+                    },
+                    {
+                      "name": "K25771  SWSAP1; ATPase SWSAP1"
+                    },
+                    {
+                      "name": "K25790  EMSY; BRCA2-interacting transcriptional repressor EMSY"
+                    },
+                    {
+                      "name": "K25791  HSF2BP; heat shock factor 2-binding protein"
+                    },
+                    {
+                      "name": "K26125  MMS22L; protein MMS22-like"
+                    },
+                    {
+                      "name": "K09257  NFKBIL2; NF-kappa-B inhibitor-like protein 2"
+                    },
+                    {
+                      "name": "K27262  BOD1L1; biorientation of chromosomes in cell division protein 1-like 1"
+                    },
+                    {
+                      "name": "K27412  PARPBP; PCNA-interacting partner"
+                    },
+                    {
+                      "name": "K27803  HROB; homologous recombination OB-fold protein"
+                    },
+                    {
+                      "name": "K10737  MCM8; DNA helicase MCM8 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10738  MCM9; DNA helicase MCM9 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K15047  HNRNPUL1, E1BAP5; heterogeneous nuclear ribonucleoprotein U-like protein 1"
+                    },
+                    {
+                      "name": "K28611  HNRNPUL2; heterogeneous nuclear ribonucleoprotein U-like protein 2"
+                    },
+                    {
+                      "name": "K28623  MRNIP; MRN complex-interacting protein"
+                    },
+                    {
+                      "name": "K22807  WRNexo; werner syndrome-like exonuclease [EC:3.1.11.-]"
+                    },
+                    {
+                      "name": "K22685  WSS1; DNA-dependent metalloprotease WSS1 [EC:3.4.24.-]"
+                    },
+                    {
+                      "name": "K26559  WHY1; single-stranded DNA-binding protein WHY1"
+                    },
+                    {
+                      "name": "K26561  WHY2; single-stranded DNA-binding protein WHY2"
+                    },
+                    {
+                      "name": "K26560  WHY3; single-stranded DNA-binding protein WHY3"
+                    },
+                    {
+                      "name": "K14635  MPH1; ATP-dependent DNA helicase MPH1 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K15080  SAW1; single-strand annealing weakened protein 1"
+                    },
+                    {
+                      "name": "K26124  RTT101, CUL8; cullin 8"
+                    },
+                    {
+                      "name": "K26122  MMS22; E3 ubiquitin-protein ligase substrate receptor MMS22"
+                    },
+                    {
+                      "name": "K26123  MMS1; E3 ubiquitin-protein ligase linker protein MMS1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "NHEJ (non-homologous end-joining)",
+              "children": [
+                {
+                  "name": "DNA-PK complex",
+                  "children": [
+                    {
+                      "name": "K10884  XRCC6, KU70, G22P1; ATP-dependent DNA helicase 2 subunit 1"
+                    },
+                    {
+                      "name": "K10885  XRCC5, KU80, G22P2; ATP-dependent DNA helicase 2 subunit 2"
+                    },
+                    {
+                      "name": "K06642  PRKDC; DNA-dependent protein kinase catalytic subunit [EC:2.7.11.1]"
+                    }
+                  ]
+                },
+                {
+                  "name": "MRX complex",
+                  "children": [
+                    {
+                      "name": "K10865  MRE11; double-strand break repair protein MRE11"
+                    },
+                    {
+                      "name": "K10866  RAD50; DNA repair protein RAD50 [EC:3.6.-.-]"
+                    },
+                    {
+                      "name": "K10868  XRS2; DNA repair protein XRS2"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA Ligase 4 complex",
+                  "children": [
+                    {
+                      "name": "K10777  LIG4, DNL4; DNA ligase 4 [EC:6.5.1.1]"
+                    },
+                    {
+                      "name": "K10886  XRCC4; DNA-repair protein XRCC4"
+                    },
+                    {
+                      "name": "K10980  NHEJ1, XLF; non-homologous end-joining factor 1"
+                    },
+                    {
+                      "name": "K10982  LIF1; ligase-interacting factor 1"
+                    },
+                    {
+                      "name": "K10983  NEJ1, LIF2; non-homologous end-joining protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "X-family DNA polymerases",
+                  "children": [
+                    {
+                      "name": "K03512  POLL; DNA polymerase lambda [EC:2.7.7.7 4.2.99.-]"
+                    },
+                    {
+                      "name": "K03513  POLM; DNA polymerase mu [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K00977  DNTT; DNA nucleotidylexotransferase [EC:2.7.7.31]"
+                    },
+                    {
+                      "name": "K02330  POLB; DNA polymerase beta [EC:2.7.7.7 4.2.99.-]"
+                    },
+                    {
+                      "name": "K10981  POL4; DNA polymerase IV [EC:2.7.7.7]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other NHEJ factors",
+                  "children": [
+                    {
+                      "name": "K10863  APTX; aprataxin [EC:3.6.1.70 3.6.1.71 3.6.1.72]"
+                    },
+                    {
+                      "name": "K13295  APLF; aprataxin and PNK-like factor [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K10887  DCLRE1C, ARTEMIS, SCIDA; DNA cross-link repair 1C protein [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K19619  TDP2; tyrosyl-DNA phosphodiesterase 2 [EC:3.1.4.-]"
+                    },
+                    {
+                      "name": "K23113  SMCHD1; structural maintenance of chromosomes flexible hinge domain-containing protein 1"
+                    },
+                    {
+                      "name": "K23386  PWWP3, MUM1; PWWP domain-containing DNA repair factor 3"
+                    },
+                    {
+                      "name": "K25772  PAXX; protein PAXX"
+                    },
+                    {
+                      "name": "K26155  CYREN, MRI; cell cycle regulator of non-homologous end joining"
+                    },
+                    {
+                      "name": "K25792  JMJD8; jumonji domain-containing protein 8"
+                    },
+                    {
+                      "name": "K26128  SHLD1; shieldin complex subunit 1"
+                    },
+                    {
+                      "name": "K26129  SHLD2; shieldin complex subunit 2"
+                    },
+                    {
+                      "name": "K26130  SHLD3; shieldin complex subunit 3"
+                    },
+                    {
+                      "name": "K27845  BEND4; BEN domain-containing protein 4"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "FA (Fanconi anemia) pathway",
+              "children": [
+                {
+                  "name": "FA core complex",
+                  "children": [
+                    {
+                      "name": "K10888  FANCA; fanconi anemia group A protein"
+                    },
+                    {
+                      "name": "K10889  FANCB; fanconi anemia group B protein"
+                    },
+                    {
+                      "name": "K10890  FANCC; fanconi anemia group C protein"
+                    },
+                    {
+                      "name": "K10892  FANCE; fanconi anemia group E protein"
+                    },
+                    {
+                      "name": "K10893  FANCF; fanconi anemia group F protein"
+                    },
+                    {
+                      "name": "K10894  FANCG; fanconi anemia group G protein"
+                    },
+                    {
+                      "name": "K10606  FANCL, PHF9; E3 ubiquitin-protein ligase FANCL [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K10896  FANCM; fanconi anemia group M protein"
+                    },
+                    {
+                      "name": "K10898  FAAP24; fanconi anemia-associated protein"
+                    },
+                    {
+                      "name": "K10993  FAAP100; fanconi anemia core complex 100 kDa subunit"
+                    }
+                  ]
+                },
+                {
+                  "name": "FA core complex binding factors",
+                  "children": [
+                    {
+                      "name": "K06054  HES1; hairy and enhancer of split 1"
+                    },
+                    {
+                      "name": "K11511  APITD1, CENPS, MHF1; centromere protein S"
+                    },
+                    {
+                      "name": "K15360  STRA13, CENPX, MHF2; centromere protein X"
+                    },
+                    {
+                      "name": "K13960  UBE2T, HSPC150; ubiquitin-conjugating enzyme E2 T [EC:2.3.2.23]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Bloom's syndrome complex (BTR)",
+                  "children": [
+                    {
+                      "name": "K10901  BLM, RECQL3, SGS1; bloom syndrome protein [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K03165  TOP3; DNA topoisomerase III [EC:5.6.2.1]"
+                    },
+                    {
+                      "name": "K10990  RMI1, BRAP75; RecQ-mediated genome instability protein 1"
+                    },
+                    {
+                      "name": "K15364  NCE4, RMI1; RecQ-mediated genome instability protein 1"
+                    },
+                    {
+                      "name": "K15365  RMI2; RecQ-mediated genome instability protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "FANCD2-I complex",
+                  "children": [
+                    {
+                      "name": "K10891  FANCD2; fanconi anemia group D2 protein"
+                    },
+                    {
+                      "name": "K10895  FANCI; fanconi anemia group I protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Downstream FA components",
+                  "children": [
+                    {
+                      "name": "K10605  BRCA1; breast cancer type 1 susceptibility protein [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K08775  BRCA2, FANCD1; breast cancer 2 susceptibility protein"
+                    },
+                    {
+                      "name": "K15362  BRIP1, BACH1, FANCJ; fanconi anemia group J protein [EC:5.6.2.3]"
+                    },
+                    {
+                      "name": "K10897  PALB2, FANCN; partner and localizer of BRCA2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other FA pathway factors",
+                  "children": [
+                    {
+                      "name": "K15363  FAN1, MTMR15; fanconi-associated nuclease 1 [EC:3.1.21.- 3.1.4.1]"
+                    },
+                    {
+                      "name": "K04482  RAD51; DNA repair protein RAD51"
+                    },
+                    {
+                      "name": "K10870  RAD51L2, RAD51C; RAD51-like protein 2"
+                    },
+                    {
+                      "name": "K11137  TELO2, TEL2; telomere length regulation protein"
+                    },
+                    {
+                      "name": "K11832  USP1; ubiquitin carboxyl-terminal hydrolase 1 [EC:3.4.19.12]"
+                    },
+                    {
+                      "name": "K15361  WDR48, UAF1; WD repeat-containing protein 48"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other DSBR factors",
+              "children": [
+                {
+                  "name": "Protein phosphatase 6",
+                  "children": [
+                    {
+                      "name": "K15498  PPP6C; serine/threonine-protein phosphatase 6 catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K15499  PPP6R1, SAPS1; serine/threonine-protein phosphatase 6 regulatory subunit 1"
+                    },
+                    {
+                      "name": "K15500  PPP6R2, SAPS2; serine/threonine-protein phosphatase 6 regulatory subunit 2"
+                    },
+                    {
+                      "name": "K15501  PPP6R3, SAPS3; serine/threonine-protein phosphatase 6 regulatory subunit 3"
+                    },
+                    {
+                      "name": "K15502  ANKRD28; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit A"
+                    },
+                    {
+                      "name": "K15503  ANKRD44; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit B"
+                    },
+                    {
+                      "name": "K15504  ANKRD52; serine/threonine-protein phosphatase 6 regulatory ankyrin repeat subunit C"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ubiquitin ligases",
+                  "children": [
+                    {
+                      "name": "K10667  RNF8; E3 ubiquitin-protein ligase RNF8 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K20779  RNF168; E3 ubiquitin-protein ligase RNF168 [EC:2.3.2.31]"
+                    },
+                    {
+                      "name": "K20805  RNF169; E3 ubiquitin-protein ligase RNF169 [EC:2.3.2.31]"
+                    },
+                    {
+                      "name": "K10595  HERC2; E3 ubiquitin-protein ligase HERC2 [EC:2.3.2.26]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K23314  WRAP53, TCAB1; telomerase Cajal body protein 1"
+                    },
+                    {
+                      "name": "K24164  TPRN; taperin"
+                    },
+                    {
+                      "name": "K24688  ZCWPW1; zinc finger CW-type PWWP domain protein 1"
+                    },
+                    {
+                      "name": "K24752  WDR70; WD repeat-containing protein 70"
+                    },
+                    {
+                      "name": "K24755  WDR76, CMR1; WD repeat-containing protein 76"
+                    },
+                    {
+                      "name": "K28434  HMCES; abasic site processing protein HMCES"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TLS (translesion DNA synthesis) factors",
+          "children": [
+            {
+              "name": "Y-family DNA polymerases",
+              "children": [
+                {
+                  "name": "K03509  POLH; DNA polymerase eta [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03510  POLI; DNA polymerase iota [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03511  POLK; DNA polymerase kappa [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03515  REV1; DNA repair protein REV1 [EC:2.7.7.-]"
+                }
+              ]
+            },
+            {
+              "name": "B-family DNA polymerases",
+              "children": [
+                {
+                  "name": "K02350  REV3L, POLZ; DNA polymerase zeta [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03508  POLZ2, rev7; DNA polymerase zeta [EC:2.7.7.7]"
+                }
+              ]
+            },
+            {
+              "name": "A-family DNA polymerase",
+              "children": [
+                {
+                  "name": "K16618  POLN; DNA polymerase nu [EC:2.7.7.7]"
+                }
+              ]
+            },
+            {
+              "name": "Rad6 epistasis group",
+              "children": [
+                {
+                  "name": "K10573  UBE2A, UBC2, RAD6A; ubiquitin-conjugating enzyme E2 A [EC:2.3.2.23]"
+                },
+                {
+                  "name": "K10574  UBE2B, RAD6B; ubiquitin-conjugating enzyme E2 B [EC:2.3.2.23]"
+                },
+                {
+                  "name": "K10627  RAD18; E3 ubiquitin-protein ligase RAD18 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K15505  RAD5; DNA repair protein RAD5 [EC:5.6.2.-]"
+                },
+                {
+                  "name": "K15711  SMARCA3, HLTF; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily A3 [EC:5.6.2. 2.3.2.27]"
+                },
+                {
+                  "name": "K10704  UBE2V; ubiquitin-conjugating enzyme E2 variant"
+                },
+                {
+                  "name": "K10580  UBE2N, BLU, UBC13; ubiquitin-conjugating enzyme E2 N [EC:2.3.2.23]"
+                }
+              ]
+            },
+            {
+              "name": "Other TLS factors",
+              "children": [
+                {
+                  "name": "K04802  PCNA; proliferating cell nuclear antigen"
+                },
+                {
+                  "name": "K27412  PARPBP; PCNA-interacting partner"
+                },
+                {
+                  "name": "K24051  SPRTN; SprT-like domain-contaning protein Spartan"
+                },
+                {
+                  "name": "K26957  GCNA, ACRC; germ cell nuclear acidic protein"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Check point factors",
+          "children": [
+            {
+              "name": "Rad9-Hus1-Rad1 complex",
+              "children": [
+                {
+                  "name": "K10994  RAD9A; cell cycle checkpoint control protein RAD9A [EC:3.1.11.2]"
+                },
+                {
+                  "name": "K10995  RAD9B; cell cycle checkpoint control protein RAD9B"
+                },
+                {
+                  "name": "K10903  HUS1; HUS1 checkpoint protein"
+                },
+                {
+                  "name": "K10996  HUS1B; checkpoint protein HUS1B"
+                },
+                {
+                  "name": "K02830  HRAD1, RAD17; cell cycle checkpoint protein [EC:3.1.11.2]"
+                }
+              ]
+            },
+            {
+              "name": "HRAD17(Rad24)-RFC complex",
+              "children": [
+                {
+                  "name": "K06662  HRAD17, RAD24; cell cycle checkpoint protein"
+                },
+                {
+                  "name": "K10755  RFC2_4; replication factor C subunit 2/4"
+                },
+                {
+                  "name": "K10756  RFC3_5; replication factor C subunit 3/5"
+                }
+              ]
+            },
+            {
+              "name": "Rad17-Mec3-Ddc1 complex",
+              "children": [
+                {
+                  "name": "K02830  HRAD1, RAD17; cell cycle checkpoint protein [EC:3.1.11.2]"
+                },
+                {
+                  "name": "K02544  MEC3; G2-specific checkpoint protein"
+                },
+                {
+                  "name": "K06663  DDC1; DNA damage checkpoint protein"
+                }
+              ]
+            },
+            {
+              "name": "FPC (fork protection complex)",
+              "children": [
+                {
+                  "name": "K10997  TIMELESS, TOF1, SWI1; replication fork protection complex subunit TIMELESS/Tof1/Swi1"
+                },
+                {
+                  "name": "K10998  TIPIN, CSM3, SWI3; replication fork protection complex subunit TIPIN/Csm3/Swi3"
+                },
+                {
+                  "name": "K25773  CLSPN; claspin"
+                },
+                {
+                  "name": "K11272  MRC1; mediator of replication checkpoint protein 1"
+                }
+              ]
+            },
+            {
+              "name": "Triple T complex",
+              "children": [
+                {
+                  "name": "K11137  TELO2, TEL2; telomere length regulation protein"
+                },
+                {
+                  "name": "K20403  TTI1; TELO2-interacting protein 1"
+                },
+                {
+                  "name": "K23115  TTI2; TELO2-interacting protein 2"
+                }
+              ]
+            },
+            {
+              "name": "BAG6-UBL4A-GET4 complex",
+              "children": [
+                {
+                  "name": "K23390  BAG6; large proline-rich protein BAG6"
+                },
+                {
+                  "name": "K23388  UBL4; ubiquitin-like protein 4"
+                },
+                {
+                  "name": "K23387  GET4; golgi to ER traffic protein 4"
+                }
+              ]
+            },
+            {
+              "name": "Other check point factors",
+              "children": [
+                {
+                  "name": "K06640  ATR; serine/threonine-protein kinase ATR [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K10905  ATRIP; ATR interacting protein"
+                },
+                {
+                  "name": "K04728  ATM, TEL1; serine-protein kinase ATM [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K04451  TP53, P53; tumor protein p53"
+                },
+                {
+                  "name": "K02216  CHEK1; serine/threonine-protein kinase CHEK1 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K06641  CHEK2; serine/threonine-protein kinase CHEK2 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K06645  CDC25A; M-phase inducer phosphatase 1 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05866  CDC25B; M-phase inducer phosphatase 2 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K05867  CDC25C; M-phase inducer phosphatase 3 [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K02555  MIH1; M-phase inducer tyrosine phosphatase [EC:3.1.3.48]"
+                },
+                {
+                  "name": "K16197  YWHAB_Q_Z; 14-3-3 protein beta/theta/zeta"
+                },
+                {
+                  "name": "K16198  YWHAG_H; 14-3-3 protein gamma/eta"
+                },
+                {
+                  "name": "K06630  YWHAE; 14-3-3 protein epsilon"
+                },
+                {
+                  "name": "K19483  NAV2; neuron navigator 2 [EC:5.6.2.4]"
+                },
+                {
+                  "name": "K06632  WEE1; wee1-like protein kinase [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K02831  RAD53; ser/thr/tyr protein kinase RAD53 [EC:2.7.11.-]"
+                },
+                {
+                  "name": "K21944  PER1; period circadian protein 1"
+                },
+                {
+                  "name": "K02633  PER2; period circadian protein 2"
+                },
+                {
+                  "name": "K21945  PER3; period circadian protein 3"
+                },
+                {
+                  "name": "K06661  RAD9; DNA repair protein RAD9"
+                },
+                {
+                  "name": "K20780  MDC1; mediator of DNA damage checkpoint protein 1"
+                },
+                {
+                  "name": "K02543  MEC1; cell cycle checkpoint protein MEC1"
+                },
+                {
+                  "name": "K15081  AMN1; antagonist of mitotic exit network protein 1"
+                },
+                {
+                  "name": "K17336  PLS3; plastin-3"
+                },
+                {
+                  "name": "K18340  AEN, ISG20L1; apoptosis-enhancing nuclease [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K08862  PLK3, CNK; polo-like kinase 3 [EC:2.7.11.21]"
+                },
+                {
+                  "name": "K19596  PLK5; inactive serine/threonine-protein kinase PLK5"
+                },
+                {
+                  "name": "K08857  NEK1_4_5; serine/threonine-protein kinase Nek1/4/5 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K20879  NEK10; serine/threonine-protein kinase Nek10 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K20880  NEK11; serine/threonine-protein kinase Nek11 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K03114  SWE1; mitosis inhibitor protein kinase SWE1 [EC:2.7.11.1]"
+                },
+                {
+                  "name": "K24663  NDD1; nuclear division defective protein 1"
+                },
+                {
+                  "name": "K24664  FKH; forkhead protein FKH"
+                },
+                {
+                  "name": "K22422  DONSON; protein downstream neighbor of Son"
+                },
+                {
+                  "name": "K22808  KANK; KN motif and ankyrin repeat domain-containing protein"
+                },
+                {
+                  "name": "K23389  KLLN; killin"
+                },
+                {
+                  "name": "K24458  SLFN11; schlafen family member 11 [EC:3.6.-.-]"
+                },
+                {
+                  "name": "K24782  CHMP4C, SNF7, VPS32C; charged multivesicular body protein 4C"
+                },
+                {
+                  "name": "K12196  VPS4; vacuolar protein-sorting-associated protein 4"
+                },
+                {
+                  "name": "K24778  ZFYVE19, ANCHR; abscission/NoCut checkpoint regulator"
+                },
+                {
+                  "name": "K25059  SDE2; replication stress response regulator SDE2"
+                },
+                {
+                  "name": "K24770  DSE1, ALT2, EMB2757; protein decreased size exclusion limit 1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Other factors with a suspected DNA repair function",
+          "children": [
+            {
+              "name": "DNA polymerases",
+              "children": [
+                {
+                  "name": "K02349  POLQ; DNA polymerase theta [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K02331  POL5, MYBBP1A; DNA polymerase phi [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K22761  PRIMPOL; DNA-directed primase/polymerase protein [EC:2.7.7.102 2.7.7.7]"
+                }
+              ]
+            },
+            {
+              "name": "Nucleases",
+              "children": [
+                {
+                  "name": "K10790  TREX1; three prime repair exonuclease 1 [EC:3.1.11.2]"
+                },
+                {
+                  "name": "K10791  TREX2; three prime repair exonuclease 2 [EC:3.1.11.2]"
+                },
+                {
+                  "name": "K15340  DCLRE1A, SNM1A, PSO2; DNA cross-link repair 1A protein"
+                },
+                {
+                  "name": "K15341  DCLRE1B, SNM1B; DNA cross-link repair 1B protein [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K17815  EXO5; exonuclease V [EC:3.1.-.-]"
+                },
+                {
+                  "name": "K21813  ENDOV; endonuclease V [EC:3.1.26.-]"
+                },
+                {
+                  "name": "K25861  ZRANB3; DNA annealing helicase and endonuclease ZRANB3 [EC:5.6.2.- 3.1.-.-]"
+                },
+                {
+                  "name": "K21411  ANKLE1, LEM3; ankyrin repeat and LEM domain-containing protein 1"
+                },
+                {
+                  "name": "K05986  NUCS; nuclease S1 [EC:3.1.30.1]"
+                }
+              ]
+            },
+            {
+              "name": "Helicases",
+              "children": [
+                {
+                  "name": "K19178  HELQ; POLQ-like helicase [EC:5.6.2.4]"
+                },
+                {
+                  "name": "K20098  ERCC6L2; DNA excision repair protein ERCC-6-like 2 [EC:5.6.2.-]"
+                }
+              ]
+            },
+            {
+              "name": "PSO4 complex",
+              "children": [
+                {
+                  "name": "K10599  PRPF19, PRP19; pre-mRNA-processing factor 19 [EC:2.3.2.27]"
+                },
+                {
+                  "name": "K12860  CDC5L, CDC5, CEF1; pre-mRNA-splicing factor CDC5/CEF1"
+                },
+                {
+                  "name": "K12861  BCAS2; pre-mRNA-splicing factor SPF27"
+                },
+                {
+                  "name": "K12862  PLRG1, PRL1, PRP46; pleiotropic regulator 1"
+                }
+              ]
+            },
+            {
+              "name": "Modulation of nucleotide pools",
+              "children": [
+                {
+                  "name": "K03574  mutT, NUDT15, MTH2; 8-oxo-dGTP diphosphatase [EC:3.6.1.55]"
+                },
+                {
+                  "name": "K17816  NUDT1, MTH1; 8-oxo-dGTP diphosphatase / 2-hydroxy-dATP diphosphatase [EC:3.6.1.55 3.6.1.56]"
+                },
+                {
+                  "name": "K17817  NUDT18, MTH3; 8-oxo-dGDP phosphatase [EC:3.6.1.58]"
+                },
+                {
+                  "name": "K01520  dut, DUT; dUTP diphosphatase [EC:3.6.1.23]"
+                },
+                {
+                  "name": "K10807  RRM1; ribonucleoside-diphosphate reductase subunit M1 [EC:1.17.4.1]"
+                },
+                {
+                  "name": "K10808  RRM2; ribonucleoside-diphosphate reductase subunit M2 [EC:1.17.4.1]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prokaryotic type",
+      "children": [
+        {
+          "name": "SSBR (single strand breaks repair)",
+          "children": [
+            {
+              "name": "Direct repair",
+              "children": [
+                {
+                  "name": "K00567  ogt, MGMT; methylated-DNA-[protein]-cysteine S-methyltransferase [EC:2.1.1.63]"
+                },
+                {
+                  "name": "K10778  ada; AraC family transcriptional regulator, regulatory protein of adaptative response / methylated-DNA-[protein]-cysteine methyltransferase [EC:2.1.1.63]"
+                },
+                {
+                  "name": "K13530  adaA; AraC family transcriptional regulator, regulatory protein of adaptative response / methylphosphotriester-DNA alkyltransferase methyltransferase [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K13531  adaB; methylated-DNA-[protein]-cysteine S-methyltransferase [EC:2.1.1.63]"
+                },
+                {
+                  "name": "K01669  phr, PHR1; deoxyribodipyrimidine photo-lyase [EC:4.1.99.3]"
+                },
+                {
+                  "name": "K06876  phrB; (6-4)DNA photolyase [EC:4.1.99.13]"
+                },
+                {
+                  "name": "K03919  alkB; DNA oxidative demethylase [EC:1.14.11.33]"
+                }
+              ]
+            },
+            {
+              "name": "BER (base exicision repair)",
+              "children": [
+                {
+                  "name": "DNA glycosylases",
+                  "children": [
+                    {
+                      "name": "K03648  UNG, UDG; uracil-DNA glycosylase [EC:3.2.2.27]"
+                    },
+                    {
+                      "name": "K03649  mug; double-stranded uracil-DNA glycosylase [EC:3.2.2.28]"
+                    },
+                    {
+                      "name": "K10800  SMUG1; single-strand selective monofunctional uracil DNA glycosylase [EC:3.2.2.-]"
+                    },
+                    {
+                      "name": "K21929  udg; uracil-DNA glycosylase [EC:3.2.2.27]"
+                    },
+                    {
+                      "name": "K01247  alkA; DNA-3-methyladenine glycosylase II [EC:3.2.2.21]"
+                    },
+                    {
+                      "name": "K13529  ada-alkA; AraC family transcriptional regulator, regulatory protein of adaptative response / DNA-3-methyladenine glycosylase II [EC:3.2.2.21]"
+                    },
+                    {
+                      "name": "K03652  MPG; DNA-3-methyladenine glycosylase [EC:3.2.2.21]"
+                    },
+                    {
+                      "name": "K03575  mutY; A/G-specific adenine glycosylase [EC:3.2.2.31]"
+                    },
+                    {
+                      "name": "K01246  tag; DNA-3-methyladenine glycosylase I [EC:3.2.2.20]"
+                    },
+                    {
+                      "name": "K10563  mutM, fpg; formamidopyrimidine-DNA glycosylase [EC:3.2.2.23 4.2.99.18]"
+                    },
+                    {
+                      "name": "K05522  nei; endonuclease VIII [EC:3.2.2.- 4.2.99.18]"
+                    },
+                    {
+                      "name": "K10773  NTHL1, nth; endonuclease III [EC:3.2.2.- 4.2.99.18]"
+                    }
+                  ]
+                },
+                {
+                  "name": "AP endonucleases",
+                  "children": [
+                    {
+                      "name": "K01142  xthA, xth; exodeoxyribonuclease III [EC:3.1.11.2]"
+                    },
+                    {
+                      "name": "K01151  nfo; deoxyribonuclease IV [EC:3.1.21.2]"
+                    },
+                    {
+                      "name": "K05982  nfi; deoxyribonuclease V [EC:3.1.21.7]"
+                    },
+                    {
+                      "name": "K09120  dU; endonuclease dU"
+                    }
+                  ]
+                },
+                {
+                  "name": "RecJ",
+                  "children": [
+                    {
+                      "name": "K07462  recJ; single-stranded-DNA-specific exonuclease [EC:3.1.-.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA ligase",
+                  "children": [
+                    {
+                      "name": "K01972  E6.5.1.2, ligA, ligB; DNA ligase (NAD+) [EC:6.5.1.2]"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA polymerase I",
+                  "children": [
+                    {
+                      "name": "K02335  polA; DNA polymerase I [EC:2.7.7.7]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "NER (nucleotide excision repair)",
+              "children": [
+                {
+                  "name": "GGR (global genome repair) factors",
+                  "children": [
+                    {
+                      "name": "K03701  uvrA; excinuclease ABC subunit A"
+                    },
+                    {
+                      "name": "K03702  uvrB; excinuclease ABC subunit B"
+                    },
+                    {
+                      "name": "K03703  uvrC; excinuclease ABC subunit C"
+                    },
+                    {
+                      "name": "K05984  cho; excinuclease Cho [EC:3.1.25.-]"
+                    },
+                    {
+                      "name": "K03657  uvrD, pcrA; ATP-dependent DNA helicase UvrD/PcrA [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K02335  polA; DNA polymerase I [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K01972  E6.5.1.2, ligA, ligB; DNA ligase (NAD+) [EC:6.5.1.2]"
+                    }
+                  ]
+                },
+                {
+                  "name": "TCR (transcription coupled repair) factors",
+                  "children": [
+                    {
+                      "name": "DNA-directed RNA polymerase complex (RNAP)",
+                      "children": [
+                        {
+                          "name": "K03043  rpoB; DNA-directed RNA polymerase subunit beta [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K03046  rpoC; DNA-directed RNA polymerase subunit beta' [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K13797  rpoBC; DNA-directed RNA polymerase subunit beta-beta' [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K03040  rpoA; DNA-directed RNA polymerase subunit alpha [EC:2.7.7.6]"
+                        },
+                        {
+                          "name": "K03048  rpoE; DNA-directed RNA polymerase subunit delta"
+                        },
+                        {
+                          "name": "K03060  rpoZ; DNA-directed RNA polymerase subunit omega [EC:2.7.7.6]"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "TRCF (transcription-repair coupling factor)",
+                      "children": [
+                        {
+                          "name": "K03723  mfd; transcription-repair coupling factor (superfamily II helicase) [EC:5.6.2.4]"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "MMR (mismatch excision repair)",
+              "children": [
+                {
+                  "name": "Mismatch and loop recognition factors",
+                  "children": [
+                    {
+                      "name": "K03555  mutS; DNA mismatch repair protein MutS"
+                    },
+                    {
+                      "name": "K07456  mutS2; DNA mismatch repair protein MutS2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Molecular matchmaker",
+                  "children": [
+                    {
+                      "name": "K03572  mutL; DNA mismatch repair protein MutL"
+                    }
+                  ]
+                },
+                {
+                  "name": "Strand discrimination factor",
+                  "children": [
+                    {
+                      "name": "K03573  mutH; DNA mismatch repair protein MutH"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA exonucleases",
+                  "children": [
+                    {
+                      "name": "K01141  sbcB, exoI; exodeoxyribonuclease I [EC:3.1.11.1]"
+                    },
+                    {
+                      "name": "K03601  xseA; exodeoxyribonuclease VII large subunit [EC:3.1.11.6]"
+                    },
+                    {
+                      "name": "K03602  xseB; exodeoxyribonuclease VII small subunit [EC:3.1.11.6]"
+                    },
+                    {
+                      "name": "K10857  exoX; exodeoxyribonuclease X [EC:3.1.11.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA polymerase III holoenzyme",
+                  "children": [
+                    {
+                      "name": "K02337  dnaE; DNA polymerase III subunit alpha [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K03763  polC; DNA polymerase III subunit alpha, Gram-positive type [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02338  dnaN; DNA polymerase III subunit beta [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02339  holC; DNA polymerase III subunit chi [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02340  holA; DNA polymerase III subunit delta [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02341  holB; DNA polymerase III subunit delta' [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02342  dnaQ; DNA polymerase III subunit epsilon [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K14159  rnhA-dnaQ; ribonuclease HI / DNA polymerase III subunit epsilon [EC:3.1.26.4 2.7.7.7]"
+                    },
+                    {
+                      "name": "K02343  dnaX; DNA polymerase III subunit gamma/tau [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02344  holD; DNA polymerase III subunit psi [EC:2.7.7.7]"
+                    },
+                    {
+                      "name": "K02345  holE; DNA polymerase III subunit theta [EC:2.7.7.7]"
+                    }
+                  ]
+                },
+                {
+                  "name": "DNA ligase",
+                  "children": [
+                    {
+                      "name": "K01972  E6.5.1.2, ligA, ligB; DNA ligase (NAD+) [EC:6.5.1.2]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other MMR factors",
+                  "children": [
+                    {
+                      "name": "K03657  uvrD, pcrA; ATP-dependent DNA helicase UvrD/PcrA [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K03111  ssb; single-strand DNA-binding protein"
+                    },
+                    {
+                      "name": "K06223  dam; DNA adenine methylase [EC:2.1.1.72]"
+                    },
+                    {
+                      "name": "K07458  vsr; DNA mismatch endonuclease, patch repair protein [EC:3.1.-.-]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DSBR (double strand breaks repair)",
+          "children": [
+            {
+              "name": "HR (homologous recombination)",
+              "children": [
+                {
+                  "name": "RecBC pathway proteins",
+                  "children": [
+                    {
+                      "name": "K03582  recB; exodeoxyribonuclease V beta subunit [EC:3.1.11.5]"
+                    },
+                    {
+                      "name": "K03583  recC; exodeoxyribonuclease V gamma subunit [EC:3.1.11.5]"
+                    },
+                    {
+                      "name": "K03581  recD; exodeoxyribonuclease V alpha subunit [EC:3.1.11.5]"
+                    },
+                    {
+                      "name": "K03553  recA; recombination protein RecA"
+                    },
+                    {
+                      "name": "K03550  ruvA; holliday junction DNA helicase RuvA"
+                    },
+                    {
+                      "name": "K03551  ruvB; holliday junction DNA helicase RuvB [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K01159  ruvC; crossover junction endodeoxyribonuclease RuvC [EC:3.1.21.10]"
+                    },
+                    {
+                      "name": "K01160  rusA; crossover junction endodeoxyribonuclease RusA [EC:3.1.21.10]"
+                    },
+                    {
+                      "name": "K04066  priA; primosomal protein N' (replication factor Y) (superfamily II helicase) [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K02686  priB; primosomal replication protein N"
+                    },
+                    {
+                      "name": "K04067  priC; primosomal replication protein N''"
+                    },
+                    {
+                      "name": "K02317  dnaT; DNA replication protein DnaT"
+                    },
+                    {
+                      "name": "K01141  sbcB, exoI; exodeoxyribonuclease I [EC:3.1.11.1]"
+                    },
+                    {
+                      "name": "K03546  sbcC, rad50; DNA repair protein SbcC/Rad50"
+                    },
+                    {
+                      "name": "K03547  sbcD, mre11; DNA repair protein SbcD/Mre11"
+                    }
+                  ]
+                },
+                {
+                  "name": "RecFOR pathway proteins",
+                  "children": [
+                    {
+                      "name": "K03553  recA; recombination protein RecA"
+                    },
+                    {
+                      "name": "K04485  radA, sms; DNA repair protein RadA/Sms"
+                    },
+                    {
+                      "name": "K03629  recF; DNA replication and repair protein RecF"
+                    },
+                    {
+                      "name": "K03655  recG; ATP-dependent DNA helicase RecG [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K07462  recJ; single-stranded-DNA-specific exonuclease [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K03584  recO; DNA repair protein RecO (recombination protein O)"
+                    },
+                    {
+                      "name": "K06187  recR; recombination protein RecR"
+                    },
+                    {
+                      "name": "K03631  recN; DNA repair protein RecN (Recombination protein N)"
+                    },
+                    {
+                      "name": "K03700  recU; recombination protein U"
+                    },
+                    {
+                      "name": "K03554  rdgC; recombination associated protein RdgC"
+                    },
+                    {
+                      "name": "K03550  ruvA; holliday junction DNA helicase RuvA"
+                    },
+                    {
+                      "name": "K03551  ruvB; holliday junction DNA helicase RuvB [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K01159  ruvC; crossover junction endodeoxyribonuclease RuvC [EC:3.1.21.10]"
+                    }
+                  ]
+                },
+                {
+                  "name": "AddAB pathway proteins",
+                  "children": [
+                    {
+                      "name": "K16898 addA; ATP-dependent helicase/nuclease subunit A [EC:5.6.2.4 3.1.-.-]"
+                    },
+                    {
+                      "name": "K16899 addB; ATP-dependent helicase/nuclease subunit B [EC:5.6.2.4 3.1.-.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other HR factor",
+                  "children": [
+                    {
+                      "name": "K15342  cas1; CRISP-associated protein Cas1"
+                    },
+                    {
+                      "name": "K19789  radD; DNA repair protein RadD"
+                    }
+                  ]
+                },
+                {
+                  "name": "Archaeal homologous recombinant proteins",
+                  "children": [
+                    {
+                      "name": "K04483  radA; DNA repair protein RadA"
+                    },
+                    {
+                      "name": "K04484  radB; DNA repair protein RadB"
+                    },
+                    {
+                      "name": "K03552  hjr, hjc, hje; holliday junction resolvase [EC:3.1.21.10]"
+                    },
+                    {
+                      "name": "K03546  sbcC, rad50; DNA repair protein SbcC/Rad50"
+                    },
+                    {
+                      "name": "K03547  sbcD, mre11; DNA repair protein SbcD/Mre11"
+                    },
+                    {
+                      "name": "K06915  herA; DNA double-strand break repair helicase HerA and related ATPase"
+                    },
+                    {
+                      "name": "K25510  nurA; DNA double-strand break repair nuclease NurA [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K03726  helS; ATP-dependent DNA helicase [EC:5.6.2.4]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "NHEJ (non-homologous end-joining)",
+              "children": [
+                {
+                  "name": "Two-component NHEJ DNA repair complex",
+                  "children": [
+                    {
+                      "name": "K10979  ku; DNA end-binding protein Ku"
+                    },
+                    {
+                      "name": "K01971  ligD; bifunctional non-homologous end joining protein LigD [EC:6.5.1.1]"
+                    }
+                  ]
+                },
+                {
+                  "name": "SHIIR (short-homology-independent illegitimate recombination)",
+                  "children": [
+                    {
+                      "name": "Facilitator",
+                      "children": [
+                        {
+                          "name": "K02469  gyrA; DNA gyrase subunit A [EC:5.6.2.2]"
+                        },
+                        {
+                          "name": "K02470  gyrB; DNA gyrase subunit B [EC:5.6.2.2]"
+                        },
+                        {
+                          "name": "K03168  topA; DNA topoisomerase I [EC:5.6.2.1]"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Supressor",
+                      "children": [
+                        {
+                          "name": "K05787  hupA; DNA-binding protein HU-alpha"
+                        },
+                        {
+                          "name": "K03530  hupB; DNA-binding protein HU-beta"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "SHDIR (short-homology-dependent illegitimate recombination)",
+                  "children": [
+                    {
+                      "name": "RecET pathway",
+                      "children": [
+                        {
+                          "name": "K10906  recE; exodeoxyribonuclease VIII [EC:3.1.11.-]"
+                        },
+                        {
+                          "name": "K07455  recT; recombination protein RecT"
+                        },
+                        {
+                          "name": "K07462  recJ; single-stranded-DNA-specific exonuclease [EC:3.1.-.-]"
+                        },
+                        {
+                          "name": "K03584  recO; DNA repair protein RecO (recombination protein O)"
+                        },
+                        {
+                          "name": "K06187  recR; recombination protein RecR"
+                        },
+                        {
+                          "name": "K01972  E6.5.1.2, ligA, ligB; DNA ligase (NAD+) [EC:6.5.1.2]"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Facilitator",
+                      "children": [
+                        {
+                          "name": "K03557  fis; Fis family transcriptional regulator, factor for inversion stimulation protein"
+                        },
+                        {
+                          "name": "K04764  ihfA, himA; integration host factor subunit alpha"
+                        },
+                        {
+                          "name": "K05788  ihfB, himD; integration host factor subunit beta"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Supressor",
+                      "children": [
+                        {
+                          "name": "K01141  sbcB, exoI; exodeoxyribonuclease I [EC:3.1.11.1]"
+                        },
+                        {
+                          "name": "K03654  recQ; ATP-dependent DNA helicase RecQ [EC:5.6.2.4]"
+                        },
+                        {
+                          "name": "K03701  uvrA; excinuclease ABC subunit A"
+                        },
+                        {
+                          "name": "K03702  uvrB; excinuclease ABC subunit B"
+                        },
+                        {
+                          "name": "K03746  hns; DNA-binding protein H-NS"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TLS (translesion DNA synthesis) factors",
+          "children": [
+            {
+              "name": "Y-family DNA polymerases",
+              "children": [
+                {
+                  "name": "K02346  dinB; DNA polymerase IV [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03502  umuC; DNA polymerase V"
+                },
+                {
+                  "name": "K03503  umuD; DNA polymerase V [EC:3.4.21.-]"
+                },
+                {
+                  "name": "K04479  dbh; DNA polymerase IV (archaeal DinB-like DNA polymerase) [EC:2.7.7.7]"
+                }
+              ]
+            },
+            {
+              "name": "Other SOS response factors",
+              "children": [
+                {
+                  "name": "K03553  recA; recombination protein RecA"
+                },
+                {
+                  "name": "K01356  lexA; repressor LexA [EC:3.4.21.88]"
+                },
+                {
+                  "name": "K03631  recN; DNA repair protein RecN (Recombination protein N)"
+                },
+                {
+                  "name": "K02336  polB; DNA polymerase II [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K14160  imuA; protein ImuA"
+                },
+                {
+                  "name": "K14161  imuB; protein ImuB"
+                },
+                {
+                  "name": "K14162  dnaE2; error-prone DNA polymerase [EC:2.7.7.7]"
+                },
+                {
+                  "name": "K03111  ssb; single-strand DNA-binding protein"
+                },
+                {
+                  "name": "K14623  dinD; DNA-damage-inducible protein D"
+                },
+                {
+                  "name": "K12149  dinI; DNA-damage-inducible protein I"
+                },
+                {
+                  "name": "K03565  recX; regulatory protein"
+                },
+                {
+                  "name": "K01157  rpnA; recombination-promoting nuclease RpnA [EC:3.1.21.-]"
+                },
+                {
+                  "name": "K24087  rpnB; recombination-promoting nuclease RpnB [EC:3.1.21.-]"
+                },
+                {
+                  "name": "K24088  rpnC; recombination-promoting nuclease RpnC [EC:3.1.21.-]"
+                },
+                {
+                  "name": "K24089  rpnD; recombination-promoting nuclease RpnD [EC:3.1.21.-]"
+                },
+                {
+                  "name": "K24090  rpnE; recombination-promoting nuclease RpnE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Other factors with a suspected DNA repair function",
+          "children": [
+            {
+              "name": "DNA polymerase",
+              "children": [
+                {
+                  "name": "K02347  polX, dpx; DNA polymerase (family X)"
+                }
+              ]
+            },
+            {
+              "name": "DNA helicases",
+              "children": [
+                {
+                  "name": "K03656  rep; ATP-dependent DNA helicase Rep [EC:5.6.2.4]"
+                },
+                {
+                  "name": "K03658  helD; DNA helicase IV [EC:5.6.2.4]"
+                },
+                {
+                  "name": "K03722  dinG; ATP-dependent DNA helicase DinG [EC:5.6.2.3]"
+                },
+                {
+                  "name": "K03724  lhr; ATP-dependent helicase Lhr and Lhr-like helicase [EC:5.6.2.6 5.6.2.4]"
+                }
+              ]
+            },
+            {
+              "name": "Modulation of nucleotide pools",
+              "children": [
+                {
+                  "name": "K03574  mutT, NUDT15, MTH2; 8-oxo-dGTP diphosphatase [EC:3.6.1.55]"
+                },
+                {
+                  "name": "K23258  mutT1; 8-oxo-(d)GTP phosphatase [EC:3.6.1.69]"
+                },
+                {
+                  "name": "K01554  K01554; 8-oxo-dGDP phosphatase [EC:3.6.1.58]"
+                },
+                {
+                  "name": "K01520  dut, DUT; dUTP diphosphatase [EC:3.6.1.23]"
+                },
+                {
+                  "name": "K00525  E1.17.4.1A, nrdA, nrdE; ribonucleoside-diphosphate reductase alpha chain [EC:1.17.4.1]"
+                },
+                {
+                  "name": "K00526  E1.17.4.1B, nrdB, nrdF; ribonucleoside-diphosphate reductase beta chain [EC:1.17.4.1]"
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "children": [
+                {
+                  "name": "K06881  nrnA; bifunctional oligoribonuclease and PAP phosphatase NrnA [EC:3.1.3.7 3.1.13.3]"
+                },
+                {
+                  "name": "K22585  nreA; DNA repair protein NreA"
+                },
+                {
+                  "name": "K28130  cc1; DNA binding protein, CC1 family"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

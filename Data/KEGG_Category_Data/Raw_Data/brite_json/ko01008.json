@@ -1,0 +1,2224 @@
+{
+  "name": "ko01008",
+  "children": [
+    {
+      "name": "Polyketide synthase (PKS)",
+      "children": [
+        {
+          "name": "Modular type I PKS",
+          "children": [
+            {
+              "name": "cis-AT PKS",
+              "children": [
+                {
+                  "name": "Erythronolide PKS",
+                  "children": [
+                    {
+                      "name": "K10817  eryAI; 6-deoxyerythronolide-B synthase EryAI [EC:2.3.1.94]"
+                    },
+                    {
+                      "name": "K24563  eryAII; 6-deoxyerythronolide B synthase EryAII [EC:2.3.1.94]"
+                    },
+                    {
+                      "name": "K24564  eryAIII; 6-deoxyerythronolide B synthase EryAIII [EC:2.3.1.94]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Oleandomycin synthase",
+                  "children": [
+                    {
+                      "name": "K16007  oleAI; 8,8a-deoxyoleandolide synthase 1"
+                    },
+                    {
+                      "name": "K24565  oleAII; 8,8a-deoxyoleandolide synthase 2"
+                    },
+                    {
+                      "name": "K24566  oleAIII; 8,8a-deoxyoleandolide synthase 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pikromycin PKS",
+                  "children": [
+                    {
+                      "name": "K16000  pikAI; narbonolide/10-deoxymethynolide synthase [EC:2.3.1.240 2.3.1.239]"
+                    },
+                    {
+                      "name": "K16001  pikAII; narbonolide/10-deoxymethynolide synthase [EC:2.3.1.240 2.3.1.239]"
+                    },
+                    {
+                      "name": "K16002  pikAIII; narbonolide/10-deoxymethynolide synthase [EC:2.3.1.240 2.3.1.239]"
+                    },
+                    {
+                      "name": "K16003  pikAIV; narbonolide synthase [EC:2.3.1.240]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Avermectin PKS",
+                  "children": [
+                    {
+                      "name": "K14371  aveA1; avermectin polyketide synthase AveA1"
+                    },
+                    {
+                      "name": "K24567  aveA2; avermectin polyketide synthase AveA2"
+                    },
+                    {
+                      "name": "K24568  aveA3; avermectin polyketide synthase AveA3"
+                    },
+                    {
+                      "name": "K24569  aveA4; avermectin polyketide synthase AveA4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Tylactone synthase",
+                  "children": [
+                    {
+                      "name": "K15988  tylG1; tylactone synthase 1"
+                    },
+                    {
+                      "name": "K24555  tylG2; tylactone synthase 2"
+                    },
+                    {
+                      "name": "K24556  tylG3; tylactone synthase 3"
+                    },
+                    {
+                      "name": "K24557  tylG4; tylactone synthase 4"
+                    },
+                    {
+                      "name": "K24558  tylG5; tylactone synthase 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Protomycinolide IV synthase",
+                  "children": [
+                    {
+                      "name": "K24528  mycAI; protomycinolide IV synthase 1"
+                    },
+                    {
+                      "name": "K24559  mycAII; protomycinolide IV synthase 2"
+                    },
+                    {
+                      "name": "K24560  mycAIII; protomycinolide IV synthase 3"
+                    },
+                    {
+                      "name": "K24561  mycAIV; protomycinolide IV synthase 4"
+                    },
+                    {
+                      "name": "K24562  mycAV; protomycinolide IV synthase 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Niddamycin PKS",
+                  "children": [
+                    {
+                      "name": "K16372  nidA1; niddamycin polyketide synthase 1"
+                    },
+                    {
+                      "name": "K20786  nidA2; niddamycin polyketide synthase 2"
+                    },
+                    {
+                      "name": "K16373  nidA3; niddamycin polyketide synthase 3"
+                    },
+                    {
+                      "name": "K16374  nidA4_5; niddamycin polyketide synthase 4/5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Rapamycin PKS",
+                  "children": [
+                    {
+                      "name": "K16420  rapA_B_C; rapamycin polyketide synthase A/B/C"
+                    }
+                  ]
+                },
+                {
+                  "name": "Immunomycin PKS",
+                  "children": [
+                    {
+                      "name": "K16377  fkbA; polyketide synthase FkbA"
+                    },
+                    {
+                      "name": "K16375  fkbB; polyketide synthase FkbB"
+                    },
+                    {
+                      "name": "K16376  fkbC; polyketide synthase FkbC"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ansamitocin PKS",
+                  "children": [
+                    {
+                      "name": "K16029  asmA; ansamitocin polyketide synthase A"
+                    },
+                    {
+                      "name": "K16030  asmB; ansamitocin polyketide synthase B"
+                    },
+                    {
+                      "name": "K16031  asmC; ansamitocin polyketide synthase C"
+                    },
+                    {
+                      "name": "K16032  asmD; ansamitocin polyketide synthase D"
+                    }
+                  ]
+                },
+                {
+                  "name": "Rifamycin PKS",
+                  "children": [
+                    {
+                      "name": "K15670  rifA; rifamycin polyketide synthase modules 1, 2 and 3 [EC:6.2.1.74]"
+                    },
+                    {
+                      "name": "K15671  rifB; rifamycin polyketide synthase modules 4, 5 and 6"
+                    },
+                    {
+                      "name": "K15672  rifC_D; rifamycin polyketide synthase modules 7 and 8"
+                    },
+                    {
+                      "name": "K15673  rifE; rifamycin polyketide synthase modules 9 and 10"
+                    }
+                  ]
+                },
+                {
+                  "name": "Polyene macrolide PKS",
+                  "children": [
+                    {
+                      "name": "K16382  amphA, nysA; polyene macrolide polyketide synthase, loading module"
+                    },
+                    {
+                      "name": "K16383  amphB, nysB; polyene macrolide polyketide synthase, A-type KR domains"
+                    },
+                    {
+                      "name": "K16384  amphC, nysC; polyene macrolide polyketide synthase"
+                    },
+                    {
+                      "name": "K16385  amphI, nysI; polyene macrolide polyketide synthase, KS-AT-KR-ACP domains"
+                    },
+                    {
+                      "name": "K16386  amphJ, nysJ; polyene macrolide polyketide synthase"
+                    },
+                    {
+                      "name": "K16387  amphK, nysK; polyene macrolide polyketide synthase"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pimaricinolide synthase",
+                  "children": [
+                    {
+                      "name": "K16391  pimS0; pimaricinolide synthase, loading module"
+                    },
+                    {
+                      "name": "K19203  pimS1; pimaricinolide synthase PimS1"
+                    },
+                    {
+                      "name": "K19204  pimS2; pimaricinolide synthase PimS2"
+                    },
+                    {
+                      "name": "K19205  pimS3; pimaricinolide synthase PimS3"
+                    },
+                    {
+                      "name": "K19206  pimS4; pimaricinolide synthase PimS4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Candicidin PKS",
+                  "children": [
+                    {
+                      "name": "K16392  fscA; candicidin polyketide synthase FscA"
+                    },
+                    {
+                      "name": "K16393  fscB; candicidin polyketide synthase FscB"
+                    },
+                    {
+                      "name": "K20787  fscC; candicidin polyketide synthase FscC"
+                    },
+                    {
+                      "name": "K19207  fscD; candicidin polyketide synthase FscD"
+                    },
+                    {
+                      "name": "K19208  fscE; candicidin polyketide synthase FscE"
+                    },
+                    {
+                      "name": "K25145  fscF; candicidin polyketide synthase FscF"
+                    }
+                  ]
+                },
+                {
+                  "name": "Soraphen PKS",
+                  "children": [
+                    {
+                      "name": "K16401  sorA; soraphen polyketide synthase A"
+                    },
+                    {
+                      "name": "K16402  sorB; soraphen polyketide synthase B"
+                    }
+                  ]
+                },
+                {
+                  "name": "Stigmatellin PKS",
+                  "children": [
+                    {
+                      "name": "K16405  stiA; stigmatellin polyketide synthase StiA"
+                    },
+                    {
+                      "name": "K16406  stiB; stigmatellin polyketide synthase StiB"
+                    },
+                    {
+                      "name": "K16407  stiC; stigmatellin polyketide synthase StiC"
+                    },
+                    {
+                      "name": "K16408  stiD; stigmatellin polyketide synthase StiD"
+                    },
+                    {
+                      "name": "K16409  stiE; stigmatellin polyketide synthase StiE"
+                    },
+                    {
+                      "name": "K16410  stiF; stigmatellin polyketide synthase StiF"
+                    },
+                    {
+                      "name": "K16411  stiG; stigmatellin polyketide synthase StiG"
+                    },
+                    {
+                      "name": "K16412  stiH; stigmatellin polyketide synthase StiH"
+                    },
+                    {
+                      "name": "K16413  stiJ; stigmatellin polyketide synthase StiJ"
+                    }
+                  ]
+                },
+                {
+                  "name": "Mycolactone PKS",
+                  "children": [
+                    {
+                      "name": "K16418  mlsA1; mycolactone core lactone polyketide synthase MlsA1"
+                    },
+                    {
+                      "name": "K16450  mlsA2; mycolactone core lactone polyketide synthase MlsA2"
+                    },
+                    {
+                      "name": "K16419  mlsB; mycolactone side chain polyketide synthase"
+                    }
+                  ]
+                },
+                {
+                  "name": "Coelimycin PKS",
+                  "children": [
+                    {
+                      "name": "K23365  cpkA; 5-hydroxydodecatetraenal polyketide synthase CpkA [EC:2.3.1.281]"
+                    },
+                    {
+                      "name": "K23366  cpkB; 5-hydroxydodecatetraenal polyketide synthase CpkB [EC:2.3.1.281]"
+                    },
+                    {
+                      "name": "K23367  cpkC; 5-hydroxydodecatetraenal polyketide synthase CpkC [EC:2.3.1.281]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Aureothin PKS",
+                  "children": [
+                    {
+                      "name": "K23744  aurA; aureothin polyketide synthase system AurA [EC:2.3.1.289]"
+                    },
+                    {
+                      "name": "K23745  aurB; aureothin polyketide synthase system AurB [EC:2.3.1.289]"
+                    },
+                    {
+                      "name": "K23746  aurC; aureothin polyketide synthase system AurC [EC:2.3.1.289]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Spectinabilin PKS",
+                  "children": [
+                    {
+                      "name": "K23747  norA; spectinabilin polyketide synthase system NorA [EC:2.3.1.290]"
+                    },
+                    {
+                      "name": "K23748  norB; spectinabilin polyketide synthase system NorB [EC:2.3.1.290]"
+                    },
+                    {
+                      "name": "K23749  norC; spectinabilin polyketide synthase system NorC [EC:2.3.1.290]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Phthiocerol / Phenolphthiocerol PKS",
+                  "children": [
+                    {
+                      "name": "K12440  ppsA; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase A [EC:2.3.1.292]"
+                    },
+                    {
+                      "name": "K12441  ppsB; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase B [EC:2.3.1.292]"
+                    },
+                    {
+                      "name": "K12442  ppsC; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase C [EC:2.3.1.292]"
+                    },
+                    {
+                      "name": "K12443  ppsD; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase D [EC:2.3.1.292]"
+                    },
+                    {
+                      "name": "K12444  ppsE; phthiocerol/phenolphthiocerol synthesis type-I polyketide synthase E [EC:2.3.1.292]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "trans-AT PKS",
+              "children": [
+                {
+                  "name": "Bacillanene hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K15329  pksE, baeE; trans-AT polyketide synthase, acyltransferase and oxidoreductase domains"
+                    },
+                    {
+                      "name": "K15328  pksD, baeD; bacillaene synthase trans-acting acyltransferase"
+                    },
+                    {
+                      "name": "K13611  pksJ, baeJ; bacillaene biosynthesis, polyketide synthase / nonribosomal peptide synthetase PksJ/BaeJ"
+                    },
+                    {
+                      "name": "K13612  pksL, baeL; bacillaene polyketide synthase PksL/BaeL"
+                    },
+                    {
+                      "name": "K13613  pksM, baeM; bacillaene polyketide synthase PksM/BaeM"
+                    },
+                    {
+                      "name": "K13614  pksN, baeN; bacillaene biosynthesis, polyketide synthase / nonribosomal peptide synthetase PksN/BaeN"
+                    },
+                    {
+                      "name": "K13615  pksR, baeR; bacillaene polyketide synthase PksR/BaeR"
+                    }
+                  ]
+                },
+                {
+                  "name": "Macrolactin PKS",
+                  "children": [
+                    {
+                      "name": "K15329  pksE, baeE; trans-AT polyketide synthase, acyltransferase and oxidoreductase domains"
+                    },
+                    {
+                      "name": "K25842  mlnB; macrolactin polyketide synthase MlnB"
+                    },
+                    {
+                      "name": "K25843  mlnC; macrolactin polyketide synthase MlnC"
+                    },
+                    {
+                      "name": "K25844  mlnD; macrolactin polyketide synthase MlnD"
+                    },
+                    {
+                      "name": "K25845  mlnE; macrolactin polyketide synthase MlnE"
+                    },
+                    {
+                      "name": "K25846  mlnF; macrolactin polyketide synthase MlnF"
+                    },
+                    {
+                      "name": "K25847  mlnG; macrolactin polyketide synthase MlnG"
+                    },
+                    {
+                      "name": "K25848  mlnH; macrolactin polyketide synthase MlnH"
+                    }
+                  ]
+                },
+                {
+                  "name": "Difficidin PKS",
+                  "children": [
+                    {
+                      "name": "K15329  pksE, baeE; trans-AT polyketide synthase, acyltransferase and oxidoreductase domains"
+                    },
+                    {
+                      "name": "K25849  dfnD; difficidin synthase DfnD"
+                    },
+                    {
+                      "name": "K25850  dfnE; difficidin synthase DfnE"
+                    },
+                    {
+                      "name": "K25851  dfnF; difficidin synthase DfnF"
+                    },
+                    {
+                      "name": "K25852  dfnG; difficidin synthase DfnG"
+                    },
+                    {
+                      "name": "K25853  dfnH; difficidin synthase DfnH"
+                    },
+                    {
+                      "name": "K25854  dfnI; difficidin synthase DfnI"
+                    },
+                    {
+                      "name": "K25855  dfnJ; difficidin synthase DfnJ"
+                    }
+                  ]
+                },
+                {
+                  "name": "Rhizoxin hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K15469  rhiG; rhizoxin biosynthesis acyltransferase"
+                    },
+                    {
+                      "name": "K15674  rhiA; rhizoxin biosynthesis, polyketide synthase / nonribosomal peptide synthetase RhiA"
+                    },
+                    {
+                      "name": "K15675  rhiB; rhizoxin biosynthesis, polyketide synthase / nonribosomal peptide synthetase RhiB"
+                    },
+                    {
+                      "name": "K15676  rhiC; rhizoxin biosynthesis, polyketide synthase RhiC"
+                    },
+                    {
+                      "name": "K15677  rhiD; rhizoxin biosynthesis, polyketide synthase RhiD"
+                    },
+                    {
+                      "name": "K15678  rhiE; rhizoxin biosynthesis, polyketide synthase RhiE"
+                    },
+                    {
+                      "name": "K15679  rhiF; rhizoxin biosynthesis, polyketide synthase RhiF"
+                    }
+                  ]
+                },
+                {
+                  "name": "Albicidin synthase, hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K28567  albXIII; albicidin biosynthesis acyltransferase"
+                    },
+                    {
+                      "name": "K28568  albI; albicidin biosynthesis, polyketide synthase / nonribosomal peptide synthetase AlbI"
+                    },
+                    {
+                      "name": "K28569  albIV; albicidin biosynthesis, nonribosomal peptide synthetase AlbIV"
+                    },
+                    {
+                      "name": "K28570  albIX; albicidin biosynthesis, nonribosomal peptide synthetase AlbIX"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Iterative type I PKS",
+          "children": [
+            {
+              "name": "Fungal nonreducing PKS (NR-PKS)",
+              "children": [
+                {
+                  "name": "K15316  PKSA; noranthrone synthase [EC:2.3.1.221]"
+                },
+                {
+                  "name": "K15321  WA; naphtho-gamma-pyrone polyketide synthase"
+                },
+                {
+                  "name": "K15317  APTA; asperthecin polyketide synthase"
+                },
+                {
+                  "name": "K15415  MDPG; monodictyphenone polyketide synthase"
+                },
+                {
+                  "name": "K15416  ORSA; orsellinic acid synthase"
+                },
+                {
+                  "name": "K20984  LOVF; 2-methylbutanoate polyketide synthase [EC:2.3.1.244]"
+                }
+              ]
+            },
+            {
+              "name": "Fungal partially reducing PKS (PR-PKS)",
+              "children": [
+                {
+                  "name": "K15320  ATX, chlB1, mdpB; 6-methylsalicylic acid synthase [EC:2.3.1.165]"
+                }
+              ]
+            },
+            {
+              "name": "Fungal highly reducing PKS (HR-PKS)",
+              "children": [
+                {
+                  "name": "K15419  EASB; emericellamide biosynthesis, highly reducing iterative type I polyketide synthase"
+                },
+                {
+                  "name": "K20981  LOVB; lovastatin nonaketide synthase [EC:2.3.1.161]"
+                }
+              ]
+            },
+            {
+              "name": "Fungal hybrid type",
+              "children": [
+                {
+                  "name": "Zearalenone synthase",
+                  "children": [
+                    {
+                      "name": "K15417  ZEA1; zearalenone synthase, nonreducing iterative type I polyketide synthase"
+                    },
+                    {
+                      "name": "K15418  ZEA2; zearalenone synthase, highly reducing iterative type I polyketide synthase"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Bacterial type",
+              "children": [
+                {
+                  "name": "K15314  sgcE, mdpE, ncsE, kedE, calE8, pksE; enediyne polyketide synthase"
+                },
+                {
+                  "name": "K21254  calO5; orsellinic acid synthase [EC:2.3.1.-]"
+                },
+                {
+                  "name": "K20422  ncsB; neocarzinostatin naphthoate synthase [EC:2.3.1.237]"
+                },
+                {
+                  "name": "K21221  kedU38; iterative type I polyketide synthase KedU38"
+                },
+                {
+                  "name": "K12436  pks12; mycoketide-CoA synthase [EC:2.3.1.295]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Type II PKS",
+          "children": [
+            {
+              "name": "C9-C14 cyclized polyketide type",
+              "children": [
+                {
+                  "name": "Spore pigment PKS",
+                  "children": [
+                    {
+                      "name": "K14667  whiEIII; minimal PKS ketosynthase (KS/KS alpha) [EC:2.3.1.-]"
+                    },
+                    {
+                      "name": "K14668  whiEIV; minimal PKS chain-length factor (CLF/KS beta) [EC:2.3.1.-]"
+                    },
+                    {
+                      "name": "K14669  whiEV; minimal PKS acyl carrier protein"
+                    },
+                    {
+                      "name": "K14670  whiEVI; aromatase"
+                    },
+                    {
+                      "name": "K14671  whiEVII; cyclase"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "C7-C14 cyclized polyketide type",
+              "children": [
+                {
+                  "name": "Octaketide PKS",
+                  "children": [
+                    {
+                      "name": "K05551  actI1, oxyA, tcmK, snoa1, aknB, mtmP; minimal PKS ketosynthase (KS/KS alpha) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05552  actI2, oxyB, tcmL, snoa2, aknC, mtmK; minimal PKS chain-length factor (CLF/KS beta) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05553  actI3, oxyC, tcmM, snoa3, aknD, mtmS; minimal PKS acyl carrier protein"
+                    },
+                    {
+                      "name": "K12420  actIII, oxyJ, snoaD, aknA; ketoreductase [EC:1.1.1.-]"
+                    },
+                    {
+                      "name": "K05554  actVII; aromatase [EC:4.2.1.-]"
+                    },
+                    {
+                      "name": "K05555  actIV; cyclase [EC:4.-.-.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Nonaketide PKS",
+                  "children": [
+                    {
+                      "name": "K05551  actI1, oxyA, tcmK, snoa1, aknB, mtmP; minimal PKS ketosynthase (KS/KS alpha) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05552  actI2, oxyB, tcmL, snoa2, aknC, mtmK; minimal PKS chain-length factor (CLF/KS beta) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05553  actI3, oxyC, tcmM, snoa3, aknD, mtmS; minimal PKS acyl carrier protein"
+                    },
+                    {
+                      "name": "K12420  actIII, oxyJ, snoaD, aknA; ketoreductase [EC:1.1.1.-]"
+                    },
+                    {
+                      "name": "K14249  oxyK; bifunctional cyclase/aromatase [EC:4.2.1.-]"
+                    },
+                    {
+                      "name": "K14250  oxyN, snoaM, dpsY, aknW, mtmY; cyclase"
+                    },
+                    {
+                      "name": "K15926  jadI; cyclase"
+                    }
+                  ]
+                },
+                {
+                  "name": "Decaketide PKS",
+                  "children": [
+                    {
+                      "name": "K05551  actI1, oxyA, tcmK, snoa1, aknB, mtmP; minimal PKS ketosynthase (KS/KS alpha) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05552  actI2, oxyB, tcmL, snoa2, aknC, mtmK; minimal PKS chain-length factor (CLF/KS beta) [EC:2.3.1.- 2.3.1.260 2.3.1.235]"
+                    },
+                    {
+                      "name": "K05553  actI3, oxyC, tcmM, snoa3, aknD, mtmS; minimal PKS acyl carrier protein"
+                    },
+                    {
+                      "name": "K12420  actIII, oxyJ, snoaD, aknA; ketoreductase [EC:1.1.1.-]"
+                    },
+                    {
+                      "name": "K14250  oxyN, snoaM, dpsY, aknW, mtmY; cyclase"
+                    },
+                    {
+                      "name": "K15884  snoaE, aknE1; bifunctional aromatase (cyclase/dehydratase) [EC:4.2.1.-]"
+                    },
+                    {
+                      "name": "K15886  tcmN; multifunctional cyclase / dehydratase / O-methyltransferase [EC:2.3.1.235]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Type III PKS",
+          "children": [
+            {
+              "name": "Plant type",
+              "children": [
+                {
+                  "name": "K00660  CHS; chalcone synthase [EC:2.3.1.74]"
+                },
+                {
+                  "name": "K13232  ST; stilbene synthase [EC:2.3.1.95]"
+                },
+                {
+                  "name": "K17212  CUS; bisdemethoxycurcumin synthase [EC:2.3.1.211]"
+                },
+                {
+                  "name": "K13231  STS; pinosylvin synthase [EC:2.3.1.146]"
+                },
+                {
+                  "name": "K13233  DCS; phenylpropanoylacetyl-CoA synthase [EC:2.3.1.218]"
+                },
+                {
+                  "name": "K13234  CURS1_2; curcumin synthase [EC:2.3.1.217]"
+                },
+                {
+                  "name": "K17211  CURS3; curcumin/demethoxycurcumin synthase [EC:2.3.1.217 2.3.1.219]"
+                },
+                {
+                  "name": "K21384  BIS; 3,5-dihydroxybiphenyl/4-hydroxycoumarin synthase [EC:2.3.1.177 2.3.1.208]"
+                },
+                {
+                  "name": "K21385  PCS; 5,7-dihydroxy-2-methylchromone synthase [EC:2.3.1.216]"
+                },
+                {
+                  "name": "K21386  BPS; 2,4,6-trihydroxybenzophenone synthase [EC:2.3.1.220]"
+                }
+              ]
+            },
+            {
+              "name": "Fungal type",
+              "children": [
+                {
+                  "name": "K16231  csyA; fungal type III polyketide synthase"
+                }
+              ]
+            },
+            {
+              "name": "Bacterial type",
+              "children": [
+                {
+                  "name": "K16424  dpgA; 3,5-dihydroxyphenylacetyl-CoA synthase [EC:2.3.1.246]"
+                },
+                {
+                  "name": "K15431  phlD; phloroglucinol synthase [EC:2.3.1.253]"
+                },
+                {
+                  "name": "K19580  rppA; 1,3,6,8-tetrahydroxynaphthalene synthase [EC:2.3.1.233]"
+                },
+                {
+                  "name": "K16232  gcs; germicidin synthase"
+                },
+                {
+                  "name": "K16167  bpsA, srsA, pks11, pks10; alkylresorcinol/alkylpyrone synthase"
+                },
+                {
+                  "name": "K16233  pks18; alpha-pyrone synthase"
+                },
+                {
+                  "name": "K28571  arsB; alkylresorcinol synthase"
+                },
+                {
+                  "name": "K28572  arsC; alkylpyrone synthase"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PKS-NRPS hybrid",
+          "children": [
+            {
+              "name": "Bacterial type (modular)",
+              "children": [
+                {
+                  "name": "Myxalamid hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K16416  mxaA; myxalamid-type nonribosomal peptide synthetase MxaA"
+                    },
+                    {
+                      "name": "K15643  mxaB; myxalamid-type polyketide synthase MxaB"
+                    },
+                    {
+                      "name": "K16417  mxaC; myxalamid-type polyketide synthase MxaC"
+                    },
+                    {
+                      "name": "K15642  mxaD; myxalamid-type polyketide synthase MxaD"
+                    },
+                    {
+                      "name": "K20788  mxaE; myxalamid-type polyketide synthase MxaE"
+                    },
+                    {
+                      "name": "K15641  mxaF; myxalamid-type polyketide synthase MxaF"
+                    }
+                  ]
+                },
+                {
+                  "name": "Coronatine hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K15644  cfa6; coronafacic acid polyketide synthase Cfa6"
+                    },
+                    {
+                      "name": "K15645  cfa7; coronafacic acid polyketide synthase Cfa7"
+                    },
+                    {
+                      "name": "K15646  cmaA; coronamic acid synthetase CmaA, adenylation and thiolation didomain protein [EC:6.2.1.46]"
+                    },
+                    {
+                      "name": "K15648  cmaD; coronamic acid synthetase CmaD, carrier protein"
+                    },
+                    {
+                      "name": "K15647  cmaE; coronamic acid synthetase CmaE, aminoacyltransferase [EC:2.3.2.28]"
+                    },
+                    {
+                      "name": "K15649  cmaT; coronamic acid synthetase CmaT, thioesterase component"
+                    }
+                  ]
+                },
+                {
+                  "name": "Microcystin synthetase",
+                  "children": [
+                    {
+                      "name": "K16130  mcyA; microcystin synthetase protein McyA"
+                    },
+                    {
+                      "name": "K16131  mcyB; microcystin synthetase protein McyB"
+                    },
+                    {
+                      "name": "K16132  mcyC; microcystin synthetase protein McyC"
+                    },
+                    {
+                      "name": "K16128  mcyD; microcystin synthetase protein McyD"
+                    },
+                    {
+                      "name": "K16129  mcyE; microcystin synthetase protein McyE"
+                    },
+                    {
+                      "name": "K16127  mcyG; microcystin synthetase protein McyG"
+                    }
+                  ]
+                },
+                {
+                  "name": "Epothilone synthetase",
+                  "children": [
+                    {
+                      "name": "K16394  epoA; epothilone polyketide synthase A"
+                    },
+                    {
+                      "name": "K16395  epoB; epothilone synthetase B"
+                    },
+                    {
+                      "name": "K16396  epoC; epothilone polyketide synthase C"
+                    },
+                    {
+                      "name": "K16397  epoD; epothilone polyketide synthase D"
+                    },
+                    {
+                      "name": "K16398  epoE; epothilone polyketide synthase E"
+                    },
+                    {
+                      "name": "K16399  epoF; epothilone polyketide synthase F"
+                    }
+                  ]
+                },
+                {
+                  "name": "Bleomycin synthetase",
+                  "children": [
+                    {
+                      "name": "K16113  blmIII; nonribosomal peptide synthetase protein BlmIII"
+                    },
+                    {
+                      "name": "K16112  blmIV; nonribosomal peptide synthetase protein BlmIV"
+                    },
+                    {
+                      "name": "K16107  blmV; nonribosomal peptide synthetase protein BlmV"
+                    },
+                    {
+                      "name": "K16106  blmVI; nonribosomal peptide synthetase protein BlmVI"
+                    },
+                    {
+                      "name": "K16111  blmVII; nonribosomal peptide synthetase protein BlmVII"
+                    },
+                    {
+                      "name": "K16110  blmVIII; nonribosomal peptide synthetase protein BlmVIII"
+                    },
+                    {
+                      "name": "K16109  blmIX; nonribosomal peptide synthetase protein BlmIX"
+                    },
+                    {
+                      "name": "K16108  blmX; nonribosomal peptide synthetase protein BlmX"
+                    }
+                  ]
+                },
+                {
+                  "name": "Colibactin synthetase",
+                  "children": [
+                    {
+                      "name": "K26572  clbN; colibactin biosynthesis nonribosomal peptide synthase"
+                    },
+                    {
+                      "name": "K26573  clbB; colibactin biosynthesis hybrid nonribosomal peptide/polyketide synthase"
+                    },
+                    {
+                      "name": "K26574  clbC; colibactin biosynthesis polyketide synthase"
+                    },
+                    {
+                      "name": "K26565  clbH; colibactin biosynthesis nonribosomal peptide synthase"
+                    },
+                    {
+                      "name": "K26575  clbI; colibactin biosynthesis polyketide synthase"
+                    },
+                    {
+                      "name": "K26578  clbJ; colibactin biosynthesis nonribosomal peptide synthase"
+                    },
+                    {
+                      "name": "K26577  clbK; colibactin biosynthesis hybrid nonribosomal peptide/polyketide synthase"
+                    },
+                    {
+                      "name": "K26576  clbO; colibactin biosynthesis polyketide synthase"
+                    }
+                  ]
+                },
+                {
+                  "name": "Myxothiazol hybrid PKS-NRPS",
+                  "children": [
+                    {
+                      "name": "K28573  mtaB; myxothiazol biosynthesis polyketide synthase MtaB"
+                    },
+                    {
+                      "name": "K28574  mtaC; myxothiazol nonribosomal peptide synthase MtaC"
+                    },
+                    {
+                      "name": "K28575  mtaD; myxothiazol biosynthesis hybrid nonribosomal peptide/polyketide synthetase MtaD"
+                    },
+                    {
+                      "name": "K28576  mtaE; myxothiazol biosynthesis polyketide synthase MtaE"
+                    },
+                    {
+                      "name": "K28577  mtaF; myxothiazol biosynthesis polyketide synthase MtaF"
+                    },
+                    {
+                      "name": "K28578  mtaG; myxothiazol nonribosomal peptide synthase MtaG"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Fungal type (trans-ER, iterative)",
+              "children": [
+                {
+                  "name": "Aspyridone synthetase",
+                  "children": [
+                    {
+                      "name": "K15384  APDA; aspyridone synthetase, hybrid polyketide synthase / nonribosomal peptide synthetase"
+                    },
+                    {
+                      "name": "K15385  APDC; aspyridone synthetase trans-acting enoyl reductase"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Fungal type (iterative)",
+              "children": [
+                {
+                  "name": "K15390  PSOA; pseurotin A synthetase, hybrid polyketide synthase / nonribosomal peptide synthetase"
+                },
+                {
+                  "name": "K15391  CPAA; cyclopiazonic acid synthetase, hybrid polyketide synthase / nonribosomal peptide synthetase"
+                },
+                {
+                  "name": "K01043  SWNK; swainsonine synthetase, hybrid polyketide synthase / nonribosomal peptide synthetase"
+                },
+                {
+                  "name": "K15394  ACE1; hybrid polyketide synthase / nonribosomal peptide synthetase ACE1"
+                },
+                {
+                  "name": "K15395  ftdB; hybrid polyketide synthase / nonribosomal peptide synthetase FtdB"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nonribosomal peptide synthetase (NRPS)",
+      "children": [
+        {
+          "name": "Linear NRPS",
+          "children": [
+            {
+              "name": "Emericellamide synthetase",
+              "children": [
+                {
+                  "name": "K28585  EASA; emericellamide biosynthesis, nonribosomal peptide synthetase [EC:6.3.2.-]"
+                }
+              ]
+            },
+            {
+              "name": "Cyanopeptolin synthetase",
+              "children": [
+                {
+                  "name": "K28588  mcnA; cyanopeptolin synthetase 1"
+                },
+                {
+                  "name": "K28589  mcnB; cyanopeptolin synthetase 2"
+                },
+                {
+                  "name": "K28590  mcnC; cyanopeptolin synthetase 3,4,5,6"
+                },
+                {
+                  "name": "K28591  mcnE; cyanopeptolin synthetase 7"
+                }
+              ]
+            },
+            {
+              "name": "ACV synthetase",
+              "children": [
+                {
+                  "name": "K12743  PCBAB; N-(5-amino-5-carboxypentanoyl)-L-cysteinyl-D-valine synthase [EC:6.3.2.26]"
+                }
+              ]
+            },
+            {
+              "name": "Bacitracin synthetase",
+              "children": [
+                {
+                  "name": "K16093  bacA; bacitracin synthase 1"
+                },
+                {
+                  "name": "K16094  bacB; bacitracin synthase 2"
+                },
+                {
+                  "name": "K16095  bacC; bacitracin synthase 3"
+                }
+              ]
+            },
+            {
+              "name": "Viomycin synthetase",
+              "children": [
+                {
+                  "name": "K16099  vioA; nonribosomal peptide synthetase protein VioA"
+                },
+                {
+                  "name": "K16098  vioF; nonribosomal peptide synthetase protein VioF"
+                },
+                {
+                  "name": "K16101  vioG; nonribosomal peptide synthetase protein VioG"
+                },
+                {
+                  "name": "K16100  vioI; nonribosomal peptide synthetase protein VioI"
+                },
+                {
+                  "name": "K16103  vioM; nonribosomal peptide synthetase protein VioM"
+                },
+                {
+                  "name": "K16102  vioO; nonribosomal peptide synthetase protein VioO"
+                }
+              ]
+            },
+            {
+              "name": "Pristinamycin I synthetase",
+              "children": [
+                {
+                  "name": "K16116  snbA; pristinamycin I synthetase 1"
+                },
+                {
+                  "name": "K16117  snbC; pristinamycin I synthase 2"
+                },
+                {
+                  "name": "K16118  snbDE; pristinamycin I synthase 3 and 4"
+                }
+              ]
+            },
+            {
+              "name": "Tyrocidine synthetase",
+              "children": [
+                {
+                  "name": "K16122  tycA; tyrocidine synthetase I"
+                },
+                {
+                  "name": "K16123  tycB; tyrocidine synthetase II"
+                },
+                {
+                  "name": "K16124  tycC; tyrocidine synthetase III"
+                }
+              ]
+            },
+            {
+              "name": "Surfactin family lipopeptide synthetase",
+              "children": [
+                {
+                  "name": "K15654  srfAA, licA, lchAA; surfactin/lichenysin synthetase A"
+                },
+                {
+                  "name": "K15655  srfAB, licB, lchAB; surfactin/lichenysin synthetase B"
+                },
+                {
+                  "name": "K15656  srfAC, licC, lchAC; surfactin/lichenysin synthetase C"
+                }
+              ]
+            },
+            {
+              "name": "Iturin family lipopeptide synthetase",
+              "children": [
+                {
+                  "name": "K15661  ituA, mycA, bmyA; iturin family lipopeptide synthetase A"
+                },
+                {
+                  "name": "K15662  ituB, mycB, bmyB; iturin family lipopeptide synthetase B"
+                },
+                {
+                  "name": "K15663  ituC, mycC, bmyC; iturin family lipopeptide synthetase C"
+                }
+              ]
+            },
+            {
+              "name": "Fengycin family lipopeptide synthetase",
+              "children": [
+                {
+                  "name": "K15664  ppsA, fenC; plipastatin/fengycin lipopeptide synthetase A"
+                },
+                {
+                  "name": "K15665  ppsB, fenD; plipastatin/fengycin lipopeptide synthetase B"
+                },
+                {
+                  "name": "K15666  ppsC, fenE; plipastatin/fengycin lipopeptide synthetase C"
+                },
+                {
+                  "name": "K15667  ppsD, fenA; plipastatin/fengycin lipopeptide synthetase D"
+                },
+                {
+                  "name": "K15668  ppsE, fenB; plipastatin/fengycin lipopeptide synthetase E"
+                }
+              ]
+            },
+            {
+              "name": "Arthrofactin type cyclic lipopeptide synthetase",
+              "children": [
+                {
+                  "name": "K15658  ofaA, arfA; arthrofactin-type cyclic lipopeptide synthetase A"
+                },
+                {
+                  "name": "K15659  ofaB, arfB; arthrofactin-type cyclic lipopeptide synthetase B"
+                },
+                {
+                  "name": "K15660  ofaC, arfC; arthrofactin-type cyclic lipopeptide synthetase C"
+                }
+              ]
+            },
+            {
+              "name": "Vancomycin synthetase",
+              "children": [
+                {
+                  "name": "K16428  cepA; nonribosomal peptide synthetase CepA"
+                },
+                {
+                  "name": "K16429  cepB; nonribosomal peptide synthetase CepB"
+                },
+                {
+                  "name": "K16430  cepC; nonribosomal peptide synthetase CepC"
+                },
+                {
+                  "name": "K16432  cepK; nonribosomal peptide synthetase CepK"
+                }
+              ]
+            },
+            {
+              "name": "Nocardicin synthetase",
+              "children": [
+                {
+                  "name": "K19102  nocA; nocardicin nonribosomal peptide synthetase NocA"
+                },
+                {
+                  "name": "K19103  nocB; nocardicin nonribosomal peptide synthetase NocB"
+                },
+                {
+                  "name": "K05375  mbtH, nocI; MbtH protein"
+                }
+              ]
+            },
+            {
+              "name": "Bialaphos synthetase",
+              "children": [
+                {
+                  "name": "K12911  phsA; phosphinothricin tripeptide synthetase PhsA"
+                },
+                {
+                  "name": "K12912  phsB; phosphinothricin tripeptide synthetase phsB [EC:6.2.1.67]"
+                },
+                {
+                  "name": "K12913  phsC; phosphinothricin tripeptide synthetase PhsC"
+                }
+              ]
+            },
+            {
+              "name": "L-2-amino-4-methoxy-trans-3-butenoic acid synthetase",
+              "children": [
+                {
+                  "name": "K25233  ambB; L-alanine---[L-alanyl-carrier protein] ligase [EC:6.2.1.67]"
+                },
+                {
+                  "name": "K25234  ambE; L-glutamate---[L-glutamyl-carrier protein] ligase [EC:6.2.1.68]"
+                }
+              ]
+            },
+            {
+              "name": "Anabaenopeptin synthetase",
+              "children": [
+                {
+                  "name": "K28594  aptA; anabaenopeptin synthetase AptA"
+                },
+                {
+                  "name": "K28595  aptB; anabaenopeptin synthetase AptB"
+                },
+                {
+                  "name": "K28596  aptC; anabaenopeptin synthetase AptC"
+                },
+                {
+                  "name": "K28597  aptD; anabaenopeptin synthetase AptD"
+                }
+              ]
+            },
+            {
+              "name": "Linear gramicidin synthetase",
+              "children": [
+                {
+                  "name": "K28600  lgrA; linear gramicidin synthase LgrA"
+                },
+                {
+                  "name": "K28601  lgrB; linear gramicidin synthase LgrB"
+                },
+                {
+                  "name": "K28602  lgrC; linear gramicidin synthase LgrC"
+                },
+                {
+                  "name": "K28603  lgrD; linear gramicidin synthase LgrD"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Iterative NRPS",
+          "children": [
+            {
+              "name": "Enterobactin synthetase",
+              "children": [
+                {
+                  "name": "K01252  entB, dhbB, vibB, mxcF; bifunctional isochorismate lyase / aryl carrier protein [EC:3.3.2.1 6.3.2.14]"
+                },
+                {
+                  "name": "K02362  entD, pptT; enterobactin synthetase component D / holo-[acyl-carrier protein] synthase [EC:6.3.2.14 2.7.8.7]"
+                },
+                {
+                  "name": "K02363  entE, dhbE, vibE, mxcE; 2,3-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.71]"
+                },
+                {
+                  "name": "K02364  entF; L-serine---[L-seryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.72]"
+                },
+                {
+                  "name": "K24147  entH; proofreading thioesterase EntH"
+                }
+              ]
+            },
+            {
+              "name": "Bacillibactin synthetase",
+              "children": [
+                {
+                  "name": "K01252  entB, dhbB, vibB, mxcF; bifunctional isochorismate lyase / aryl carrier protein [EC:3.3.2.1 6.3.2.14]"
+                },
+                {
+                  "name": "K02363  entE, dhbE, vibE, mxcE; 2,3-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.71]"
+                },
+                {
+                  "name": "K04780  dhbF; glyine---[glycyl-carrier protein] ligase [EC:6.2.1.66]"
+                }
+              ]
+            },
+            {
+              "name": "Gramicidin synthetase",
+              "children": [
+                {
+                  "name": "K16096  grsA; gramicidin S synthase 1"
+                },
+                {
+                  "name": "K16097  grsB; gramicidin S synthase 2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nonlinear NRPS",
+          "children": [
+            {
+              "name": "Yersiniabactin synthetase",
+              "children": [
+                {
+                  "name": "K04786  irp1, HMWP1; yersiniabactin nonribosomal peptide/polyketide synthase"
+                },
+                {
+                  "name": "K04784  irp2, HMWP2; yersiniabactin nonribosomal peptide synthetase"
+                },
+                {
+                  "name": "K04783  irp5, ybtE; yersiniabactin salicyl-AMP ligase [EC:6.3.2.-]"
+                }
+              ]
+            },
+            {
+              "name": "Pyochelin synthetase",
+              "children": [
+                {
+                  "name": "K12238  pchD; salicylate---[aryl-carrier protein] ligase [EC:6.2.1.61]"
+                },
+                {
+                  "name": "K12239  pchE; L-cysteine---[L-cysteinyl-carrier protein] ligase PchE [EC:6.2.1.69]"
+                },
+                {
+                  "name": "K12240  pchF; L-cysteine---[L-cysteinyl-carrier protein] ligase PchF [EC:6.2.1.69]"
+                }
+              ]
+            },
+            {
+              "name": "Mycobactin synthetase",
+              "children": [
+                {
+                  "name": "K04787  mbtA; mycobactin salicyl-AMP ligase [EC:6.3.2.-]"
+                },
+                {
+                  "name": "K04788  mbtB; mycobactin phenyloxazoline synthetase"
+                },
+                {
+                  "name": "K04790  mbtC; mycobactin polyketide synthetase MbtC"
+                },
+                {
+                  "name": "K04791  mbtD; mycobactin polyketide synthetase MbtD"
+                },
+                {
+                  "name": "K04789  mbtE; mycobactin peptide synthetase MbtE"
+                },
+                {
+                  "name": "K04792  mbtF; mycobactin peptide synthetase MbtF"
+                }
+              ]
+            },
+            {
+              "name": "Vibriobactin synthetase",
+              "children": [
+                {
+                  "name": "K01252  entB, dhbB, vibB, mxcF; bifunctional isochorismate lyase / aryl carrier protein [EC:3.3.2.1 6.3.2.14]"
+                },
+                {
+                  "name": "K02363  entE, dhbE, vibE, mxcE; 2,3-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.71]"
+                },
+                {
+                  "name": "K12237  vibF; nonribosomal peptide synthetase VibF"
+                },
+                {
+                  "name": "K04778  vibH; vibriobactin synthetase"
+                }
+              ]
+            },
+            {
+              "name": "Myxochelin synthetase",
+              "children": [
+                {
+                  "name": "K02363  entE, dhbE, vibE, mxcE; 2,3-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.71]"
+                },
+                {
+                  "name": "K01252  entB, dhbB, vibB, mxcF; bifunctional isochorismate lyase / aryl carrier protein [EC:3.3.2.1 6.3.2.14]"
+                },
+                {
+                  "name": "K15653  mxcG; nonribosomal peptide synthetase MxcG"
+                }
+              ]
+            },
+            {
+              "name": "Petrobacin synthetase",
+              "children": [
+                {
+                  "name": "K24110  asbC; 3,4-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.2.1.62]"
+                },
+                {
+                  "name": "K24111  asbD; aryl carrier protein AsbD"
+                },
+                {
+                  "name": "K24112  asbE; petrobactin synthase [EC:2.-.-.-]"
+                }
+              ]
+            },
+            {
+              "name": "Syringomycin synthetase",
+              "children": [
+                {
+                  "name": "K16126  syrB1; L-threonine---[L-threonyl-carrier protein] ligase [EC:6.2.1.70]"
+                },
+                {
+                  "name": "K16125  syrE; syringomycin synthetase protein SyrE"
+                }
+              ]
+            },
+            {
+              "name": "Vanchrobactin synthetase",
+              "children": [
+                {
+                  "name": "K01252  entB, dhbB, vibB, mxcF; bifunctional isochorismate lyase / aryl carrier protein [EC:3.3.2.1 6.3.2.14]"
+                },
+                {
+                  "name": "K02363  entE, dhbE, vibE, mxcE; 2,3-dihydroxybenzoate---[aryl-carrier protein] ligase [EC:6.3.2.14 6.2.1.71]"
+                },
+                {
+                  "name": "K24101  vabF; L-arginine---[L-arginyl-carrier protein] ligase [EC:6.2.1.63]"
+                }
+              ]
+            },
+            {
+              "name": "Isonitrile lipopeptide synthase",
+              "children": [
+                {
+                  "name": "K28321  scoA; isonitrile lipopeptide synthase / L-lysine---[L-lysyl-carrier protein] ligase [EC:2.3.1.329 6.2.1.77]"
+                },
+                {
+                  "name": "K28320  mmaA; isonitrile lipopeptide synthase [EC:2.3.1.329]"
+                },
+                {
+                  "name": "K28329  mmaB; acyl carrier protein"
+                },
+                {
+                  "name": "K12422  fadD10; medium/long-chain-fatty-acid---[acyl-carrier-protein] ligase FadD10 [EC:6.2.1.-]"
+                },
+                {
+                  "name": "K26055  scoD, mmaD; (3R)-3-[(carboxylmethyl)amino]fatty acid synthase [EC:4.3.2.11]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Polyketide tailoring proteins",
+      "children": [
+        {
+          "name": "Hydrolase",
+          "children": [
+            {
+              "name": "K15318  APTB; hydrolase"
+            },
+            {
+              "name": "K15315  sgcE10, mdpE10, ncsE10, kedE10, calE7, pksE10; enediyne core biosynthesis thioesterase"
+            }
+          ]
+        },
+        {
+          "name": "Ketoreductase",
+          "children": [
+            {
+              "name": "K14373  aveF; C-5 ketoreductase"
+            },
+            {
+              "name": "K05556  actVI1, RED1; ketoreductase RED1 [EC:1.1.1.-]"
+            },
+            {
+              "name": "K14633  gra6, RED2; ketoreductase RED2 [EC:1.1.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "Oxygenase",
+          "children": [
+            {
+              "name": "K14366  eryF, CYP107A; 6-deoxyerythronolide B hydroxylase [EC:1.14.15.35]"
+            },
+            {
+              "name": "K14370  eryK, CYP113A; erythromycin 12 hydroxylase [EC:1.14.13.154]"
+            },
+            {
+              "name": "K16008  oleP, CYP107D; cytochrome P450 monooxygenase OleP"
+            },
+            {
+              "name": "K16006  pikC, CYP107L; pikromycin synthase [EC:1.14.15.33]"
+            },
+            {
+              "name": "K14372  aveE, CYP171A; cytochrome P450 hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K15992  tylI, CYP113B; cytochrome P450 TylI"
+            },
+            {
+              "name": "K15991  tylHI, CYP105L1; 20-oxo-5-O-mycaminosyltylactone 23-monooxygenase [EC:1.14.15.34]"
+            },
+            {
+              "name": "K16022  rif19; flavoprotein hydroxylase"
+            },
+            {
+              "name": "K20789  CYP140A7; cytochrome P450 hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K24292  mycCI, CYP105L2; mycinamicin VIII C21 methyl hydroxylase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K24390  mycG, CYP107E1; mycinamicin IV hydroxylase/epoxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K16379  fkbD, rapJ; cytochrome P450 C-9 hydroxylase"
+            },
+            {
+              "name": "K16380  rapN; cytochrome P450 RapN"
+            },
+            {
+              "name": "K16389  amphN, nysN, fscP, pimG; cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K16390  amphL, nysL, pimD; cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K16400  epoK; cytochrome P450 enzyme"
+            },
+            {
+              "name": "K14630  actVA5; two-component flavin-dependent monooxygenase [EC:1.14.14.-]"
+            },
+            {
+              "name": "K14632  actVA6; C-6 monooxygenase"
+            },
+            {
+              "name": "K20420  ncsB3; 2-hydroxy-5-methyl-1-naphthoate 7-hydroxylase [EC:1.14.15.31]"
+            },
+            {
+              "name": "K21184  sgcC, mdpC; two-component FAD-dependent monooxygenase [EC:1.14.14.15 1.14.14.-]"
+            },
+            {
+              "name": "K21159  sgcF, ncsF2, kedF; epoxide hydrolase"
+            },
+            {
+              "name": "K21222  kedN3; cytochrome P450 monooxygenase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K21257  calO2; orsellenic acid P450 oxidase [EC:1.14.-.-]"
+            },
+            {
+              "name": "K14253  oxyE; 6-methylpretetramide 4-monooxygenase [EC:1.14.13.232]"
+            },
+            {
+              "name": "K14252  oxyL; 6-methylpretetramide 4-monooxygenase / 4-hydroxy-6-methylpretetramide 12a-monooxygenase [EC:1.14.13.232 1.14.13.233]"
+            },
+            {
+              "name": "K14256  oxyS, cts8; anhydrotetracycline 6-monooxygenase / 5a,11a-dehydrotetracycline 5-monooxygenase [EC:1.14.13.38 1.14.13.234]"
+            },
+            {
+              "name": "K15941  snoaB, dnrG, aknX; deoxynogalonate / 12-deoxyaklanonic acid monooxygenase [EC:1.13.12.22 1.13.12.-]"
+            },
+            {
+              "name": "K15966  mtmOIV; monooxygenase [EC:1.14.13.-]"
+            },
+            {
+              "name": "K15969  tcmH; tetracenomycin F1 monooxygenase [EC:1.13.12.21]"
+            },
+            {
+              "name": "K15972  tcmG, elmG; tetracenomycin A2 monooxygenase-dioxygenase [EC:1.14.13.200]"
+            },
+            {
+              "name": "K16427  dpgC; (3,5-dihydroxyphenyl)acetyl-CoA 1,2-dioxygenase [EC:1.13.11.80]"
+            },
+            {
+              "name": "K14673  whiEII; putative monooxygenase"
+            },
+            {
+              "name": "K14672  whiEVIII; putative polyketide hydroxylase"
+            },
+            {
+              "name": "K15468  pksS, CYP107K1; cytochrome P450 family 107 subfamily K polypeptide 1"
+            },
+            {
+              "name": "K15470  rhiH; cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K16415  stiL; cytochrome P450 dependent monooxygenase"
+            },
+            {
+              "name": "K15319  APTC; monooxygenase"
+            },
+            {
+              "name": "K15386  APDB, CYP685A1; cytochrome P450 monooxygenase"
+            },
+            {
+              "name": "K15387  APDD; FAD-dependent monooxygenase"
+            },
+            {
+              "name": "K15388  APDE, CYP655; cytochrome P450 monooxygenase"
+            }
+          ]
+        },
+        {
+          "name": "Methylase",
+          "children": [
+            {
+              "name": "K14369  eryG; erythromycin 3''-O-methyltransferase [EC:2.1.1.254]"
+            },
+            {
+              "name": "K14374  aveD; avermectin B 5-O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K16381  fkbM; 31-O-methyltransferase"
+            },
+            {
+              "name": "K15995  tylE; demethylmacrocin O-methyltransferase [EC:2.1.1.102]"
+            },
+            {
+              "name": "K15996  tylF; macrocin O-methyltransferase [EC:2.1.1.101]"
+            },
+            {
+              "name": "K21540  mycE; mycinamicin VI 2''-O-methyltransferase [EC:2.1.1.238]"
+            },
+            {
+              "name": "K21539  mycF; mycinamicin III 3''-O-methyltransferase [EC:2.1.1.237]"
+            },
+            {
+              "name": "K13320  oleY; L-olivosyl-oleandolide 3-O-methyltransferase [EC:2.1.1.239]"
+            },
+            {
+              "name": "K16034  asm7; 20-O-methyltransferase"
+            },
+            {
+              "name": "K16038  asm10; N-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K16028  asm17; O-methyltransferase"
+            },
+            {
+              "name": "K15467  rif14; 27-O-demethylrifamycin SV methyltransferase [EC:2.1.1.315]"
+            },
+            {
+              "name": "K15471  rhiI; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21192  mdpB1; methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21189  mdpC6; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K20421  ncsB1; 2,7-dihydroxy-5-methyl-1-naphthoate 7-O-methyltransferase [EC:2.1.1.303]"
+            },
+            {
+              "name": "K21215  ncsC5; N-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21178  sgcD4; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21255  calO6; orsellinic acid C2-O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21258  calO1; orsellinic acid C3-O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21223  kedN1; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K21224  kedN5; radical SAM C-methyltransferase"
+            },
+            {
+              "name": "K14251  oxyF; C-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K14255  oxyT, ctcO, cts6; 4-amino-anhydrotetracycline N4-methyltransferase [EC:2.1.1.335]"
+            },
+            {
+              "name": "K15942  snoaC, dnrC, dauC, aknG; O-methyltransferase / aklanonic acid methyltransferase [EC:2.1.1.- 2.1.1.288]"
+            },
+            {
+              "name": "K15959  mtmMI; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K15963  mtmMII; C-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K15962  mtmC; D-mycarose 3-C-methyltransferase"
+            },
+            {
+              "name": "K15886  tcmN; multifunctional cyclase / dehydratase / O-methyltransferase [EC:2.3.1.235]"
+            },
+            {
+              "name": "K15970  tcmO; 8-O-methyltransferase"
+            },
+            {
+              "name": "K15971  tcmP, elmP; O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K19567  elmMI; 8-demethyl-8-alpha-L-rhamnosyltetracenomycin-C 2'-O-methyltransferase [EC:2.1.1.305]"
+            },
+            {
+              "name": "K19568  elmMII; 8-demethyl-8-(2-methoxy-alpha-L-rhamnosyl)tetracenomycin-C 3'-O-methyltransferase [EC:2.1.1.306]"
+            },
+            {
+              "name": "K19569  elmMIII; 8-demethyl-8-(2,3-dimethoxy-alpha-L-rhamnosyl)tetracenomycin-C 4'-O-methyltransferase [EC:2.1.1.307]"
+            },
+            {
+              "name": "K19570  elmD; 8-demethyl-8-(2,3,4-trimethoxy-alpha-L-rhamnosyl)tetracenomycin-C O-methyltransferase [EC:2.1.1.-]"
+            },
+            {
+              "name": "K16168  bpsB, srsB; methyltransferase"
+            },
+            {
+              "name": "K16403  sorM; O-methyltransferase"
+            },
+            {
+              "name": "K16414  stiK; methyltransferase"
+            }
+          ]
+        },
+        {
+          "name": "Glycosyltransferase",
+          "children": [
+            {
+              "name": "K14367  eryBV; erythronolide mycarosyltransferase [EC:2.4.1.328]"
+            },
+            {
+              "name": "K14368  eryCIII; 3-alpha-mycarosylerythronolide B desosaminyl transferase [EC:2.4.1.278]"
+            },
+            {
+              "name": "K15997  eryCII; 3-alpha-mycarosylerythronolide B desosaminyl transferase auxiliary protein"
+            },
+            {
+              "name": "K14375  aveBI; dTDP-L-oleandrosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K16004  desVII; narbonolide/10-deoxymethynolide desosaminyltransferase [EC:2.4.1.277]"
+            },
+            {
+              "name": "K16005  desVIII; narbonolide/10-deoxymethynolide desosaminyltransferase auxiliary protein"
+            },
+            {
+              "name": "K15989  tylMII; tylactone mycaminosyltransferase [EC:2.4.1.316]"
+            },
+            {
+              "name": "K15990  tylMIII; tylactone mycaminosyltransferase auxiliary protein"
+            },
+            {
+              "name": "K15993  tylN; O-mycaminosyltylonolide 6-deoxyallosyltransferase [EC:2.4.1.317]"
+            },
+            {
+              "name": "K15994  tylCV; demethyllactenocin mycarosyltransferase [EC:2.4.1.318]"
+            },
+            {
+              "name": "K24529  mycB; protomycinolide IV desosaminyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K24531  mycD; mycinamicin VII 6-deoxyallosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K16009  oleGII; glycosyltransferase OleGII"
+            },
+            {
+              "name": "K16010  oleGI; desosaminyltransferase OleGI"
+            },
+            {
+              "name": "K16388  amphDI, nysDI, fscMI, pimK; polyene glycosyltransferase"
+            },
+            {
+              "name": "K16039  asm25; N-glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21216  ncsC6; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21187  sgcA6; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21194  mdpA6; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21229  kedS6; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21230  kedS10; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21259  calG3; calicheamicinone 4-hydroxyamino-4,6-dideoxy-alpha-D-glucosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21260  calG2; calicheamicin 4-deoxy-4-thio-alpha-D-digitoxosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K21262  calG4; calicheamicin aminopentosyltransferase [EC:2.4.2.-]"
+            },
+            {
+              "name": "K21263  calG1; calicheamicin 3'-O-methyl-rhamnosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K15960  mtmGIV; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K15961  mtmGIII; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K15964  mtmGI; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K15965  mtmGII; glycosyltransferase [EC:2.4.1.-]"
+            },
+            {
+              "name": "K19566  elmGT; 8-demethyltetracenomycin C L-rhamnosyltransferase [EC:2.4.1.331]"
+            }
+          ]
+        },
+        {
+          "name": "Halogenase",
+          "children": [
+            {
+              "name": "K16033  asm12; FADH2-dependent halogenase"
+            },
+            {
+              "name": "K21256  calO3; flavin-dependent halogenase"
+            },
+            {
+              "name": "K16431  cepH, sgcC3, mdpC3, kedY3; FAD-dependent halogenase [EC:1.14.19.-]"
+            },
+            {
+              "name": "K14257  ctcP, cts4, prnC; tetracycline 7-halogenase / FADH2 O2-dependent halogenase [EC:1.14.19.49 1.14.19.-]"
+            },
+            {
+              "name": "K15650  cmaB; non-haem Fe2+, alpha-ketoglutarate-dependent halogenase"
+            },
+            {
+              "name": "K28679  syrB2; L-threonyl-[L-threonyl-carrier protein] 4-chlorinase [EC:1.14.20.15]"
+            }
+          ]
+        },
+        {
+          "name": "beta-Branched incorporating proteins",
+          "children": [
+            {
+              "name": "K15327  pksC; polyketide biosynthesis malonyl-CoA-[acyl-carrier-protein] transacylase"
+            },
+            {
+              "name": "K00646  pksF, curC, aprD, corD; malonyl-[acp] decarboxylase [EC:4.1.1.124]"
+            },
+            {
+              "name": "K15337  acpK, curB, aprC, corC; polyketide biosynthesis acyl carrier protein"
+            },
+            {
+              "name": "K15311  pksG, curD, aprE, corE; 3-carboxymethyl-3-hydroxy-acyl-[acp] synthase [EC:2.3.3.22]"
+            },
+            {
+              "name": "K15312  pksH, curE, aprF, corF; 3-carboxymethyl-3-hydroxy-acyl-[acp] dehydratase [EC:4.2.1.181]"
+            },
+            {
+              "name": "K15313  pksI, corG; 4-carboxy-3-alkylbut-2-enoyl-[acp] decarboxylase [EC:4.1.1.125]"
+            },
+            {
+              "name": "K27305  aprG, curF; polyketide synthase / 4-carboxy-3-alkylbut-2-enoyl-[acp] decarboxylase [EC:4.1.1.125]"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K16037  asm11; 4,5-epoxidase"
+            },
+            {
+              "name": "K16024  asm13; methoxymalonate biosynthesis protein"
+            },
+            {
+              "name": "K16025  asm14; methoxymalonate biosynthesis acyl carrier protein"
+            },
+            {
+              "name": "K16026  asm15; methoxymalonate biosynthesis protein"
+            },
+            {
+              "name": "K16027  asm16; methoxymalonate biosynthesis protein"
+            },
+            {
+              "name": "K16036  asm19; 3-O-acyltransferase"
+            },
+            {
+              "name": "K16035  asm21; 7-O-carbamoyltransferase [EC:2.1.3.-]"
+            },
+            {
+              "name": "K15466  rifF, asm9; amide synthase"
+            },
+            {
+              "name": "K16023  rif20; acetyltransferase"
+            },
+            {
+              "name": "K14626  actVIA; actinorhodin biosynthesis protein ActVIA"
+            },
+            {
+              "name": "K14627  actVI3; dehydratase [EC:4.2.1.-]"
+            },
+            {
+              "name": "K14628  actVI2; enoyl reductase"
+            },
+            {
+              "name": "K14629  actVI4; enoyl reductase"
+            },
+            {
+              "name": "K14631  actVB; flavin reductase ActVB [EC:1.5.1.-]"
+            },
+            {
+              "name": "K16378  rapP, fkbP; pipecolate-incorporating enzyme"
+            },
+            {
+              "name": "K15389  APDG; acyl-CoA dehydrogenase"
+            },
+            {
+              "name": "K21160  sgcE2, ncsE2, kedE2; enediyne biosynthesis protein E2"
+            },
+            {
+              "name": "K21161  sgcE3, ncsE3, kedE3; enediyne biosynthesis protein E3"
+            },
+            {
+              "name": "K21162  sgcE4, ncsE4, kedE4; enediyne biosynthesis protein E4"
+            },
+            {
+              "name": "K21163  sgcE5, ncsE5, kedE5; enediyne biosynthesis protein E5"
+            },
+            {
+              "name": "K21164  sgcE7, ncsE7, kedE7; enediyne biosynthesis protein E7"
+            },
+            {
+              "name": "K21165  sgcE8, ncsE8, kedE8; enediyne biosynthesis protein E8"
+            },
+            {
+              "name": "K21166  sgcE9, ncsE9, kedE9; enediyne biosynthesis protein E9"
+            },
+            {
+              "name": "K21167  sgcE11, ncsE11, kedE11; enediyne biosynthesis protein E11"
+            },
+            {
+              "name": "K21168  calE1; enediyne biosynthesis protein CalE1"
+            },
+            {
+              "name": "K21169  calE2; enediyne biosynthesis protein CalE2"
+            },
+            {
+              "name": "K21170  calE3; enediyne biosynthesis protein CalE3"
+            },
+            {
+              "name": "K21171  calE4; enediyne biosynthesis protein CalE4"
+            },
+            {
+              "name": "K21172  calE5; enediyne biosynthesis protein CalE5"
+            },
+            {
+              "name": "K21173  calE6; methionine gamma-lyase"
+            },
+            {
+              "name": "K21174  calE9; enediyne biosynthesis protein CalE9"
+            },
+            {
+              "name": "K21186  sgcC5, mdpC5, kedY5; condensation enzyme"
+            },
+            {
+              "name": "K21180  sgcD6; 3-O-acyltransferase"
+            },
+            {
+              "name": "K21185  sgcE6, mdpE6, kedE6; flavin reductase"
+            },
+            {
+              "name": "K21191  mdpB2; CoA ligase [EC:6.2.1.-]"
+            },
+            {
+              "name": "K21193  mdpB3; acetyltransferase/esterase"
+            },
+            {
+              "name": "K21190  mdpC8; dehydrogenase"
+            },
+            {
+              "name": "K20423  ncsB2; 2-hydroxy-7-methoxy-5-methyl-1-naphthoate---CoA ligase [EC:6.2.1.43]"
+            },
+            {
+              "name": "K21209  ncsB4; acyltransferase"
+            },
+            {
+              "name": "K21225  kedN2; acyl-CoA synthetase"
+            },
+            {
+              "name": "K21226  kedN4; acyl-CoA N-acyltransferase"
+            },
+            {
+              "name": "K21261  calO4; acyltransferase"
+            },
+            {
+              "name": "K14254  oxyQ; aminotransferase"
+            },
+            {
+              "name": "K21301  oxyR, ctcR; 5a,11a-dehydrotetracycline reductase [EC:1.3.98.4]"
+            },
+            {
+              "name": "K21297  ctcQ; flavin reductase (NADH) [EC:1.5.1.36]"
+            },
+            {
+              "name": "K15943  snoaL, dnrD, dauD, aknH; nogalonic acid methyl ester cyclase / aklanonic acid methyl ester cyclase [EC:5.5.1.26 5.5.1.23]"
+            },
+            {
+              "name": "K15944  snoaF, dnrE, dauE, aknU; nogalaviketone/aklaviketone reductase [EC:1.1.1.- 1.1.1.362]"
+            },
+            {
+              "name": "K15967  mtmW; ketoreductase"
+            },
+            {
+              "name": "K15968  tcmI; tetracenomycin F2 cyclase [EC:4.2.1.154]"
+            },
+            {
+              "name": "K14244  oxyD; amidotransferase [EC:6.3.5.-]"
+            },
+            {
+              "name": "K15392  CPAD; cyclo-acetoacetyl-L-tryptophan dimethylallyltransferase [EC:2.5.1.-]"
+            },
+            {
+              "name": "K15393  CPAO; beta-cyclopiazonate dehydrogenase [EC:1.21.99.1]"
+            },
+            {
+              "name": "K15651  cmaC; aminocarboxycyclopropane-forming enzyme"
+            },
+            {
+              "name": "K16404  sorR; reductase"
+            },
+            {
+              "name": "K26570  clbQ; colibactin biosynthesis thioesterase"
+            },
+            {
+              "name": "K26571  clbL; colibactin biosynthesis amidase"
+            },
+            {
+              "name": "K26579  clbP; colibactin biosynthesis peptidase"
+            },
+            {
+              "name": "K23875  tmlU; marinolic acid---CoA ligase [EC:6.2.1.60]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nonribosomal peptide tailoring proteins",
+      "children": [
+        {
+          "name": "Reductase",
+          "children": [
+            {
+              "name": "K04785  irp3, ybtU; yersiniabactin synthetase, thiazolinyl reductase component"
+            },
+            {
+              "name": "K12241  pchG; pyochelin biosynthesis protein PchG"
+            }
+          ]
+        },
+        {
+          "name": "Thioesterase",
+          "children": [
+            {
+              "name": "K05374  irp4, ybtT; yersiniabactin synthetase, thioesterase component"
+            },
+            {
+              "name": "K12242  pchC; pyochelin biosynthesis protein PchC"
+            },
+            {
+              "name": "K15657  srfATE, srfAD, lchAD; external thioesterase TEII"
+            },
+            {
+              "name": "K16434  cepJ; thioesterase CepJ"
+            }
+          ]
+        },
+        {
+          "name": "Oxygenase",
+          "children": [
+            {
+              "name": "K04793  mbtG; mycobactin lysine-N-oxygenase"
+            },
+            {
+              "name": "K16445  cepE, oxyA, CYP165A3; oxidation protein CepE"
+            },
+            {
+              "name": "K16446  cepF, oxyB, CYP165B3; oxidation protein CepF"
+            },
+            {
+              "name": "K16447  cepG, oxyC, CYP165C4; oxidation protein CepG"
+            },
+            {
+              "name": "K19106  nocL; nocardicin C N-oxygenase [EC:1.14.15.43]"
+            }
+          ]
+        },
+        {
+          "name": "Glycosyltransferase",
+          "children": [
+            {
+              "name": "K16440  gtfA; chloroorienticin B synthase [EC:2.4.1.311]"
+            },
+            {
+              "name": "K16444  gtfB, gtfE; vancomycin aglycone glucosyltransferase [EC:2.4.1.310]"
+            },
+            {
+              "name": "K16443  gtfD; desvancosaminyl-vancomycin vancosaminetransferase [EC:2.4.1.322]"
+            }
+          ]
+        },
+        {
+          "name": "Aminotransferase",
+          "children": [
+            {
+              "name": "K15681  mxcL; aminotransferase MxcL"
+            },
+            {
+              "name": "K16423  hpgT, nocG; (S)-3,5-dihydroxyphenylglycine transaminase [EC:2.6.1.103]"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K28586  EASC; acyltransferase [EC:2.3.1.-]"
+            },
+            {
+              "name": "K28587  EASD; acyl-CoA ligase [EC:6.2.1.-]"
+            },
+            {
+              "name": "K04126  PCBC; isopenicillin-N synthase [EC:1.21.3.1]"
+            },
+            {
+              "name": "K10852  PENDE; isopenicillin-N N-acyltransferase [EC:2.3.1.164]"
+            },
+            {
+              "name": "K04127  cefD; isopenicillin-N epimerase [EC:5.1.1.17]"
+            },
+            {
+              "name": "K12744  cefE; deacetoxycephalosporin-C synthase [EC:1.14.20.1]"
+            },
+            {
+              "name": "K12745  cefF; deacetoxycephalosporin-C hydroxylase [EC:1.14.11.26]"
+            },
+            {
+              "name": "K04128  cmcH; hydroxymethyl cephem carbamoyltransferase [EC:2.1.3.7]"
+            },
+            {
+              "name": "K18062  cmcI; cephamycin C biosynthesis protein"
+            },
+            {
+              "name": "K18063  cmcJ; cephamycin C biosynthesis protein"
+            },
+            {
+              "name": "K16104  vioJ; 2,3-diaminopropionyl alpha,beta-desaturase"
+            },
+            {
+              "name": "K16105  vioL; carbamoyltransferase"
+            },
+            {
+              "name": "K16114  blmE; glycosyl transferase protein BlmE"
+            },
+            {
+              "name": "K16115  blmF; glycosyl transferase / beta-hydroxylase protein BlmF"
+            },
+            {
+              "name": "K16433  cepL; hydroxylation protein CepL"
+            },
+            {
+              "name": "K19104  nat; isonocardicin synthase [EC:2.5.1.38]"
+            },
+            {
+              "name": "K19105  nocJ; nocardicin-A epimerase [EC:5.1.1.14]"
+            },
+            {
+              "name": "K16421  hmaS, nocF; 4-hydroxymandelate synthase [EC:1.13.11.46]"
+            },
+            {
+              "name": "K16422  hmo, nocN; 4-hydroxymandelate oxidase [EC:1.1.3.46]"
+            },
+            {
+              "name": "K16425  dpgB; isomerase DpgB"
+            },
+            {
+              "name": "K16427  dpgC; (3,5-dihydroxyphenyl)acetyl-CoA 1,2-dioxygenase [EC:1.13.11.80]"
+            },
+            {
+              "name": "K16426  dpgD; dehydration protein DpgD"
+            },
+            {
+              "name": "K16442  gtfC; glycosyltransferase GtfC"
+            },
+            {
+              "name": "K16448  mtfA; methylation protein MtfA"
+            },
+            {
+              "name": "K16133  mcyI; microcystin synthetase protein McyI"
+            },
+            {
+              "name": "K24530  mycCII; ferredoxin"
+            },
+            {
+              "name": "K01779  racD; aspartate racemase [EC:5.1.1.13]"
+            },
+            {
+              "name": "K16134  mcyJ; microcystin synthetase protein McyJ"
+            },
+            {
+              "name": "K28713  OMT1; atrochrysone 6-O-methyltransferase [EC:2.1.1.404]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

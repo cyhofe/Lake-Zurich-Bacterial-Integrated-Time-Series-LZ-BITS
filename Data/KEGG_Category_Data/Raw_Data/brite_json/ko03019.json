@@ -1,0 +1,1936 @@
+{
+  "name": "ko03019",
+  "children": [
+    {
+      "name": "Eukaryotic type",
+      "children": [
+        {
+          "name": "mRNA processing factors",
+          "children": [
+            {
+              "name": "5' end processing",
+              "children": [
+                {
+                  "name": "Capping factors",
+                  "children": [
+                    {
+                      "name": "K00565  RNMT; mRNA (guanine-N7-)-methyltransferase [EC:2.1.1.56]"
+                    },
+                    {
+                      "name": "K13917  RNGTT; mRNA-capping enzyme [EC:2.7.7.50 3.6.1.74]"
+                    },
+                    {
+                      "name": "K04563  CDC28, CDC2; cyclin-dependent kinase [EC:2.7.11.22]"
+                    },
+                    {
+                      "name": "K02202  CDK7; cyclin-dependent kinase 7 [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K00987  CEG1; mRNA guanylyltransferase [EC:2.7.7.50]"
+                    },
+                    {
+                      "name": "K01098  CET1; polynucleotide 5'-triphosphatase [EC:3.6.1.74]"
+                    },
+                    {
+                      "name": "K14589  CMTR1, FTSJD2, MTR1; cap1 methyltransferase [EC:2.1.1.57]"
+                    },
+                    {
+                      "name": "K14590  CMTR2, FTSJD1, AFT; cap2 methyltransferase [EC:2.1.1.296]"
+                    },
+                    {
+                      "name": "K18776  MTR2, MT48; cap2 methyltransferase [EC:2.1.1.296]"
+                    },
+                    {
+                      "name": "K18777  MTR3, MT57; cap3/cap4 methyltransferase [EC:2.1.1.-]"
+                    },
+                    {
+                      "name": "K18708  FAM103A1; RNMT-activating mini protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cap binding complex",
+                  "children": [
+                    {
+                      "name": "K12882  NCBP1, CBP80; nuclear cap-binding protein subunit 1"
+                    },
+                    {
+                      "name": "K12883  NCBP2, CBP20; nuclear cap-binding protein subunit 2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "3' end processing",
+              "children": [
+                {
+                  "name": "Pre-mRNA cleavage factor Im (CFIm)",
+                  "children": [
+                    {
+                      "name": "K14397  NUDT21, CPSF5, CFIM25; cleavage and polyadenylation specificity factor subunit 5"
+                    },
+                    {
+                      "name": "K14398  CPSF6_7; cleavage and polyadenylation specificity factor subunit 6/7"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pre-mRNA cleavage factor IIm (CFIIm)",
+                  "children": [
+                    {
+                      "name": "K14399  CLP1, HERB; polyribonucleotide 5'-hydroxyl-kinase [EC:2.7.1.78]"
+                    },
+                    {
+                      "name": "K14400  PCF11; pre-mRNA cleavage complex 2 protein Pcf11"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cleavage and polyadenylation specificity factor (CPSF) complex",
+                  "children": [
+                    {
+                      "name": "K14401  CPSF1, CFT1; cleavage and polyadenylation specificity factor subunit 1"
+                    },
+                    {
+                      "name": "K14402  CPSF2, CFT2; cleavage and polyadenylation specificity factor subunit 2"
+                    },
+                    {
+                      "name": "K14403  CPSF3, YSH1; cleavage and polyadenylation specificity factor subunit 3 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K14404  CPSF4, YTH1; cleavage and polyadenylation specificity factor subunit 4"
+                    },
+                    {
+                      "name": "K14405  FIP1L1, FIP1; pre-mRNA 3'-end-processing factor FIP1"
+                    },
+                    {
+                      "name": "K15541  MPE1; protein MPE1"
+                    },
+                    {
+                      "name": "K15542  PFS2; polyadenylation factor subunit 2"
+                    },
+                    {
+                      "name": "K14962  WDR82, SWD2, CPS35; COMPASS component SWD2"
+                    },
+                    {
+                      "name": "K15543  REF2; RNA end formation protein 2"
+                    },
+                    {
+                      "name": "K06269  PPP1C; serine/threonine-protein phosphatase PP1 catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K15544  SSU72; RNA polymerase II subunit A C-terminal domain phosphatase SSU72 [EC:3.1.3.16]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cleavage stimulation factor (CSTF) complex",
+                  "children": [
+                    {
+                      "name": "K14406  CSTF1; cleavage stimulation factor subunit 1"
+                    },
+                    {
+                      "name": "K14407  CSTF2, RNA15; cleavage stimulation factor subunit 2"
+                    },
+                    {
+                      "name": "K14408  CSTF3, RNA14; cleavage stimulation factor subunit 3"
+                    },
+                    {
+                      "name": "K06100  SYMPK; symplekin"
+                    }
+                  ]
+                },
+                {
+                  "name": "U7-dependent histone pre-mRNA processing factors",
+                  "children": [
+                    {
+                      "name": "K11086  SNRPB, SMB; small nuclear ribonucleoprotein B and B'"
+                    },
+                    {
+                      "name": "K11088  SNRPD3, SMD3; small nuclear ribonucleoprotein D3"
+                    },
+                    {
+                      "name": "K11097  SNRPE, SME; small nuclear ribonucleoprotein E"
+                    },
+                    {
+                      "name": "K11098  SNRPF, SMF; small nuclear ribonucleoprotein F"
+                    },
+                    {
+                      "name": "K11099  SNRPG, SMG; small nuclear ribonucleoprotein G"
+                    },
+                    {
+                      "name": "K25591  LSM10; U7 snRNA-associated Sm-like protein LSm10"
+                    },
+                    {
+                      "name": "K25592  LSM11; U7 snRNA-associated Sm-like protein LSm11"
+                    },
+                    {
+                      "name": "K14402  CPSF2, CFT2; cleavage and polyadenylation specificity factor subunit 2"
+                    },
+                    {
+                      "name": "K14403  CPSF3, YSH1; cleavage and polyadenylation specificity factor subunit 3 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K14407  CSTF2, RNA15; cleavage stimulation factor subunit 2"
+                    },
+                    {
+                      "name": "K06100  SYMPK; symplekin"
+                    },
+                    {
+                      "name": "K18710  SLBP; histone RNA hairpin-binding protein"
+                    },
+                    {
+                      "name": "K25593  CASP8AP2; CASP8-associated protein 2"
+                    }
+                  ]
+                },
+                {
+                  "name": "DRB sensitivity inducing factor (DSIF) complex",
+                  "children": [
+                    {
+                      "name": "K15171  SUPT4H1, SPT4; transcription elongation factor SPT4"
+                    },
+                    {
+                      "name": "K15172  SUPT5H, SPT5; transcription elongation factor SPT5"
+                    }
+                  ]
+                },
+                {
+                  "name": "N6-methyltransferase complex",
+                  "children": [
+                    {
+                      "name": "K05925  METTL3; mRNA m6A methyltransferase catalytic subunit [EC:2.1.1.348]"
+                    },
+                    {
+                      "name": "K23960  METTL14; mRNA m6A methyltransferase non-catalytic subunit"
+                    },
+                    {
+                      "name": "K24174  METTL4; N(6)-adenine-specific DNA methyltransferase [EC:2.1.1.72]"
+                    },
+                    {
+                      "name": "K11393  METTL16, METT10D; U6 snRNA m6A methyltransferase [EC:2.1.1.346]"
+                    },
+                    {
+                      "name": "K22824  WTAP; pre-mRNA-splicing regulator WTAP"
+                    },
+                    {
+                      "name": "K22910  VIRMA; protein virilizer"
+                    },
+                    {
+                      "name": "K13190  RBM15; RNA-binding protein 15"
+                    },
+                    {
+                      "name": "K22909  ZC3H13; zinc finger CCCH domain-containing protein 13"
+                    },
+                    {
+                      "name": "K15685  CBLL1; E3 ubiquitin-protein ligase Hakai [EC:2.3.2.27]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Poly(A) addition factors",
+                  "children": [
+                    {
+                      "name": "K14376  PAP; poly(A) polymerase [EC:2.7.7.19]"
+                    },
+                    {
+                      "name": "K14079  PAPD4, GLD2; poly(A) RNA polymerase GLD2 [EC:2.7.7.19]"
+                    },
+                    {
+                      "name": "K18709  TUT1; speckle targeted PIP5K1A-regulated poly(A) polymerase [EC:2.7.7.19 2.7.7.52]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Negative regulators of mRNA 3' end processing",
+                  "children": [
+                    {
+                      "name": "K10683  BARD1; BRCA1-associated RING domain protein 1"
+                    },
+                    {
+                      "name": "K13192  RBM26; RNA-binding protein 26"
+                    },
+                    {
+                      "name": "K19469  FTO; mRNA N6-methyladenine demethylase [EC:1.14.11.53]"
+                    },
+                    {
+                      "name": "K10767  ALKBH5; mRNA N6-methyladenine demethylase [EC:1.14.11.53]"
+                    },
+                    {
+                      "name": "K23600  TARDBP, TDP43; TAR DNA-binding protein 43"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other processing factors",
+              "children": [
+                {
+                  "name": "K18711  DHX40; ATP-dependent RNA helicase DHX40 [EC:5.6.2.6]"
+                },
+                {
+                  "name": "K13102  KIN; DNA/RNA-binding protein KIN17"
+                },
+                {
+                  "name": "K24975  METTL8; mRNA N(3)-methylcytidine methyltransferase METTL8 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K23040  METTL22; methyltransferase-like protein 22 [EC:2.1.1.-]"
+                },
+                {
+                  "name": "K23033  TENT5A_B, FAM46A_B; terminal nucleotidyltransferase 5A/B [EC:2.7.7.-]"
+                },
+                {
+                  "name": "K23034  TENT5C, FAM46C; terminal nucleotidyltransferase 5C [EC:2.7.7.19]"
+                },
+                {
+                  "name": "K23035  TENT5D, FAM46D; terminal nucleotidyltransferase 5D [EC:2.7.7.19]"
+                },
+                {
+                  "name": "K23038  ZC3H14; zinc finger CCCH domain-containing protein 14"
+                },
+                {
+                  "name": "K27103  SRRT, ARS2; serrate RNA effector molecule"
+                },
+                {
+                  "name": "K23039  NAB2; nuclear polyadenylated RNA-binding protein NAB2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mRNA surveillance and transport factors",
+          "children": [
+            {
+              "name": "Transport factors",
+              "children": [
+                {
+                  "name": "EJC complex",
+                  "children": [
+                    {
+                      "name": "K12876  RBM8A, Y14; RNA-binding protein 8A"
+                    },
+                    {
+                      "name": "K12877  MAGOH; protein mago nashi"
+                    },
+                    {
+                      "name": "K12881  THOC4, ALYREF; THO complex subunit 4"
+                    },
+                    {
+                      "name": "K12812  DDX39B, UAP56, SUB2; ATP-dependent RNA helicase UAP56/SUB2 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K13025  EIF4A3, FAL1; ATP-dependent RNA helicase [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K25178  CCDC174; coiled-coil domain-containing protein 174"
+                    },
+                    {
+                      "name": "K14323  CASC3, MLN51; protein CASC3"
+                    },
+                    {
+                      "name": "K14324  SAP18; histone deacetylase complex subunit SAP18"
+                    },
+                    {
+                      "name": "K13114  PNN; pinin"
+                    },
+                    {
+                      "name": "K12875  ACIN1, ACINUS; apoptotic chromatin condensation inducer in the nucleus"
+                    },
+                    {
+                      "name": "K14325  RNPS1; RNA-binding protein with serine-rich domain 1"
+                    },
+                    {
+                      "name": "K13171  SRRM1, SRM160; serine/arginine repetitive matrix protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "TREX complex",
+                  "children": [
+                    {
+                      "name": "K12878  THOC1; THO complex subunit 1"
+                    },
+                    {
+                      "name": "K12879  THOC2; THO complex subunit 2"
+                    },
+                    {
+                      "name": "K12880  THOC3; THO complex subunit 3"
+                    },
+                    {
+                      "name": "K12881  THOC4, ALYREF; THO complex subunit 4"
+                    },
+                    {
+                      "name": "K13174  THOC5; THO complex subunit 5"
+                    },
+                    {
+                      "name": "K13175  THOC6; THO complex subunit 6"
+                    },
+                    {
+                      "name": "K13176  THOC7; THO complex subunit 7"
+                    },
+                    {
+                      "name": "K28424  CHTOP; chromatin target of PRMT1 protein"
+                    },
+                    {
+                      "name": "K18712  HPR1; THO complex subunit HPR1"
+                    },
+                    {
+                      "name": "K18713  THP2; THO complex subunit THP2"
+                    },
+                    {
+                      "name": "K18714  MFT1; THO complex subunit MFT1"
+                    }
+                  ]
+                },
+                {
+                  "name": "TREX-2 complex",
+                  "children": [
+                    {
+                      "name": "K23801  PCID2, THP1; nuclear mRNA export protein PCID2/THP1"
+                    },
+                    {
+                      "name": "K10881  SHFM1, DSS1, RPN15; 26 proteasome complex subunit DSS1"
+                    },
+                    {
+                      "name": "K11368  ENY2, DC6, SUS1; enhancer of yellow 2 transcription factor"
+                    },
+                    {
+                      "name": "K10840  CETN2; centrin-2"
+                    },
+                    {
+                      "name": "K16466  CETN3, CDC31; centrin-3"
+                    },
+                    {
+                      "name": "K24317  MCM3AP; germinal-center associated nuclear protein [EC:2.3.1.48]"
+                    },
+                    {
+                      "name": "K23719  SAC3; nuclear mRNA export protein SAC3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Nuclear pore complex",
+                  "children": [
+                    {
+                      "name": "K09291  TPR, MLP1, MLP2; nucleoprotein TPR"
+                    },
+                    {
+                      "name": "K14298  RAE1, GLE2; mRNA export factor"
+                    },
+                    {
+                      "name": "K14004  SEC13; protein transport protein SEC13"
+                    },
+                    {
+                      "name": "K14302  NUP37; nuclear pore complex protein Nup37"
+                    },
+                    {
+                      "name": "K14304  NUP85; nuclear pore complex protein Nup85"
+                    },
+                    {
+                      "name": "K14305  NUP43; nuclear pore complex protein Nup43"
+                    },
+                    {
+                      "name": "K14295  NUP50, NPAP60; nuclear pore complex protein Nup50"
+                    },
+                    {
+                      "name": "K14308  NUP54, NUP57; nuclear pore complex protein Nup54"
+                    },
+                    {
+                      "name": "K14306  NUP62, NSP1; nuclear pore complex protein Nup62"
+                    },
+                    {
+                      "name": "K14318  NUP88; nuclear pore complex protein Nup88"
+                    },
+                    {
+                      "name": "K14309  NUP93, NIC96; nuclear pore complex protein Nup93"
+                    },
+                    {
+                      "name": "K14297  NUP98, ADAR2, NUP116; nuclear pore complex protein Nup98-Nup96"
+                    },
+                    {
+                      "name": "K14301  NUP107, NUP84; nuclear pore complex protein Nup107"
+                    },
+                    {
+                      "name": "K14300  NUP133; nuclear pore complex protein Nup133"
+                    },
+                    {
+                      "name": "K14311  NUP188; nuclear pore complex protein Nup188"
+                    },
+                    {
+                      "name": "K14296  NUP153; nuclear pore complex protein Nup153"
+                    },
+                    {
+                      "name": "K14312  NUP155, NUP170, NUP157; nuclear pore complex protein Nup155"
+                    },
+                    {
+                      "name": "K14303  NUP160, NUP120; nuclear pore complex protein Nup160"
+                    },
+                    {
+                      "name": "K14313  NUP35, NUP53; nuclear pore complex protein Nup53"
+                    },
+                    {
+                      "name": "K14310  NUP205, NUP192; nuclear pore complex protein Nup205"
+                    },
+                    {
+                      "name": "K14314  NUP210, GP210; nuclear pore complex protein Nup210"
+                    },
+                    {
+                      "name": "K14317  NUP214, CAN; nuclear pore complex protein Nup214"
+                    },
+                    {
+                      "name": "K14316  POM121, NUP121; nuclear pore complex protein Nup121"
+                    },
+                    {
+                      "name": "K14307  NUPL1, NUP49; nucleoporin p58/p45"
+                    },
+                    {
+                      "name": "K14321  NUPL2, NUP42, CG1; nucleoporin-like protein 2"
+                    },
+                    {
+                      "name": "K14315  NDC1, TMEM48; nucleoporin NDC1"
+                    },
+                    {
+                      "name": "K14299  SEH1; nucleoporin SEH1"
+                    },
+                    {
+                      "name": "K12172  RANBP2, NUP358; E3 SUMO-protein ligase RanBP2 [EC:2.3.2.-]"
+                    },
+                    {
+                      "name": "K03345  SENP2, AXAM2; sentrin-specific protease 2 (axin associating molecule) [EC:3.4.22.68]"
+                    },
+                    {
+                      "name": "K14320  AAAS; aladin"
+                    },
+                    {
+                      "name": "K18715  NUP159; nucleoporin NUP159"
+                    },
+                    {
+                      "name": "K18716  NUP42, RIP1; nucleoporin NUP42"
+                    },
+                    {
+                      "name": "K18717  ASM4, NUP59; nucleoporin ASM4"
+                    },
+                    {
+                      "name": "K18718  NUP60; nucleoporin NUP60"
+                    },
+                    {
+                      "name": "K18719  NUP82; nucleoporin NUP82"
+                    },
+                    {
+                      "name": "K18720  NUP145; nucleoporin NUP145"
+                    },
+                    {
+                      "name": "K18721  NUP1; nucleoporin NUP1"
+                    },
+                    {
+                      "name": "K18722  NUP2; nucleoporin NUP2"
+                    },
+                    {
+                      "name": "K16466  CETN3, CDC31; centrin-3"
+                    },
+                    {
+                      "name": "K18723  GLE1; nucleoporin GLE1"
+                    },
+                    {
+                      "name": "K14284  NXF, TAP, MEX67; nuclear RNA export factor"
+                    },
+                    {
+                      "name": "K14285  NXT1_2, P15; NTF2-related export protein 1/2"
+                    },
+                    {
+                      "name": "K26564  NPAP1; nuclear pore-associated protein 1"
+                    },
+                    {
+                      "name": "K14543  MTR2; mRNA transport regulator MTR2"
+                    },
+                    {
+                      "name": "K18724  POM34; nucleoporin POM34"
+                    },
+                    {
+                      "name": "K18725  POM152; nucleoporin POM152"
+                    },
+                    {
+                      "name": "K14017  SNL1; HSP70 co-chaperone SNL1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ran-mediated transport factors",
+                  "children": [
+                    {
+                      "name": "K07936  RAN; GTP-binding nuclear protein Ran"
+                    },
+                    {
+                      "name": "K18646  ANP32A_C_D; acidic leucine-rich nuclear phosphoprotein 32 family member A/C/D"
+                    },
+                    {
+                      "name": "K18647  ANP32B; acidic leucine-rich nuclear phosphoprotein 32 family member B"
+                    },
+                    {
+                      "name": "K05475  TNFSF13, APRIL, CD256; tumor necrosis factor ligand superfamily member 13"
+                    },
+                    {
+                      "name": "K13088  ELAVL1, HUR; ELAV-like protein 1"
+                    },
+                    {
+                      "name": "K13208  ELAVL2_3_4; ELAV like protein 2/3/4"
+                    },
+                    {
+                      "name": "K18726  FAF2, UBXD8; FAS-associated factor 2"
+                    },
+                    {
+                      "name": "K13525  VCP, CDC48; transitional endoplasmic reticulum ATPase"
+                    },
+                    {
+                      "name": "K21806  VCPKMT, METTL21D; protein N-lysine methyltransferase METTL21D [EC:2.1.1.-]"
+                    },
+                    {
+                      "name": "K18727  TNPO2, IPO3, KPNB2B; transportin-2"
+                    },
+                    {
+                      "name": "K14290  XPO1, CRM1; exportin-1"
+                    },
+                    {
+                      "name": "K18460  XPO7, EXP7; exportin-7"
+                    },
+                    {
+                      "name": "K24115  RANBP17; Ran-binding protein 17"
+                    },
+                    {
+                      "name": "K14319  RANGAP1; Ran GTPase-activating protein 1"
+                    },
+                    {
+                      "name": "K14651  TAF15, NPL3; transcription initiation factor TFIID subunit 15"
+                    }
+                  ]
+                },
+                {
+                  "name": "eIF4F and regulatory proteins",
+                  "children": [
+                    {
+                      "name": "K03259  EIF4E; translation initiation factor 4E"
+                    },
+                    {
+                      "name": "K03257  EIF4A; translation initiation factor 4A"
+                    },
+                    {
+                      "name": "K03260  EIF4G; translation initiation factor 4G"
+                    },
+                    {
+                      "name": "K03258  EIF4B; translation initiation factor 4B"
+                    },
+                    {
+                      "name": "K24086  EIF4H; translation initiation factor 4H"
+                    },
+                    {
+                      "name": "K07205  EIF4EBP1; eukaryotic translation initiation factor 4E binding protein 1"
+                    },
+                    {
+                      "name": "K18644  EIF4EBP2; eukaryotic translation initiation factor 4E binding protein 2"
+                    },
+                    {
+                      "name": "K18645  EIF4EBP3; eukaryotic translation initiation factor 4E binding protein 3"
+                    },
+                    {
+                      "name": "K18728  EIF4ENIF1; eukaryotic translation initiation factor 4E transporter"
+                    },
+                    {
+                      "name": "K18729  ANGEL; protein angel"
+                    },
+                    {
+                      "name": "K15516  FMR; fragile X mental retardation protein"
+                    },
+                    {
+                      "name": "K05749  CYFIP; cytoplasmic FMR1 interacting protein"
+                    },
+                    {
+                      "name": "K13133  GEMIN5; gem associated protein 5"
+                    },
+                    {
+                      "name": "K14283  TACC3, maskin; transforming acidic coiled-coil-containing protein 3"
+                    },
+                    {
+                      "name": "K02602  CPEB, ORB; cytoplasmic polyadenylation element-binding protein"
+                    },
+                    {
+                      "name": "K11594  DDX3X, bel; ATP-dependent RNA helicase DDX3X [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K18730  GIGYF; PERQ amino acid-rich with GYF domain-containing protein"
+                    },
+                    {
+                      "name": "K13126  PABPC; polyadenylate-binding protein"
+                    },
+                    {
+                      "name": "K14322  PAIP1; polyadenylate-binding protein-interacting protein 1"
+                    },
+                    {
+                      "name": "K27470  PAIP2; polyadenylate-binding protein-interacting protein 2"
+                    },
+                    {
+                      "name": "K12599  SKI2, SKIV2L; antiviral helicase SKI2 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K18664  SLH1; antiviral helicase SLH1 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K23041  DEAF1; deformed epidermal autoregulatory factor 1"
+                    },
+                    {
+                      "name": "K07575  MCTS, TMA20; malignant T-cell-amplified sequence"
+                    },
+                    {
+                      "name": "K24272  DENR, TMA22; density-regulated protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "APOBEC1-ACF complex",
+                  "children": [
+                    {
+                      "name": "K16932  APOBEC1; C->U-editing enzyme APOBEC1 [EC:3.5.4.36]"
+                    },
+                    {
+                      "name": "K24978  A1CF; APOBEC1 complementation factor"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other transport factors",
+                  "children": [
+                    {
+                      "name": "K14294  WIBG, PYM; partner of Y14 and mago"
+                    },
+                    {
+                      "name": "K12741  HNRNPA1_3; heterogeneous nuclear ribonucleoprotein A1/A3"
+                    },
+                    {
+                      "name": "K14411  MSI; RNA-binding protein Musashi"
+                    },
+                    {
+                      "name": "K14416  HBS1; elongation factor 1 alpha-like protein"
+                    },
+                    {
+                      "name": "K06965  PELO, DOM34, pelA; protein pelota"
+                    },
+                    {
+                      "name": "K14396  PABPN1, PABP2; polyadenylate-binding protein 2"
+                    },
+                    {
+                      "name": "K18731  GFD1; mRNA transport factor GFD1"
+                    },
+                    {
+                      "name": "K18655  DDX19, DBP5; ATP-dependent RNA helicase DDX19/DBP5 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K18656  DDX25, GRTH; ATP-dependent RNA helicase DDX25 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K12867  SYF1, XAB2; pre-mRNA-splicing factor SYF1"
+                    },
+                    {
+                      "name": "K18732  SARNP, CIP29, THO1; SAP domain-containing ribonucleoprotein"
+                    },
+                    {
+                      "name": "K11493  RCC1; regulator of chromosome condensation"
+                    },
+                    {
+                      "name": "K18733  LARP6; la-related protein 6"
+                    },
+                    {
+                      "name": "K21772  PURA; transcriptional activator protein Pur-alpha"
+                    },
+                    {
+                      "name": "K21799  PURB; transcriptional activator protein Pur-beta"
+                    },
+                    {
+                      "name": "K22414  POLDIP3; polymerase delta-interacting protein 3"
+                    },
+                    {
+                      "name": "K22415  ZC3H11; zinc finger CCCH domain-containing protein 11"
+                    },
+                    {
+                      "name": "K23802  LENG8, THP3; SAC3 family protein LENG8/THP3"
+                    },
+                    {
+                      "name": "K24823  PATL2; protein PAT1 homolog 2"
+                    },
+                    {
+                      "name": "K23799  YRA2; RNA annealing protein YRA2"
+                    },
+                    {
+                      "name": "K28506  GBP2, HRB1; serine/arginine (SR)-type shuttling mRNA binding protein"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Surveillance factors",
+              "children": [
+                {
+                  "name": "Surveillance complex",
+                  "children": [
+                    {
+                      "name": "K03265  ETF1, ERF1; peptide chain release factor subunit 1"
+                    },
+                    {
+                      "name": "K03267  ERF3, GSPT; peptide chain release factor subunit 3"
+                    },
+                    {
+                      "name": "K14326  UPF1, RENT1; regulator of nonsense transcripts 1 [EC:5.6.2.5 5.6.2.3]"
+                    },
+                    {
+                      "name": "K14327  UPF2, RENT2; regulator of nonsense transcripts 2"
+                    },
+                    {
+                      "name": "K14328  UPF3, RENT3; regulator of nonsense transcripts 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Protein phosphatase 2A",
+                  "children": [
+                    {
+                      "name": "K04382  PPP2C; serine/threonine-protein phosphatase 2A catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K03456  PPP2R1; serine/threonine-protein phosphatase 2A regulatory subunit A"
+                    },
+                    {
+                      "name": "K04354  PPP2R2; serine/threonine-protein phosphatase 2A regulatory subunit B"
+                    },
+                    {
+                      "name": "K11583  PPP2R3; serine/threonine-protein phosphatase 2A regulatory subunit B''"
+                    },
+                    {
+                      "name": "K11584  PPP2R5; serine/threonine-protein phosphatase 2A regulatory subunit B'"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other surveillance factors",
+                  "children": [
+                    {
+                      "name": "K08873  SMG1; serine/threonine-protein kinase SMG1 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K11125  SMG5, EST1B; protein SMG5"
+                    },
+                    {
+                      "name": "K11124  SMG6, EST1A; protein SMG6 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K14409  SMG7, EST1C; protein SMG7"
+                    },
+                    {
+                      "name": "K18734  SMG8; protein SMG8"
+                    },
+                    {
+                      "name": "K18735  SMG9; protein SMG9"
+                    },
+                    {
+                      "name": "K18730  GIGYF; PERQ amino acid-rich with GYF domain-containing protein"
+                    },
+                    {
+                      "name": "K19539  SECISBP2, SBP2; selenocysteine insertion sequence-binding protein 2"
+                    },
+                    {
+                      "name": "K20101  DHX34; ATP-dependent RNA helicase DHX34 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K24887  GTPBP1; GTP-binding protein 1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Factors involved in mRNA localization",
+              "children": [
+                {
+                  "name": "Cargo complex",
+                  "children": [
+                    {
+                      "name": "K18736  SHE2; SWI5-dependent HO expression protein 2"
+                    },
+                    {
+                      "name": "K18737  SHE3; SWI5-dependent HO expression protein 3"
+                    },
+                    {
+                      "name": "K14844  PUF6; pumilio homology domain family member 6"
+                    },
+                    {
+                      "name": "K18738  HEK; heterogeneous nuclear rnp K-like protein"
+                    },
+                    {
+                      "name": "K10357  MYO5; myosin V"
+                    },
+                    {
+                      "name": "K18658  ASH1; transcriptional regulatory protein ASH1"
+                    },
+                    {
+                      "name": "K18739  BICD; protein bicaudal D"
+                    },
+                    {
+                      "name": "K18740  EXD1, EGL; exonuclease 3'-5' domain-containing protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Factors that have mRNA localization signals",
+                  "children": [
+                    {
+                      "name": "K05692  ACTB_G1; actin beta/gamma 1"
+                    },
+                    {
+                      "name": "K17269  MBP; myelin basic protein"
+                    },
+                    {
+                      "name": "K07606  VIM; vimentin"
+                    },
+                    {
+                      "name": "K14739  MT1_2; metallothionein 1/2"
+                    },
+                    {
+                      "name": "K04377  MYC; Myc proto-oncogene protein"
+                    },
+                    {
+                      "name": "K18659  BCD; homeotic protein bicoid"
+                    },
+                    {
+                      "name": "K05495  GDF1; growth differentiation factor 1"
+                    },
+                    {
+                      "name": "K10180  TBX6; T-box protein 6"
+                    },
+                    {
+                      "name": "K18741  NANOS1, NOS1; protein nanos 1"
+                    },
+                    {
+                      "name": "K18742  OSK; maternal effect protein oskar"
+                    },
+                    {
+                      "name": "K02524  K10; DNA binding protein (fs(1)K10, female sterile(1)K10)"
+                    },
+                    {
+                      "name": "K02447  GRK; protein gruken"
+                    },
+                    {
+                      "name": "K09090  HESN; hairy and enhancer of split, invertebrate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Trans-acting binding proteins",
+                  "children": [
+                    {
+                      "name": "K12965  ZBP1, DAI; Z-DNA binding protein 1"
+                    },
+                    {
+                      "name": "K13210  FUBP; far upstream element-binding protein"
+                    },
+                    {
+                      "name": "K03231  EEF1A; elongation factor 1-alpha"
+                    },
+                    {
+                      "name": "K03233  EEF1G; elongation factor 1-gamma"
+                    },
+                    {
+                      "name": "K13158  HNRNPA2B1; heterogeneous nuclear ribonucleoprotein A2/B1"
+                    },
+                    {
+                      "name": "K16220  HAX1; HCLS1-associated protein X-1"
+                    },
+                    {
+                      "name": "K15044  AGFG1; Arf-GAP domain and FG repeats-containing protein 1"
+                    },
+                    {
+                      "name": "K17597  STAU; double-stranded RNA-binding protein Staufen"
+                    },
+                    {
+                      "name": "K13197  IGF2BP3; insulin-like growth factor 2 mRNA-binding protein 3"
+                    },
+                    {
+                      "name": "K13218  PTBP1, PTB; polypyrimidine tract-binding protein 1"
+                    },
+                    {
+                      "name": "K03102  SQD; squid"
+                    },
+                    {
+                      "name": "K02602  CPEB, ORB; cytoplasmic polyadenylation element-binding protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other mRNA localization factors",
+                  "children": [
+                    {
+                      "name": "K15516  FMR; fragile X mental retardation protein"
+                    },
+                    {
+                      "name": "K05749  CYFIP; cytoplasmic FMR1 interacting protein"
+                    },
+                    {
+                      "name": "K13162  PCBP2; poly(rC)-binding protein 2"
+                    },
+                    {
+                      "name": "K21444  PCBP3_4; poly(rC)-binding protein 3/4"
+                    },
+                    {
+                      "name": "K18743  CAPRIN1, GPIAP1; caprin-1"
+                    },
+                    {
+                      "name": "K18744  CAPRIN2, EEG1; caprin-2"
+                    },
+                    {
+                      "name": "K02177  BRU; bruno"
+                    },
+                    {
+                      "name": "K18745  EXU; maternal protein exuperantia"
+                    },
+                    {
+                      "name": "K09276  YBX1, NSEP1; Y-box-binding protein 1"
+                    },
+                    {
+                      "name": "K18746  CUP; protein cup"
+                    },
+                    {
+                      "name": "K18747  SXL; protein sex-lethal"
+                    },
+                    {
+                      "name": "K18748  SSD1; protein SSD1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "mRNA cycle factors",
+              "children": [
+                {
+                  "name": "Common to processing body (P body) and stress granule",
+                  "children": [
+                    {
+                      "name": "K12618  XRN1, SEP1, KEM1; 5'-3' exoribonuclease 1 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K11593  ELF2C, AGO; eukaryotic translation initiation factor 2C"
+                    },
+                    {
+                      "name": "K03259  EIF4E; translation initiation factor 4E"
+                    },
+                    {
+                      "name": "K14326  UPF1, RENT1; regulator of nonsense transcripts 1 [EC:5.6.2.5 5.6.2.3]"
+                    },
+                    {
+                      "name": "K11594  DDX3X, bel; ATP-dependent RNA helicase DDX3X [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K17642  DDX3Y; ATP-dependent RNA helicase DDX3Y [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K12614  DDX6, RCK, DHH1; ATP-dependent RNA helicase DDX6/DHH1 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K15686  MEX3, RKHD; RNA-binding protein MEX3 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K08290  FASTK; Fas-activated serine/threonine kinase [EC:2.7.11.8]"
+                    },
+                    {
+                      "name": "K18749  LSM14, RAP55, SCD6; protein LSM14"
+                    },
+                    {
+                      "name": "K12889  PCBP1; poly(rC)-binding protein 1"
+                    },
+                    {
+                      "name": "K13162  PCBP2; poly(rC)-binding protein 2"
+                    },
+                    {
+                      "name": "K09276  YBX1, NSEP1; Y-box-binding protein 1"
+                    },
+                    {
+                      "name": "K16682  AJUBA, LIMD1, WTIP; LIM domain-containing protein"
+                    },
+                    {
+                      "name": "K16932  APOBEC1; C->U-editing enzyme APOBEC1 [EC:3.5.4.36]"
+                    },
+                    {
+                      "name": "K18750  APOBEC3; C->U-editing enzyme APOBEC3 [EC:3.5.4.-]"
+                    },
+                    {
+                      "name": "K18422  MOV10; helicase MOV-10 [EC:5.6.2.5]"
+                    },
+                    {
+                      "name": "K18751  PNRC2; proline-rich nuclear receptor coactivator 2"
+                    },
+                    {
+                      "name": "K18752  TNPO1, IPO2, KPNB2; transportin-1"
+                    },
+                    {
+                      "name": "K08873  SMG1; serine/threonine-protein kinase SMG1 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K11125  SMG5, EST1B; protein SMG5"
+                    },
+                    {
+                      "name": "K11124  SMG6, EST1A; protein SMG6 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K14409  SMG7, EST1C; protein SMG7"
+                    },
+                    {
+                      "name": "K15308  TTP; tristetraprolin"
+                    },
+                    {
+                      "name": "K18753  ZFP36L; butyrate response factor"
+                    },
+                    {
+                      "name": "K18754  LIN28; protein lin-28"
+                    },
+                    {
+                      "name": "K04533  HD; huntingtin"
+                    },
+                    {
+                      "name": "K18755  IPO8, RANBP8; importin-8"
+                    },
+                    {
+                      "name": "K18756  BICC1, BICC; protein bicaudal C"
+                    },
+                    {
+                      "name": "K12741  HNRNPA1_3; heterogeneous nuclear ribonucleoprotein A1/A3"
+                    },
+                    {
+                      "name": "K04345  PKA; protein kinase A [EC:2.7.11.11]"
+                    },
+                    {
+                      "name": "K18757  LARP1; la-related protein 1"
+                    },
+                    {
+                      "name": "K23625  ATXN2; ataxin-2"
+                    }
+                  ]
+                },
+                {
+                  "name": "P-body specific factors",
+                  "children": [
+                    {
+                      "name": "K12613  DCP2; mRNA-decapping enzyme subunit 2 [EC:3.6.1.62]"
+                    },
+                    {
+                      "name": "K12610  DCP1A; mRNA-decapping enzyme 1A [EC:3.-.-.-]"
+                    },
+                    {
+                      "name": "K12611  DCP1B; mRNA-decapping enzyme 1B [EC:3.-.-.-]"
+                    },
+                    {
+                      "name": "K12612  DCP1; mRNA-decapping enzyme subunit 1"
+                    },
+                    {
+                      "name": "K12620  LSM1; U6 snRNA-associated Sm-like protein LSm1"
+                    },
+                    {
+                      "name": "K12621  LSM2; U6 snRNA-associated Sm-like protein LSm2"
+                    },
+                    {
+                      "name": "K12622  LSM3; U6 snRNA-associated Sm-like protein LSm3"
+                    },
+                    {
+                      "name": "K12623  LSM4; U6 snRNA-associated Sm-like protein LSm4"
+                    },
+                    {
+                      "name": "K12624  LSM5; U6 snRNA-associated Sm-like protein LSm5"
+                    },
+                    {
+                      "name": "K12625  LSM6; U6 snRNA-associated Sm-like protein LSm6"
+                    },
+                    {
+                      "name": "K12626  LSM7; U6 snRNA-associated Sm-like protein LSm7"
+                    },
+                    {
+                      "name": "K12627  LSM8; U6 snRNA-associated Sm-like protein LSm8"
+                    },
+                    {
+                      "name": "K10407  KLC; kinesin light chain"
+                    },
+                    {
+                      "name": "K10357  MYO5; myosin V"
+                    },
+                    {
+                      "name": "K07374  TUBA; tubulin alpha"
+                    },
+                    {
+                      "name": "K02602  CPEB, ORB; cytoplasmic polyadenylation element-binding protein"
+                    },
+                    {
+                      "name": "K13133  GEMIN5; gem associated protein 5"
+                    },
+                    {
+                      "name": "K14283  TACC3, maskin; transforming acidic coiled-coil-containing protein 3"
+                    },
+                    {
+                      "name": "K18412  TNRC6, GW182; trinucleotide repeat-containing gene 6 protein"
+                    },
+                    {
+                      "name": "K12604  CNOT1, NOT1; CCR4-NOT transcription complex subunit 1"
+                    },
+                    {
+                      "name": "K12605  CNOT2, NOT2; CCR4-NOT transcription complex subunit 2"
+                    },
+                    {
+                      "name": "K12580  CNOT3, NOT3; CCR4-NOT transcription complex subunit 3"
+                    },
+                    {
+                      "name": "K10643  CNOT4, NOT4, MOT2; CCR4-NOT transcription complex subunit 4 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K12603  CNOT6, CCR4; CCR4-NOT transcription complex subunit 6 [EC:3.1.13.4]"
+                    },
+                    {
+                      "name": "K12581  CNOT7_8, CAF1, POP2; CCR4-NOT transcription complex subunit 7/8"
+                    },
+                    {
+                      "name": "K26671  GARRE1; granule associated Rac and RHOG effector protein 1"
+                    },
+                    {
+                      "name": "K18758  DIS3L2; DIS3-like exonuclease 2 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K12571  PAN2; PAB-dependent poly(A)-specific ribonuclease subunit 2 [EC:3.1.13.4]"
+                    },
+                    {
+                      "name": "K12572  PAN3; PAB-dependent poly(A)-specific ribonuclease subunit 3"
+                    },
+                    {
+                      "name": "K14443  TOB; protein Tob/BTG"
+                    },
+                    {
+                      "name": "K18728  EIF4ENIF1; eukaryotic translation initiation factor 4E transporter"
+                    },
+                    {
+                      "name": "K12617  PATL1, PAT1; DNA topoisomerase 2-associated protein PAT1"
+                    },
+                    {
+                      "name": "K18759  EDC1_2; enhancer of mRNA-decapping protein 1/2"
+                    },
+                    {
+                      "name": "K12615  EDC3; enhancer of mRNA-decapping protein 3"
+                    },
+                    {
+                      "name": "K12616  EDC4; enhancer of mRNA-decapping protein 4"
+                    },
+                    {
+                      "name": "K18760  NANOS2, NOS2; protein nanos 2"
+                    },
+                    {
+                      "name": "K18761  NANOS3, NOS3; protein nanos 3"
+                    },
+                    {
+                      "name": "K14327  UPF2, RENT2; regulator of nonsense transcripts 2"
+                    },
+                    {
+                      "name": "K14328  UPF3, RENT3; regulator of nonsense transcripts 3"
+                    },
+                    {
+                      "name": "K10651  TRIM21, SSA1; tripartite motif-containing protein 21 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K12035  TRIM71; tripartite motif-containing protein 71 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K03015  RPB7, POLR2G; DNA-directed RNA polymerase II subunit RPB7"
+                    },
+                    {
+                      "name": "K16195  EIF2AK2; eukaryotic translation initiation factor 2-alpha kinase 2 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K18762  ZAR1; zygote arrest protein 1"
+                    },
+                    {
+                      "name": "K20102  YTHDF; YTH domain-containing family protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Stress granule specific factors",
+                  "children": [
+                    {
+                      "name": "K13201  TIA1, TIAL1; nucleolysin TIA-1/TIAR"
+                    },
+                    {
+                      "name": "K13126  PABPC; polyadenylate-binding protein"
+                    },
+                    {
+                      "name": "K17597  STAU; double-stranded RNA-binding protein Staufen"
+                    },
+                    {
+                      "name": "K15516  FMR; fragile X mental retardation protein"
+                    },
+                    {
+                      "name": "K12965  ZBP1, DAI; Z-DNA binding protein 1"
+                    },
+                    {
+                      "name": "K13088  ELAVL1, HUR; ELAV-like protein 1"
+                    },
+                    {
+                      "name": "K17265  G3BP1; Ras GTPase-activating protein-binding protein 1 [EC:5.6.2.5 5.6.2.3]"
+                    },
+                    {
+                      "name": "K24983  G3BP2; Ras GTPase-activating protein-binding protein 2"
+                    },
+                    {
+                      "name": "K15026  EIF2A; translation initiation factor 2A"
+                    },
+                    {
+                      "name": "K03253  EIF3B; translation initiation factor 3 subunit B"
+                    },
+                    {
+                      "name": "K03257  EIF4A; translation initiation factor 4A"
+                    },
+                    {
+                      "name": "K13025  EIF4A3, FAL1; ATP-dependent RNA helicase [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K03258  EIF4B; translation initiation factor 4B"
+                    },
+                    {
+                      "name": "K03260  EIF4G; translation initiation factor 4G"
+                    },
+                    {
+                      "name": "K04373  RPS6KA; ribosomal protein S6 kinase alpha-1/2/3/6 [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K14753  RACK1; guanine nucleotide-binding protein subunit beta-2-like 1 protein"
+                    },
+                    {
+                      "name": "K03173  TRAF2; TNF receptor-associated factor 2 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K14284  NXF, TAP, MEX67; nuclear RNA export factor"
+                    },
+                    {
+                      "name": "K11407  HDAC6; histone deacetylase 6 [EC:3.5.1.98]"
+                    },
+                    {
+                      "name": "K18404  TDRD3; tudor domain-containing protein 3"
+                    },
+                    {
+                      "name": "K18763  LARP4; la-related protein 4"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mRNA degradation factors",
+          "children": [
+            {
+              "name": "5'-3' decay",
+              "children": [
+                {
+                  "name": "Decapping complex",
+                  "children": [
+                    {
+                      "name": "K12610  DCP1A; mRNA-decapping enzyme 1A [EC:3.-.-.-]"
+                    },
+                    {
+                      "name": "K12611  DCP1B; mRNA-decapping enzyme 1B [EC:3.-.-.-]"
+                    },
+                    {
+                      "name": "K12612  DCP1; mRNA-decapping enzyme subunit 1"
+                    },
+                    {
+                      "name": "K12613  DCP2; mRNA-decapping enzyme subunit 2 [EC:3.6.1.62]"
+                    },
+                    {
+                      "name": "K12614  DDX6, RCK, DHH1; ATP-dependent RNA helicase DDX6/DHH1 [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K18759  EDC1_2; enhancer of mRNA-decapping protein 1/2"
+                    },
+                    {
+                      "name": "K12615  EDC3; enhancer of mRNA-decapping protein 3"
+                    },
+                    {
+                      "name": "K12616  EDC4; enhancer of mRNA-decapping protein 4"
+                    },
+                    {
+                      "name": "K12617  PATL1, PAT1; DNA topoisomerase 2-associated protein PAT1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Lsm complex",
+                  "children": [
+                    {
+                      "name": "K12620  LSM1; U6 snRNA-associated Sm-like protein LSm1"
+                    },
+                    {
+                      "name": "K12621  LSM2; U6 snRNA-associated Sm-like protein LSm2"
+                    },
+                    {
+                      "name": "K12622  LSM3; U6 snRNA-associated Sm-like protein LSm3"
+                    },
+                    {
+                      "name": "K12623  LSM4; U6 snRNA-associated Sm-like protein LSm4"
+                    },
+                    {
+                      "name": "K12624  LSM5; U6 snRNA-associated Sm-like protein LSm5"
+                    },
+                    {
+                      "name": "K12625  LSM6; U6 snRNA-associated Sm-like protein LSm6"
+                    },
+                    {
+                      "name": "K12626  LSM7; U6 snRNA-associated Sm-like protein LSm7"
+                    },
+                    {
+                      "name": "K12627  LSM8; U6 snRNA-associated Sm-like protein LSm8"
+                    }
+                  ]
+                },
+                {
+                  "name": "5' exonucleases",
+                  "children": [
+                    {
+                      "name": "K12618  XRN1, SEP1, KEM1; 5'-3' exoribonuclease 1 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K12619  XRN2, RAT1; 5'-3' exoribonuclease 2 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K20553  XRN4; 5'-3' exoribonuclease 4 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K16855  NUDT16; U8 snoRNA-decapping enzyme [EC:3.6.1.62 3.6.1.64]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other 5'-3' decay factors",
+                  "children": [
+                    {
+                      "name": "K12584  DCPS, DCS; m7GpppX diphosphatase [EC:3.6.1.59]"
+                    },
+                    {
+                      "name": "K25168  HELZ; helicase with zinc finger domain [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K28513  SBP1; single-stranded nucleic acid-binding protein"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "3'-5' decay",
+              "children": [
+                {
+                  "name": "Core exosome factors",
+                  "children": [
+                    {
+                      "name": "K07573  CSL4, EXOSC1; exosome complex component CSL4"
+                    },
+                    {
+                      "name": "K03679  RRP4, EXOSC2; exosome complex component RRP4"
+                    },
+                    {
+                      "name": "K03681  RRP40, EXOSC3; exosome complex component RRP40"
+                    },
+                    {
+                      "name": "K11600  RRP41, EXOSC4, SKI6; exosome complex component RRP41"
+                    },
+                    {
+                      "name": "K12590  RRP46, EXOSC5; exosome complex component RRP46"
+                    },
+                    {
+                      "name": "K12587  MTR3, EXOSC6; exosome complex component MTR3"
+                    },
+                    {
+                      "name": "K12589  RRP42, EXOSC7; exosome complex component RRP42"
+                    },
+                    {
+                      "name": "K12586  RRP43, EXOSC8, OIP2; exosome complex component RRP43"
+                    },
+                    {
+                      "name": "K03678  RRP45, EXOSC9; exosome complex component RRP45"
+                    }
+                  ]
+                },
+                {
+                  "name": "Exosome cofactors",
+                  "children": [
+                    {
+                      "name": "K12585  DIS3, RRP44; exosome complex exonuclease DIS3/RRP44 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K18681  DIS3L; DIS3-like exonuclease 1 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K12591  RRP6, EXOSC10; exosome complex exonuclease RRP6 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K12592  C1D, LRP1; exosome complex protein LRP1"
+                    },
+                    {
+                      "name": "K12593  MPHOSPH6, MPP6; M-phase phosphoprotein 6, animal type"
+                    },
+                    {
+                      "name": "K12594  MPP6; M-phase phosphoprotein 6, fungi type"
+                    },
+                    {
+                      "name": "K12595  SKI7; superkiller protein 7"
+                    },
+                    {
+                      "name": "K20103  DDX60; ATP-dependent RNA helicase DDX60 [EC:5.6.2.7]"
+                    }
+                  ]
+                },
+                {
+                  "name": "TRAMP complex",
+                  "children": [
+                    {
+                      "name": "K03514  PAPD5_7, TRF4; non-canonical poly(A) RNA polymerase PAPD5/7 [EC:2.7.7.19]"
+                    },
+                    {
+                      "name": "K12597  AIR1_2; protein AIR1/2"
+                    },
+                    {
+                      "name": "K12598  MTR4, SKIV2L2; ATP-dependent RNA helicase DOB1 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K12596  TRF5; poly(A) RNA polymerase"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ski complex",
+                  "children": [
+                    {
+                      "name": "K12599  SKI2, SKIV2L; antiviral helicase SKI2 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K12600  SKI3, TTC37; superkiller protein 3"
+                    },
+                    {
+                      "name": "K12601  SKI8; superkiller protein 8"
+                    },
+                    {
+                      "name": "K12602  WDR61, REC14, SKI8; WD repeat-containing protein 61"
+                    }
+                  ]
+                },
+                {
+                  "name": "Ccr4-NOT complex",
+                  "children": [
+                    {
+                      "name": "K12603  CNOT6, CCR4; CCR4-NOT transcription complex subunit 6 [EC:3.1.13.4]"
+                    },
+                    {
+                      "name": "K12604  CNOT1, NOT1; CCR4-NOT transcription complex subunit 1"
+                    },
+                    {
+                      "name": "K12605  CNOT2, NOT2; CCR4-NOT transcription complex subunit 2"
+                    },
+                    {
+                      "name": "K12580  CNOT3, NOT3; CCR4-NOT transcription complex subunit 3"
+                    },
+                    {
+                      "name": "K10643  CNOT4, NOT4, MOT2; CCR4-NOT transcription complex subunit 4 [EC:2.3.2.27]"
+                    },
+                    {
+                      "name": "K12581  CNOT7_8, CAF1, POP2; CCR4-NOT transcription complex subunit 7/8"
+                    },
+                    {
+                      "name": "K12606  RCD1, CNOT9, CAF40; CCR4-NOT transcription complex subunit 9"
+                    },
+                    {
+                      "name": "K12607  CNOT10; CCR4-NOT transcription complex subunit 10"
+                    },
+                    {
+                      "name": "K12608  CAF16; CCR4-NOT complex subunit CAF16"
+                    },
+                    {
+                      "name": "K12609  CAF120; CCR4-NOT transcriptional complex subunit CAF120"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pan complex",
+                  "children": [
+                    {
+                      "name": "K12571  PAN2; PAB-dependent poly(A)-specific ribonuclease subunit 2 [EC:3.1.13.4]"
+                    },
+                    {
+                      "name": "K12572  PAN3; PAB-dependent poly(A)-specific ribonuclease subunit 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other 3'-5' decay factors",
+                  "children": [
+                    {
+                      "name": "K01148  PARN, PNLDC1; poly(A)-specific ribonuclease [EC:3.1.13.4]"
+                    },
+                    {
+                      "name": "K14442  DHX36, RHAU; ATP-dependent RNA helicase DHX36 [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K14443  TOB; protein Tob/BTG"
+                    },
+                    {
+                      "name": "K05427  CSF2, GMCSF; granulocyte-macrophage colony-stimulating factor"
+                    },
+                    {
+                      "name": "K18764  NOCT, CCRN4L; nocturnin [EC:3.1.3.108]"
+                    },
+                    {
+                      "name": "K18416  THEX1, ERI1; 3'-5' exoribonuclease 1 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K18417  ERI2; ERI1 exoribonuclease 2 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K12584  DCPS, DCS; m7GpppX diphosphatase [EC:3.6.1.59]"
+                    },
+                    {
+                      "name": "K19612  PDE12; 2',5'-phosphodiesterase [EC:3.1.13.4 3.1.4.-]"
+                    },
+                    {
+                      "name": "K22416  IREB2; iron-responsive element-binding protein 2"
+                    },
+                    {
+                      "name": "K25168  HELZ; helicase with zinc finger domain [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K25165  HELZ2; 3'-5' exoribonuclease HELZ2 [EC:3.1.13.1 5.6.2.6]"
+                    },
+                    {
+                      "name": "K26109  NRDE2; nuclear exosome regulator NRDE2"
+                    },
+                    {
+                      "name": "K27396  SMG; protein Smaug"
+                    },
+                    {
+                      "name": "K27498  FOCAD; focadhesin"
+                    },
+                    {
+                      "name": "K27407  VTS1; RNA-binding protein VTS1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other degradation factors",
+              "children": [
+                {
+                  "name": "RNases",
+                  "children": [
+                    {
+                      "name": "K01168  RNASE1_2; pancreatic ribonuclease [EC:4.6.1.18]"
+                    },
+                    {
+                      "name": "K10787  RNASE3, ECP; eosinophil cationic protein [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K16632  RNASE4; ribonuclease 4 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K01172  RNASE6_7_8; ribonuclease 6/7/8 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K16633  RNASE11; ribonuclease 11 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K18668  ZC3H12, MCPIP; ribonuclease ZC3H12 [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K23175  RNU2; ribonuclease U2 [EC:4.6.1.20]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prokaryotic type",
+      "children": [
+        {
+          "name": "Bacterial mRNA degradation factors",
+          "children": [
+            {
+              "name": "RNA degradosome components",
+              "children": [
+                {
+                  "name": "Ribonucreases",
+                  "children": [
+                    {
+                      "name": "K08300  rne; ribonuclease E [EC:3.1.26.12]"
+                    },
+                    {
+                      "name": "K08301  rng, cafA; ribonuclease G [EC:3.1.26.-]"
+                    },
+                    {
+                      "name": "K03685  rnc, DROSHA, RNT1; ribonuclease III [EC:3.1.26.3]"
+                    },
+                    {
+                      "name": "K12574  rnj; ribonuclease J [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K18682  rny; ribonucrease Y [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K12573  rnr, vacB; ribonuclease R [EC:3.1.13.1]"
+                    },
+                    {
+                      "name": "K01167  rnaSA; ribonuclease T1 [EC:4.6.1.24]"
+                    },
+                    {
+                      "name": "K13288  orn, REX2, REXO2; oligoribonuclease [EC:3.1.-.-]"
+                    },
+                    {
+                      "name": "K03698  cbf, cbf1; 3'-5' exoribonuclease [EC:3.1.-.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Helicases",
+                  "children": [
+                    {
+                      "name": "K03732  rhlB; ATP-dependent RNA helicase RhlB [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K11927  rhlE; ATP-dependent RNA helicase RhlE [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K05592  deaD, cshA; ATP-dependent RNA helicase DeaD [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K18692  cshB; ATP-dependent RNA helicase CshB [EC:5.6.2.7]"
+                    },
+                    {
+                      "name": "K03654  recQ; ATP-dependent DNA helicase RecQ [EC:5.6.2.4]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other RNA degradosome components",
+                  "children": [
+                    {
+                      "name": "K01689  ENO1_2_3, eno; enolase 1/2/3 [EC:4.2.1.11]"
+                    },
+                    {
+                      "name": "K00962  pnp, PNPT1; polyribonucleotide nucleotidyltransferase [EC:2.7.7.8]"
+                    },
+                    {
+                      "name": "K03628  rho; transcription termination factor Rho"
+                    },
+                    {
+                      "name": "K00850  pfkA, PFK; 6-phosphofructokinase 1 [EC:2.7.1.11]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other RNA degradation factors",
+              "children": [
+                {
+                  "name": "Chaperones",
+                  "children": [
+                    {
+                      "name": "K04043  dnaK, HSPA9; molecular chaperone DnaK"
+                    },
+                    {
+                      "name": "K04077  groEL, HSPD1, HSP60, CPN60; chaperonin GroEL [EC:5.6.1.7]"
+                    },
+                    {
+                      "name": "K03666  hfq; host factor-I protein"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K00937  ppk1; polyphosphate kinase [EC:2.7.4.1]"
+                    },
+                    {
+                      "name": "K22468  ppk2; polyphosphate kinase [EC:2.7.4.34]"
+                    },
+                    {
+                      "name": "K00970  pcnB; poly(A) polymerase [EC:2.7.7.19]"
+                    },
+                    {
+                      "name": "K08311  nudH; putative (di)nucleoside polyphosphate hydrolase [EC:3.6.1.-]"
+                    },
+                    {
+                      "name": "K03563  csrA; carbon storage regulator"
+                    },
+                    {
+                      "name": "K18765  csrD; RNase E specificity factor CsrD"
+                    },
+                    {
+                      "name": "K02553  rraA, menG; regulator of ribonuclease activity A"
+                    },
+                    {
+                      "name": "K09893  rraB; regulator of ribonuclease activity B"
+                    },
+                    {
+                      "name": "K06958  rapZ; RNase adapter protein RapZ"
+                    },
+                    {
+                      "name": "K03727  helY; ATP-dependent RNA helicase HelY [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K03578  hrpA; ATP-dependent RNA helicase HrpA [EC:5.6.2.6]"
+                    },
+                    {
+                      "name": "K03579  hrpB; ATP-dependent RNA helicase HrpB [EC:5.6.2.6]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Bacterial Small RNA Regulators",
+                  "children": [
+                    {
+                      "name": "K18502  dsrA; small regulatory RNA DsrA"
+                    },
+                    {
+                      "name": "K18503  chiX, sroB; small regulatory RNA ChiX"
+                    },
+                    {
+                      "name": "K18504  arcZ; small regulatory RNA ArcZ"
+                    },
+                    {
+                      "name": "K15841  glmY; small regulatory RNA GlmY"
+                    },
+                    {
+                      "name": "K18505  glmZ; small regulatory RNA GlmZ"
+                    },
+                    {
+                      "name": "K18506  sgrS; small regulatory RNA SgrS"
+                    },
+                    {
+                      "name": "K18507  ryhB; small regulatory RNA RyhB"
+                    },
+                    {
+                      "name": "K18508  rybB; small regulatory RNA RybB"
+                    },
+                    {
+                      "name": "K18509  rydC; small regulatory RNA RydC"
+                    },
+                    {
+                      "name": "K18510  fnrS; small regulatory RNA FnrS"
+                    },
+                    {
+                      "name": "K18511  micA; small regulatory RNA MicA"
+                    },
+                    {
+                      "name": "K18512  micC; small regulatory RNA MicC"
+                    },
+                    {
+                      "name": "K18513  micF; small regulatory RNA MicF"
+                    },
+                    {
+                      "name": "K18514  mgrR; small regulatory RNA MgrR"
+                    },
+                    {
+                      "name": "K18515  csrB; small regulatory RNA CsrB"
+                    },
+                    {
+                      "name": "K18516  csrC; small regulatory RNA CsrC"
+                    },
+                    {
+                      "name": "K18517  dicF; small regulatory RNA DicF"
+                    },
+                    {
+                      "name": "K18518  rprA; small regulatory RNA RprA"
+                    },
+                    {
+                      "name": "K18519  rseX; small regulatory RNA RseX"
+                    },
+                    {
+                      "name": "K18520  cyaR, ryeE; small regulatory RNA CyaR"
+                    },
+                    {
+                      "name": "K18521  gcvB; small regulatory RNA GcvB"
+                    },
+                    {
+                      "name": "K18522  omrA, rygA; small regulatory RNA OmrA"
+                    },
+                    {
+                      "name": "K18523  omrB, rygB; small regulatory RNA OmrB"
+                    },
+                    {
+                      "name": "K18525  gadY; small regulatory RNA GadY"
+                    },
+                    {
+                      "name": "K18526  istR; sRNA antisense regulator of TisB protein"
+                    },
+                    {
+                      "name": "K18527  spf; small regulatory RNA Spot 42"
+                    },
+                    {
+                      "name": "K18528  oxyS; small regulatory RNA OxyS"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Archeal mRNA degradation factors",
+          "children": [
+            {
+              "name": "Exosome components",
+              "children": [
+                {
+                  "name": "Core exosome",
+                  "children": [
+                    {
+                      "name": "K03679  RRP4, EXOSC2; exosome complex component RRP4"
+                    },
+                    {
+                      "name": "K07573  CSL4, EXOSC1; exosome complex component CSL4"
+                    }
+                  ]
+                },
+                {
+                  "name": "Cofactors",
+                  "children": [
+                    {
+                      "name": "K11600  RRP41, EXOSC4, SKI6; exosome complex component RRP41"
+                    },
+                    {
+                      "name": "K12589  RRP42, EXOSC7; exosome complex component RRP42"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K03725  K03725; putative ATP-dependent RNA helicase [EC:5.6.2.-]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

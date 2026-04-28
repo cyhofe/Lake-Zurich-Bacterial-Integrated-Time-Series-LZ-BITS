@@ -1,0 +1,212 @@
+{
+  "name": "ko04054",
+  "children": [
+    {
+      "name": "Membrane-bound pattern recognition receptors",
+      "children": [
+        {
+          "name": "Toll-like receptors",
+          "children": [
+            {
+              "name": "K05398  TLR1, CD281; toll-like receptor 1"
+            },
+            {
+              "name": "K10159  TLR2, CD282; toll-like receptor 2"
+            },
+            {
+              "name": "K05401  TLR3, CD283; toll-like receptor 3"
+            },
+            {
+              "name": "K10160  TLR4, CD284; toll-like receptor 4"
+            },
+            {
+              "name": "K10168  TLR5; toll-like receptor 5"
+            },
+            {
+              "name": "K10169  TLR6, CD286; toll-like receptor 6"
+            },
+            {
+              "name": "K05404  TLR7; toll-like receptor 7"
+            },
+            {
+              "name": "K10170  TLR8, CD288; toll-like receptor 8"
+            },
+            {
+              "name": "K10161  TLR9, CD289; toll-like receptor 9"
+            },
+            {
+              "name": "K10171  TLR10, CD290; toll-like receptor 10"
+            },
+            {
+              "name": "K14142  TLR11; toll-like receptor 11"
+            },
+            {
+              "name": "K18807  TLR12; toll-like receptor 12"
+            },
+            {
+              "name": "K18808  TLR13; toll-like receptor 13"
+            }
+          ]
+        },
+        {
+          "name": "C-type lectin receptors",
+          "children": [
+            {
+              "name": "K10069  CLEC1A; C-type lectin domain family 1 member A"
+            },
+            {
+              "name": "K10070  CLEC1B; C-type lectin domain family 1 member B"
+            },
+            {
+              "name": "K10071  CLEC2B; C-type lectin domain family 2 member B"
+            },
+            {
+              "name": "K10072  CLEC2D; C-type lectin domain family 2 member D"
+            },
+            {
+              "name": "K10057  CLEC4A, CD367; C-type lectin domain family 4 member A"
+            },
+            {
+              "name": "K06723  CLEC4C, CLECSF11, CLECSF7, CD303; C-type lectin domain family 4 member C"
+            },
+            {
+              "name": "K10058  CLEC4D, MCL, CD368; C-type lectin domain family 4 member D"
+            },
+            {
+              "name": "K10059  CLEC4E, MINCLE; C-type lectin domain family 4 member E"
+            },
+            {
+              "name": "K10061  CLEC4G; C-type lectin superfamily 4 member G"
+            },
+            {
+              "name": "K06563  CLEC4L_M, DC-SIGN, CD209, CD299; C-type lectin domain family 4 member L/M"
+            },
+            {
+              "name": "K10073  CLEC5A; C-type lectin domain family 5 member A"
+            },
+            {
+              "name": "K17514  CLEC6A, DECTIN2; C-type lectin domain family 6 member A"
+            },
+            {
+              "name": "K10074  CLEC7A, DECTIN1, CD369; C-type lectin domain family 7 member A"
+            },
+            {
+              "name": "K17515  CLEC9A, CD370; C-type lectin domain family 9 member A"
+            },
+            {
+              "name": "K06721  CLEC10A, CLECSF13, CLECSF14, CD301; C-type lectin domain family 10 member A"
+            },
+            {
+              "name": "K17516  CLEC12A, CD371; C-type lectin domain family 12 member A"
+            },
+            {
+              "name": "K17517  CLEC12B; C-type lectin domain family 12 member B"
+            },
+            {
+              "name": "K06559  LY75, CD205; lymphocyte antigen 75"
+            },
+            {
+              "name": "K06560  MRC, CD206, CD280; mannose receptor, C type"
+            },
+            {
+              "name": "K06561  CD207; CD207 antigen"
+            },
+            {
+              "name": "K08763  OLR1; oxidised low-density lipoprotein receptor 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cytoplasmic pattern recognition receptors",
+      "children": [
+        {
+          "name": "NOD-like receptors",
+          "children": [
+            {
+              "name": "K08727  NOD1, CARD4; nucleotide-binding oligomerization domain-containing protein 1"
+            },
+            {
+              "name": "K10165  NOD2, CARD15; nucleotide-binding oligomerization domain-containing protein 2"
+            },
+            {
+              "name": "K22614  NLRC3, NOD3; NLR family CARD domain-containing protein 3"
+            },
+            {
+              "name": "K12805  NLRC4, CARD12; NLR family CARD domain-containing protein 4"
+            },
+            {
+              "name": "K22615  NLRC5, NOD4; NLR family CARD domain containing 5"
+            },
+            {
+              "name": "K12653  NLRX1; NLR family member X1"
+            },
+            {
+              "name": "K08060  CIITA; MHC class II transactivator [EC:2.7.11.1]"
+            },
+            {
+              "name": "K12807  NAIP, BIRC1; baculoviral IAP repeat-containing protein 1"
+            },
+            {
+              "name": "K12798  NLRP1, CARD7; NACHT, LRR and PYD domains-containing protein 1"
+            },
+            {
+              "name": "K19409  NLRP2; NACHT, LRR and PYD domains-containing protein 2"
+            },
+            {
+              "name": "K12800  NLRP3, PYPAF1; NACHT, LRR and PYD domains-containing protein 3"
+            },
+            {
+              "name": "K22265  NLRP4; NACHT, LRR and PYD domains-containing protein 4"
+            },
+            {
+              "name": "K22626  NLRP5; NACHT, LRR and PYD domains-containing protein 5"
+            },
+            {
+              "name": "K20863  NLRP6, NALP6; NACHT, LRR and PYD domains-containing protein 6"
+            },
+            {
+              "name": "K20864  NLRP7, NALP7; NACHT, LRR and PYD domains-containing protein 7"
+            },
+            {
+              "name": "K22662  NLRP8, NALP8; NACHT, LRR and PYD domains-containing protein 8"
+            },
+            {
+              "name": "K22663  NLRP9, NALP9; NACHT, LRR and PYD domains-containing protein 9"
+            },
+            {
+              "name": "K22266  NLRP10; NACHT, LRR and PYD domains-containing protein 10"
+            },
+            {
+              "name": "K22664  NLRP11, NALP11; NACHT, LRR and PYD domains-containing protein 11"
+            },
+            {
+              "name": "K20865  NLRP12; NACHT, LRR and PYD domains-containing protein 12"
+            },
+            {
+              "name": "K22665  NLRP13, NALP13; NACHT, LRR and PYD domains-containing protein 13"
+            },
+            {
+              "name": "K22666  NLRP14, NALP14; NACHT, LRR and PYD domains-containing protein 14"
+            }
+          ]
+        },
+        {
+          "name": "RIG-I-like receptors",
+          "children": [
+            {
+              "name": "K12646  RIGI, DDX58; ATP-dependent RNA helicase DDX58 [EC:5.6.2.6]"
+            },
+            {
+              "name": "K12647  IFIH1, MDA5; interferon-induced helicase C domain-containing protein 1 [EC:5.6.2.6]"
+            },
+            {
+              "name": "K12649  DHX58, LGP2; ATP-dependent RNA helicase DHX58 [EC:5.6.2.6]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

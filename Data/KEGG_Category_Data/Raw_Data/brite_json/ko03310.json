@@ -1,0 +1,332 @@
+{
+  "name": "ko03310",
+  "children": [
+    {
+      "name": "1. Thyroid hormone like",
+      "children": [
+        {
+          "name": "1A. Thyroid hormone receptor (THR)",
+          "children": [
+            {
+              "name": "K05547  THRA, NR1A1; thyroid hormone receptor alpha"
+            },
+            {
+              "name": "K08362  THRB, NR1A2; thyroid hormone receptor beta"
+            }
+          ]
+        },
+        {
+          "name": "1B. Retinoic acid receptor (RAR)",
+          "children": [
+            {
+              "name": "K08527  RARA, NR1B1; retinoic acid receptor alpha"
+            },
+            {
+              "name": "K08528  RARB, NR1B2; retinoic acid receptor beta"
+            },
+            {
+              "name": "K08529  RARG, NR1B3; retinoic acid receptor gamma"
+            }
+          ]
+        },
+        {
+          "name": "1C. Peroxisome proliferator-activated receptor (PPAR)",
+          "children": [
+            {
+              "name": "K07294  NR1C1, PPARA; peroxisome proliferator-activated receptor alpha"
+            },
+            {
+              "name": "K04504  NR1C2, PPARD; peroxisome proliferator-activated receptor delta"
+            },
+            {
+              "name": "K08530  NR1C3, PPARG; peroxisome proliferator-activated receptor gamma"
+            }
+          ]
+        },
+        {
+          "name": "1D. Rev-Erb",
+          "children": [
+            {
+              "name": "K03728  NR1D1; nuclear receptor subfamily 1 group D member 1"
+            },
+            {
+              "name": "K08531  NR1D2; nuclear receptor subfamily 1 group D member 2"
+            },
+            {
+              "name": "K08701  NR1D3; nuclear receptor subfamily 1 group D member 3"
+            }
+          ]
+        },
+        {
+          "name": "1F. RAR-related orphan receptor",
+          "children": [
+            {
+              "name": "K08532  NR1F1, RORA; RAR-related orphan receptor alpha"
+            },
+            {
+              "name": "K08533  NR1F2, RORB; RAR-related orphan receptor beta"
+            },
+            {
+              "name": "K08534  NR1F3, RORC; RAR-related orphan receptor gamma"
+            },
+            {
+              "name": "K14033  NR1F4; nuclear receptor subfamily 1 group F member 4"
+            }
+          ]
+        },
+        {
+          "name": "1H. Liver X receptor like receptor",
+          "children": [
+            {
+              "name": "K08536  NR1H3, LXRA; liver X receptor alpha"
+            },
+            {
+              "name": "K08535  NR1H2, LXRB; liver X receptor beta"
+            },
+            {
+              "name": "K08537  NR1H4, FXR; farnesoid X receptor"
+            },
+            {
+              "name": "K08538  NR1H5, FXRB; farnesoid X receptor beta"
+            },
+            {
+              "name": "K14034  NR1H1, EcR; ecdysone receptor"
+            }
+          ]
+        },
+        {
+          "name": "1I. Vitamin D3 like receptor",
+          "children": [
+            {
+              "name": "K08539  VDR, NR1I1; vitamin D3 receptor"
+            },
+            {
+              "name": "K08540  NR1I2, PXR; pregnane X receptor"
+            },
+            {
+              "name": "K08541  NR1I3, CAR; constitutive androstane receptor"
+            },
+            {
+              "name": "K14035  NR1IN; nuclear receptor subfamily 1 group I"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Hepatocyte nuclear factor 4 like",
+      "children": [
+        {
+          "name": "2A. Hepatocyte nuclear factor 4 receptor",
+          "children": [
+            {
+              "name": "K07292  NR2A1, HNF4A; hepatocyte nuclear factor 4-alpha"
+            },
+            {
+              "name": "K08037  NR2A2, HNF4G; hepatocyte nuclear factor 4-gamma"
+            },
+            {
+              "name": "K08542  NR2A3, HNF4B; hepatocyte nuclear factor 4-beta"
+            },
+            {
+              "name": "K08704  NR2A4, Hnf4; hepatocyte nuclear factor 4"
+            },
+            {
+              "name": "K07295  NR2AN, dsf; nuclear receptor subfamily 2 group A"
+            }
+          ]
+        },
+        {
+          "name": "2B. Retinoid X receptor (RXR)",
+          "children": [
+            {
+              "name": "K08524  RXRA, NR2B1; retinoid X receptor alpha"
+            },
+            {
+              "name": "K08525  RXRB, NR2B2; retinoid X receptor beta"
+            },
+            {
+              "name": "K08526  RXRG, NR2B3; retinoid X receptor gamma"
+            },
+            {
+              "name": "K14030  NR2B4, usp; nuclear receptor subfamily 2 group B member 4"
+            }
+          ]
+        },
+        {
+          "name": "2C. Testicular receptor",
+          "children": [
+            {
+              "name": "K08543  NR2C1, TR2; testicular receptor 2"
+            },
+            {
+              "name": "K08544  NR2C2, TR4; testicular receptor 4"
+            },
+            {
+              "name": "K14031  NR2CN; nuclear receptor subfamily 2 group C"
+            }
+          ]
+        },
+        {
+          "name": "2E. Tailless like receptor",
+          "children": [
+            {
+              "name": "K08545  NR2E1, TLX, tll; nuclear receptor subfamily 2 group E member 1"
+            },
+            {
+              "name": "K08546  NR2E3, PNR; nuclear receptor subfamily 2 group E member 3"
+            }
+          ]
+        },
+        {
+          "name": "2F. COUP-TF like receptor",
+          "children": [
+            {
+              "name": "K08547  NR2F1, TFCOUP1; COUP transcription factor 1"
+            },
+            {
+              "name": "K08548  NR2F2, TFCOUP2; COUP transcription factor 2"
+            },
+            {
+              "name": "K14032  NR2F3, svp; nuclear receptor subfamily 2 group F member 3"
+            },
+            {
+              "name": "K08702  NR2F5, SVP46; nuclear receptor subfamily 2 group F member 5"
+            },
+            {
+              "name": "K08549  NR2F6, EAR2; nuclear receptor subfamily 2 group F member 6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Estrogen like",
+      "children": [
+        {
+          "name": "3A. Estrogen receptor",
+          "children": [
+            {
+              "name": "K08550  ESR1, NR3A1; estrogen receptor alpha"
+            },
+            {
+              "name": "K08551  ESR2, NR3A2; estrogen receptor beta"
+            }
+          ]
+        },
+        {
+          "name": "3B. Estrogen-related receptor",
+          "children": [
+            {
+              "name": "K08552  NR3B1, ESRRA; estrogen-related receptor alpha"
+            },
+            {
+              "name": "K08553  NR3B2, ESRRB; estrogen-related receptor beta"
+            },
+            {
+              "name": "K08554  NR3B3, ESRRG; estrogen-related receptor gamma"
+            },
+            {
+              "name": "K08703  NR3BN, ERR; estrogen-related receptor ERR"
+            }
+          ]
+        },
+        {
+          "name": "3C. 3-Ketosteroid receptor",
+          "children": [
+            {
+              "name": "K05771  NR3C1, GR; glucocorticoid receptor"
+            },
+            {
+              "name": "K08555  NR3C2, MR; mineralocorticoid receptor"
+            },
+            {
+              "name": "K08556  PGR, NR3C3; progesterone receptor"
+            },
+            {
+              "name": "K08557  AR, NR3C4; androgen receptor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Nerve growth factor IB like",
+      "children": [
+        {
+          "name": "4A. Nerve growth factor IB like receptor",
+          "children": [
+            {
+              "name": "K04465  NR4A1, HMR; nuclear receptor subfamily 4 group A member 1"
+            },
+            {
+              "name": "K08558  NR4A2, NURR1; nuclear receptor subfamily 4 group A member 2"
+            },
+            {
+              "name": "K08559  NR4A3, NOR1; nuclear receptor subfamily 4 group A member 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Fushi tarazu-F1 like",
+      "children": [
+        {
+          "name": "5A. Fushi tarazu-F1 like receptor",
+          "children": [
+            {
+              "name": "K08560  NR5A1, SF1; steroidogenic factor 1"
+            },
+            {
+              "name": "K08027  NR5A2, FTF; nuclear receptor subfamily 5 group A member 2"
+            },
+            {
+              "name": "K08705  NR5A3, ftz-f1; nuclear receptor subfamily 5 group A member 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Germ cell nuclear factor",
+      "children": [
+        {
+          "name": "6A. Germ cell nuclear factor receptor",
+          "children": [
+            {
+              "name": "K08561  NR6A1, GCNF; germ cell nuclear factor"
+            },
+            {
+              "name": "K09185  NR6AN; nuclear receptor subfamily 6 group A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "0. Knirps / DAX like",
+      "children": [
+        {
+          "name": "0A. Knirps like receptor",
+          "children": [
+            {
+              "name": "K08706  NR0AN, kni; nuclear receptor subfamily 0 group A"
+            }
+          ]
+        },
+        {
+          "name": "0B. DAX like receptor",
+          "children": [
+            {
+              "name": "K08562  NR0B1, DAX1; nuclear receptor subfamily 0 group B member 1"
+            },
+            {
+              "name": "K08563  NR0B2, SHP; nuclear receptor subfamily 0 group B member 2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

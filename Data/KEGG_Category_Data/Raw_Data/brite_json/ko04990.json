@@ -1,0 +1,1871 @@
+{
+  "name": "ko04990",
+  "children": [
+    {
+      "name": "Src homology (SH) domain-containing proteins",
+      "children": [
+        {
+          "name": "Signal transducing adaptor proteins",
+          "children": [
+            {
+              "name": "K23688  BCAR3, SH2D3B; breast cancer anti-estrogen resistance protein 3"
+            },
+            {
+              "name": "K23694  GRAP; GRB2-related adapter protein"
+            },
+            {
+              "name": "K23695  GRB7; growth factor receptor-bound protein 7"
+            },
+            {
+              "name": "K23696  GRB14; growth factor receptor-bound protein 14"
+            },
+            {
+              "name": "K23697  SHB_D_E_F; SH2 domain-containing adapter protein B/D/E/F"
+            },
+            {
+              "name": "K23698  SLA; src-like-adapter"
+            }
+          ]
+        },
+        {
+          "name": "Other SH2 and SH3-containing proteins",
+          "children": [
+            {
+              "name": "K23699  HSH2D; hematopoietic SH2 domain-containing protein"
+            },
+            {
+              "name": "K23689  SH2D3A; SH2 domain-containing protein 3A"
+            },
+            {
+              "name": "K23690  SH2D3C; SH2 domain-containing protein 3C"
+            },
+            {
+              "name": "K23701  SH2D5; SH2 domain-containing protein 5"
+            },
+            {
+              "name": "K23710  ABI3; abi gene family member 3"
+            },
+            {
+              "name": "K23702  MACC1; metastasis-associated in colon cancer protein 1"
+            },
+            {
+              "name": "K16655  MIA; melanoma inhibitory activity protein"
+            },
+            {
+              "name": "K23703  MIA2, CTAGE5; melanoma inhibitory activity protein 2"
+            },
+            {
+              "name": "K23704  MIA3, TANGO1; transport and golgi organization protein 1"
+            },
+            {
+              "name": "K23705  SASH1; SAM and SH3 domain-containing protein 1"
+            },
+            {
+              "name": "K23706  SASH3; SAM and SH3 domain-containing protein 3"
+            },
+            {
+              "name": "K23707  SAMSN1; SAM domain-containing protein SAMSN-1"
+            },
+            {
+              "name": "K23708  SORBS2; sorbin and SH3 domain-containing protein 2"
+            },
+            {
+              "name": "K23709  SORBS3; vinexin"
+            },
+            {
+              "name": "K23711  STAC; SH3 and cysteine-rich domain-containing protein"
+            },
+            {
+              "name": "K23712  STAC2; SH3 and cysteine-rich domain-containing protein 2"
+            },
+            {
+              "name": "K23713  STAC3; SH3 and cysteine-rich domain-containing protein 3"
+            },
+            {
+              "name": "K23714  SH3D19; SH3 domain-containing protein 19"
+            },
+            {
+              "name": "K23715  SH3D21; SH3 domain-containing protein 21"
+            },
+            {
+              "name": "K23716  VXN; vexin"
+            },
+            {
+              "name": "K23740  SH3BGR; SH3 domain-binding glutamic acid-rich protein"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pleckstrin homology (PH) domain-containing proteins",
+      "children": [
+        {
+          "name": "Dbl-Like RhoGEF family proteins",
+          "children": [
+            {
+              "name": "K16847  TIAM2; T-lymphoma invasion and metastasis-inducing protein 2"
+            },
+            {
+              "name": "K05721  FGD2; FYVE, RhoGEF and PH domain containing 2"
+            },
+            {
+              "name": "K05723  FGD4; FYVE, RhoGEF and PH domain containing 4"
+            },
+            {
+              "name": "K05724  FGD5_6; FYVE, RhoGEF and PH domain containing 5/6"
+            }
+          ]
+        },
+        {
+          "name": "Other PH domain-containing proteins",
+          "children": [
+            {
+              "name": "K23781  ADAP, CENTA; Arf-GAP with dual PH domain-containing protein"
+            },
+            {
+              "name": "K23782  AFAP1L; actin filament associated protein 1-like"
+            },
+            {
+              "name": "K08283  COL4A3BP; collagen type IV alpha-3-binding protein"
+            },
+            {
+              "name": "K17083  FERMT2, KIND2; kindlin 2"
+            },
+            {
+              "name": "K23780  GAB3; GRB2-associated-binding protein 3"
+            },
+            {
+              "name": "K23795  IPCEF1; interactor protein for cytohesin exchange factors 1"
+            },
+            {
+              "name": "K23792  MPRIP; myosin phosphatase Rho-interacting protein"
+            },
+            {
+              "name": "K23793  PHLDA; pleckstrin homology-like domain family A"
+            },
+            {
+              "name": "K23794  PHLDB; pleckstrin homology-like domain family B"
+            },
+            {
+              "name": "K15370  PLCL2; inactive phospholipase C-like protein 2"
+            },
+            {
+              "name": "K23796  PLEKHA1_2; pleckstrin homology domain-containing family A member 1/2"
+            },
+            {
+              "name": "K23797  PLEKHA4_5_6_7; pleckstrin homology domain-containing family A member 4/5/6/7"
+            },
+            {
+              "name": "K23857  PLEKHB; pleckstrin homology domain-containing family B"
+            },
+            {
+              "name": "K23858  PLEKHF; pleckstrin homology domain-containing family F"
+            },
+            {
+              "name": "K23859  PLEKHG1_2_3; pleckstrin homology domain-containing family G member 1/2/3"
+            },
+            {
+              "name": "K23860  PLEKHG4; pleckstrin homology domain-containing family G member 4"
+            },
+            {
+              "name": "K23861  PLEKHG6; pleckstrin homology domain-containing family G member 6"
+            },
+            {
+              "name": "K24020  PLEKHH; pleckstrin homology domain-containing family H"
+            },
+            {
+              "name": "K24021  PLEKHJ; pleckstrin homology domain-containing family J"
+            },
+            {
+              "name": "K24022  PLEKHO; pleckstrin homology domain-containing family O"
+            },
+            {
+              "name": "K24023  RALGPS; Ras-specific guanine nucleotide-releasing factor RalGPS"
+            },
+            {
+              "name": "K24024  RTKN; rhotekin"
+            },
+            {
+              "name": "K24025  STAP1; signal-transducing adaptor protein 1"
+            },
+            {
+              "name": "K24026  STAP2; signal-transducing adaptor protein 2"
+            },
+            {
+              "name": "K24027  VEPH1, MELT; protein melted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phosphotyrosine binding (PTB) domain-containing proteins",
+      "children": [
+        {
+          "name": "IRS related family proteins",
+          "children": [
+            {
+              "name": "K14752  DOK1; docking protein 1"
+            },
+            {
+              "name": "K20234  DOK2; docking protein 2"
+            },
+            {
+              "name": "K24036  DOK3; docking protein 3"
+            },
+            {
+              "name": "K24037  DOK4_5_6, IRS5_6; docking protein 4/5/6"
+            },
+            {
+              "name": "K24038  DOK7; docking protein 7"
+            },
+            {
+              "name": "K12461  FRS2; fibroblast growth factor receptor substrate 2"
+            },
+            {
+              "name": "K24039  FRS3; fibroblast growth factor receptor substrate 3"
+            }
+          ]
+        },
+        {
+          "name": "Other PTB domain-containing proteins",
+          "children": [
+            {
+              "name": "K24035  APBA3, 11L2; amyloid beta A4 precursor protein-binding family A member 3"
+            },
+            {
+              "name": "K04530  APBB2, FE65L; amyloid beta A4 precursor protein-binding family B member 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EF-hand domain-containing proteins",
+      "children": [
+        {
+          "name": "CREC family proteins",
+          "children": [
+            {
+              "name": "K23898  RCN1; reticulocalbin-1"
+            },
+            {
+              "name": "K23899  RCN2; reticulocalbin-2"
+            },
+            {
+              "name": "K23900  RCN3; reticulocalbin-3"
+            },
+            {
+              "name": "K23901  CALU; calumenin"
+            }
+          ]
+        },
+        {
+          "name": "Calcium binding proteins",
+          "children": [
+            {
+              "name": "K23531  CABP1_2_4_5; calcium-binding protein 1/2/4/5"
+            },
+            {
+              "name": "K23849  CABP7_8, CALN2_1; calcium-binding protein 7/8"
+            },
+            {
+              "name": "K17259  CIB1; calcium and integrin-binding protein 1"
+            },
+            {
+              "name": "K23837  CIB2; calcium and integrin-binding protein 2"
+            },
+            {
+              "name": "K23838  CIB3; calcium and integrin-binding protein 3"
+            },
+            {
+              "name": "K23839  CIB4; calcium and integrin-binding protein 4"
+            },
+            {
+              "name": "K23850  CRNN; cornulin"
+            },
+            {
+              "name": "K23851  EFCAB6; EF-hand calcium-binding domain-containing protein 6"
+            },
+            {
+              "name": "K23853  EFCAB11; EF-hand calcium-binding domain-containing protein 11"
+            },
+            {
+              "name": "K22827  MICU1; calcium uptake protein 1, mitochondrial"
+            },
+            {
+              "name": "K22828  MICU2; calcium uptake protein 2, mitochondrial"
+            },
+            {
+              "name": "K23843  MICU3; calcium uptake protein 3, mitochondrial"
+            },
+            {
+              "name": "K19932  NCS1; neuronal calcium sensor"
+            },
+            {
+              "name": "K23854  NECAB; N-terminal EF-hand calcium-binding protein"
+            },
+            {
+              "name": "K23846  HPCA; neuron-specific calcium-binding protein hippocalcin"
+            },
+            {
+              "name": "K23847  HPCAL1; hippocalcin-like protein 1"
+            },
+            {
+              "name": "K19936  VSNL1; visinin-like protein 1"
+            },
+            {
+              "name": "K23848  HPCAL4; hippocalcin-like protein 4"
+            },
+            {
+              "name": "K23855  KCNIP; Kv channel-interacting protein"
+            }
+          ]
+        },
+        {
+          "name": "S100 proteins",
+          "children": [
+            {
+              "name": "K23770  S100B; protein S100-B"
+            },
+            {
+              "name": "K23771  S100P; protein S100-P"
+            },
+            {
+              "name": "K14734  S100G; protein S100-G"
+            },
+            {
+              "name": "K23772  S100Z; protein S100-Z"
+            }
+          ]
+        },
+        {
+          "name": "Other EF-hand domain-containing proteins",
+          "children": [
+            {
+              "name": "K14757  CALB1, CALB; calbindin"
+            },
+            {
+              "name": "K23908  CALB2; calretinin"
+            },
+            {
+              "name": "K23909  CAPS; calcyphosin"
+            },
+            {
+              "name": "K23929  EFHB; EF-hand domain-containing family member B"
+            },
+            {
+              "name": "K23029  EFHC1; EF-hand domain-containing protein 1"
+            },
+            {
+              "name": "K23921  EFHD1; EF-hand domain-containing family member D1"
+            },
+            {
+              "name": "K23922  EFHD2; EF-hand domain-containing family member D2"
+            },
+            {
+              "name": "K23912  FSTL1; follistatin-related protein 1"
+            },
+            {
+              "name": "K23915  FSTL5; follistatin-related protein 5"
+            },
+            {
+              "name": "K23923  GCA; grancalcin"
+            },
+            {
+              "name": "K23924  SRI; sorcin"
+            },
+            {
+              "name": "K08328  GUCA1; guanylate cyclase activator 1"
+            },
+            {
+              "name": "K19695  NCALD; neurocalcin delta"
+            },
+            {
+              "name": "K03213  NKD; naked cuticle"
+            },
+            {
+              "name": "K20371  NUCB; nucleobindin"
+            },
+            {
+              "name": "K23925  OCM; oncomodulin"
+            },
+            {
+              "name": "K23902  PDCD6; programmed cell death protein 6"
+            },
+            {
+              "name": "K23905  PEF1; peflin"
+            },
+            {
+              "name": "K06711  PH-4; hypoxia-inducible factor prolyl 4-hydroxylase [EC:1.14.11.-]"
+            },
+            {
+              "name": "K23926  PVALB; parvalbumin alpha"
+            },
+            {
+              "name": "K17199  RASEF, RAB45; Ras and EF-hand domain-containing protein"
+            },
+            {
+              "name": "K13764  RCVRN; recoverin"
+            },
+            {
+              "name": "K23927  RPTN; repeatin"
+            },
+            {
+              "name": "K04962  RYR2; ryanodine receptor 2"
+            },
+            {
+              "name": "K23928  SCGN; secretagogin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EVH1 / WASP  homology  (WH) domain-containing proteins",
+      "children": [
+        {
+          "name": "WH1 domain-containing proteins",
+          "children": [
+            {
+              "name": "K05747  WAS; Wiskott-Aldrich syndrome protein"
+            }
+          ]
+        },
+        {
+          "name": "WH2 domain-containing proteins",
+          "children": [
+            {
+              "name": "K24046  COBLL1; cordon-bleu protein-like 1"
+            },
+            {
+              "name": "K24047  ESPN; espin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PDZ domain-containing proteins",
+      "children": [
+        {
+          "name": "MAGUK family proteins",
+          "children": [
+            {
+              "name": "K21880  MPP1; MAGUK 55 kDa erythrocyte membrane protein"
+            },
+            {
+              "name": "K24048  MPP2; MAGUK p55 subfamily member 2"
+            },
+            {
+              "name": "K24049  MPP3; MAGUK p55 subfamily member 3"
+            },
+            {
+              "name": "K21109  MPP4; MAGUK p55 subfamily member 4"
+            },
+            {
+              "name": "K06091  MPP5, PALS1; MAGUK p55 subfamily member 5"
+            },
+            {
+              "name": "K28619  MPP6; MAGUK p55 subfamily member 6"
+            },
+            {
+              "name": "K28620  MPP7; MAGUK p55 subfamily member 7"
+            }
+          ]
+        },
+        {
+          "name": "Other PDZ domain-containing proteins",
+          "children": [
+            {
+              "name": "K23783  CNKSR1, CNK1; connector enhancer of kinase suppressor of Ras 1"
+            },
+            {
+              "name": "K17536  CNKSR2, CNK2, KSR2; connector enhancer of kinase suppressor of Ras 2"
+            },
+            {
+              "name": "K23784  CNKSR3, CNK3; connector enhancer of kinase suppressor of Ras 3"
+            },
+            {
+              "name": "K24053  GRASP; general receptor for phosphoinositides 1-associated scaffold protein"
+            },
+            {
+              "name": "K24054  GOPC; golgi-associated PDZ and coiled-coil motif-containing protein"
+            },
+            {
+              "name": "K24055  LRRC7; leucine-rich repeat-containing protein 7"
+            },
+            {
+              "name": "K24057  PDZK1, PDZD1; DZ domain-containing protein 1"
+            },
+            {
+              "name": "K24058  PDZD2; PDZ domain-containing protein 2"
+            },
+            {
+              "name": "K24059  PDZD3; PDZ domain-containing protein 3"
+            },
+            {
+              "name": "K24056  PDZD4; PDZ domain-containing protein 4"
+            },
+            {
+              "name": "K22862  INTU, CPLANE4, PDZD6; protein inturned"
+            },
+            {
+              "name": "K21882  PDZD7; PDZ domain-containing protein 7"
+            },
+            {
+              "name": "K24060  PDZD8; PDZ domain-containing protein 8"
+            },
+            {
+              "name": "K24061  PDZD11; PDZ domain-containing protein 11"
+            },
+            {
+              "name": "K24062  PICK1; PRKCA-binding protein"
+            },
+            {
+              "name": "K24065  SNTG; gamma-syntrophin"
+            },
+            {
+              "name": "K24066  SYNPO2; synaptopodin-2"
+            },
+            {
+              "name": "K24067  TAX1BP3; Tax1-binding protein 3"
+            },
+            {
+              "name": "K27395  PRX; periaxin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phox homology (PX) domain-containing proteins",
+      "children": [
+        {
+          "name": "Sorting nexins",
+          "children": [
+            {
+              "name": "K17917  SNX1_2; sorting nexin-1/2"
+            },
+            {
+              "name": "K17918  SNX3_12; sorting nexin-3/12"
+            },
+            {
+              "name": "K17919  SNX4; sorting nexin-4"
+            },
+            {
+              "name": "K17920  SNX5_6_32; sorting nexin-5/6/32"
+            },
+            {
+              "name": "K17921  SNX7_30; sorting nexin-7/30"
+            },
+            {
+              "name": "K17922  SNX8, MVP1; sorting nexin-8"
+            },
+            {
+              "name": "K17923  SNX9_18_33; sorting nexin-9/18/33"
+            },
+            {
+              "name": "K17924  SNX10_11; sorting nexin-10/11"
+            },
+            {
+              "name": "K17925  SNX13; sorting nexin-13"
+            },
+            {
+              "name": "K17926  SNX14; sorting nexin-14"
+            },
+            {
+              "name": "K17927  SNX15; sorting nexin-15"
+            },
+            {
+              "name": "K17928  SNX16; sorting nexin-16"
+            },
+            {
+              "name": "K17929  SNX17; sorting nexin-17"
+            },
+            {
+              "name": "K17930  SNX19; sorting nexin-19"
+            },
+            {
+              "name": "K17931  SNX20; sorting nexin-20"
+            },
+            {
+              "name": "K17932  SNX21; sorting nexin-21"
+            },
+            {
+              "name": "K17941  SNX22_24; sorting nexin-22/24"
+            },
+            {
+              "name": "K17916  KIF16B, SNX23; kinesin family member 16B"
+            },
+            {
+              "name": "K17887  SNX25, MDM1; sorting nexin-25"
+            },
+            {
+              "name": "K17933  ARHGAP33, SNX26; Rho GTPase-activating protein 33"
+            },
+            {
+              "name": "K17936  SNX27; sorting nexin-27"
+            },
+            {
+              "name": "K17934  NOXO1, SNX28; NADPH oxidase organizer 1"
+            },
+            {
+              "name": "K17935  SNX29; sorting nexin-29"
+            },
+            {
+              "name": "K17937  SNX31; sorting nexin-31"
+            },
+            {
+              "name": "K21996  SNX41_42; sorting nexin-41/42"
+            }
+          ]
+        },
+        {
+          "name": "Other PX domain-containing proteins",
+          "children": [
+            {
+              "name": "K24094  HS1BP3; HCLS1-binding protein 3"
+            },
+            {
+              "name": "K24095  NISCH; nischarin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zinc finger domain-containing proteins",
+      "children": [
+        {
+          "name": "MYND-type zinc finger domain-containing proteins",
+          "children": [
+            {
+              "name": "K10053  RUNX1T1, CBFA2T1; CBFA2/RNUX1 translocation partner 1"
+            },
+            {
+              "name": "K22751  CBFA2T2; CBFA2/RUNX1 translocation partner 2"
+            },
+            {
+              "name": "K22752  CBFA2T3; CBFA2/RUNX1 translocation partner 3"
+            },
+            {
+              "name": "K24630  ZMYND8; protein kinase C-binding protein 1"
+            },
+            {
+              "name": "K24631  ANKMY1, ZMYD13; ankyrin repeat and MYND domain-containing protein 1"
+            },
+            {
+              "name": "K24632  ZMYND19; zinc finger MYND domain-containing protein 19"
+            },
+            {
+              "name": "K24633  ANKMY2, ZMYND20, DAF25; ankyrin repeat and MYND domain-containing protein 2"
+            },
+            {
+              "name": "K24634  SMYD4, ZMYND21; SET and MYND domain-containing protein 4 [EC:2.1.1.-]"
+            },
+            {
+              "name": "K24635  SMYD5, ZMYND23; SET and MYND domain-containing protein 5 [EC:2.1.1.-]"
+            }
+          ]
+        },
+        {
+          "name": "MYM-type zinc finger domain-containing proteins",
+          "children": [
+            {
+              "name": "K24674  ZMYM1; zinc finger MYM-type protein 1"
+            },
+            {
+              "name": "K24676  ZMYM5; zinc finger MYM-type protein 5"
+            }
+          ]
+        },
+        {
+          "name": "AN1-type zinc finger domain-containing proteins",
+          "children": [
+            {
+              "name": "K24684  ZFAND1; AN1-type zinc finger protein 1"
+            },
+            {
+              "name": "K24685  ZFAND2; AN1-type zinc finger protein 2"
+            },
+            {
+              "name": "K24686  ZFAND3; AN1-type zinc finger protein 3"
+            },
+            {
+              "name": "K12163  ZFAND4, ANUBL1; AN1-type zinc finger protein 4"
+            },
+            {
+              "name": "K24687  ZFAND5_6; AN1-type zinc finger protein 5/6"
+            }
+          ]
+        },
+        {
+          "name": "SWIM-type zinc finger domain-containing proteins",
+          "children": [
+            {
+              "name": "K26145  ZSWIM1; zinc finger SWIM domain-containing protein 1"
+            },
+            {
+              "name": "K26146  ZSWIM4; zinc finger SWIM domain-containing protein 4"
+            },
+            {
+              "name": "K26147  ZSWIM5; zinc finger SWIM domain-containing protein 5"
+            }
+          ]
+        },
+        {
+          "name": "Other zinc finger domain-containing proteins",
+          "children": [
+            {
+              "name": "K24642  ZBED5_7_8_9, BUSTER; zinc finger BED domain-containing protein 5/7/8/9"
+            },
+            {
+              "name": "K24691  ZNF106; zinc finger protein 106"
+            },
+            {
+              "name": "K26542  ZNF346, JAZ; zinc finger protein 346"
+            },
+            {
+              "name": "K19325  ZNF592; zinc finger protein 592"
+            },
+            {
+              "name": "K24945  ZC3H7; zinc finger CCCH domain-containing protein 7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LIM domain-containing proteins",
+      "children": [
+        {
+          "name": "Nuclear LMO family proteins",
+          "children": [
+            {
+              "name": "K24098  LMO1_3; rhombotin-1/3"
+            },
+            {
+              "name": "K15612  LMO2; rhombotin-2"
+            },
+            {
+              "name": "K24099  LMO4; LIM domain transcription factor LMO4"
+            }
+          ]
+        },
+        {
+          "name": "CRP family proteins",
+          "children": [
+            {
+              "name": "K24412  CRIP1, CRP1; cysteine-rich protein 1"
+            },
+            {
+              "name": "K24413  CRIP2_3, CRP2_3; cysteine-rich protein 2/3"
+            }
+          ]
+        },
+        {
+          "name": "FHL family proteins",
+          "children": [
+            {
+              "name": "K14365  FHL1, SLIM1; four and a half LIM domains protein 1"
+            },
+            {
+              "name": "K14380  FHL2; four and a half LIM domains protein 2"
+            },
+            {
+              "name": "K24414  FHL3; four and a half LIM domains protein 3"
+            },
+            {
+              "name": "K24415  FHL5, ACT; four and a half LIM domains protein 5"
+            }
+          ]
+        },
+        {
+          "name": "PINCH family proteins",
+          "children": [
+            {
+              "name": "K23354  LIMS1_2, PINCH1_2; LIM and senescent cell antigen-like-containing domain protein 1/2"
+            }
+          ]
+        },
+        {
+          "name": "Paxillin family proteins",
+          "children": [
+            {
+              "name": "K05760  PXN; paxillin"
+            },
+            {
+              "name": "K24314  LPXN; leupaxin"
+            },
+            {
+              "name": "K24315  TGFB1I1; transforming growth factor beta-1-induced transcript 1 protein"
+            }
+          ]
+        },
+        {
+          "name": "Testin family proteins",
+          "children": [
+            {
+              "name": "K24270  TES; testin"
+            },
+            {
+              "name": "K24417  LMCD1; LIM and cysteine-rich domains protein 1"
+            }
+          ]
+        },
+        {
+          "name": "PDZ-LIM family proteins",
+          "children": [
+            {
+              "name": "K23353  PDLIM1_2_3_4; PDZ and LIM domain protein 1/2/3/4"
+            },
+            {
+              "name": "K19867  PDLIM5_6_7; PDZ and LIM domain protein 5/6/7"
+            }
+          ]
+        },
+        {
+          "name": "LASP family proteins",
+          "children": [
+            {
+              "name": "K24420  LASP1; LIM and SH3 domain protein 1"
+            },
+            {
+              "name": "K24421  NRAP; nebulin-related-anchoring protein"
+            }
+          ]
+        },
+        {
+          "name": "Other lim domain-containing proteins",
+          "children": [
+            {
+              "name": "K24416  FBLIM1, FBLP1; filamin-binding LIM protein 1"
+            },
+            {
+              "name": "K24422  LIMCH1; LIM and calponin homology domains-containing protein 1"
+            },
+            {
+              "name": "K24423  ZNF185; zinc finger protein 185"
+            },
+            {
+              "name": "K24424  SCEL; sciellin"
+            },
+            {
+              "name": "K28605  LIMD2; LIM domain-containing protein 2"
+            }
+          ]
+        },
+        {
+          "name": "Lim domain binding proteins",
+          "children": [
+            {
+              "name": "K15617  LDB1; LIM domain-binding protein 1"
+            },
+            {
+              "name": "K24143  LDB2; LIM domain-binding protein 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Laminin domain-containing proteins",
+      "children": [
+        {
+          "name": "Laminin G domain-containing proteins",
+          "children": [
+            {
+              "name": "K07379  CNTNAP1; contactin associated protein 1"
+            },
+            {
+              "name": "K07380  CNTNAP2; contactin associated protein-like 2"
+            },
+            {
+              "name": "K24337  CNTNAP3_4; contactin associated protein-like 3/4"
+            },
+            {
+              "name": "K24338  CNTNAP5; contactin associated protein-like 5"
+            },
+            {
+              "name": "K24341  EGFRAM; pikachurin"
+            },
+            {
+              "name": "K19601  EYS; protein eyes shut"
+            },
+            {
+              "name": "K24342  NELL; protein kinase C-binding protein NELL"
+            }
+          ]
+        },
+        {
+          "name": "Laminin EGF-like domain-containing proteins",
+          "children": [
+            {
+              "name": "K24333  MEGF6; multiple epidermal growth factor-like domains protein 6"
+            },
+            {
+              "name": "K24334  MEGF9; multiple epidermal growth factor-like domains protein 9"
+            },
+            {
+              "name": "K24331  PEAR1, MEGF12; platelet endothelial aggregation receptor 1"
+            },
+            {
+              "name": "K24319  SCARF2; scavenger receptor class F member 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fibronectin (FN) domain-containing proteins",
+      "children": [
+        {
+          "name": "Fibronectin type I domain-containing proteins",
+          "children": [
+            {
+              "name": "K05717  FN1; fibronectin 1"
+            },
+            {
+              "name": "K01328  F12; coagulation factor XII (Hageman factor) [EC:3.4.21.38]"
+            }
+          ]
+        },
+        {
+          "name": "Fibronectin type II domain-containing proteins",
+          "children": [
+            {
+              "name": "K24474  BSPH, ELSPBP2; binder of sperm protein"
+            },
+            {
+              "name": "K24475  ELSPBP1; epididymal sperm-binding protein 1"
+            }
+          ]
+        },
+        {
+          "name": "Fibronectin type III domain-containing proteins",
+          "children": [
+            {
+              "name": "K24477  ABI3BP; target of Nesh-SH3"
+            },
+            {
+              "name": "K24478  ANKFN1; ankyrin repeat and fibronectin type-III domain-containing protein 1"
+            },
+            {
+              "name": "K24479  ASTN; astrotactin"
+            },
+            {
+              "name": "K24480  CMYA5; cardiomyopathy-associated protein 5"
+            },
+            {
+              "name": "K24481  CRLF1; cytokine receptor-like factor 1"
+            },
+            {
+              "name": "K24482  CRLF3; cytokine receptor-like factor 3"
+            },
+            {
+              "name": "K24483  FANK1; fibronectin type 3 and ankyrin repeat domains protein 1"
+            },
+            {
+              "name": "K16362  FLRT; leucine-rich repeat transmembrane protein FLRT"
+            },
+            {
+              "name": "K24484  FNDC1; fibronectin type III domain-containing protein 1"
+            },
+            {
+              "name": "K24485  FNDC3; fibronectin type III domain-containing protein 3"
+            },
+            {
+              "name": "K24486  FNDC4_5; fibronectin type III domain-containing protein 4/5"
+            },
+            {
+              "name": "K24487  FNDC7; fibronectin type III domain-containing protein 7"
+            },
+            {
+              "name": "K24488  FNDC8; fibronectin type III domain-containing protein 8"
+            },
+            {
+              "name": "K24489  FSD1; fibronectin type III and SPRY domain-containing protein 1"
+            },
+            {
+              "name": "K24490  FSD2; fibronectin type III and SPRY domain-containing protein 2"
+            },
+            {
+              "name": "K16354  LRFN1, SALM2; leucine-rich repeat and fibronectin type-III domain-containing protein 1"
+            },
+            {
+              "name": "K16355  LRFN2, SALM1; leucine-rich repeat and fibronectin type-III domain-containing protein 2"
+            },
+            {
+              "name": "K16356  LRFN3, SALM4; leucine-rich repeat and fibronectin type-III domain-containing protein 3"
+            },
+            {
+              "name": "K16357  LRFN4, SALM3; leucine-rich repeat and fibronectin type-III domain-containing protein 4"
+            },
+            {
+              "name": "K16358  LRFN5, SALM5; leucine-rich repeat and fibronectin type-III domain-containing protein 5"
+            },
+            {
+              "name": "K24491  LRIT; leucine-rich repeat, immunoglobulin-like domain and transmembrane domain-containing protein"
+            },
+            {
+              "name": "K24492  LRRN1_2_3; leucine-rich repeat neuronal protein 1/2/3"
+            },
+            {
+              "name": "K24493  LRRN4; leucine-rich repeat neuronal protein 4"
+            },
+            {
+              "name": "K24494  MYBPH; myosin-binding protein H"
+            },
+            {
+              "name": "K24495  MYOM; myomesin"
+            },
+            {
+              "name": "K24496  NPHS1; nephrin"
+            },
+            {
+              "name": "K24497  PHYHIP; phytanoyl-CoA hydroxylate-interacting protein"
+            },
+            {
+              "name": "K24499  UMODL1; uromodulin-like 1"
+            },
+            {
+              "name": "K24500  VASN; vasorin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "C1q domain-containing proteins",
+      "children": [
+        {
+          "name": "Adiponectin / short collagen group proteins",
+          "children": [
+            {
+              "name": "K07296  ADIPOQ, ACDC; adiponectin"
+            },
+            {
+              "name": "K24211  C1QTNF2; complement C1q and tumor necrosis factor-related protein 2"
+            },
+            {
+              "name": "K24212  C1QTNF5; complement C1q and tumor necrosis factor-related protein 5"
+            },
+            {
+              "name": "K24218  C1QTNF7; complement C1q and tumor necrosis factor-related protein 7"
+            },
+            {
+              "name": "K24213  C1QTNF9; complement C1q and tumor necrosis factor-related protein 9"
+            },
+            {
+              "name": "K24214  OTOL1; otolin-1"
+            }
+          ]
+        },
+        {
+          "name": "CBLN / gliacolin group proteins",
+          "children": [
+            {
+              "name": "K24235  CBLN; cerebellin"
+            },
+            {
+              "name": "K19470  C1QTNF1_6_8; complement C1q tumor necrosis factor-related protein 1/6/8"
+            },
+            {
+              "name": "K24236  C1QTNF3; complement C1q and tumor necrosis factor-related protein 3"
+            },
+            {
+              "name": "K24237  C1QTNF4; complement C1q and tumor necrosis factor-related protein 4"
+            },
+            {
+              "name": "K21410  C1QTNF12, FAM132A; adipolin"
+            },
+            {
+              "name": "K24381  ERFE, FAM132B; erythroferrone"
+            }
+          ]
+        },
+        {
+          "name": "Emilin / mutimerin group proteins",
+          "children": [
+            {
+              "name": "K24246  EMILIN; emilin"
+            },
+            {
+              "name": "K24247  MMRN; multimerin"
+            },
+            {
+              "name": "K24248  EMID1; EMI domain-containing protein 1"
+            },
+            {
+              "name": "K24358  COL26A, EMID2; collagen type XXVI alpha (EMI domain-containing protein 2)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thrombospondin domain-containing proteins",
+      "children": [
+        {
+          "name": "F-spondins",
+          "children": [
+            {
+              "name": "K24427  SPON1; spondin-1"
+            },
+            {
+              "name": "K24428  SPON2; spondin-2"
+            }
+          ]
+        },
+        {
+          "name": "ADAMTS-like proteins",
+          "children": [
+            {
+              "name": "K24429  ADAMTSL1_3; ADAMTS-like protein 1/3"
+            },
+            {
+              "name": "K24430  ADAMTSL2; ADAMTS-like protein 2"
+            },
+            {
+              "name": "K23369  ADAMTSL4; ADAMTS-like protein 4"
+            },
+            {
+              "name": "K24432  ADAMTSL5; ADAMTS-like protein 5"
+            },
+            {
+              "name": "K23377  THSD4, ADAMTSL6; thrombospondin type-1 domain-containing protein 4"
+            }
+          ]
+        },
+        {
+          "name": "Other thrombospondin domain-containing proteins",
+          "children": [
+            {
+              "name": "K24433  THSD1; thrombospondin type-1 domain-containing protein 1"
+            },
+            {
+              "name": "K24434  SSPO; SCO-spondin"
+            },
+            {
+              "name": "K24435  ISM; isthmin"
+            },
+            {
+              "name": "K24436  CILP; cartilage intermediate layer protein"
+            },
+            {
+              "name": "K24437  TSEAR; thrombospondin-type laminin G domain and EAR repeat-containing protein"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EGF-like domain-containing proteins",
+      "children": [
+        {
+          "name": "hEGF domain-containing proteins",
+          "children": [
+            {
+              "name": "K24461  DLK1; protein delta homolog 1"
+            },
+            {
+              "name": "K24462  DLK2, EGFL9; protein delta homolog 2"
+            },
+            {
+              "name": "K24463  DNER; delta and Notch-like epidermal growth factor-related receptor"
+            },
+            {
+              "name": "K24469  SVEP1; sushi, von Willebrand factor type A, EGF and pentraxin domain-containing protein 1"
+            }
+          ]
+        },
+        {
+          "name": "cEGF domain-containing proteins",
+          "children": [
+            {
+              "name": "K06826  NID; nidogen (entactin)"
+            },
+            {
+              "name": "K24431  OPA3; oncoprotein-induced transcript 3 protein"
+            }
+          ]
+        },
+        {
+          "name": "hEGF / cEGF domain-containing proteins",
+          "children": [
+            {
+              "name": "K18262  EFEMP1, FBLN3; EGF-containing fibulin-like extracellular matrix protein 1"
+            },
+            {
+              "name": "K19866  EFEMP2; EGF-containing fibulin-like extracellular matrix protein 2"
+            },
+            {
+              "name": "K17340  FBLN5; fibulin 5"
+            },
+            {
+              "name": "K17341  HMCN; hemicentin"
+            },
+            {
+              "name": "K17342  FBLN7; fibulin 7"
+            },
+            {
+              "name": "K24464  EDIL3; EGF-like repeat and discoidin I-like domain-containing protein 3"
+            },
+            {
+              "name": "K24465  EGFL7_8; epidermal growth factor-like protein 7/8"
+            },
+            {
+              "name": "K19559  LTBP1; latent transforming growth factor beta binding protein 1"
+            },
+            {
+              "name": "K08023  LTBP2_3_4; latent transforming growth factor beta binding protein 2/3/4"
+            },
+            {
+              "name": "K24466  NOTCH2NL; Notch homolog 2 N-terminal-like protein"
+            },
+            {
+              "name": "K24467  PROZ; vitamin K-dependent protein Z"
+            },
+            {
+              "name": "K24468  SCUBE1_3; signal peptide, CUB and EGF-like domain-containing protein 1/3"
+            },
+            {
+              "name": "K24470  SNED1, IRE-BP1; insulin-responsive sequence DNA-binding protein 1"
+            }
+          ]
+        },
+        {
+          "name": "Other EGF-like domain-containing proteins",
+          "children": [
+            {
+              "name": "K24471  EPGN; epigen"
+            },
+            {
+              "name": "K24473  TENM, ODZ; teneurin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Von Willebrand domain-containing proteins",
+      "children": [
+        {
+          "name": "VWA domain-containing proteins",
+          "children": [
+            {
+              "name": "K19467  MATN; matrilin"
+            },
+            {
+              "name": "K23574  COCH; cochlin"
+            },
+            {
+              "name": "K24506  VIT; vitrin"
+            },
+            {
+              "name": "K24507  VWA1; von Willebrand factor A domain-containing protein 1"
+            },
+            {
+              "name": "K24508  VWA2; von Willebrand factor A domain-containing protein 2"
+            },
+            {
+              "name": "K24509  VWA3; von Willebrand factor A domain-containing protein 3"
+            },
+            {
+              "name": "K24510  VWA5; von Willebrand factor A domain-containing protein 5"
+            },
+            {
+              "name": "K24511  VWA7; von Willebrand factor A domain-containing protein 7"
+            },
+            {
+              "name": "K24512  VWA8; von Willebrand factor A domain-containing protein 8"
+            },
+            {
+              "name": "K24514  ITIH4; inter-alpha-trypsin inhibitor heavy chain H4"
+            },
+            {
+              "name": "K24515  ITIH5; inter-alpha-trypsin inhibitor heavy chain H5"
+            },
+            {
+              "name": "K24516  ITIH6; inter-alpha-trypsin inhibitor heavy chain H6"
+            },
+            {
+              "name": "K24524  CPNE1_2_3; copine 1/2/3"
+            },
+            {
+              "name": "K24525  CPNE4_6_7; copine 4/6/7"
+            },
+            {
+              "name": "K24523  CPNE5_8_9; copine 5/8/9"
+            }
+          ]
+        },
+        {
+          "name": "VWC domain-containing proteins",
+          "children": [
+            {
+              "name": "K24517  BMPER; BMP-binding endothelial regulator protein"
+            },
+            {
+              "name": "K24518  CRIM1; cysteine-rich motor neuron 1 protein"
+            },
+            {
+              "name": "K24519  VWCE; von Willebrand factor C and EGF domain-containing protein"
+            },
+            {
+              "name": "K24520  CHRDL1; chordin-like protein 1"
+            },
+            {
+              "name": "K24521  VWC2; brorin"
+            },
+            {
+              "name": "K24522  KCP; kielin/chordin-like protein"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Other domain-containing proteins",
+      "children": [
+        {
+          "name": "WD40 repeat (WDR) domain-containing proteins",
+          "children": [
+            {
+              "name": "K24725  AAMP; angio-associated migratory cell protein"
+            },
+            {
+              "name": "K24731  DMWD; dystrophia myotonica WD repeat-containing protein"
+            },
+            {
+              "name": "K24732  GNB1L; guanine nucleotide-binding protein subunit beta-like protein 1"
+            },
+            {
+              "name": "K24733  LRWD1; leucine-rich repeat and WD repeat-containing protein 1"
+            },
+            {
+              "name": "K24734  NWD; NACHT domain- and WD repeat-containing protein"
+            },
+            {
+              "name": "K24736  WDR1, AIP1; WD repeat-containing protein 1 (actin-interacting protein 1)"
+            },
+            {
+              "name": "K24737  WDR6; WD repeat-containing protein 6"
+            },
+            {
+              "name": "K24739  WDR13; WD repeat-containing protein 13"
+            },
+            {
+              "name": "K24740  WDR17; WD repeat-containing protein 17"
+            },
+            {
+              "name": "K24741  WDR20; WD repeat-containing protein 20"
+            },
+            {
+              "name": "K24742  WDR25; WD repeat-containing protein 25"
+            },
+            {
+              "name": "K24743  WDR31; WD repeat-containing protein 31"
+            },
+            {
+              "name": "K24744  WDR37; WD repeat-containing protein 37"
+            },
+            {
+              "name": "K24745  WDR38; WD repeat-containing protein 38"
+            },
+            {
+              "name": "K24746  WDR47; WD repeat-containing protein 47"
+            },
+            {
+              "name": "K24747  WDR49; WD repeat-containing protein 49"
+            },
+            {
+              "name": "K24748  WDR53; WD repeat-containing protein 53"
+            },
+            {
+              "name": "K24749  WDR54; WD repeat-containing protein 54"
+            },
+            {
+              "name": "K24750  WDR55, JIP5; WD repeat-containing protein 55"
+            },
+            {
+              "name": "K24751  WDR64; WD repeat-containing protein 64"
+            },
+            {
+              "name": "K24753  WDR72; WD repeat-containing protein 72"
+            },
+            {
+              "name": "K24754  WDR73; WD repeat-containing protein 73"
+            },
+            {
+              "name": "K24756  WDR86; WD repeat-containing protein 86"
+            },
+            {
+              "name": "K24757  WDR88; WD repeat-containing protein 88"
+            },
+            {
+              "name": "K24758  WDR89; WD repeat-containing protein 89"
+            },
+            {
+              "name": "K24764  WDSUB1; WD repeat, SAM and U-box domain-containing protein 1"
+            },
+            {
+              "name": "K24765  CREC; catabolite repression protein CreC"
+            }
+          ]
+        },
+        {
+          "name": "WW domain-containing proteins",
+          "children": [
+            {
+              "name": "K24774  FNBP4; formin-binding protein 4"
+            },
+            {
+              "name": "K19329  WWOX; WW domain-containing oxidoreductase"
+            },
+            {
+              "name": "K24775  WBP1; WW domain-binding protein 1"
+            },
+            {
+              "name": "K22524  WBP2; WW domain-binding protein 2"
+            }
+          ]
+        },
+        {
+          "name": "FYVE domain-containing proteins",
+          "children": [
+            {
+              "name": "K24779  ZFYVE21; zinc finger FYVE domain-containing protein 21"
+            }
+          ]
+        },
+        {
+          "name": "Tubby family proteins",
+          "children": [
+            {
+              "name": "K19600  TUB, TULP; tubby and related proteins"
+            },
+            {
+              "name": "K24720  TULP4; tubby-related protein 4"
+            }
+          ]
+        },
+        {
+          "name": "FERM domain-containing proteins",
+          "children": [
+            {
+              "name": "K23961  EPB41L1_2_3; band 4.1-like protein 1/2/3"
+            },
+            {
+              "name": "K23962  EPB41L4A, NBL4; band 4.1-like protein 4A"
+            },
+            {
+              "name": "K21111  EPB41L4B, EHM2, LULU2; band 4.1-like protein 4B"
+            },
+            {
+              "name": "K23963  EPB41L5; band 4.1-like protein 5"
+            },
+            {
+              "name": "K23954  FRMPD1; FERM and PDZ domain-containing protein 1"
+            },
+            {
+              "name": "K23955  FRMPD2; FERM and PDZ domain-containing protein 2"
+            },
+            {
+              "name": "K23959  FRMPD3; FERM and PDZ domain-containing protein 3"
+            },
+            {
+              "name": "K23956  FRMPD4; FERM and PDZ domain-containing protein 4"
+            },
+            {
+              "name": "K23969  FRMD3_5; FERM domain-containing protein 3/5"
+            },
+            {
+              "name": "K23970  FRMD4; FERM domain-containing protein 4"
+            }
+          ]
+        },
+        {
+          "name": "JAKMIP domain-containing proteins",
+          "children": [
+            {
+              "name": "K24783  JAKMIP1; janus kinase and microtubule-interacting protein 1"
+            },
+            {
+              "name": "K24784  JAKMIP2; janus kinase and microtubule-interacting protein 2"
+            },
+            {
+              "name": "K24785  JAKMIP3; janus kinase and microtubule-interacting protein 3"
+            }
+          ]
+        },
+        {
+          "name": "RUN domain-containing proteins",
+          "children": [
+            {
+              "name": "K24786  RUNDC1; RUN domain-containing protein 1"
+            },
+            {
+              "name": "K24787  RUNDC3; RUN domain-containing protein 3"
+            }
+          ]
+        },
+        {
+          "name": "Patched domain-containing proteins",
+          "children": [
+            {
+              "name": "K24682  PTCHD; patched domain-containing protein"
+            },
+            {
+              "name": "K24680  DISP1; protein dispatched 1"
+            },
+            {
+              "name": "K24681  DISP2; protein dispatched 2"
+            },
+            {
+              "name": "K24683  DISP3, PTCHD2; protein dispatched 3"
+            }
+          ]
+        },
+        {
+          "name": "Fasciclin domain-containing proteins",
+          "children": [
+            {
+              "name": "K19897  FAS1; fasciclin 1"
+            },
+            {
+              "name": "K19519  TGFBI, BIGH3; transforming growth factor-beta-induced protein"
+            },
+            {
+              "name": "K24790  POSTN; periostin"
+            }
+          ]
+        },
+        {
+          "name": "CUB domain-containing proteins",
+          "children": [
+            {
+              "name": "K24792  CDCP2; CUB domain-containing protein 2"
+            },
+            {
+              "name": "K24793  CUZD1; CUB and zona pellucida-like domain-containing protein 1"
+            },
+            {
+              "name": "K24794  DCBLD; discoidin, CUB and LCCL domain-containing protein"
+            },
+            {
+              "name": "K23091  KREMEN; kremen protein"
+            },
+            {
+              "name": "K24359  MFRP; membrane frizzled-related protein"
+            },
+            {
+              "name": "K24360  NETO; neuropilin and tolloid-like protein"
+            },
+            {
+              "name": "K24361  PCOLCE; procollagen C-endopeptidase enhancer"
+            },
+            {
+              "name": "K24362  PAMR1; inactive serine protease PAMR1"
+            },
+            {
+              "name": "K24363  SEZ6; seizure protein 6"
+            }
+          ]
+        },
+        {
+          "name": "Sushi domain-containing proteins",
+          "children": [
+            {
+              "name": "K23818  SRPX; sushi repeat-containing protein SRPX"
+            },
+            {
+              "name": "K19408  SRPX2; sushi repeat-containing protein SRPX2"
+            },
+            {
+              "name": "K23819  SUSD1; sushi domain-containing protein 1"
+            },
+            {
+              "name": "K23820  SUSD2; sushi domain-containing protein 2"
+            },
+            {
+              "name": "K23821  SUSD3; sushi domain-containing protein 3"
+            },
+            {
+              "name": "K23822  SUSD4; sushi domain-containing protein 4"
+            },
+            {
+              "name": "K23823  SUSD5; sushi domain-containing protein 5"
+            },
+            {
+              "name": "K23824  SUSD6; sushi domain-containing protein 6"
+            }
+          ]
+        },
+        {
+          "name": "BTB-POZ domain-containing proteins",
+          "children": [
+            {
+              "name": "K24808  BTBD17; BTB/POZ domain-containing protein 17"
+            },
+            {
+              "name": "K24811  BTBD18; BTB/POZ domain-containing protein 18"
+            },
+            {
+              "name": "K24809  CCIN; calicin"
+            },
+            {
+              "name": "K24810  IBTK; inhibitor of Bruton tyrosine kinase"
+            }
+          ]
+        },
+        {
+          "name": "HEAT repeat domain-containing proteins",
+          "children": [
+            {
+              "name": "K24812  HEATR3; HEAT repeat-containing protein 3"
+            },
+            {
+              "name": "K24813  HEATR4; HEAT repeat-containing protein 4"
+            },
+            {
+              "name": "K24815  HEATR6; HEAT repeat-containing protein 6"
+            },
+            {
+              "name": "K24816  MROH1, HEATR7A; maestro heat-like repeat-containing protein family member 1"
+            },
+            {
+              "name": "K24817  MROH2, HEATR7B; maestro heat-like repeat-containing protein family member 2"
+            },
+            {
+              "name": "K24818  RIPOR, FAM65; Rho family-interacting cell polarization regulator"
+            }
+          ]
+        },
+        {
+          "name": "Armadillo repeat domain-containing proteins",
+          "children": [
+            {
+              "name": "K24124  ARMC3; armadillo repeat-containing protein 3"
+            },
+            {
+              "name": "K24166  ARMC6; armadillo repeat-containing protein 6"
+            },
+            {
+              "name": "K24167  ARMC10; armadillo repeat-containing protein 10"
+            },
+            {
+              "name": "K24168  ARMC12; armadillo repeat-containing protein 12"
+            },
+            {
+              "name": "K24169  THADA, ARMC13; thyroid adenoma-associated protein"
+            },
+            {
+              "name": "K26233  ARMCX5; armadillo repeat-containing X-linked protein 5"
+            },
+            {
+              "name": "K26234  BHLHB9, GPRASP3; G-protein coupled receptor-associated sorting protein 3"
+            }
+          ]
+        },
+        {
+          "name": "Tetratricopeptide repeat-containing proteins",
+          "children": [
+            {
+              "name": "K24848  IFIT2; interferon-induced protein with tetratricopeptide repeats 2"
+            },
+            {
+              "name": "K24849  IFIT3; interferon-induced protein with tetratricopeptide repeats 3"
+            },
+            {
+              "name": "K24924  RAPSN; receptor-associated protein of the synapse"
+            },
+            {
+              "name": "K24044  RGPD; RANBP2-like and GRIP domain-containing protein"
+            },
+            {
+              "name": "K24929  TTC6; tetratricopeptide repeat protein 6"
+            },
+            {
+              "name": "K24930  TTC9; tetratricopeptide repeat protein 9"
+            },
+            {
+              "name": "K24933  TTC22; tetratricopeptide repeat protein 22"
+            },
+            {
+              "name": "K24935  TTC27; tetratricopeptide repeat protein 27"
+            },
+            {
+              "name": "K24946  TTC32; tetratricopeptide repeat protein 32"
+            },
+            {
+              "name": "K24947  TTC34; tetratricopeptide repeat protein 34"
+            },
+            {
+              "name": "K24942  TTC38; tetratricopeptide repeat protein 38"
+            },
+            {
+              "name": "K24943  TTC39; tetratricopeptide repeat protein 39"
+            },
+            {
+              "name": "K24944  TTC41; tetratricopeptide repeat protein 41"
+            }
+          ]
+        },
+        {
+          "name": "RRM domain-containing proteins",
+          "children": [
+            {
+              "name": "K24979  BOLL; protein boule-like"
+            },
+            {
+              "name": "K24980  DAZ; deleted in azoospermia protein"
+            },
+            {
+              "name": "K24981  DND1; dead end 1"
+            },
+            {
+              "name": "K24982  ENOX; ecto-NOX disulfide-thiol exchanger"
+            },
+            {
+              "name": "K17392  IGF2BP2; insulin-like growth factor 2 mRNA-binding protein 2"
+            },
+            {
+              "name": "K24990  RBMS; RNA-binding motif, single-stranded-interacting protein"
+            },
+            {
+              "name": "K24991  MTHFSD; methenyltetrahydrofolate synthase domain-containing protein"
+            },
+            {
+              "name": "K24994  RALYL; RNA-binding Raly-like protein"
+            },
+            {
+              "name": "K25000  RAVER2; ribonucleoprotein PTB-binding 2"
+            },
+            {
+              "name": "K25078  RBM33; RNA-binding protein 33"
+            },
+            {
+              "name": "K25079  RBM42; RNA-binding protein 42"
+            },
+            {
+              "name": "K25080  RBM44; RNA-binding protein 44"
+            },
+            {
+              "name": "K25081  RBM45; RNA-binding protein 45"
+            },
+            {
+              "name": "K25082  RBM46; RNA-binding protein 46"
+            },
+            {
+              "name": "K25083  RBM47; RNA-binding protein 47"
+            },
+            {
+              "name": "K25095  SLIRP; SRA stem-loop-interacting RNA-binding protein, mitochondrial"
+            },
+            {
+              "name": "K25093  SLTM; SAFB-like transcription modulator"
+            }
+          ]
+        },
+        {
+          "name": "CAP domain-containing proteins",
+          "children": [
+            {
+              "name": "K24834  GLIPR1; glioma pathogenesis-related protein 1"
+            },
+            {
+              "name": "K24835  GLIPR2; glioma pathogenesis-related protein 2"
+            },
+            {
+              "name": "K24836  PI15, CRISP8; peptidase inhibitor 15"
+            },
+            {
+              "name": "K24243  CRISPLD; cysteine-rich secretory protein LCCL domain-containing"
+            }
+          ]
+        },
+        {
+          "name": "IQ domain-containing proteins",
+          "children": [
+            {
+              "name": "K24837  IQCA, DRC11; dynein regulatory complex subunit 11"
+            },
+            {
+              "name": "K24839  IQCD, DRC10; dynein regulatory complex subunit 10"
+            },
+            {
+              "name": "K24840  IQCF; IQ domain-containing protein F"
+            },
+            {
+              "name": "K24841  IQCG, DRC9; dynein regulatory complex subunit 9"
+            },
+            {
+              "name": "K24842  IQCH; IQ domain-containing protein H"
+            },
+            {
+              "name": "K24832  IQCJ; IQ domain-containing protein J"
+            },
+            {
+              "name": "K24838  IQUB; IQ and ubiquitin-like domain-containing protein"
+            }
+          ]
+        },
+        {
+          "name": "BEN domain-containing proteins",
+          "children": [
+            {
+              "name": "K27846  BEND2; BEN domain-containing protein 2"
+            },
+            {
+              "name": "K27847  BEND6; BEN domain-containing protein 6"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "children": [
+            {
+              "name": "K26405  CCDC25; coiled-coil domain-containing protein 25"
+            },
+            {
+              "name": "K23729  CCDC39; coiled-coil domain-containing protein 39"
+            },
+            {
+              "name": "K23730  CCDC40; coiled-coil domain-containing protein 40"
+            },
+            {
+              "name": "K23731  CCDC103; coiled-coil domain-containing protein 103"
+            },
+            {
+              "name": "K23930  FAM83; protein FAM83"
+            },
+            {
+              "name": "K24828  LCA5; lebercilin"
+            },
+            {
+              "name": "K24822  LOXHD1; lipoxygenase homology domain-containing protein 1"
+            },
+            {
+              "name": "K24127  MAGE; melanoma-associated antigen"
+            },
+            {
+              "name": "K24829  MINAR1; major intrinsically disordered Notch2-binding receptor 1"
+            },
+            {
+              "name": "K24830  MINAR2; major intrinsically disordered Notch2-binding receptor 2"
+            },
+            {
+              "name": "K24833  SCHP1; schwannomin-interacting protein 1"
+            },
+            {
+              "name": "K24831  ZAN; zonadhesin"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

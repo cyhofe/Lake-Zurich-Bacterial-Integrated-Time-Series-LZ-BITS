@@ -1,0 +1,1601 @@
+{
+  "name": "ko03021",
+  "children": [
+    {
+      "name": "Eukaryotic type",
+      "children": [
+        {
+          "name": "RNA polymerase II system",
+          "children": [
+            {
+              "name": "RNA polymerase II",
+              "children": [
+                {
+                  "name": "Core subunits",
+                  "children": [
+                    {
+                      "name": "K03006  RPB1, POLR2A; DNA-directed RNA polymerase II subunit RPB1 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03010  RPB2, POLR2B; DNA-directed RNA polymerase II subunit RPB2 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03011  RPB3, POLR2C; DNA-directed RNA polymerase II subunit RPB3"
+                    },
+                    {
+                      "name": "K03008  RPB11, POLR2J; DNA-directed RNA polymerase II subunit RPB11"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol II specific subunits",
+                  "children": [
+                    {
+                      "name": "K03012  RPB4, POLR2D; DNA-directed RNA polymerase II subunit RPB4"
+                    },
+                    {
+                      "name": "K03015  RPB7, POLR2G; DNA-directed RNA polymerase II subunit RPB7"
+                    },
+                    {
+                      "name": "K03017  RPB9, POLR2I; DNA-directed RNA polymerase II subunit RPB9"
+                    },
+                    {
+                      "name": "K21987  POLR2M, GRINL1A; DNA-directed RNA polymerase II subunit GRINL1A"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol I, II, III common subunits",
+                  "children": [
+                    {
+                      "name": "K03013  RPABC1, RPB5, POLR2E; DNA-directed RNA polymerases I, II, and III subunit RPABC1"
+                    },
+                    {
+                      "name": "K03014  RPABC2, RPB6, POLR2F; DNA-directed RNA polymerases I, II, and III subunit RPABC2"
+                    },
+                    {
+                      "name": "K03016  RPABC3, RPB8, POLR2H; DNA-directed RNA polymerases I, II, and III subunit RPABC3"
+                    },
+                    {
+                      "name": "K03009  RPABC4, RPB12, POLR2K; DNA-directed RNA polymerases I, II, and III subunit RPABC4"
+                    },
+                    {
+                      "name": "K03007  RPABC5, RPB10, POLR2L; DNA-directed RNA polymerases I, II, and III subunit RPABC5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol IV and V specific subunits",
+                  "children": [
+                    {
+                      "name": "K16250  NRPD1; DNA-directed RNA polymerase IV subunit 1 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K16251  NRPE1; DNA-directed RNA polymerase V subunit 1 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K16252  NRPD2, NRPE2; DNA-directed RNA polymerase IV and V subunit 2 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K16253  NRPD7, NRPE7; DNA-directed RNA polymerase IV and V subunit 7"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Basal transcription factors",
+              "children": [
+                {
+                  "name": "TFIIA",
+                  "children": [
+                    {
+                      "name": "K03122  TFIIA1, GTF2A1, TOA1; transcription initiation factor TFIIA large subunit"
+                    },
+                    {
+                      "name": "K03123  TFIIA2, GTF2A2, TOA2; transcription initiation factor TFIIA small subunit"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIB",
+                  "children": [
+                    {
+                      "name": "K03124  TFIIB, GTF2B, SUA7, tfb; transcription initiation factor TFIIB"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIID",
+                  "children": [
+                    {
+                      "name": "K03120  TBP, tbp; transcription initiation factor TFIID TATA-box-binding protein"
+                    },
+                    {
+                      "name": "K03125  TAF1; transcription initiation factor TFIID subunit 1 [EC:2.3.1.48 2.7.11.1]"
+                    },
+                    {
+                      "name": "K23358  TAF1; transcription initiation factor TFIID subunit 1, fungi type [EC:2.3.1.48]"
+                    },
+                    {
+                      "name": "K03128  TAF2; transcription initiation factor TFIID subunit 2"
+                    },
+                    {
+                      "name": "K14650  TAF3; transcription initiation factor TFIID subunit 3"
+                    },
+                    {
+                      "name": "K03129  TAF4; transcription initiation factor TFIID subunit 4"
+                    },
+                    {
+                      "name": "K03130  TAF5; transcription initiation factor TFIID subunit 5"
+                    },
+                    {
+                      "name": "K03131  TAF6; transcription initiation factor TFIID subunit 6"
+                    },
+                    {
+                      "name": "K03132  TAF7; transcription initiation factor TFIID subunit 7"
+                    },
+                    {
+                      "name": "K14649  TAF8; transcription initiation factor TFIID subunit 8"
+                    },
+                    {
+                      "name": "K14535  TAF9; transcription initiation factor TFIID subunit 9"
+                    },
+                    {
+                      "name": "K03133  TAF9B, TAF9; transcription initiation factor TFIID subunit 9B"
+                    },
+                    {
+                      "name": "K03134  TAF10; transcription initiation factor TFIID subunit 10"
+                    },
+                    {
+                      "name": "K03135  TAF11; transcription initiation factor TFIID subunit 11"
+                    },
+                    {
+                      "name": "K03126  TAF12; transcription initiation factor TFIID subunit 12"
+                    },
+                    {
+                      "name": "K03127  TAF13; transcription initiation factor TFIID subunit 13"
+                    },
+                    {
+                      "name": "K03140  TAF14; transcription initiation factor TFIID/TFIIF subunit"
+                    },
+                    {
+                      "name": "K14651  TAF15, NPL3; transcription initiation factor TFIID subunit 15"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIE",
+                  "children": [
+                    {
+                      "name": "K03136  TFIIE1, GTF2E1, TFA1, tfe; transcription initiation factor TFIIE subunit alpha"
+                    },
+                    {
+                      "name": "K03137  TFIIE2, GTF2E2, TFA2; transcription initiation factor TFIIE subunit beta"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIF",
+                  "children": [
+                    {
+                      "name": "K03138  TFIIF1, GTF2F1, TFG1; transcription initiation factor TFIIF subunit alpha"
+                    },
+                    {
+                      "name": "K03139  TFIIF2, GTF2F2, TFG2; transcription initiation factor TFIIF subunit beta [EC:5.6.2.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIH",
+                  "children": [
+                    {
+                      "name": "K03141  TFIIH1, GTF2H1, TFB1; transcription initiation factor TFIIH subunit 1"
+                    },
+                    {
+                      "name": "K03142  TFIIH2, GTF2H2, SSL1; transcription initiation factor TFIIH subunit 2"
+                    },
+                    {
+                      "name": "K03143  TFIIH3, GTF2H3, TFB4; transcription initiation factor TFIIH subunit 3"
+                    },
+                    {
+                      "name": "K03144  TFIIH4, GTF2H4, TFB2; transcription initiation factor TFIIH subunit 4"
+                    },
+                    {
+                      "name": "K10843  ERCC3, XPB; DNA excision repair protein ERCC-3 [EC:5.6.2.4]"
+                    },
+                    {
+                      "name": "K10844  ERCC2, XPD; DNA excision repair protein ERCC-2 [EC:5.6.2.3]"
+                    },
+                    {
+                      "name": "K10845  TTDA, GTF2H5, TFB5; TFIIH basal transcription factor complex TTD-A subunit"
+                    },
+                    {
+                      "name": "K02202  CDK7; cyclin-dependent kinase 7 [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K10842  MNAT1; CDK-activating kinase assembly factor MAT1"
+                    },
+                    {
+                      "name": "K06634  CCNH; cyclin H"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Mediator complex",
+              "children": [
+                {
+                  "name": "Head",
+                  "children": [
+                    {
+                      "name": "K15128  MED6; mediator of RNA polymerase II transcription subunit 6"
+                    },
+                    {
+                      "name": "K15129  MED8; mediator of RNA polymerase II transcription subunit 8"
+                    },
+                    {
+                      "name": "K15130  MED8; mediator of RNA polymerase II transcription subunit 8, fungi type"
+                    },
+                    {
+                      "name": "K15131  MED11; mediator of RNA polymerase II transcription subunit 11"
+                    },
+                    {
+                      "name": "K15132  MED11; mediator of RNA polymerase II transcription subunit 11, fungi type"
+                    },
+                    {
+                      "name": "K15133  MED17; mediator of RNA polymerase II transcription subunit 17"
+                    },
+                    {
+                      "name": "K15134  SRB4, MED17; mediator of RNA polymerase II transcription subunit 17, fungi type"
+                    },
+                    {
+                      "name": "K15135  MED18; mediator of RNA polymerase II transcription subunit 18"
+                    },
+                    {
+                      "name": "K15136  SRB5, MED18; mediator of RNA polymerase II transcription subunit 18, fungi type"
+                    },
+                    {
+                      "name": "K15137  MED19; mediator of RNA polymerase II transcription subunit 19"
+                    },
+                    {
+                      "name": "K15138  ROX3, MED19; mediator of RNA polymerase II transcription subunit 19, fungi type"
+                    },
+                    {
+                      "name": "K13528  MED20; mediator of RNA polymerase II transcription subunit 20"
+                    },
+                    {
+                      "name": "K15139  MED22; mediator of RNA polymerase II transcription subunit 22"
+                    },
+                    {
+                      "name": "K15140  SRB6, MED22; mediator of RNA polymerase II transcription subunit 22, fungi type"
+                    },
+                    {
+                      "name": "K15141  MED28; mediator of RNA polymerase II transcription subunit 28"
+                    },
+                    {
+                      "name": "K15142  MED29; mediator of RNA polymerase II transcription subunit 29"
+                    },
+                    {
+                      "name": "K15143  MED30; mediator of RNA polymerase II transcription subunit 30"
+                    }
+                  ]
+                },
+                {
+                  "name": "Middle",
+                  "children": [
+                    {
+                      "name": "K15144  MED1; mediator of RNA polymerase II transcription subunit 1"
+                    },
+                    {
+                      "name": "K15145  MED1; mediator of RNA polymerase II transcription subunit 1, fungi type"
+                    },
+                    {
+                      "name": "K15146  MED4; mediator of RNA polymerase II transcription subunit 4"
+                    },
+                    {
+                      "name": "K15147  MED5, NUT1; mediator of RNA polymerase II transcription subunit 5"
+                    },
+                    {
+                      "name": "K15148  MED7; mediator of RNA polymerase II transcription subunit 7"
+                    },
+                    {
+                      "name": "K15149  MED9; mediator of RNA polymerase II transcription subunit 9"
+                    },
+                    {
+                      "name": "K15150  CSE2, MED9; mediator of RNA polymerase II transcription subunit 9, fungi type"
+                    },
+                    {
+                      "name": "K15151  MED10, NUT2; mediator of RNA polymerase II transcription subunit 10"
+                    },
+                    {
+                      "name": "K15152  MED21, SRB7; mediator of RNA polymerase II transcription subunit 21"
+                    },
+                    {
+                      "name": "K15153  MED31, SOH1; mediator of RNA polymerase II transcription subunit 31"
+                    }
+                  ]
+                },
+                {
+                  "name": "Tail",
+                  "children": [
+                    {
+                      "name": "K15154  MED2; mediator of RNA polymerase II transcription subunit 2"
+                    },
+                    {
+                      "name": "K15155  MED3, HRS1, PGD1; mediator of RNA polymerase II transcription subunit 3"
+                    },
+                    {
+                      "name": "K15156  MED14, RGR1; mediator of RNA polymerase II transcription subunit 14"
+                    },
+                    {
+                      "name": "K15157  MED15; mediator of RNA polymerase II transcription subunit 15"
+                    },
+                    {
+                      "name": "K15158  GAL11, MED15; mediator of RNA polymerase II transcription subunit 15, fungi type"
+                    },
+                    {
+                      "name": "K15159  MED16; mediator of RNA polymerase II transcription subunit 16"
+                    },
+                    {
+                      "name": "K15160  SIN4, MED16; mediator of RNA polymerase II transcription subunit 16, fungi type"
+                    }
+                  ]
+                },
+                {
+                  "name": "CDK-module",
+                  "children": [
+                    {
+                      "name": "K02208  CDK8_11; cyclin-dependent kinase 8/11 [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K15161  CCNC, SSN8; cyclin-C"
+                    },
+                    {
+                      "name": "K15162  MED12; mediator of RNA polymerase II transcription subunit 12"
+                    },
+                    {
+                      "name": "K15163  SRB8, MED12; mediator of RNA polymerase II transcription subunit 12, fungi type"
+                    },
+                    {
+                      "name": "K15164  MED13; mediator of RNA polymerase II transcription subunit 13"
+                    },
+                    {
+                      "name": "K15165  SSN2, MED13; mediator of RNA polymerase II transcription subunit 13, fungi type"
+                    }
+                  ]
+                },
+                {
+                  "name": "Other mediators",
+                  "children": [
+                    {
+                      "name": "K15166  MED23; mediator of RNA polymerase II transcription subunit 23"
+                    },
+                    {
+                      "name": "K15167  MED24; mediator of RNA polymerase II transcription subunit 24"
+                    },
+                    {
+                      "name": "K15168  MED25; mediator of RNA polymerase II transcription subunit 25"
+                    },
+                    {
+                      "name": "K15169  MED26; mediator of RNA polymerase II transcription subunit 26"
+                    },
+                    {
+                      "name": "K15170  MED27; mediator of RNA polymerase II transcription subunit 27"
+                    },
+                    {
+                      "name": "K27471  MED32; mediator of RNA polymerase II transcription subunit 32"
+                    },
+                    {
+                      "name": "K27472  MED33; mediator of RNA polymerase II transcription subunit 33"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Coactivators",
+              "children": [
+                {
+                  "name": "SAGA/TFTC/STAGA complex",
+                  "children": [
+                    {
+                      "name": "K06062  PCAF, KAT2, GCN5; histone acetyltransferase [EC:2.3.1.48]"
+                    },
+                    {
+                      "name": "K08874  TRRAP; transformation/transcription domain-associated protein"
+                    },
+                    {
+                      "name": "K11313  SUPT3H, SPT3; transcription initiation protein SPT3"
+                    },
+                    {
+                      "name": "K11359  SPT7; transcriptional activator SPT7"
+                    },
+                    {
+                      "name": "K11360  SPT8; transcriptional activator SPT8"
+                    },
+                    {
+                      "name": "K11361  SPT20, ADA5; transcription factor SPT20"
+                    },
+                    {
+                      "name": "K11362  HFI1, ADA1; transcriptional coactivator HFI1/ADA1"
+                    },
+                    {
+                      "name": "K11314  TADA2A, ADA2; transcriptional adapter 2-alpha"
+                    },
+                    {
+                      "name": "K15127  TADA2B; transcriptional adapter 2-beta"
+                    },
+                    {
+                      "name": "K11315  TADA3, ADA3, NGG1; transcriptional adapter 3"
+                    },
+                    {
+                      "name": "K11317  TADA1, STAF42; transcriptional adapter 1"
+                    },
+                    {
+                      "name": "K03128  TAF2; transcription initiation factor TFIID subunit 2"
+                    },
+                    {
+                      "name": "K03129  TAF4; transcription initiation factor TFIID subunit 4"
+                    },
+                    {
+                      "name": "K03130  TAF5; transcription initiation factor TFIID subunit 5"
+                    },
+                    {
+                      "name": "K03131  TAF6; transcription initiation factor TFIID subunit 6"
+                    },
+                    {
+                      "name": "K03132  TAF7; transcription initiation factor TFIID subunit 7"
+                    },
+                    {
+                      "name": "K14535  TAF9; transcription initiation factor TFIID subunit 9"
+                    },
+                    {
+                      "name": "K03133  TAF9B, TAF9; transcription initiation factor TFIID subunit 9B"
+                    },
+                    {
+                      "name": "K03134  TAF10; transcription initiation factor TFIID subunit 10"
+                    },
+                    {
+                      "name": "K03126  TAF12; transcription initiation factor TFIID subunit 12"
+                    },
+                    {
+                      "name": "K11363  ATXN7L, SGF11; SAGA-associated factor 11"
+                    },
+                    {
+                      "name": "K11364  SGF29; SAGA-associated factor 29"
+                    },
+                    {
+                      "name": "K11365  SGF73; SAGA-associated factor 73"
+                    },
+                    {
+                      "name": "K11316  SUPT7L; STAGA complex 65 subunit gamma"
+                    },
+                    {
+                      "name": "K11318  ATXN7, SCA7; ataxin-7"
+                    },
+                    {
+                      "name": "K11367  CHD1; chromodomain-helicase-DNA-binding protein 1 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K11368  ENY2, DC6, SUS1; enhancer of yellow 2 transcription factor"
+                    },
+                    {
+                      "name": "K11366  USP22_27_51, UBP8; ubiquitin carboxyl-terminal hydrolase 22/27/51 [EC:3.4.19.12]"
+                    },
+                    {
+                      "name": "K12830  SF3B3, SAP130, RSE1; splicing factor 3B subunit 3"
+                    }
+                  ]
+                },
+                {
+                  "name": "BAF/PBAF complex",
+                  "children": [
+                    {
+                      "name": "K11647  SMARCA2_4; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily A member 2/4 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K11648  SMARCB1, SNF5, INI1; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily B member 1"
+                    },
+                    {
+                      "name": "K11649  SMARCC; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily C"
+                    },
+                    {
+                      "name": "K11650  SMARCD; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily D"
+                    },
+                    {
+                      "name": "K11651  SMARCE1; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily E member 1"
+                    },
+                    {
+                      "name": "K05692  ACTB_G1; actin beta/gamma 1"
+                    },
+                    {
+                      "name": "K11340  ACTL6A, INO80K; actin-like protein 6A"
+                    },
+                    {
+                      "name": "K11652  ACTL6B; actin-like protein 6B"
+                    },
+                    {
+                      "name": "K11653  ARID1; AT-rich interactive domain-containing protein 1"
+                    },
+                    {
+                      "name": "K11765  ARID2; AT-rich interactive domain-containing protein 2"
+                    },
+                    {
+                      "name": "K11757  PBRM1, PB1; protein polybromo-1"
+                    }
+                  ]
+                },
+                {
+                  "name": "SWI/SNF complex",
+                  "children": [
+                    {
+                      "name": "K11771  SWI1, ADR6; SWI/SNF chromatin-remodeling complex subunit SWI1"
+                    },
+                    {
+                      "name": "K11786  STH1_SNF2; ATP-dependent helicase STH1/SNF2 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K11648  SMARCB1, SNF5, INI1; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily B member 1"
+                    },
+                    {
+                      "name": "K11772  SWI3; SWI/SNF complex subunit SWI3"
+                    },
+                    {
+                      "name": "K11773  SNF6; SWI/SNF complex component SNF6"
+                    },
+                    {
+                      "name": "K11774  SNF11; SWI/SNF complex component SNF11"
+                    },
+                    {
+                      "name": "K11775  SNF12, SWP73; SWI/SNF complex component SWP73"
+                    },
+                    {
+                      "name": "K11776  SWP82; SWI/SNF complex component SWP82"
+                    },
+                    {
+                      "name": "K11767  ARP7, SWP61; actin-related protein 7"
+                    },
+                    {
+                      "name": "K11768  ARP9, SWP59; actin-related protein 9"
+                    },
+                    {
+                      "name": "K03140  TAF14; transcription initiation factor TFIID/TFIIF subunit"
+                    }
+                  ]
+                },
+                {
+                  "name": "RSC complex",
+                  "children": [
+                    {
+                      "name": "K11756  RSC1_2; chromatin structure-remodeling complex subunit RSC1/2"
+                    },
+                    {
+                      "name": "K11758  RSC3_30; chromatin structure-remodeling complex subunit RSC3/30"
+                    },
+                    {
+                      "name": "K11759  RSC4; chromatin structure-remodeling complex subunit RSC4"
+                    },
+                    {
+                      "name": "K11760  RSC6; chromatin structure-remodeling complex subunit RSC6"
+                    },
+                    {
+                      "name": "K11761  NPL6, RSC7; chromatin structure-remodeling complex protein RSC7"
+                    },
+                    {
+                      "name": "K11762  RSC8, SWH3, SSR2; chromatin structure-remodeling complex subunit RSC8"
+                    },
+                    {
+                      "name": "K11763  RSC9; chromatin structure-remodeling complex subunit RSC9"
+                    },
+                    {
+                      "name": "K11764  LDB7, RSC14; chromatin structure-remodeling complex protein RSC14"
+                    },
+                    {
+                      "name": "K11766  RSC58; chromatin structure-remodeling complex subunit RSC58"
+                    },
+                    {
+                      "name": "K11767  ARP7, SWP61; actin-related protein 7"
+                    },
+                    {
+                      "name": "K11768  ARP9, SWP59; actin-related protein 9"
+                    },
+                    {
+                      "name": "K11769  HTL1; chromatin structure-remodeling complex protein HTL1"
+                    },
+                    {
+                      "name": "K11770  SFH1; chromatin structure-remodeling complex subunit SFH1"
+                    },
+                    {
+                      "name": "K11786  STH1_SNF2; ATP-dependent helicase STH1/SNF2 [EC:5.6.2.-]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K25815  SUB1; activated RNA polymerase II transcriptional coactivator p15"
+                    },
+                    {
+                      "name": "K25827  CCAR1; cell division cycle and apoptosis regulator protein 1"
+                    },
+                    {
+                      "name": "K25828  CALCOCO1; calcium-binding and coiled-coil domain-containing protein 1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other transcription-related factors",
+              "children": [
+                {
+                  "name": "Transcription elongation factors",
+                  "children": [
+                    {
+                      "name": "K03145  TFIIS; transcription elongation factor S-II"
+                    },
+                    {
+                      "name": "K15171  SUPT4H1, SPT4; transcription elongation factor SPT4"
+                    },
+                    {
+                      "name": "K15172  SUPT5H, SPT5; transcription elongation factor SPT5"
+                    },
+                    {
+                      "name": "K11292  SUPT6H, SPT6; transcription elongation factor SPT6"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription termination factor",
+                  "children": [
+                    {
+                      "name": "K15173  TTF2; transcription termination factor 2 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K14400  PCF11; pre-mRNA cleavage complex 2 protein Pcf11"
+                    },
+                    {
+                      "name": "K14401  CPSF1, CFT1; cleavage and polyadenylation specificity factor subunit 1"
+                    },
+                    {
+                      "name": "K14403  CPSF3, YSH1; cleavage and polyadenylation specificity factor subunit 3 [EC:3.1.27.-]"
+                    },
+                    {
+                      "name": "K14404  CPSF4, YTH1; cleavage and polyadenylation specificity factor subunit 4"
+                    },
+                    {
+                      "name": "K06269  PPP1C; serine/threonine-protein phosphatase PP1 catalytic subunit [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K06100  SYMPK; symplekin"
+                    },
+                    {
+                      "name": "K15544  SSU72; RNA polymerase II subunit A C-terminal domain phosphatase SSU72 [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K12619  XRN2, RAT1; 5'-3' exoribonuclease 2 [EC:3.1.13.-]"
+                    },
+                    {
+                      "name": "K14845  RAI1, DOM3Z; RAT1-interacting protein"
+                    },
+                    {
+                      "name": "K15559  RTT103; regulator of Ty1 transposition protein 103"
+                    },
+                    {
+                      "name": "K13219  SFPQ, PSF; splicing factor, proline- and glutamine-rich"
+                    },
+                    {
+                      "name": "K15560  NRD1; protein NRD1"
+                    },
+                    {
+                      "name": "K13191  RBM16, SCAF8; RNA-binding protein 16"
+                    },
+                    {
+                      "name": "K13167  SCAF4, SFRS15; SR-related and CTD-associated factor 4"
+                    },
+                    {
+                      "name": "K15561  NAB3; nuclear polyadenylated RNA-binding protein 3"
+                    },
+                    {
+                      "name": "K10706  SETX, ALS4, SEN1; ATP-dependent RNA/DNA helicase, senataxin [EC:5.6.2.5 5.6.2.3]"
+                    },
+                    {
+                      "name": "K09578  PIN1; peptidyl-prolyl cis-trans isomerase NIMA-interacting 1 [EC:5.2.1.8]"
+                    }
+                  ]
+                },
+                {
+                  "name": "PAF1 complex",
+                  "children": [
+                    {
+                      "name": "K15174  PAF1; RNA polymerase II-associated factor 1"
+                    },
+                    {
+                      "name": "K15175  CDC73; parafibromin"
+                    },
+                    {
+                      "name": "K15176  CTR9; RNA polymerase-associated protein CTR9"
+                    },
+                    {
+                      "name": "K15177  LEO1; RNA polymerase-associated protein LEO1"
+                    },
+                    {
+                      "name": "K15178  RTF1; RNA polymerase-associated protein RTF1"
+                    }
+                  ]
+                },
+                {
+                  "name": "NELF complex",
+                  "children": [
+                    {
+                      "name": "K15179  WHSC2, NELFA; negative elongation factor A"
+                    },
+                    {
+                      "name": "K15180  COBRA1, NELFB; negative elongation factor B"
+                    },
+                    {
+                      "name": "K15181  TH1L, NELFD; negative elongation factor C/D"
+                    },
+                    {
+                      "name": "K15182  RDBP, NELFE; negative elongation factor E"
+                    }
+                  ]
+                },
+                {
+                  "name": "Super elongation complex (SEC)",
+                  "children": [
+                    {
+                      "name": "K15183  ELL; RNA polymerase II elongation factor ELL"
+                    },
+                    {
+                      "name": "K15184  AFF1; AF4/FMR2 family member 1"
+                    },
+                    {
+                      "name": "K15185  AFF4; AF4/FMR2 family member 4"
+                    },
+                    {
+                      "name": "K15186  EAF; ELL-associated factor"
+                    },
+                    {
+                      "name": "K15187  MLLT1_3, ENL, AF9; YEATS domain-containing protein 1/3"
+                    },
+                    {
+                      "name": "K15188  CCNT; cyclin T"
+                    },
+                    {
+                      "name": "K02211  CDK9; cyclin-dependent kinase 9 [EC:2.7.11.22 2.7.11.23]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Little elongation complex (LEC)",
+                  "children": [
+                    {
+                      "name": "K15183  ELL; RNA polymerase II elongation factor ELL"
+                    },
+                    {
+                      "name": "K26143  ICE1; little elongation complex subunit 1"
+                    },
+                    {
+                      "name": "K26144  ICE2; little elongation complex subunit 2"
+                    },
+                    {
+                      "name": "K24388  ZC3H8; zinc finger CCCH domain-containing protein 8"
+                    }
+                  ]
+                },
+                {
+                  "name": "Brd4/P-TEFb complex",
+                  "children": [
+                    {
+                      "name": "K11722  BRD4; bromodomain-containing protein 4"
+                    },
+                    {
+                      "name": "K15188  CCNT; cyclin T"
+                    },
+                    {
+                      "name": "K02211  CDK9; cyclin-dependent kinase 9 [EC:2.7.11.22 2.7.11.23]"
+                    }
+                  ]
+                },
+                {
+                  "name": "BUR kinase complex",
+                  "children": [
+                    {
+                      "name": "K15562  BUR1, SGV1; serine/threonine-protein kinase BUR1 [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K15563  BUR2; protein BUR2"
+                    }
+                  ]
+                },
+                {
+                  "name": "CTDK-I complex",
+                  "children": [
+                    {
+                      "name": "K00916  CTK1; CTD kinase subunit alpha [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K15564  CTK2; CTD kinase subunit beta"
+                    },
+                    {
+                      "name": "K15565  CTK3; CTD kinase subunit gamma"
+                    }
+                  ]
+                },
+                {
+                  "name": "7SK RNP complex",
+                  "children": [
+                    {
+                      "name": "K15189  HEXIM1_2; protein HEXIM1/2"
+                    },
+                    {
+                      "name": "K15190  MEPCE, BCDIN3; 7SK snRNA methylphosphate capping enzyme [EC:2.1.1.-]"
+                    },
+                    {
+                      "name": "K15191  LARP7; La-related protein 7"
+                    },
+                    {
+                      "name": "K15188  CCNT; cyclin T"
+                    },
+                    {
+                      "name": "K02211  CDK9; cyclin-dependent kinase 9 [EC:2.7.11.22 2.7.11.23]"
+                    }
+                  ]
+                },
+                {
+                  "name": "DBIRD complex",
+                  "children": [
+                    {
+                      "name": "K25816  CCAR2, DBC1; cell cycle and apoptosis regulator protein 2"
+                    },
+                    {
+                      "name": "K13204  ZNF326; zinc finger protein 326"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K03121  TFII-I, GTF2I; transcription initiation factor TFII-I"
+                    },
+                    {
+                      "name": "K27274  GTF2IRD1; general transcription factor II-I repeat domain-containing protein 1"
+                    },
+                    {
+                      "name": "K15192  BTAF1, MOT1; TATA-binding protein-associated factor [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K21751  DR1, NC2-beta; down-regulator of transcription 1"
+                    },
+                    {
+                      "name": "K21752  DRAP1, NC2-alpha; Dr1-associated corepressor"
+                    },
+                    {
+                      "name": "K15193  SPTY2D1, SPT2; protein SPT2"
+                    },
+                    {
+                      "name": "K15194  AFF2; AF4/FMR2 family member 2"
+                    },
+                    {
+                      "name": "K15195  AFF3; AF4/FMR2 family member 3"
+                    },
+                    {
+                      "name": "K15732  CTDP1, FCP1; RNA polymerase II subunit A C-terminal domain phosphatase [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K18998  CPL1_2; RNA polymerase II C-terminal domain phosphatase-like 1/2 [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K18999  CPL3_4; RNA polymerase II C-terminal domain phosphatase-like 3/4 [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K15731  CTDSP; carboxy-terminal domain RNA polymerase II polypeptide A small phosphatase [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K17498  SPN1, IWS1; transcription factor SPN1"
+                    },
+                    {
+                      "name": "K17494  CSRNP; cysteine/serine-rich nuclear protein"
+                    },
+                    {
+                      "name": "K20826  RPAP1; RNA polymerase II-associated protein 1"
+                    },
+                    {
+                      "name": "K20827  RPAP2; RNA polymerase II-associated protein 2 [EC:3.1.3.16]"
+                    },
+                    {
+                      "name": "K23002  RPAP3; RNA polymerase II-associated protein 3"
+                    },
+                    {
+                      "name": "K06666  TUP1; general transcriptional corepressor TUP1"
+                    },
+                    {
+                      "name": "K06665  SSN6, CYC8; general transcriptional corepressor CYC8"
+                    },
+                    {
+                      "name": "K12412  MCM1; pheromone receptor transcription factor"
+                    },
+                    {
+                      "name": "K21388  AHR1; adhesion and hyphal regulator 1"
+                    },
+                    {
+                      "name": "K23326  CCNK; cyclin K"
+                    },
+                    {
+                      "name": "K24104  GPN; GPN-loop GTPase"
+                    },
+                    {
+                      "name": "K28237  SLC7A6OS, IWR1; RNA polymerase II nuclear localization protein"
+                    },
+                    {
+                      "name": "K26769  TCEAL1; transcription elongation factor A protein-like 1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "RNA polymerase III system",
+          "children": [
+            {
+              "name": "RNA polymerase III",
+              "children": [
+                {
+                  "name": "Core subunits",
+                  "children": [
+                    {
+                      "name": "K03018  RPC1, POLR3A; DNA-directed RNA polymerase III subunit RPC1 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03021  RPC2, POLR3B; DNA-directed RNA polymerase III subunit RPC2 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03027  RPAC1, RPC40, POLR1C; DNA-directed RNA polymerases I and III subunit RPAC1"
+                    },
+                    {
+                      "name": "K03020  RPAC2, RPC19, POLR1D; DNA-directed RNA polymerases I and III subunit RPAC2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol III specific subunits",
+                  "children": [
+                    {
+                      "name": "K03023  RPC3, POLR3C; DNA-directed RNA polymerase III subunit RPC3"
+                    },
+                    {
+                      "name": "K03026  RPC4, POLR3D; DNA-directed RNA polymerase III subunit RPC4"
+                    },
+                    {
+                      "name": "K14721  RPC5, POLR3E; DNA-directed RNA polymerase III subunit RPC5"
+                    },
+                    {
+                      "name": "K03025  RPC6, POLR3F; DNA-directed RNA polymerase III subunit RPC6"
+                    },
+                    {
+                      "name": "K03024  RPC7, POLR3G; DNA-directed RNA polymerase III subunit RPC7"
+                    },
+                    {
+                      "name": "K03022  RPC8, POLR3H; DNA-directed RNA polymerase III subunit RPC8"
+                    },
+                    {
+                      "name": "K25304  RPC9, CRCP; DNA-directed RNA polymerase III subunit RPC9"
+                    },
+                    {
+                      "name": "K03019  RPC11, POLR3K; DNA-directed RNA polymerase III subunit RPC11"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol I, II, III common subunits",
+                  "children": [
+                    {
+                      "name": "K03013  RPABC1, RPB5, POLR2E; DNA-directed RNA polymerases I, II, and III subunit RPABC1"
+                    },
+                    {
+                      "name": "K03014  RPABC2, RPB6, POLR2F; DNA-directed RNA polymerases I, II, and III subunit RPABC2"
+                    },
+                    {
+                      "name": "K03016  RPABC3, RPB8, POLR2H; DNA-directed RNA polymerases I, II, and III subunit RPABC3"
+                    },
+                    {
+                      "name": "K03009  RPABC4, RPB12, POLR2K; DNA-directed RNA polymerases I, II, and III subunit RPABC4"
+                    },
+                    {
+                      "name": "K03007  RPABC5, RPB10, POLR2L; DNA-directed RNA polymerases I, II, and III subunit RPABC5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Basal transcription factors",
+              "children": [
+                {
+                  "name": "TFIIIA",
+                  "children": [
+                    {
+                      "name": "K09191  GTF3A; general transcription factor IIIA"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIIB",
+                  "children": [
+                    {
+                      "name": "K03120  TBP, tbp; transcription initiation factor TFIID TATA-box-binding protein"
+                    },
+                    {
+                      "name": "K15196  BRF1, GTF3B; transcription factor IIIB 90 kDa subunit"
+                    },
+                    {
+                      "name": "K15197  BRF2; transcription factor IIIB 50 kDa subunit"
+                    },
+                    {
+                      "name": "K15198  BDP1, TFC5; transcription factor TFIIIB component B''"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIIC",
+                  "children": [
+                    {
+                      "name": "K15199  GTF3C1; general transcription factor 3C polypeptide 1"
+                    },
+                    {
+                      "name": "K15200  GTF3C2; general transcription factor 3C polypeptide 2"
+                    },
+                    {
+                      "name": "K15201  GTP3C3, TFC4; general transcription factor 3C polypeptide 3 (transcription factor C subunit 4)"
+                    },
+                    {
+                      "name": "K11310  GTF3C4, KAT12; general transcription factor 3C polypeptide 4 [EC:2.3.1.48]"
+                    },
+                    {
+                      "name": "K15202  GTF3C5, TFC1; general transcription factor 3C polypeptide 5 (transcription factor C subunit 1)"
+                    },
+                    {
+                      "name": "K15203  GTF3C6; general transcription factor 3C polypeptide 6"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFIIIC, fungi type",
+                  "children": [
+                    {
+                      "name": "K15202  GTF3C5, TFC1; general transcription factor 3C polypeptide 5 (transcription factor C subunit 1)"
+                    },
+                    {
+                      "name": "K15204  TFC3; transcription factor C subunit 3"
+                    },
+                    {
+                      "name": "K15201  GTP3C3, TFC4; general transcription factor 3C polypeptide 3 (transcription factor C subunit 4)"
+                    },
+                    {
+                      "name": "K15205  TFC6; transcription factor C subunit 6"
+                    },
+                    {
+                      "name": "K15206  TFC7; transcription factor C subunit 7"
+                    },
+                    {
+                      "name": "K15207  TFC8; transcription factor C subunit 8"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other transcription-related factors",
+              "children": [
+                {
+                  "name": "snRNA-activating protein complex (SNAPc)",
+                  "children": [
+                    {
+                      "name": "K15208  SNAPC1; snRNA-activating protein complex subunit 1"
+                    },
+                    {
+                      "name": "K15209  SNAPC2; snRNA-activating protein complex subunit 2"
+                    },
+                    {
+                      "name": "K15210  SNAPC3; snRNA-activating protein complex subunit 3"
+                    },
+                    {
+                      "name": "K09453  SNAPC4; snRNA-activating protein complex subunit 4"
+                    },
+                    {
+                      "name": "K15211  SNAPC5; snRNA-activating protein complex subunit 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Octamer transcription factors",
+                  "children": [
+                    {
+                      "name": "K09364  POU2F, OTF; POU domain transcription factor, class 2"
+                    },
+                    {
+                      "name": "K09367  POU5F; POU domain transcription factor, class 5"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K20828  ZNF143_76, STAF; zinc finger protein 143/76"
+                    },
+                    {
+                      "name": "K25817  MAF1; repressor of RNA polymerase III transcription MAF1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "RNA polymerase I system",
+          "children": [
+            {
+              "name": "RNA polymerase I",
+              "children": [
+                {
+                  "name": "Core subunits",
+                  "children": [
+                    {
+                      "name": "K02999  RPA1, POLR1A; DNA-directed RNA polymerase I subunit RPA1 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03002  RPA2, POLR1B; DNA-directed RNA polymerase I subunit RPA2 [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03027  RPAC1, RPC40, POLR1C; DNA-directed RNA polymerases I and III subunit RPAC1"
+                    },
+                    {
+                      "name": "K03020  RPAC2, RPC19, POLR1D; DNA-directed RNA polymerases I and III subunit RPAC2"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol I specific subunits",
+                  "children": [
+                    {
+                      "name": "K03005  RPA49, POLR1E; DNA-directed RNA polymerase I subunit RPA49"
+                    },
+                    {
+                      "name": "K03004  RPA43, POLR1F, TWISTNB; DNA-directed RNA polymerase I subunit RPA43"
+                    },
+                    {
+                      "name": "K25436  POLR1G; DNA-directed RNA polymerase I subunit RPA34"
+                    },
+                    {
+                      "name": "K03003  RPA34; DNA-directed RNA polymerase I subunit RPA34"
+                    },
+                    {
+                      "name": "K03000  RPA12, POLR1H, ZNRD1; DNA-directed RNA polymerase I subunit RPA12"
+                    },
+                    {
+                      "name": "K03001  RPA14; DNA-directed RNA polymerase I subunit RPA14"
+                    }
+                  ]
+                },
+                {
+                  "name": "Pol I, II, III common subunits",
+                  "children": [
+                    {
+                      "name": "K03013  RPABC1, RPB5, POLR2E; DNA-directed RNA polymerases I, II, and III subunit RPABC1"
+                    },
+                    {
+                      "name": "K03014  RPABC2, RPB6, POLR2F; DNA-directed RNA polymerases I, II, and III subunit RPABC2"
+                    },
+                    {
+                      "name": "K03016  RPABC3, RPB8, POLR2H; DNA-directed RNA polymerases I, II, and III subunit RPABC3"
+                    },
+                    {
+                      "name": "K03009  RPABC4, RPB12, POLR2K; DNA-directed RNA polymerases I, II, and III subunit RPABC4"
+                    },
+                    {
+                      "name": "K03007  RPABC5, RPB10, POLR2L; DNA-directed RNA polymerases I, II, and III subunit RPABC5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Basal transcription factors",
+              "children": [
+                {
+                  "name": "SL1/TIF-1B",
+                  "children": [
+                    {
+                      "name": "K03120  TBP, tbp; transcription initiation factor TFIID TATA-box-binding protein"
+                    },
+                    {
+                      "name": "K15212  TAF1A, SL1; TATA box-binding protein-associated factor RNA polymerase I subunit A"
+                    },
+                    {
+                      "name": "K15213  TAF1B; TATA box-binding protein-associated factor RNA polymerase I subunit B"
+                    },
+                    {
+                      "name": "K15214  TAF1C; TATA box-binding protein-associated factor RNA polymerase I subunit C"
+                    },
+                    {
+                      "name": "K15215  TAF1D; TATA box-binding protein-associated factor RNA polymerase I subunit D"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other transcription-related factors",
+              "children": [
+                {
+                  "name": "UBF",
+                  "children": [
+                    {
+                      "name": "K09273  UBTF; upstream-binding transcription factor"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription initiation factors",
+                  "children": [
+                    {
+                      "name": "K15216  RRN3, TIFIA; RNA polymerase I-specific transcription initiation factor RRN3"
+                    },
+                    {
+                      "name": "K15217  RRN5; RNA polymerase I-specific transcription initiation factor RRN5"
+                    },
+                    {
+                      "name": "K15218  RRN6; RNA polymerase I-specific transcription initiation factor RRN6"
+                    },
+                    {
+                      "name": "K15219  RRN7; RNA polymerase I-specific transcription initiation factor RRN7"
+                    },
+                    {
+                      "name": "K15220  RRN9; RNA polymerase I-specific transcription initiation factor RRN9"
+                    },
+                    {
+                      "name": "K15221  RRN10; RNA polymerase I-specific transcription initiation factor RRN10"
+                    },
+                    {
+                      "name": "K15222  RRN11; RNA polymerase I-specific transcription initiation factor RRN11"
+                    },
+                    {
+                      "name": "K15223  UAF30, SPP27; upstream activation factor subunit UAF30"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription elongation factors",
+                  "children": [
+                    {
+                      "name": "K15171  SUPT4H1, SPT4; transcription elongation factor SPT4"
+                    },
+                    {
+                      "name": "K15172  SUPT5H, SPT5; transcription elongation factor SPT5"
+                    }
+                  ]
+                },
+                {
+                  "name": "NoRC (nucleolar remodeling complex)",
+                  "children": [
+                    {
+                      "name": "K11654  SMARCA5, SNF2H, ISWI; SWI/SNF-related matrix-associated actin-dependent regulator of chromatin subfamily A member 5 [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K15224  BAZ2A, TIP5; bromodomain adjacent to zinc finger domain protein 2A"
+                    }
+                  ]
+                },
+                {
+                  "name": "CTDK-I complex",
+                  "children": [
+                    {
+                      "name": "K00916  CTK1; CTD kinase subunit alpha [EC:2.7.11.22 2.7.11.23]"
+                    },
+                    {
+                      "name": "K15564  CTK2; CTD kinase subunit beta"
+                    },
+                    {
+                      "name": "K15565  CTK3; CTD kinase subunit gamma"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription termination factors",
+                  "children": [
+                    {
+                      "name": "K15225  TTF1; transcription termination factor 1"
+                    },
+                    {
+                      "name": "K19387  CAVIN1, PTRF; caveolae-associated protein 1"
+                    }
+                  ]
+                },
+                {
+                  "name": "Others",
+                  "children": [
+                    {
+                      "name": "K25818  NOLC1; nucleolar and coiled-body phosphoprotein 1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prokaryotic type",
+      "children": [
+        {
+          "name": "Bacterial type",
+          "children": [
+            {
+              "name": "RNA polymerase",
+              "children": [
+                {
+                  "name": "Core subunits",
+                  "children": [
+                    {
+                      "name": "K03040  rpoA; DNA-directed RNA polymerase subunit alpha [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03043  rpoB; DNA-directed RNA polymerase subunit beta [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03046  rpoC; DNA-directed RNA polymerase subunit beta' [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K13797  rpoBC; DNA-directed RNA polymerase subunit beta-beta' [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03048  rpoE; DNA-directed RNA polymerase subunit delta"
+                    },
+                    {
+                      "name": "K03060  rpoZ; DNA-directed RNA polymerase subunit omega [EC:2.7.7.6]"
+                    }
+                  ]
+                },
+                {
+                  "name": "Sigma factors",
+                  "children": [
+                    {
+                      "name": "K03086  rpoD; RNA polymerase primary sigma factor"
+                    },
+                    {
+                      "name": "K03087  rpoS; RNA polymerase nonessential primary-like sigma factor"
+                    },
+                    {
+                      "name": "K03088  rpoE; RNA polymerase sigma-70 factor, ECF subfamily"
+                    },
+                    {
+                      "name": "K23514  fecI, prhI; RNA polymerase sigma-19 factor, ECF subfamily"
+                    },
+                    {
+                      "name": "K24073  cnrH; RNA polymerase sigma factor CnrH"
+                    },
+                    {
+                      "name": "K03089  rpoH; RNA polymerase sigma-32 factor"
+                    },
+                    {
+                      "name": "K03090  sigB; RNA polymerase sigma-B factor"
+                    },
+                    {
+                      "name": "K03091  sigE_F_G; RNA polymerase sigma-E/F/G factor"
+                    },
+                    {
+                      "name": "K27000  sigH; RNA polymerase sigma-H factor"
+                    },
+                    {
+                      "name": "K03093  sigI; RNA polymerase sigma-I factor"
+                    },
+                    {
+                      "name": "K26992  sigO; RNA polymerase sigma-O factor"
+                    },
+                    {
+                      "name": "K03092  rpoN; RNA polymerase sigma-54 factor"
+                    },
+                    {
+                      "name": "K02405  fliA, whiG; RNA polymerase sigma factor FliA"
+                    },
+                    {
+                      "name": "K24072  xpf; positive control factor"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Other transcription-related factors",
+              "children": [
+                {
+                  "name": "RNA polymerase-associated proteins",
+                  "children": [
+                    {
+                      "name": "K03580  hepA; ATP-dependent helicase HepA [EC:5.6.2.-]"
+                    },
+                    {
+                      "name": "K02600  nusA; transcription termination/antitermination protein NusA"
+                    },
+                    {
+                      "name": "K03625  nusB; transcription antitermination protein NusB"
+                    },
+                    {
+                      "name": "K02601  nusG; transcription termination/antitermination protein NusG"
+                    },
+                    {
+                      "name": "K03599  sspA, mglA; stringent starvation protein A"
+                    },
+                    {
+                      "name": "K03600  sspB; stringent starvation protein B"
+                    },
+                    {
+                      "name": "K17752  rsbT; serine/threonine-protein kinase RsbT [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K17762  rsbS; rsbT antagonist protein RsbS"
+                    },
+                    {
+                      "name": "K17763  rsbR; rsbT co-antagonist protein RsbR"
+                    },
+                    {
+                      "name": "K07315  rsbU_P; phosphoserine phosphatase RsbU/P [EC:3.1.3.3]"
+                    },
+                    {
+                      "name": "K19707  rsbQ; sigma-B regulation protein RsbQ"
+                    },
+                    {
+                      "name": "K05518  rsbX; phosphoserine phosphatase RsbX [EC:3.1.3.3]"
+                    },
+                    {
+                      "name": "K04749  rsbV; anti-sigma B factor antagonist"
+                    },
+                    {
+                      "name": "K04757  rsbW; serine/threonine-protein kinase RsbW [EC:2.7.11.1]"
+                    },
+                    {
+                      "name": "K03597  rseA; sigma-E factor negative regulatory protein RseA"
+                    },
+                    {
+                      "name": "K03598  rseB; sigma-E factor negative regulatory protein RseB"
+                    },
+                    {
+                      "name": "K03803  rseC; sigma-E factor negative regulatory protein RseC"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription elongation factors",
+                  "children": [
+                    {
+                      "name": "K06204  dksA; RNA polymerase-binding transcription factor"
+                    },
+                    {
+                      "name": "K03624  greA; transcription elongation factor GreA"
+                    },
+                    {
+                      "name": "K04760  greB; transcription elongation factor GreB"
+                    }
+                  ]
+                },
+                {
+                  "name": "Transcription termination factor",
+                  "children": [
+                    {
+                      "name": "K03628  rho; transcription termination factor Rho"
+                    },
+                    {
+                      "name": "K19000  rof; Rho-binding antiterminator"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Archaeal type",
+          "children": [
+            {
+              "name": "RNA polymerase",
+              "children": [
+                {
+                  "name": "Core subunits",
+                  "children": [
+                    {
+                      "name": "K03041  rpoA1; DNA-directed RNA polymerase subunit A' [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03042  rpoA2; DNA-directed RNA polymerase subunit A\\\" [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03044  rpoB1; DNA-directed RNA polymerase subunit B' [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03045  rpoB2; DNA-directed RNA polymerase subunit B\\\" [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K13798  rpoB; DNA-directed RNA polymerase subunit B [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03047  rpoD; DNA-directed RNA polymerase subunit D [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03049  rpoE1; DNA-directed RNA polymerase subunit E' [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03051  rpoF; DNA-directed RNA polymerase subunit F [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03052  rpoG; DNA-directed RNA polymerase subunit G [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03053  rpoH; DNA-directed RNA polymerase subunit H [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03054  rpoI; DNA-directed RNA polymerase subunit I [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03055  rpoK; DNA-directed RNA polymerase subunit K [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03056  rpoL; DNA-directed RNA polymerase subunit L [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03058  rpoN; DNA-directed RNA polymerase subunit N [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K03059  rpoP; DNA-directed RNA polymerase subunit P [EC:2.7.7.6]"
+                    },
+                    {
+                      "name": "K00960  rpo13; DNA-directed RNA polymerase subunit 13 [EC:2.7.7.6]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Basal transcription factors",
+              "children": [
+                {
+                  "name": "TFB",
+                  "children": [
+                    {
+                      "name": "K03124  TFIIB, GTF2B, SUA7, tfb; transcription initiation factor TFIIB"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFE",
+                  "children": [
+                    {
+                      "name": "K03136  TFIIE1, GTF2E1, TFA1, tfe; transcription initiation factor TFIIE subunit alpha"
+                    }
+                  ]
+                },
+                {
+                  "name": "TFS",
+                  "children": [
+                    {
+                      "name": "K03057  tfs; transcription factor S"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1612 @@
+{
+  "name": "ko03037",
+  "children": [
+    {
+      "name": "Primary cilia and associated proteins",
+      "children": [
+        {
+          "name": "BBSome",
+          "children": [
+            {
+              "name": "K16746  BBS1; Bardet-Biedl syndrome 1 protein"
+            },
+            {
+              "name": "K16747  BBS2; Bardet-Biedl syndrome 2 protein"
+            },
+            {
+              "name": "K16531  BBS4; Bardet-Biedl syndrome 4 protein"
+            },
+            {
+              "name": "K16748  BBS5; Bardet-Biedl syndrome 5 protein"
+            },
+            {
+              "name": "K16749  BBS7; Bardet-Biedl syndrome 7 protein"
+            },
+            {
+              "name": "K16781  TTC8, BBS8; tetratricopeptide repeat protein 8"
+            },
+            {
+              "name": "K19398  BBS9; Bardet-Biedl syndrome 9 protein"
+            },
+            {
+              "name": "K07951  ARL6, BBS3; ADP-ribosylation factor-like protein 6"
+            },
+            {
+              "name": "K19399  BBIP1; BBSome-interacting protein 1"
+            },
+            {
+              "name": "K19400  LZTFL1; leucine zipper transcription factor-like protein 1"
+            },
+            {
+              "name": "K28689  CCDC28B; coiled-coil domain-containing protein 28B"
+            }
+          ]
+        },
+        {
+          "name": "BBS-CCT complex",
+          "children": [
+            {
+              "name": "K09492  MKKS; McKusick-Kaufman syndrome protein"
+            },
+            {
+              "name": "K19401  BBS10; Bardet-Biedl syndrome 10 protein"
+            },
+            {
+              "name": "K19402  BBS12; Bardet-Biedl syndrome 12 protein"
+            },
+            {
+              "name": "K09493  CCT1, TCP1; T-complex protein 1 subunit alpha"
+            },
+            {
+              "name": "K09494  CCT2; T-complex protein 1 subunit beta"
+            },
+            {
+              "name": "K09495  CCT3, TRIC5; T-complex protein 1 subunit gamma"
+            },
+            {
+              "name": "K09496  CCT4; T-complex protein 1 subunit delta"
+            },
+            {
+              "name": "K09497  CCT5; T-complex protein 1 subunit epsilon"
+            },
+            {
+              "name": "K09500  CCT8; T-complex protein 1 subunit theta"
+            }
+          ]
+        },
+        {
+          "name": "Intraflagellar transport (IFT) complex A",
+          "children": [
+            {
+              "name": "K19671  WDR19, IFT144; WD repeat-containing protein 19"
+            },
+            {
+              "name": "K19672  IFT140; intraflagellar transport protein 140"
+            },
+            {
+              "name": "K19673  TTC21B, IFT139B; tetratricopeptide repeat protein 21B"
+            },
+            {
+              "name": "K19656  IFT122; intraflagellar transport protein 122"
+            },
+            {
+              "name": "K19674  WDR35, IFT121; WD repeat-containing protein 35"
+            },
+            {
+              "name": "K19675  IFT43; intraflagellar transport protein 43"
+            }
+          ]
+        },
+        {
+          "name": "Intraflagellar transport (IFT) complex B1",
+          "children": [
+            {
+              "name": "K16474  IFT88; intraflagellar transport protein 88"
+            },
+            {
+              "name": "K19677  IFT81; intraflagellar transport protein 81"
+            },
+            {
+              "name": "K19679  IFT74; intraflagellar transport protein 74"
+            },
+            {
+              "name": "K19683  TTC30, DYF1; tetratricopeptide repeat protein 30"
+            },
+            {
+              "name": "K19681  IFT52; intraflagellar transport protein 52"
+            },
+            {
+              "name": "K19682  IFT46; intraflagellar transport protein 46"
+            },
+            {
+              "name": "K07934  IFT27, RAYL, RABL4; intraflagellar transport protein 27"
+            },
+            {
+              "name": "K19369  HSPB11; heat shock protein beta-11"
+            },
+            {
+              "name": "K07935  IFT22, RABL5; intraflagellar transport protein 22"
+            }
+          ]
+        },
+        {
+          "name": "Intraflagellar transport (IFT) complex B2",
+          "children": [
+            {
+              "name": "K19676  IFT172; intraflagellar transport protein 172"
+            },
+            {
+              "name": "K19678  IFT80; intraflagellar transport protein 80"
+            },
+            {
+              "name": "K04638  IFT57, HIPPI, ESRRBL1; intraflagellar transport protein 57"
+            },
+            {
+              "name": "K19680  TRAF3IP1, IFT54; TRAF3-interacting protein 1"
+            },
+            {
+              "name": "K19684  CLUAP1, DYF3; clusterin-associated protein 1"
+            },
+            {
+              "name": "K16473  IFT20; intraflagellar transport protein 20"
+            }
+          ]
+        },
+        {
+          "name": "Dynein and associated proteins",
+          "children": [
+            {
+              "name": "K10414  DYNC2H, DNCH2; dynein cytoplasmic 2 heavy chain"
+            },
+            {
+              "name": "K10417  DYNC2LI; dynein cytoplasmic 2 light intermediate chain"
+            },
+            {
+              "name": "K22866  TCTEX1D2; tctex1 domain-containing protein 2"
+            },
+            {
+              "name": "K22868  WDR34; WD repeat-containing protein 34"
+            },
+            {
+              "name": "K22869  WDR60; WD repeat-containing protein 60"
+            }
+          ]
+        },
+        {
+          "name": "Kinesin-2 and associated proteins",
+          "children": [
+            {
+              "name": "K10394  KIF3A; kinesin family member 3A"
+            },
+            {
+              "name": "K20196  KIF3B; kinesin family member 3B"
+            },
+            {
+              "name": "K20198  KIF17; kinesin family member 17"
+            },
+            {
+              "name": "K25388  KIFAP3, KAP3; kinesin-associated protein 3"
+            }
+          ]
+        },
+        {
+          "name": "MKS complex",
+          "children": [
+            {
+              "name": "K19332  MKS1; Meckel syndrome type 1 protein"
+            },
+            {
+              "name": "K16740  AHI1; jouberin"
+            },
+            {
+              "name": "K19384  TMEM17; transmembrane protein 17"
+            },
+            {
+              "name": "K19348  TMEM67, MKS3; meckelin"
+            },
+            {
+              "name": "K22764  TMEM107; transmembrane protein 107"
+            },
+            {
+              "name": "K19385  TMEM216; transmembrane protein 216"
+            },
+            {
+              "name": "K26674  TMEM218; transmembrane protein 218"
+            },
+            {
+              "name": "K19362  TMEM231; transmembrane protein 231"
+            },
+            {
+              "name": "K22765  TMEM237; transmembrane protein 237"
+            },
+            {
+              "name": "K19382  TCTN1_3; tectonic-1/3"
+            },
+            {
+              "name": "K19361  TCTN2; tectonic-2"
+            },
+            {
+              "name": "K16744  B9D1; B9 domain-containing protein 1"
+            },
+            {
+              "name": "K16745  B9D2; B9 domain-containing protein 2"
+            },
+            {
+              "name": "K16550  RPGRIP1L; protein fantom"
+            },
+            {
+              "name": "K19352  CC2D2A; coiled-coil and C2 domain-containing protein 2A"
+            },
+            {
+              "name": "K25389  TXNDC15; thioredoxin domain-containing protein 15"
+            }
+          ]
+        },
+        {
+          "name": "Nephronophthisis-related proteins",
+          "children": [
+            {
+              "name": "K19657  NPHP1; nephrocystin-1"
+            },
+            {
+              "name": "K19626  INVS; inversin"
+            },
+            {
+              "name": "K19360  NPHP3; nephrocystin-3"
+            },
+            {
+              "name": "K16478  NPHP4; nephrocystin-4"
+            },
+            {
+              "name": "K16774  IQCB1, NPHP5; IQ calmodulin-binding motif-containing protein 1"
+            },
+            {
+              "name": "K16533  CEP290, NPHP6; centrosomal protein CEP290"
+            },
+            {
+              "name": "K09233  GLIS2; zinc finger protein GLIS2"
+            },
+            {
+              "name": "K23405  DCDC2; doublecortin domain-containing protein 2"
+            },
+            {
+              "name": "K22870  ZNF423; zinc finger protein 423"
+            }
+          ]
+        },
+        {
+          "name": "Ciliogenesis and planar polarity effectors (CPLANE) complex",
+          "children": [
+            {
+              "name": "K22859  JBTS17, CPLANE1; protein JBTS17"
+            },
+            {
+              "name": "K22860  RSG1, CPLANE2; REM2 and Rab-like small GTPase 1"
+            },
+            {
+              "name": "K22861  FUZ, CPLANE3; protein fuzzy"
+            },
+            {
+              "name": "K22862  INTU, CPLANE4, PDZD6; protein inturned"
+            },
+            {
+              "name": "K22863  WDPCP, CPLANE5; WD repeat-containing and planar cell polarity effector protein"
+            }
+          ]
+        },
+        {
+          "name": "EVC complex",
+          "children": [
+            {
+              "name": "K19605  EVC1; ellis van creveld syndrome protein 1"
+            },
+            {
+              "name": "K19608  EVC2; ellis van creveld syndrome protein 2"
+            },
+            {
+              "name": "K23852  EFCAB7; EF-hand calcium-binding domain-containing protein 7"
+            },
+            {
+              "name": "K24677  IQCE; IQ domain-contaning protein E"
+            }
+          ]
+        },
+        {
+          "name": "USH complex and associated proteins",
+          "children": [
+            {
+              "name": "K10359  MYO7A, USH1B; myosin VIIa"
+            },
+            {
+              "name": "K21877  USH1C; harmonin"
+            },
+            {
+              "name": "K06813  CDH23, USH1D; cadherin 23"
+            },
+            {
+              "name": "K16500  PCDH15, USH1F; protocadherin-15"
+            },
+            {
+              "name": "K21878  USH1G; Usher syndrome type-1G protein"
+            },
+            {
+              "name": "K19636  USH2A; usherin"
+            },
+            {
+              "name": "K18263  ADGRV1, GPR98, USH2C; adhesion G-protein coupled receptor V1"
+            },
+            {
+              "name": "K21879  WHRN, USH2D; whirlin"
+            },
+            {
+              "name": "K21880  MPP1; MAGUK 55 kDa erythrocyte membrane protein"
+            },
+            {
+              "name": "K06103  CASK; calcium/calmodulin-dependent serine protein kinase [EC:2.7.11.1]"
+            },
+            {
+              "name": "K17697  DOCK4; dedicator of cytokinesis protein 4"
+            },
+            {
+              "name": "K21414  ANKS4B, HARP; ankyrin repeat and SAM domain-containing protein 4B"
+            },
+            {
+              "name": "K21881  USHBP1, MCC2; Usher syndrome type-1C protein-binding protein 1"
+            },
+            {
+              "name": "K13858  SLC4A7, NBC3; solute carrier family 4 (sodium bicarbonate cotransporter), member 7"
+            },
+            {
+              "name": "K21882  PDZD7; PDZ domain-containing protein 7"
+            },
+            {
+              "name": "K23837  CIB2; calcium and integrin-binding protein 2"
+            },
+            {
+              "name": "K23841  CLRN; clarin"
+            }
+          ]
+        },
+        {
+          "name": "Tubulin polyglutamylase and associated proteins",
+          "children": [
+            {
+              "name": "K16581  TPGS1; tubulin polyglutamylase complex subunit 1"
+            },
+            {
+              "name": "K16605  TPGS2; tubulin polyglutamylase complex subunit 2"
+            },
+            {
+              "name": "K16606  LRRC49; leucine-rich repeat-containing protein 49"
+            },
+            {
+              "name": "K16607  NICN1; nicolin-1"
+            },
+            {
+              "name": "K16599  TTLL1; tubulin polyglutamylase TTLL1 [EC:6.3.2.61]"
+            },
+            {
+              "name": "K16608  TTLL3_8; tubulin monoglycylase TTLL3/8 [EC:6.3.2.-]"
+            },
+            {
+              "name": "K16601  TTLL4; tubulin polyglutamylase TTLL4 [EC:6.3.2.62]"
+            },
+            {
+              "name": "K16602  TTLL5; tubulin polyglutamylase TTLL5 [EC:6.3.2.61]"
+            },
+            {
+              "name": "K16582  TTLL6_13; tubulin polyglutamylase TTLL6/13 [EC:6.3.2.61]"
+            },
+            {
+              "name": "K16583  TTLL7; tubulin polyglutamylase TTLL7 [EC:6.3.2.62]"
+            },
+            {
+              "name": "K16604  TTLL11; tubulin polyglutamylase TTLL11 [EC:6.3.2.-]"
+            }
+          ]
+        },
+        {
+          "name": "Other primary cilia associated proteins",
+          "children": [
+            {
+              "name": "K16741  ALMS1; alstrom syndrome protein 1"
+            },
+            {
+              "name": "K21415  ANKS6; ankyrin repeat and SAM domain-containing protein 6"
+            },
+            {
+              "name": "K16742  ARL2BP, BART; ADP-ribosylation factor-like protein 2-binding protein"
+            },
+            {
+              "name": "K07944  ARL3; ADP-ribosylation factor-like protein 3"
+            },
+            {
+              "name": "K07962  ARL13B, ARL2L1; ADP-ribosylation factor-like protein 13B"
+            },
+            {
+              "name": "K22864  ARMC9; LisH domain-containing protein ARMC9"
+            },
+            {
+              "name": "K16540  AZI1, CEP131; 5-azacytidine-induced protein 1"
+            },
+            {
+              "name": "K23402  CBY1; protein chibby 1"
+            },
+            {
+              "name": "K25390  CETN4; centrin-4"
+            },
+            {
+              "name": "K25391  DBN1; drebrin"
+            },
+            {
+              "name": "K16534  DISC1; disrupted in schizophrenia 1 protein"
+            },
+            {
+              "name": "K16470  DZIP1; zinc finger protein DZIP1"
+            },
+            {
+              "name": "K23868  FAM92; protein FAM92"
+            },
+            {
+              "name": "K24653  FAM149; primary cilium assembly protein FAM149"
+            },
+            {
+              "name": "K16772  FAM161; protein FAM161"
+            },
+            {
+              "name": "K16535  FOPNL, FOR20; lisH domain-containing protein FOPNL"
+            },
+            {
+              "name": "K08828  ICK; intestinal cell (MAK-like) kinase [EC:2.7.11.22]"
+            },
+            {
+              "name": "K08817  CDK20, CCRK; cyclin-dependent kinase 20 [EC:2.7.11.22]"
+            },
+            {
+              "name": "K28444  TBC1D32, BROMI; TBC1 domain family member 32"
+            },
+            {
+              "name": "K08857  NEK1_4_5; serine/threonine-protein kinase Nek1/4/5 [EC:2.7.11.1]"
+            },
+            {
+              "name": "K20877  NEK8; serine/threonine-protein kinase Nek8 [EC:2.7.11.1]"
+            },
+            {
+              "name": "K16480  OFD1; oral-facial-digital syndrome 1 protein"
+            },
+            {
+              "name": "K16537  PCM1; pericentriolar material 1 protein"
+            },
+            {
+              "name": "K25393  PIFO; protein pitchfork"
+            },
+            {
+              "name": "K26197  GPRASP2; G-protein coupled receptor-associated sorting protein 2"
+            },
+            {
+              "name": "K19865  PKHD1; fibrocystin"
+            },
+            {
+              "name": "K16482  POC1; centriolar protein POC1"
+            },
+            {
+              "name": "K18040  PTPN23; tyrosine-protein phosphatase non-receptor type 23 [EC:3.1.3.48]"
+            },
+            {
+              "name": "K16484  RTTN; rotatin"
+            },
+            {
+              "name": "K24869  SCAPER; S phase cyclin A-associated protein in the endoplasmic reticulum"
+            },
+            {
+              "name": "K22938  SDCCAG3, ENTR1; serologically defined colon cancer antigen 3"
+            },
+            {
+              "name": "K16488  SDCCAG8; serologically defined colon cancer antigen 8"
+            },
+            {
+              "name": "K06229  SUFU; suppressor of fused"
+            },
+            {
+              "name": "K23404  TAPT1; transmembrane anterior posterior transformation protein 1"
+            },
+            {
+              "name": "K25394  TMEM80; transmembrane protein 80"
+            },
+            {
+              "name": "K22867  TMEM138; transmembrane protein 138"
+            },
+            {
+              "name": "K24886  TOGARAM; TOG array regulator of axonemal microtubules protein"
+            },
+            {
+              "name": "K16801  CEP19; centrosomal protein CEP19"
+            },
+            {
+              "name": "K16455  CEP41, TSGA14; centrosomal protein CEP41"
+            },
+            {
+              "name": "K16765  CEP78; centrosomal protein CEP78"
+            },
+            {
+              "name": "K16458  CEP104; centrosomal protein CEP104"
+            },
+            {
+              "name": "K16771  CSPP1; centrosome and spindle pole-associated protein 1"
+            },
+            {
+              "name": "K25395  CFAP36; cilia- and flagella-associated protein 36"
+            },
+            {
+              "name": "K25396  CFAP126; protein Flattop"
+            },
+            {
+              "name": "K28375  CFAP263; cilia- and flagella-associated protein 263"
+            },
+            {
+              "name": "K23456  CFAP410, C21ORF2; cilla- and flagella-associated protein"
+            },
+            {
+              "name": "K25392  CCDC88A; girdin"
+            },
+            {
+              "name": "K27917  CCDC13; coiled-coil domain-containing protein 13"
+            },
+            {
+              "name": "K25397  CCDC66; coiled-coil domain-containing protein 66"
+            },
+            {
+              "name": "K25398  CCDC68; coiled-coil domain containing protein 68"
+            },
+            {
+              "name": "K25399  CCDC120; coiled-coil domain containing protein 120"
+            },
+            {
+              "name": "K16754  CEP83, CCDC41; centrosomal protein CEP83"
+            },
+            {
+              "name": "K16543  CEP89; centrosomal protein CEP89"
+            },
+            {
+              "name": "K16462  CEP164; centrosomal protein CEP164"
+            },
+            {
+              "name": "K16471  FBF1, ALB; Fas-binding factor 1"
+            },
+            {
+              "name": "K25400  SCLT1; sodium channel and clathrin linker 1"
+            },
+            {
+              "name": "K16453  CCP110, CEP110; centrosomal protein CEP110"
+            },
+            {
+              "name": "K16717  CEP97; centrosomal protein CEP97"
+            },
+            {
+              "name": "K27678  ENKD1; enkurin domain-containing protein 1"
+            },
+            {
+              "name": "K16461  CEP135, CEP4; centrosomal protein CEP135"
+            },
+            {
+              "name": "K16751  C2CD3; C2 domain-containing protein 3"
+            },
+            {
+              "name": "K16469  CROCC; rootletin"
+            },
+            {
+              "name": "K25226  C8ORF37; protein C8orf37"
+            },
+            {
+              "name": "K24828  LCA5; lebercilin"
+            },
+            {
+              "name": "K25401  LRRC45; leucine-rich repeat-containing protein 45"
+            },
+            {
+              "name": "K25402  CYS1; cystin-1"
+            },
+            {
+              "name": "K04985  PKD1; polycystin 1"
+            },
+            {
+              "name": "K04986  PKD2; polycystin 2"
+            },
+            {
+              "name": "K04987  PKD1L1; polycystin 1L1"
+            },
+            {
+              "name": "K04990  PKD2L1; polycystin 2L1"
+            },
+            {
+              "name": "K07931  RABL2; Rab-like protein 2"
+            },
+            {
+              "name": "K20173  RILPL1; RILP-like protein 1"
+            },
+            {
+              "name": "K25403  RILPL2; RILP-like protein 2"
+            },
+            {
+              "name": "K17343  PRPH2, TSPAN22; peripherin-2"
+            },
+            {
+              "name": "K24165  PCARE; photoreceptor cilium actin regulator"
+            },
+            {
+              "name": "K19637  PRCD; progressive rod-cone degeneration protein"
+            },
+            {
+              "name": "K25404  RD3; protein RD3"
+            },
+            {
+              "name": "K04254  RGR; retinal G protein coupled receptor"
+            },
+            {
+              "name": "K13765  RGS9; regulator of G-protein signaling 9"
+            },
+            {
+              "name": "K25405  RGS9BP; regulator of G-protein signaling 9-binding protein"
+            },
+            {
+              "name": "K17344  ROM1, TSPAN23; rod outer segment membrane protein 1"
+            },
+            {
+              "name": "K19600  TUB, TULP; tubby and related proteins"
+            },
+            {
+              "name": "K19538  RP1; retinitis pigmentosa 1"
+            },
+            {
+              "name": "K18272  RP2; protein XRP2"
+            },
+            {
+              "name": "K19607  RPGR; X-linked retinitis pigmentosa GTPase regulator"
+            },
+            {
+              "name": "K16512  RPGRIP1; X-linked retinitis pigmentosa GTPase regulator-interacting protein 1"
+            },
+            {
+              "name": "K08829  MAK; male germ cell-associated kinase [EC:2.7.11.22]"
+            },
+            {
+              "name": "K10631  TOPORS; E3 ubiquitin-protein ligase Topors [EC:2.3.2.27]"
+            },
+            {
+              "name": "K16780  SSNA1; sjoegren syndrome nuclear autoantigen 1"
+            },
+            {
+              "name": "K22865  TALPID3, JBTS23; protein TALPID3"
+            },
+            {
+              "name": "K25138  ANKRD26; ankyrin repeat domain-containing protein 26"
+            },
+            {
+              "name": "K19685  TTC26, IFT56, DYF13; intraflagellar transport protein 56"
+            },
+            {
+              "name": "K24759  WDR90; WD repeat-containing protein 90"
+            },
+            {
+              "name": "K27918  BLTP2, HOB; bridge-like lipid transfer protein family member 2"
+            },
+            {
+              "name": "K28284  KIAA1549; UPF0606 protein KIAA1549"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Motile cilia and associated proteins",
+      "children": [
+        {
+          "name": "Dynein arm",
+          "children": [
+            {
+              "name": "K10408  DNAH; dynein axonemal heavy chain"
+            },
+            {
+              "name": "K10409  DNAI1; dynein axonemal intermediate chain 1"
+            },
+            {
+              "name": "K11143  DNAI2; dynein axonemal intermediate chain 2"
+            },
+            {
+              "name": "K24722  DNAI3, WDR63; dynein axonemal intermediate chain 3"
+            },
+            {
+              "name": "K24723  DNAI4, WDR78; dynein axonemal intermediate chain 4"
+            },
+            {
+              "name": "K10410  DNALI; dynein axonemal light intermediate chain 1"
+            },
+            {
+              "name": "K10411  DNAL1; dynein axonemal light chain 1"
+            },
+            {
+              "name": "K10412  DNAL4; dynein axonemal light chain 4"
+            },
+            {
+              "name": "K10419  DYNLRB, DNCL2; dynein light chain roadblock-type"
+            },
+            {
+              "name": "K10418  DYNLL; dynein light chain LC8-type"
+            },
+            {
+              "name": "K10420  DYNLT1_3; dynein light chain Tctex-type 1/3"
+            },
+            {
+              "name": "K25419  DYNLT2, TCTE3; dynein light chain Tctex-type 2"
+            },
+            {
+              "name": "K25420  DYNLT4, TCTEX1D4; dynein light chain Tctex-type 4"
+            },
+            {
+              "name": "K25421  DYNLT5, TCTEX1D1; dynein light chain Tctex-type 5"
+            },
+            {
+              "name": "K16465  CETN1; centrin-1"
+            },
+            {
+              "name": "K17580  CASC1; cancer susceptibility candidate protein 1"
+            }
+          ]
+        },
+        {
+          "name": "Dynein assembly factors",
+          "children": [
+            {
+              "name": "K19750  DNAAF1, LRRC50, ODA7; dynein axonemal assembly factor 1"
+            },
+            {
+              "name": "K19751  DNAAF2, KTU, PF13; dynein axonemal assembly factor 2"
+            },
+            {
+              "name": "K19752  DNAAF3, PF22; dynein axonemal assembly factor 3"
+            },
+            {
+              "name": "K19758  DNAAF4, DYX1C1; dynein axonemal assembly factor 4"
+            },
+            {
+              "name": "K19759  DNAAF5; dynein axonemal assembly factor 5"
+            },
+            {
+              "name": "K24253  DNAAF6, PIH1D3; dynein axonemal assembly factor 6"
+            },
+            {
+              "name": "K24030  ZMYND10; zinc finger MYND domain-containing protein 10"
+            },
+            {
+              "name": "K25423  DNAAF8; dynein axonemal assembly factor 8"
+            },
+            {
+              "name": "K25424  DNAAF9; dynein axonemal assembly factor 9"
+            },
+            {
+              "name": "K24761  WDR92, DNAAF10; dynein axonemal assembly factor 10"
+            },
+            {
+              "name": "K19753  LRRC6, DNAAF11; dynein axonemal assembly factor 11"
+            },
+            {
+              "name": "K25425  LRRC56; leucine-rich repeat-containing protein 56"
+            },
+            {
+              "name": "K19870  SPAG1; sperm-associated antigen 1"
+            },
+            {
+              "name": "K25426  PIH1D1; PIH1 domain-containing protein 1"
+            },
+            {
+              "name": "K25427  PIH1D2; PIH1 domain-containing protein 2"
+            },
+            {
+              "name": "K04499  RUVBL1, RVB1, INO80H; RuvB-like protein 1 [EC:5.6.2.4]"
+            },
+            {
+              "name": "K11338  RUVBL2, RVB2, INO80J; RuvB-like protein 2 [EC:5.6.2.3]"
+            },
+            {
+              "name": "K19760  DAW1; dynein assembly factor with WDR repeat domains 1"
+            },
+            {
+              "name": "K19868  NME8, TXNDC3; thioredoxin domain-containing protein 3"
+            },
+            {
+              "name": "K24229  CFAP298; cilia- and flagella-associated protein 298"
+            },
+            {
+              "name": "K24230  CFAP300; cilia- and flagella-associated protein 300"
+            },
+            {
+              "name": "K24652  TTC12; tetratricopeptide repeat protein 12"
+            }
+          ]
+        },
+        {
+          "name": "Modifier of inner arms (MIA) complex",
+          "children": [
+            {
+              "name": "K25439  CFAP100, MIA1; cilia- and flagella-associated protein 100"
+            },
+            {
+              "name": "K25440  CFAP73, CCDC42; CFAP73 family protein"
+            }
+          ]
+        },
+        {
+          "name": "Tether/Tether head (T/TH) complex",
+          "children": [
+            {
+              "name": "K24223  CFAP43, WDR96; cilia- and flagella-associated protein 43"
+            },
+            {
+              "name": "K24224  CFAP44, WDR52; cilia- and flagella-associated protein 44"
+            }
+          ]
+        },
+        {
+          "name": "ODA docking complex",
+          "children": [
+            {
+              "name": "K23732  CCDC63_114; coiled-coil domain-containing protein 63/114"
+            },
+            {
+              "name": "K24125  ODAD2, ARMC4; outer dynein arm-docking complex subunit 2"
+            },
+            {
+              "name": "K23733  ODAD3, CCDC151; outer dynein arm-docking complex subunit 3"
+            },
+            {
+              "name": "K24254  ODAD4, TTC25; outer dynein arm-docking complex subunit 4"
+            },
+            {
+              "name": "K27179  ODAD5, CLXN, EFCAB1; outer dynein arm-docking complex subunit 5"
+            },
+            {
+              "name": "K25441  MNS1; meiosis-specific nuclear structural protein 1"
+            }
+          ]
+        },
+        {
+          "name": "96 nano-molecular ruler",
+          "children": [
+            {
+              "name": "K23729  CCDC39; coiled-coil domain-containing protein 39"
+            },
+            {
+              "name": "K23730  CCDC40; coiled-coil domain-containing protein 40"
+            }
+          ]
+        },
+        {
+          "name": "Tektins",
+          "children": [
+            {
+              "name": "K18628  TEKT1; tektin-1"
+            },
+            {
+              "name": "K18629  TEKT2; tektin-2"
+            },
+            {
+              "name": "K18630  TEKT3; tektin-3"
+            },
+            {
+              "name": "K18631  TEKT4; tektin-4"
+            },
+            {
+              "name": "K18632  TEKT5; tektin-5"
+            }
+          ]
+        },
+        {
+          "name": "Nexin-dynein regulatory complex",
+          "children": [
+            {
+              "name": "K19754  DRC1; dynein regulatry complex protein 1"
+            },
+            {
+              "name": "K23728  CCDC65, DRC2; dynein regulatory complex subunit 2"
+            },
+            {
+              "name": "K25443  DRC3; dynein regulatory complex subunit 3"
+            },
+            {
+              "name": "K19942  GAS8, DRC4; dynein regulatory complex subunit 4"
+            },
+            {
+              "name": "K25450  TCTE1, DRC5; dynein regulatory complex subunit 5"
+            },
+            {
+              "name": "K10279  FBXL13, DRC6; dynein regulatory complex subunit 6"
+            },
+            {
+              "name": "K25451  DRC7; dynein regulatory complex subunit 7"
+            },
+            {
+              "name": "K25452  EFCAB2, DRC8; dynein regulatory complex subunit 8"
+            },
+            {
+              "name": "K24841  IQCG, DRC9; dynein regulatory complex subunit 9"
+            },
+            {
+              "name": "K24839  IQCD, DRC10; dynein regulatory complex subunit 10"
+            },
+            {
+              "name": "K24837  IQCA, DRC11; dynein regulatory complex subunit 11"
+            }
+          ]
+        },
+        {
+          "name": "Radial spoke",
+          "children": [
+            {
+              "name": "K19755  RSPH1; radial spoke head protein 1"
+            },
+            {
+              "name": "K23965  RSPH3; radial spoke head protein 3"
+            },
+            {
+              "name": "K19756  RSPH4_6; radial spoke head protein 4/6"
+            },
+            {
+              "name": "K19757  RSPH9; radial spoke head protein 9"
+            },
+            {
+              "name": "K25458  RSPH10B; radial spoke head protein 10B"
+            },
+            {
+              "name": "K25457  ROPN1L; ropporin-1-like protein"
+            },
+            {
+              "name": "K12739  PPIL6; peptidyl-prolyl cis-trans isomerase-like 6 [EC:5.2.1.8]"
+            },
+            {
+              "name": "K25459  RSPH14, RTDR1; radial spoke head protein 14"
+            },
+            {
+              "name": "K09519  DNAJB13; DnaJ homolog subfamily B member 13"
+            },
+            {
+              "name": "K20790  NME5; nucleoside diphosphate kinase homolog 5"
+            }
+          ]
+        },
+        {
+          "name": "Calmodulin-spoke complex",
+          "children": [
+            {
+              "name": "K25460  CFAP61; cilia- and flagella-associated protein 61"
+            },
+            {
+              "name": "K25461  CFAP91, MAATS1; cilia- and flagella-associated protein 91"
+            },
+            {
+              "name": "K24228  WDR66, CFAP251; cilia- and flagella-associated protein 251"
+            }
+          ]
+        },
+        {
+          "name": "Other motile cilia associated proteins",
+          "children": [
+            {
+              "name": "K23731  CCDC103; coiled-coil domain-containing protein 103"
+            },
+            {
+              "name": "K16809  CEP162; centrosomal protein CEP162"
+            },
+            {
+              "name": "K25470  CFAP20; cilia- and flagella-associated protein 20"
+            },
+            {
+              "name": "K24728  CFAP52, WDR16; cilia- and flagella-associated protein 52"
+            },
+            {
+              "name": "K24225  CFAP53; cilia- and flagella-associated protein 53"
+            },
+            {
+              "name": "K24729  CFAP57, WDR65; cilia- and flagella-associated protein 57"
+            },
+            {
+              "name": "K24932  CFAP70, TTC18; cilia- and flagella-associated protein 70"
+            },
+            {
+              "name": "K28109  CFAP90; cilia- and flagella-associated protein 90"
+            },
+            {
+              "name": "K28374  CFAP184; cilia- and flagella-associated protein 184"
+            },
+            {
+              "name": "K25471  CFAP206; cilia- and flagella-associated protein 206"
+            },
+            {
+              "name": "K28375  CFAP263; cilia- and flagella-associated protein 263"
+            },
+            {
+              "name": "K28111  CIMIP2B, FAM166B; ciliary microtubule inner protein 2B"
+            },
+            {
+              "name": "K28112  CIMIP2C, FAM166C; ciliary microtubule inner protein 2C"
+            },
+            {
+              "name": "K28113  PIERCE1; piercer of microtubule wall 1 protein"
+            },
+            {
+              "name": "K28114  PIERCE2; piercer of microtubule wall 2 protein"
+            },
+            {
+              "name": "K25472  SAXO; stabilizer of axonemal microtubules"
+            },
+            {
+              "name": "K25473  BBOF1; basal body-orientation factor 1"
+            },
+            {
+              "name": "K16530  AKAP14; A-kinase anchor protein 14"
+            },
+            {
+              "name": "K23029  EFHC1; EF-hand domain-containing protein 1"
+            },
+            {
+              "name": "K06228  FU; fused [EC:2.7.11.1]"
+            },
+            {
+              "name": "K25474  FAM183; protein FAM183"
+            },
+            {
+              "name": "K23851  EFCAB6; EF-hand calcium-binding domain-containing protein 6"
+            },
+            {
+              "name": "K24124  ARMC3; armadillo repeat-containing protein 3"
+            },
+            {
+              "name": "K25475  RIBC; RIB43A-like with coiled-coils protein"
+            },
+            {
+              "name": "K24509  VWA3; von Willebrand factor A domain-containing protein 3"
+            },
+            {
+              "name": "K24936  TTC28; tetratricopeptide repeat protein 28"
+            },
+            {
+              "name": "K28404  CIROZ; ciliated left-right organizer protein containing ZP-N domains"
+            }
+          ]
+        },
+        {
+          "name": "Sperm associated proteins",
+          "children": [
+            {
+              "name": "K25373  ACRV1; acrosomal protein SP-10"
+            },
+            {
+              "name": "K25513  SPACA1; sperm acrosome membrane-associated protein 1"
+            },
+            {
+              "name": "K24198  SPACA3; sperm acrosome membrane-associated protein 3"
+            },
+            {
+              "name": "K19894  SPACA4, SAMP14; sperm acrosome membrane-associated protein 4"
+            },
+            {
+              "name": "K25514  SPACA6; sperm acrosome membrane-associated protein 6"
+            },
+            {
+              "name": "K25515  SPACA7; sperm acrosome membrane-associated protein 7"
+            },
+            {
+              "name": "K25516  SPACA9; sperm acrosome membrane-associated protein 9"
+            },
+            {
+              "name": "K19920  EQTN; equatorin"
+            },
+            {
+              "name": "K25529  IZUMO1; izumo sperm-egg fusion protein 1"
+            },
+            {
+              "name": "K25530  IZUMO1R, FOLR4; sperm-egg fusion protein Juno"
+            },
+            {
+              "name": "K06460  CD9, TSPAN29; CD9 antigen"
+            },
+            {
+              "name": "K25531  CFAP97D1; sperm axonemal maintenance protein CFAP97D1"
+            },
+            {
+              "name": "K25532  SPAG6; sperm-associated antigen 6"
+            },
+            {
+              "name": "K24735  SPAG16; sperm-associated antigen 16 protein"
+            },
+            {
+              "name": "K25533  SPAG17; sperm-associated antigen 17"
+            },
+            {
+              "name": "K25547  CCDC189; coiled-coil domain-containing protein 189"
+            },
+            {
+              "name": "K25548  DLEC1; deleted in lung and esophageal cancer protein 1"
+            },
+            {
+              "name": "K25549  LRGUK; leucine-rich repeat and guanylate kinase domain-containing protein"
+            },
+            {
+              "name": "K25550  MYCBP; c-Myc-binding protein"
+            },
+            {
+              "name": "K25551  CFAP45; cilia- and flagella-associated protein 45"
+            },
+            {
+              "name": "K24938  CFAP46, TTC40; cilia- and flagella-associated protein 46"
+            },
+            {
+              "name": "K25552  CFAP47; cilia- and flagella-associated protein 47"
+            },
+            {
+              "name": "K25553  CFAP54; cilia- and flagella-associated protein 54"
+            },
+            {
+              "name": "K25554  CFAP58; cilia- and flagella-associated protein 58"
+            },
+            {
+              "name": "K24226  CFAP65; cilia- and flagella-associated protein 65"
+            },
+            {
+              "name": "K28053  CFAP68; cilia- and flagella-associated protein 68"
+            },
+            {
+              "name": "K24227  CFAP69; cilia- and flagella-associated protein 69"
+            },
+            {
+              "name": "K25607  CFAP74; cilia- and flagella-associated protein 74"
+            },
+            {
+              "name": "K28054  CFAP77; cilia- and flagella-associated protein 77"
+            },
+            {
+              "name": "K25608  CFAP99; cilia- and flagella-associated protein 99"
+            },
+            {
+              "name": "K25609  CFAP157; cilia- and flagella-associated protein 157"
+            },
+            {
+              "name": "K28055  CFAP161; cilia- and flagella-associated protein 161"
+            },
+            {
+              "name": "K25610  CFAP221, PCDP1; cilia- and flagella-associated protein 221"
+            },
+            {
+              "name": "K25611  CFAP299; cilia- and flagella-associated protein 299"
+            },
+            {
+              "name": "K24762  WDR93; WD repeat-containing protein 93"
+            },
+            {
+              "name": "K25614  SPEF1; sperm flagellar protein 1"
+            },
+            {
+              "name": "K25615  SPEF2; sperm flagellar protein 2"
+            },
+            {
+              "name": "K17570  HYDIN; hydrocephalus-inducing protein"
+            },
+            {
+              "name": "K23223  PMFBP1; polyamine-modulated factor 1-binding protein 1"
+            },
+            {
+              "name": "K25616  SPATA4; spermatogenesis-associated protein 4"
+            },
+            {
+              "name": "K23224  SPATA6; spermatogenesis-associated protein 6"
+            },
+            {
+              "name": "K19655  SPATA7; spermatogenesis-associated protein 7"
+            },
+            {
+              "name": "K26121  SPATA16; spermatogenesis-associated protein 16"
+            },
+            {
+              "name": "K25546  SPATA17; spermatogenesis-associated protein 17"
+            },
+            {
+              "name": "K21875  SPAG4, SUN4; sperm-associated antigen 4 protein"
+            },
+            {
+              "name": "K21876  SUN5; SUN domain-containing protein 5"
+            },
+            {
+              "name": "K23403  SPERT, CBY2; spermatid-associated protein"
+            },
+            {
+              "name": "K27712  CCDC146; coiled-coil domain-containing protein 146"
+            },
+            {
+              "name": "K25624  CCDC172; coiled-coil domain-containing protein 172"
+            },
+            {
+              "name": "K25625  CCDC181; coiled-coil domain-containing protein 181"
+            },
+            {
+              "name": "K04181  CCR6, CD196; C-C chemokine receptor type 6"
+            },
+            {
+              "name": "K23125  DEFB1; beta-defensin 1"
+            },
+            {
+              "name": "K25707  LYZL; lysozyme [EC:3.2.1.17]"
+            },
+            {
+              "name": "K25438  LYZL4; lysozyme-like protein 4"
+            },
+            {
+              "name": "K24817  MROH2, HEATR7B; maestro heat-like repeat-containing protein family member 2"
+            },
+            {
+              "name": "K25628  TCP11; T-complex protein 11"
+            },
+            {
+              "name": "K16942  SEPT2; septin 2"
+            },
+            {
+              "name": "K16938  SEPT3_9_12; septin 3/9/12"
+            },
+            {
+              "name": "K16943  SEPT4; septin 4"
+            },
+            {
+              "name": "K16939  SEPT6_8_11; septin 6/8/11"
+            },
+            {
+              "name": "K16944  SEPT7, CDC3; septin 7"
+            },
+            {
+              "name": "K16520  AKAP3; A-kinase anchor protein 3"
+            },
+            {
+              "name": "K16521  AKAP4; A-kinase anchor protein 4"
+            },
+            {
+              "name": "K26675  FSIP2; fibrous sheath-interacting protein 2"
+            },
+            {
+              "name": "K24123  ARMC2; armadillo repeat-containing protein 2"
+            },
+            {
+              "name": "K25629  CABYR; calcium-binding tyrosine phosphorylation-regulated protein"
+            },
+            {
+              "name": "K25630  FSCB; fibrous sheath CABYR-binding protein"
+            },
+            {
+              "name": "K25631  FLACC1, ALS2CR12; flagellum-associated coiled-coil domain-containing protein 1"
+            },
+            {
+              "name": "K25632  TSGA10; testis-specific gene 10 protein"
+            },
+            {
+              "name": "K25633  SPA17; sperm surface protein Sp17"
+            },
+            {
+              "name": "K25635  ODF1; outer dense fiber protein 1"
+            },
+            {
+              "name": "K16479  ODF2; outer dense fiber protein 2"
+            },
+            {
+              "name": "K25636  ODF3; outer dense fiber protein 3"
+            },
+            {
+              "name": "K25637  ODF4; outer dense fiber protein 4"
+            },
+            {
+              "name": "K25638  RHPN1; rhophilin-1"
+            },
+            {
+              "name": "K25456  ROPN1; ropporin-1"
+            },
+            {
+              "name": "K16889  CATSPER1; cation channel sperm-associated protein 1"
+            },
+            {
+              "name": "K16890  CATSPER2; cation channel sperm-associated protein 2"
+            },
+            {
+              "name": "K16891  CATSPER3; cation channel sperm-associated protein 3"
+            },
+            {
+              "name": "K16892  CATSPER4; cation channel sperm-associated protein 4"
+            },
+            {
+              "name": "K16893  CATSPERB; cation channel sperm-associated protein subunit beta"
+            },
+            {
+              "name": "K16894  CATSPERG; cation channel sperm-associated protein subunit gamma"
+            },
+            {
+              "name": "K16895  CATSPERD; cation channel sperm-associated protein subunit delta"
+            },
+            {
+              "name": "K25642  CATSPERE; cation channel sperm-associated protein subunit epsilon"
+            },
+            {
+              "name": "K25643  CATSPERZ, TEX40; cation channel sperm-associated protein subunit zeta"
+            },
+            {
+              "name": "K13697  ABHD2; abhydrolase domain-containing protein 2"
+            },
+            {
+              "name": "K25644  CABCOCO1; ciliary-associated calcium-binding coiled-coil protein 1"
+            },
+            {
+              "name": "K25645  CABS1; calcium-binding and spermatid-specific protein 1"
+            },
+            {
+              "name": "K25646  EFCAB9; EF-hand calcium-binding domain-containing protein 9"
+            },
+            {
+              "name": "K25647  ENKUR; enkurin"
+            },
+            {
+              "name": "K25648  MYCBPAP, AMAP1; MYCBP-associated protein"
+            },
+            {
+              "name": "K25131  PRSS37; inactive serine protease 37"
+            },
+            {
+              "name": "K24298  QRICH2; glutamine-rich protein 2"
+            },
+            {
+              "name": "K24148  RNF151; RING finger protein 151"
+            },
+            {
+              "name": "K14726  SLC9A10_11; solute carrier family 9 (sodium/hydrogen exchanger), member 10/11"
+            },
+            {
+              "name": "K23994  SLC9B1_2; solute carrier family 9B (sodium/hydrogen exchanger), member 1/2"
+            },
+            {
+              "name": "K25095  SLIRP; SRA stem-loop-interacting RNA-binding protein, mitochondrial"
+            },
+            {
+              "name": "K19528  SYCP3; synaptonemal complex protein 3"
+            },
+            {
+              "name": "K24574  TEX11; testis-expressed protein 11"
+            },
+            {
+              "name": "K19537  TEX12; testis-expressed protein 12"
+            },
+            {
+              "name": "K25679  TEX13; testis-expressed protein 13"
+            },
+            {
+              "name": "K17540  TEX14, SGK307; inactive serine/threonine-protein kinase TEX14"
+            },
+            {
+              "name": "K25680  TEX15; testis-expressed protein 15"
+            },
+            {
+              "name": "K25681  TEX19; testis-expressed protein 19"
+            },
+            {
+              "name": "K25682  TEX22; testis-expressed protein 22"
+            },
+            {
+              "name": "K25683  FAM9, TEX39; protein FAM9"
+            },
+            {
+              "name": "K25697  TSGA13; testis-specific gene 13 protein"
+            },
+            {
+              "name": "K25698  TPPP2; tubulin polymerization-promoting protein family member 2"
+            },
+            {
+              "name": "K08811  TSSK, STK22; testis-specific serine kinase [EC:2.7.11.1]"
+            },
+            {
+              "name": "K16492  TSKS; testis-specific serine kinase substrate"
+            },
+            {
+              "name": "K24178  TTC21A, IFT139A; tetratricopeptide repeat protein 21A"
+            },
+            {
+              "name": "K24937  TTC29; tetratricopeptide repeat protein 29"
+            },
+            {
+              "name": "K25699  TXNDC8, SPTRX3; thioredoxin domain-containing protein 8"
+            },
+            {
+              "name": "K22532  WBP2NL; postacrosomal sheath WW domain-binding protein"
+            },
+            {
+              "name": "K26106  M1AP; meiosis 1 arrest protein"
+            },
+            {
+              "name": "K26198  ARMCX4; armadillo repeat-containing X-linked protein 4"
+            },
+            {
+              "name": "K26199  BCORL1; BCL-6 corepressor-like protein 1"
+            },
+            {
+              "name": "K26555  DNHD1; dynein heavy chain domain-containing protein 1"
+            },
+            {
+              "name": "K26737  IQCN; IQ domain-containing protein N"
+            },
+            {
+              "name": "K26807  GGN; gametogenetin"
+            },
+            {
+              "name": "K26999  BPY2; testis-specific basic protein Y 2"
+            },
+            {
+              "name": "K27449  PRY; PTPN13-like protein, Y-linked"
+            },
+            {
+              "name": "K27622  PRSS42_43_44; serine protease 42/43/44"
+            },
+            {
+              "name": "K27856  LRRC23; leucine-rich repeat-containing protein 23"
+            },
+            {
+              "name": "K27901  ACTL7; actin-like protein 7"
+            },
+            {
+              "name": "K27902  ACTL9; actin-like protein 9"
+            },
+            {
+              "name": "K27949  ADAM3; disintegrin and metalloproteinase domain-containing protein 3"
+            },
+            {
+              "name": "K27950  TMPRSS12; transmembrane protease serine 12 [EC:3.4.21.-]"
+            },
+            {
+              "name": "K28057  CYLC; cylicin"
+            },
+            {
+              "name": "K28110  CIMIP2A, FAM166A; ciliary microtubule inner protein 2A"
+            },
+            {
+              "name": "K28661  GLCCI1; glucocorticoid-induced transcript 1 protein"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Other cilia and associated proteins",
+      "children": [
+        {
+          "name": "Stereociliary proteins",
+          "children": [
+            {
+              "name": "K24636  STRC; stereocilin"
+            },
+            {
+              "name": "K24047  ESPN; espin"
+            },
+            {
+              "name": "K08834  MYO3, DFNB30; myosin III [EC:2.7.11.1]"
+            },
+            {
+              "name": "K17277  EPS8; epidermal growth factor receptor kinase substrate 8"
+            },
+            {
+              "name": "K15837  GPSM2; G-protein signaling modulator 2"
+            },
+            {
+              "name": "K06639  CDC14; cell division cycle 14 [EC:3.1.3.16 3.1.3.48]"
+            },
+            {
+              "name": "K06499  CEACAM, CD66; carcinoembryonic antigen-related cell adhesion molecule"
+            },
+            {
+              "name": "K06087  CLDN; claudin"
+            },
+            {
+              "name": "K05025  CLIC5; chloride intracellular channel protein 5"
+            },
+            {
+              "name": "K00545  COMT; catechol O-methyltransferase [EC:2.1.1.6]"
+            },
+            {
+              "name": "K25700  CTHRC1; collagen triple helix repeat-containing protein 1"
+            },
+            {
+              "name": "K23538  ELMOD; ELMO domain-containing protein"
+            },
+            {
+              "name": "K17479  GRXCR1; glutaredoxin domain-containing cysteine-rich protein 1"
+            },
+            {
+              "name": "K24294  GRXCR2; glutaredoxin domain-contaning cysteine-rich protein 2"
+            },
+            {
+              "name": "K15010  HOMER; homer"
+            },
+            {
+              "name": "K23893  LHFPL; LHFPL tetraspan subfamily member protein"
+            },
+            {
+              "name": "K24822  LOXHD1; lipoxygenase homology domain-containing protein 1"
+            },
+            {
+              "name": "K25701  MORN4; MORN repeat-containing protein 4"
+            },
+            {
+              "name": "K25030  OTOG, OTOGL; otogelin"
+            },
+            {
+              "name": "K16910  PTPRQ; receptor-type tyrosine-protein phosphatase Q [EC:3.1.3.48]"
+            },
+            {
+              "name": "K24818  RIPOR, FAM65; Rho family-interacting cell polarization regulator"
+            },
+            {
+              "name": "K21841  TBC1D24; TBC1 domain family member 24"
+            },
+            {
+              "name": "K18273  TECTA; alpha-tectorin"
+            },
+            {
+              "name": "K25702  TECTB; beta-tectorin"
+            },
+            {
+              "name": "K21988  TMC; transmembrane channel-like protein"
+            },
+            {
+              "name": "K08870  TWF; twinfilin"
+            },
+            {
+              "name": "K25703  VEZT; vezatin"
+            },
+            {
+              "name": "K24437  TSEAR; thrombospondin-type laminin G domain and EAR repeat-containing protein"
+            },
+            {
+              "name": "K25704  ZSWIM6; zinc finger SWIM domain-containing protein 6"
+            },
+            {
+              "name": "K27624  PKHD1L1; fibrocystin-L"
+            },
+            {
+              "name": "K27919  USP53; inactive ubiquitin carboxyl-terminal hydrolase 53"
+            }
+          ]
+        },
+        {
+          "name": "Other cilium assembly proteins",
+          "children": [
+            {
+              "name": "K16464  CEP250, CNAP1; centrosomal protein CEP250"
+            },
+            {
+              "name": "K20800  DPCD; protein DPCD"
+            },
+            {
+              "name": "K22858  JBTS26; protein JBTS26"
+            },
+            {
+              "name": "K24931  TTC17; tetratricopeptide repeat protein 17"
+            },
+            {
+              "name": "K24934  TTC23; tetratricopeptide repeat protein 23"
+            },
+            {
+              "name": "K24941  TTC36, HBP21; tetratricopeptide repeat protein 36"
+            },
+            {
+              "name": "K24352  UBXN10; UBX domain-containing protein 10"
+            },
+            {
+              "name": "K24260  WDR11; WD repeat-containing protein 11"
+            },
+            {
+              "name": "K25788  CATIP; ciliogenesis-associated TTC17-interacting protein"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
