@@ -57,6 +57,14 @@ This repository is directly linked to the Zenodo archive via DOI.
 
 ---
 
+## Data repository
+
+Sequencing data: PRJEB95916 (ENA - European Nucleotide Archive)
+
+Proteomics data: PXD070123 (PRIDE - PRoteomics IDEntifications Database)
+
+---
+
 ## Reproducibility
 
 This repository provides:
