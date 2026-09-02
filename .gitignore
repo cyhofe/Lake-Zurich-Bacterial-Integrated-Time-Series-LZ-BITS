@@ -5,217 +5,134 @@
 
 
 # ============================================================
-# DEFAULT: IGNORE EVERYTHING
+# IGNORE ALL TOP-LEVEL CONTENT BY DEFAULT
 # ============================================================
 
-*
+/*
+
+
+# ============================================================
+# REPOSITORY FILES
+# ============================================================
+
+!/.gitignore
+!/README.md
+!/LICENSE
+
+
+# ============================================================
+# PROJECT DIRECTORIES INCLUDED IN THE REPOSITORY
+# ============================================================
+
+!/Data/
+!/Datasets/
+!/DataAnalysis_SpringBloom2021/
+
+
+# ============================================================
+# WITHIN PROJECT DIRECTORIES: IGNORE EVERYTHING BY DEFAULT
+# ============================================================
+
+/Data/**
+/Datasets/**
+/DataAnalysis_SpringBloom2021/**
 
 
 # ============================================================
 # ALLOW DIRECTORY TRAVERSAL
 # ============================================================
 
-!*/
+!/Data/**/
+!/Datasets/**/
+!/DataAnalysis_SpringBloom2021/**/
 
 
 # ============================================================
-# ANALYSIS / WORKFLOW CODE
+# R ANALYSIS CODE
 # ============================================================
 
-# R
-!*.R
-!*.r
-!*.Rmd
-!*.rmd
+!/Data/**/*.R
+!/Data/**/*.r
+!/Data/**/*.Rmd
+!/Data/**/*.rmd
+!/Data/**/*.qmd
 
-# Python
-!*.py
+!/Datasets/**/*.R
+!/Datasets/**/*.r
+!/Datasets/**/*.Rmd
+!/Datasets/**/*.rmd
+!/Datasets/**/*.qmd
 
-# Shell
-!*.sh
-!*.bash
-
-# Snakemake
-!Snakefile
-!*.smk
-
-# Workflow configuration
-!*.yaml
-!*.yml
-
-# RMarkdown / report styling
-!*.css
+!/DataAnalysis_SpringBloom2021/**/*.R
+!/DataAnalysis_SpringBloom2021/**/*.r
+!/DataAnalysis_SpringBloom2021/**/*.Rmd
+!/DataAnalysis_SpringBloom2021/**/*.rmd
+!/DataAnalysis_SpringBloom2021/**/*.qmd
 
 
 # ============================================================
-# REPOSITORY DOCUMENTATION / METADATA
+# PYTHON CODE
 # ============================================================
 
-!README.md
-!LICENSE
-!.gitignore
+!/Data/**/*.py
+!/Datasets/**/*.py
+!/DataAnalysis_SpringBloom2021/**/*.py
 
 
 # ============================================================
-# R SESSION / PROJECT FILES
+# SHELL CODE
 # ============================================================
 
-.Rhistory
-.RData
-.Rproj.user/
-*.Rproj
-*.RDataTmp
-*.RDataTmp*
+!/Data/**/*.sh
+!/Data/**/*.bash
+
+!/Datasets/**/*.sh
+!/Datasets/**/*.bash
+
+!/DataAnalysis_SpringBloom2021/**/*.sh
+!/DataAnalysis_SpringBloom2021/**/*.bash
+
+
+# ============================================================
+# SNAKEMAKE / WORKFLOW FILES
+# ============================================================
+
+!/Data/**/Snakefile
+!/Data/**/*.smk
+
+!/Datasets/**/Snakefile
+!/Datasets/**/*.smk
+
+!/DataAnalysis_SpringBloom2021/**/Snakefile
+!/DataAnalysis_SpringBloom2021/**/*.smk
+
+
+# ============================================================
+# WORKFLOW CONFIGURATION
+# ============================================================
+
+!/Data/**/*.yaml
+!/Data/**/*.yml
+
+!/Datasets/**/*.yaml
+!/Datasets/**/*.yml
+
+!/DataAnalysis_SpringBloom2021/**/*.yaml
+!/DataAnalysis_SpringBloom2021/**/*.yml
+
+
+# ============================================================
+# R MARKDOWN STYLING
+# ============================================================
+
+!/Data/**/*.css
+!/Datasets/**/*.css
+!/DataAnalysis_SpringBloom2021/**/*.css
 
 
 # ============================================================
 # SOURCE-DATA DIRECTORIES
 # ============================================================
 
-DataAnalysis_SpringBloom2021/Source_Data_Main/
-DataAnalysis_SpringBloom2021/Source_Data_Supplement/
-
-
-# ============================================================
-# PHYLOGENETIC FILES
-# ============================================================
-
-*.nwk
-*.newick
-*.tree
-*.treefile
-*.contree
-*.ufboot
-*.bionj
-*.mldist
-*.iqtree
-*.splits.nex
-
-
-# ============================================================
-# FLOW-CYTOMETRY FILES
-# ============================================================
-
-*.fcs
-*.FCS
-*.xit
-*.XIT
-
-
-# ============================================================
-# SEQUENCE / GENOME / DATABASE FILES
-# ============================================================
-
-*.fasta
-*.fa
-*.fna
-*.faa
-*.ffn
-*.frn
-*.gb
-*.gbk
-*.gbff
-*.gff
-*.gff3
-*.sam
-*.bam
-*.bai
-*.cram
-*.fastq
-*.fq
-
-
-# ============================================================
-# DATA / TABLES
-# ============================================================
-
-*.csv
-*.tsv
-*.txt
-*.rds
-*.RDS
-*.xlsx
-*.xls
-*.h5
-*.hdf5
-*.parquet
-*.feather
-*.xml
-*.json
-
-
-# ============================================================
-# FIGURES / GRAPHICS
-# ============================================================
-
-*.png
-*.jpg
-*.jpeg
-*.tif
-*.tiff
-*.pdf
-*.svg
-*.eps
-*.bmp
-
-
-# ============================================================
-# DOCUMENTS
-# ============================================================
-
-*.doc
-*.docx
-*.docm
-*.dotx
-*.dotm
-*.ppt
-*.pptx
-
-
-# ============================================================
-# ARCHIVES / COMPRESSED FILES
-# ============================================================
-
-*.zip
-*.tar
-*.tar.gz
-*.tgz
-*.gz
-*.bz2
-*.xz
-*.7z
-
-
-# ============================================================
-# RENDERED REPORTS
-# ============================================================
-
-*.html
-*.htm
-
-
-# ============================================================
-# DESIGN FILES
-# ============================================================
-
-*.cdr
-*.CDR
-
-
-# ============================================================
-# LOGS / TEMPORARY / GENERATED FILES
-# ============================================================
-
-*.log
-*.tmp
-*.bak
-*.out
-*.cache
-
-
-# ============================================================
-# OPERATING SYSTEM FILES
-# ============================================================
-
-Thumbs.db
-.DS_Store
+/DataAnalysis_SpringBloom2021/Source_Data_Main/
+/DataAnalysis_SpringBloom2021/Source_Data_Supplement/
