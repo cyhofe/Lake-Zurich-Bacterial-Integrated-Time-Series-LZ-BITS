@@ -221,6 +221,18 @@ ggsave(filename = "MAG_quality_plot_after_dereplication.pdf",
   units    = "cm",
   dpi      = 300)
 
+
+readr::write_csv(
+  df %>%
+    dplyr::select(
+      MAG_ID,
+      Completeness,
+      Contamination,
+      Quality,
+      MAGs_Per_Species
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_1b.csv"
+)
 ```
 
 ```{r}

@@ -30,6 +30,7 @@ setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/
 library(ggplot2)
 library(scales)
 library(readr)
+library(dplyr)
 
 # Load the color palette
 source("ColorPalette.R")
@@ -135,5 +136,10 @@ ggsave(
   dpi    = 300
 )
 
+
+readr::write_csv(
+  dat,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_1c.csv"
+)
 ```
 

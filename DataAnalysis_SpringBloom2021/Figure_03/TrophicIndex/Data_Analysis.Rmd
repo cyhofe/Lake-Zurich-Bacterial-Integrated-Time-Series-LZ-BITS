@@ -2691,6 +2691,52 @@ final_train_lake_fig_est
 
 ggsave("Fig_TrophicIndex_Training_vs_LakeZurich_FINAL_EST.pdf",
        final_train_lake_fig_est, width = 11, height = 14.5, units = "in", dpi = 300)
+
+############################################################
+# FIGURE 3B — TRAINING SPECIES
+############################################################
+
+readr::write_csv(
+  train_plot_df %>%
+    dplyr::mutate(
+      Training_Q25 = q25_train,
+      Training_Q75 = q75_train
+    ) %>%
+    dplyr::select(
+      Species_ID,
+      Classification,
+      Rank,
+      TrophicIndex,
+      TrophicGroup,
+      Training_Q25,
+      Training_Q75
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_3b.csv"
+)
+
+############################################################
+# FIGURE 3C — LAKE ZURICH SPECIES
+############################################################
+
+readr::write_csv(
+  lake_plot_df %>%
+    dplyr::mutate(
+      Training_Q25 = q25_train,
+      Training_Q75 = q75_train
+    ) %>%
+    dplyr::select(
+      Species_ID,
+      Phylum,
+      Genus,
+      Rank,
+      TrophicIndex,
+      TrophicGroup,
+      Highlight,
+      Training_Q25,
+      Training_Q75
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_3c.csv"
+)
 ```
 
 ## Reviewer-facing methodological summary and interpretation
@@ -3163,6 +3209,38 @@ fig_model_justify_est
 
 ggsave("Fig_ModelJustification_BoxplotsPlusVariance_FINAL_EST.pdf",
        fig_model_justify_est, width = 9, height = 9, units = "in", device = pdf)
+
+############################################################
+# FIGURE 3A — INDIVIDUAL SOURCE DATA
+############################################################
+
+figure_3a_data <- pca_df %>%
+  dplyr::select(
+    Species_ID,
+    Classification,
+    dplyr::all_of(pca_vars)
+  ) %>%
+  tidyr::pivot_longer(
+    cols = dplyr::all_of(pca_vars),
+    names_to = "Trait",
+    values_to = "Raw_Trait_Value"
+  ) %>%
+  dplyr::group_by(Trait) %>%
+  dplyr::mutate(
+    Trait_z = as.numeric(scale(Raw_Trait_Value))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::left_join(
+    scores %>%
+      dplyr::select(Species_ID, PC1),
+    by = "Species_ID"
+  ) %>%
+  dplyr::rename(PC1_Score = PC1)
+
+readr::write_csv(
+  figure_3a_data,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_3a.csv"
+)
 ```
 
 

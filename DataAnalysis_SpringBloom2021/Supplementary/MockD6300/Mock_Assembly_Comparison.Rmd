@@ -1,0 +1,960 @@
+---
+title: Mock Assembly Strategy
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Clear R's Brain
+rm(list = ls())
+
+# Set the working directory
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/MockD6300/")
+
+# Load the libraries
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+# Load the color palette
+source("ColorPalette.R")
+
+# Load the data
+dat <- read_xlsx("../../../Data/Mock_Data/Genomic/Workflow_Comparison.xlsx", sheet = 1)
+glimpse(dat)
+```
+
+```{r}
+############################################################
+# Mock-community assembly and polishing analysis
+#
+# GOAL
+# Compare assembly contiguity, rRNA-gene recovery, assembly
+# quality and nucleotide accuracy across sequencing,
+# assembly and polishing strategies.
+#
+# INPUT
+# `dat`: First sheet of Workflow_Comparison.xlsx, loaded in
+# the preceding data-loading block.
+#
+# SELECTION
+# - Eight bacterial mock-community members
+# - Eukaryotic organisms are excluded
+# - Uncorrected assemblies are used for the comparisons
+#   between Reference, metaSpades, megahit, canu and metaFlye
+# - Six explicitly selected metaFlye workflows are used for
+#   the polishing comparison
+#
+# OUTPUT
+# Plot objects:
+# - Assembly_Contiguity_Comparison
+# - rRNA_Gene_Recovery
+# - Assembly_Quality_Comparison
+# - Polishing_Accuracy_Comparison
+#
+# PNG files:
+# - Fig_A4_Page/Assembly_Contiguity_Comparison.png
+# - Fig_A4_Page/rRNA_Gene_Recovery.png
+# - Fig_A4_Page/Assembly_Quality_Comparison.png
+# - Fig_A4_Page/Polishing_Accuracy_Comparison.png
+############################################################
+
+
+############################################################
+# Shared analysis and plotting settings
+############################################################
+
+# Define the order of organisms
+organism_levels <- c(
+  "Bacillus",
+  "Enterococcus",
+  "Escherichia",
+  "Lactobacillus",
+  "Listeria",
+  "Pseudomonas",
+  "Salmonella",
+  "Staphylococcus"
+)
+
+# Define the order of assembly workflows
+assembler_levels <- c(
+  "Reference",
+  "metaSpades",
+  "megahit",
+  "canu",
+  "metaFlye"
+)
+
+# Define the sequencing-technology order
+technology_levels <- c(
+  "Reference",
+  "Illumina",
+  "Nanopore"
+)
+
+# Colours reproduced from the original figures
+technology_colours <- c(
+  Reference = "#FFFFFF",
+  Illumina  = "#9ECAE1",
+  Nanopore  = "#FF6347"
+)
+
+# Standardize the variables used throughout the analysis
+workflow_data <- dat %>%
+  mutate(
+    Organism = factor(
+      trimws(as.character(ZymoBIOMICS.STD.refseq.v2)),
+      levels = organism_levels
+    ),
+
+    Technology = factor(
+      trimws(as.character(SequencingTechnology)),
+      levels = technology_levels
+    ),
+
+    Assembler_key = tolower(
+      gsub(
+        "[^[:alnum:]]",
+        "",
+        trimws(as.character(Assembler))
+      )
+    ),
+
+    Assembler_Plot = case_when(
+      Technology == "Reference"     ~ "Reference",
+      Assembler_key == "metaspades" ~ "metaSpades",
+      Assembler_key == "megahit"    ~ "megahit",
+      Assembler_key == "canu"       ~ "canu",
+      Assembler_key == "metaflye"   ~ "metaFlye",
+      TRUE                          ~ NA_character_
+    ),
+
+    Assembler_Plot = factor(
+      Assembler_Plot,
+      levels = assembler_levels
+    ),
+
+    Correction_Workflow = case_when(
+      is.na(Correction) ~ "Uncorrected",
+
+      trimws(as.character(Correction)) %in%
+        c("", "NA", "Uncorrected") ~ "Uncorrected",
+
+      TRUE ~ trimws(as.character(Correction))
+    )
+  ) %>%
+  filter(!is.na(Organism))
+
+# Select uncorrected assemblies for the general comparisons
+uncorrected_assembly_data <- workflow_data %>%
+  filter(
+    Correction_Workflow == "Uncorrected",
+    !is.na(Assembler_Plot)
+  )
+
+# Shared visual style
+mock_comparison_theme <- theme_bw(
+  base_size = 9,
+  base_family = "sans"
+) +
+  theme(
+    # Axis titles and labels
+    axis.title.x = element_text(
+      size = 9,
+      colour = "black",
+      margin = margin(t = 5)
+    ),
+
+    axis.title.y = element_blank(),
+
+    axis.text.x = element_text(
+      size = 7,
+      colour = "black",
+      angle = 45,
+      hjust = 1,
+      vjust = 1
+    ),
+
+    axis.text.y = element_text(
+      size = 7,
+      colour = "black"
+    ),
+
+    axis.ticks = element_line(
+      colour = "#666666",
+      linewidth = 0.30
+    ),
+
+    axis.ticks.length = grid::unit(1.5, "pt"),
+
+    # Show only horizontal gridlines positioned at
+    # the labelled major y-axis breaks
+    panel.grid.major.y = element_line(
+      colour = "#E5E5E5",
+      linewidth = 0.35
+    ),
+
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+
+    # Panel borders and spacing
+    panel.border = element_rect(
+      fill = NA,
+      colour = "#8C8C8C",
+      linewidth = 0.50
+    ),
+
+    panel.spacing = grid::unit(2.5, "pt"),
+
+    # Organism and metric labels
+    strip.background = element_rect(
+      fill = "#F0F0F0",
+      colour = "#8C8C8C",
+      linewidth = 0.50
+    ),
+
+    strip.text.x = element_text(
+      size = 8,
+      face = "bold",
+      colour = "black",
+      margin = margin(t = 2, b = 2)
+    ),
+
+    strip.text.y.left = element_text(
+      size = 8,
+      face = "bold",
+      colour = "black",
+      angle = 90,
+      margin = margin(l = 2, r = 2)
+    ),
+
+    # Legend
+    legend.position = "top",
+    legend.title = element_blank(),
+
+    legend.text = element_text(
+      size = 8,
+      colour = "black"
+    ),
+
+    legend.key = element_blank(),
+    legend.key.width = grid::unit(10, "pt"),
+    legend.key.height = grid::unit(8, "pt"),
+    legend.spacing.x = grid::unit(3, "pt"),
+    legend.margin = margin(t = 0, r = 0, b = 1, l = 0),
+
+    plot.margin = margin(t = 2, r = 5, b = 2, l = 2)
+  )
+
+
+############################################################
+# Assembly contiguity comparison
+#
+# Genome size, longest contig and number of contigs are
+# compared across the reference, two Illumina assemblers
+# and two Nanopore assemblers.
+############################################################
+
+# Data wrangling
+assembly_contiguity_data <- uncorrected_assembly_data %>%
+  select(
+    Organism,
+    Technology,
+    Assembler_Plot,
+    Genome_Size,
+    Longest_Contig,
+    Nr_Contigs
+  ) %>%
+  pivot_longer(
+    cols = c(
+      Genome_Size,
+      Longest_Contig,
+      Nr_Contigs
+    ),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = recode(
+      Metric,
+      Genome_Size    = "Genome size (bp)",
+      Longest_Contig = "Longest contig (bp)",
+      Nr_Contigs     = "Number of contigs"
+    ),
+
+    Metric = factor(
+      Metric,
+      levels = c(
+        "Genome size (bp)",
+        "Longest contig (bp)",
+        "Number of contigs"
+      )
+    )
+  )
+
+# Figure plotting
+Assembly_Contiguity_Comparison <- ggplot(
+  assembly_contiguity_data,
+  aes(
+    x = Assembler_Plot,
+    y = Value
+  )
+) +
+  geom_line(
+    aes(group = 1),
+    colour = "#BDBDBD",
+    linewidth = 0.45
+  ) +
+  geom_point(
+    aes(fill = Technology),
+    shape = 21,
+    size = 2.1,
+    stroke = 0.35,
+    colour = "#7F7F7F"
+  ) +
+  scale_x_discrete(
+    limits = assembler_levels,
+    drop = FALSE
+  ) +
+  scale_y_log10(
+    labels = scales::label_number(
+      big.mark = " ",
+      decimal.mark = "."
+    ),
+    expand = expansion(
+      mult = c(0.05, 0.08)
+    )
+  ) +
+  scale_fill_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE
+  ) +
+  facet_grid(
+    rows = vars(Metric),
+    cols = vars(Organism),
+    scales = "free_y",
+    switch = "y"
+  ) +
+  guides(
+    fill = guide_legend(
+      nrow = 1,
+      byrow = TRUE,
+      override.aes = list(
+        shape = 21,
+        size = 2.2,
+        stroke = 0.35,
+        colour = "#7F7F7F"
+      )
+    )
+  ) +
+  labs(
+    x = "Assembler",
+    y = NULL,
+    fill = NULL
+  ) +
+  mock_comparison_theme
+
+# Show the figure
+Assembly_Contiguity_Comparison
+
+# Export the figure
+ggsave(
+  filename = file.path(
+    
+    "Assembly_Contiguity_Comparison.png"
+  ),
+  plot = Assembly_Contiguity_Comparison,
+  device = "png",
+  width = 15,
+  height = 8.7,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+
+############################################################
+# rRNA-gene recovery
+#
+# Recovery of 5S, 16S and 23S rRNA genes is compared across
+# reference, Illumina and Nanopore assembly workflows.
+############################################################
+
+# Data wrangling
+rrna_recovery_data <- uncorrected_assembly_data %>%
+  select(
+    Organism,
+    Technology,
+    Assembler_Plot,
+    Nr_5S,
+    Nr_16S,
+    Nr_23S
+  ) %>%
+  pivot_longer(
+    cols = c(
+      Nr_5S,
+      Nr_16S,
+      Nr_23S
+    ),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = recode(
+      Metric,
+      Nr_5S  = "Recovered 5S rRNA genes",
+      Nr_16S = "Recovered 16S rRNA genes",
+      Nr_23S = "Recovered 23S rRNA genes"
+    ),
+
+    Metric = factor(
+      Metric,
+      levels = c(
+        "Recovered 5S rRNA genes",
+        "Recovered 16S rRNA genes",
+        "Recovered 23S rRNA genes"
+      )
+    )
+  )
+
+# Figure plotting
+rRNA_Gene_Recovery <- ggplot(
+  rrna_recovery_data,
+  aes(
+    x = Assembler_Plot,
+    y = Value
+  )
+) +
+  geom_line(
+    aes(group = 1),
+    colour = "#BDBDBD",
+    linewidth = 0.45
+  ) +
+  geom_point(
+    aes(fill = Technology),
+    shape = 21,
+    size = 2.1,
+    stroke = 0.35,
+    colour = "#7F7F7F"
+  ) +
+  scale_x_discrete(
+    limits = assembler_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(
+      big.mark = " ",
+      decimal.mark = "."
+    ),
+    expand = expansion(
+      mult = c(0.05, 0.08)
+    )
+  ) +
+  scale_fill_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE
+  ) +
+  facet_grid(
+    rows = vars(Metric),
+    cols = vars(Organism),
+    scales = "free_y",
+    switch = "y"
+  ) +
+  guides(
+    fill = guide_legend(
+      nrow = 1,
+      byrow = TRUE,
+      override.aes = list(
+        shape = 21,
+        size = 2.2,
+        stroke = 0.35,
+        colour = "#7F7F7F"
+      )
+    )
+  ) +
+  labs(
+    x = "Assembler",
+    y = NULL,
+    fill = NULL
+  ) +
+  mock_comparison_theme
+
+# Show the figure
+rRNA_Gene_Recovery
+
+# Export the figure
+ggsave(
+  filename = file.path(
+    
+    "rRNA_Gene_Recovery.png"
+  ),
+  plot = rRNA_Gene_Recovery,
+  device = "png",
+  width = 15,
+  height = 9,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+
+############################################################
+# Assembly quality comparison
+#
+# Completeness, contamination, reference similarity,
+# reference-aligned coverage and mismatch rates are compared
+# across the uncorrected assembly workflows.
+############################################################
+
+# Data wrangling
+assembly_quality_data <- uncorrected_assembly_data %>%
+  select(
+    Organism,
+    Technology,
+    Assembler_Plot,
+    checkM_completeness,
+    checkM_contamination,
+    average_nucleotide_identity_ani2,
+    average_coverage_ani2,
+    `Mismatches per 100kbp`
+  ) %>%
+  pivot_longer(
+    cols = c(
+      checkM_completeness,
+      checkM_contamination,
+      average_nucleotide_identity_ani2,
+      average_coverage_ani2,
+      `Mismatches per 100kbp`
+    ),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = recode(
+      Metric,
+
+      checkM_completeness =
+        "checkM completeness (%)",
+
+      checkM_contamination =
+        "checkM contamination (%)",
+
+      average_nucleotide_identity_ani2 =
+        "ANI to reference (%)",
+
+      average_coverage_ani2 =
+        "Reference-aligned coverage (%)",
+
+      `Mismatches per 100kbp` =
+        "Mismatches per 100 kbp"
+    ),
+
+    Metric = factor(
+      Metric,
+      levels = c(
+        "checkM completeness (%)",
+        "checkM contamination (%)",
+        "ANI to reference (%)",
+        "Reference-aligned coverage (%)",
+        "Mismatches per 100 kbp"
+      )
+    )
+  )
+
+# Figure plotting
+Assembly_Quality_Comparison <- ggplot(
+  assembly_quality_data,
+  aes(
+    x = Assembler_Plot,
+    y = Value
+  )
+) +
+  geom_line(
+    aes(group = 1),
+    colour = "#BDBDBD",
+    linewidth = 0.45
+  ) +
+  geom_point(
+    aes(fill = Technology),
+    shape = 21,
+    size = 2.1,
+    stroke = 0.35,
+    colour = "#7F7F7F"
+  ) +
+  scale_x_discrete(
+    limits = assembler_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(
+      big.mark = " ",
+      decimal.mark = "."
+    ),
+    expand = expansion(
+      mult = c(0.05, 0.08)
+    )
+  ) +
+  scale_fill_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE
+  ) +
+  facet_grid(
+    rows = vars(Metric),
+    cols = vars(Organism),
+    scales = "free_y",
+    switch = "y"
+  ) +
+  guides(
+    fill = guide_legend(
+      nrow = 1,
+      byrow = TRUE,
+      override.aes = list(
+        shape = 21,
+        size = 2.2,
+        stroke = 0.35,
+        colour = "#7F7F7F"
+      )
+    )
+  ) +
+  labs(
+    x = "Assembler",
+    y = NULL,
+    fill = NULL
+  ) +
+  mock_comparison_theme
+
+# Show the figure
+Assembly_Quality_Comparison
+
+# Export the figure
+ggsave(
+  filename = file.path(
+    
+    "Assembly_Quality_Comparison.png"
+  ),
+  plot = Assembly_Quality_Comparison,
+  device = "png",
+  width = 15,
+  height = 9,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+
+############################################################
+# Polishing accuracy comparison
+#
+# ANI, mismatch rates and indel rates are compared across
+# six explicitly selected metaFlye correction workflows.
+# The uncorrected metaFlye assembly is used as the baseline.
+############################################################
+
+# Map the exact input names to concise display labels
+correction_name_map <- c(
+  "metaFlye" =
+    "Uncorrected",
+
+  "Metaflye_Racon" =
+    "racon",
+
+  "Metaflye_Racon_Medaka" =
+    "racon_medaka",
+
+  "Metaflye_Racon_Medaka_Pilon" =
+    "racon_medaka_pilon",
+
+  "Metaflye_Racon_Medaka_Pilon_Pilon" =
+    "racon_medaka_pilon_pilon",
+
+  "Metaflye_3Racon_2Medaka_3Pilon" =
+    "racon3_medaka2_pilon3"
+)
+
+correction_levels <- unname(correction_name_map)
+
+# Data wrangling
+polishing_accuracy_data <- workflow_data %>%
+  filter(
+    Name %in% names(correction_name_map)
+  ) %>%
+  mutate(
+    Correction_Workflow = correction_name_map[
+      as.character(Name)
+    ],
+
+    Correction_Workflow = factor(
+      Correction_Workflow,
+      levels = correction_levels
+    )
+  ) %>%
+  select(
+    Organism,
+    Correction_Workflow,
+    average_nucleotide_identity_ani2,
+    `Mismatches per 100kbp`,
+    `Indels per 100 kbp`
+  ) %>%
+  pivot_longer(
+    cols = c(
+      average_nucleotide_identity_ani2,
+      `Mismatches per 100kbp`,
+      `Indels per 100 kbp`
+    ),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = recode(
+      Metric,
+
+      average_nucleotide_identity_ani2 =
+        "ANI to reference (%)",
+
+      `Mismatches per 100kbp` =
+        "Mismatches per 100 kbp",
+
+      `Indels per 100 kbp` =
+        "Indels per 100 kbp"
+    ),
+
+    Metric = factor(
+      Metric,
+      levels = c(
+        "ANI to reference (%)",
+        "Mismatches per 100 kbp",
+        "Indels per 100 kbp"
+      )
+    )
+  )
+
+# Figure plotting
+Polishing_Accuracy_Comparison <- ggplot(
+  polishing_accuracy_data,
+  aes(
+    x = Correction_Workflow,
+    y = Value
+  )
+) +
+  geom_line(
+    aes(group = 1),
+    colour = "#BDBDBD",
+    linewidth = 0.45
+  ) +
+  geom_point(
+    shape = 21,
+    size = 2.1,
+    stroke = 0.35,
+    colour = "#7F7F7F",
+    fill = technology_colours[["Nanopore"]]
+  ) +
+  scale_x_discrete(
+    limits = correction_levels,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(
+      big.mark = " ",
+      decimal.mark = "."
+    ),
+    expand = expansion(
+      mult = c(0.05, 0.08)
+    )
+  ) +
+  facet_grid(
+    rows = vars(Metric),
+    cols = vars(Organism),
+    scales = "free_y",
+    switch = "y"
+  ) +
+  labs(
+    x = "Correction workflow",
+    y = NULL
+  ) +
+  mock_comparison_theme +
+  theme(
+    legend.position = "none"
+  )
+
+# Show the figure
+Polishing_Accuracy_Comparison
+
+# Export the figure
+ggsave(
+  filename = file.path(
+    
+    "Polishing_Accuracy_Comparison.png"
+  ),
+  plot = Polishing_Accuracy_Comparison,
+  device = "png",
+  width = 15,
+  height = 9,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+```
+
+```{r}
+# ============================================================
+# Source data: Supplementary Figures 6-9
+# Run after creating the four plotting-data objects
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+# ============================================================
+# Supplementary Figure 6: assembly contiguity
+# One row = one organism × assembler × contiguity metric
+# ============================================================
+
+suppl_figure_6 <- assembly_contiguity_data |>
+  dplyr::transmute(
+    Organism = as.character(Organism),
+    Sequencing_Technology = as.character(Technology),
+    Assembler = as.character(Assembler_Plot),
+    Metric = as.character(Metric),
+    Value = as.numeric(Value)
+  ) |>
+  dplyr::filter(
+    is.finite(Value)
+  ) |>
+  dplyr::arrange(
+    Metric,
+    Organism,
+    Assembler
+  )
+
+readr::write_excel_csv(
+  suppl_figure_6,
+  file.path(source_dir, "Suppl_Figure_6.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Supplementary Figure 7: rRNA-gene recovery
+# One row = one organism × assembler × rRNA-gene metric
+# ============================================================
+
+suppl_figure_7 <- rrna_recovery_data |>
+  dplyr::transmute(
+    Organism = as.character(Organism),
+    Sequencing_Technology = as.character(Technology),
+    Assembler = as.character(Assembler_Plot),
+    Metric = as.character(Metric),
+    Recovered_Gene_Count = as.numeric(Value)
+  ) |>
+  dplyr::filter(
+    is.finite(Recovered_Gene_Count)
+  ) |>
+  dplyr::arrange(
+    Metric,
+    Organism,
+    Assembler
+  )
+
+readr::write_excel_csv(
+  suppl_figure_7,
+  file.path(source_dir, "Suppl_Figure_7.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Supplementary Figure 8: assembly quality
+# One row = one organism × assembler × quality metric
+# ============================================================
+
+suppl_figure_8 <- assembly_quality_data |>
+  dplyr::transmute(
+    Organism = as.character(Organism),
+    Sequencing_Technology = as.character(Technology),
+    Assembler = as.character(Assembler_Plot),
+    Metric = as.character(Metric),
+    Value = as.numeric(Value)
+  ) |>
+  dplyr::filter(
+    is.finite(Value)
+  ) |>
+  dplyr::arrange(
+    Metric,
+    Organism,
+    Assembler
+  )
+
+readr::write_excel_csv(
+  suppl_figure_8,
+  file.path(source_dir, "Suppl_Figure_8.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Supplementary Figure 9: polishing accuracy
+# One row = one organism × correction workflow × metric
+# ============================================================
+
+suppl_figure_9 <- polishing_accuracy_data |>
+  dplyr::transmute(
+    Organism = as.character(Organism),
+    Correction_Workflow = as.character(
+      Correction_Workflow
+    ),
+    Metric = as.character(Metric),
+    Value = as.numeric(Value)
+  ) |>
+  dplyr::filter(
+    is.finite(Value)
+  ) |>
+  dplyr::arrange(
+    Metric,
+    Organism,
+    Correction_Workflow
+  )
+
+readr::write_excel_csv(
+  suppl_figure_9,
+  file.path(source_dir, "Suppl_Figure_9.csv"),
+  na = ""
+)
+```
+

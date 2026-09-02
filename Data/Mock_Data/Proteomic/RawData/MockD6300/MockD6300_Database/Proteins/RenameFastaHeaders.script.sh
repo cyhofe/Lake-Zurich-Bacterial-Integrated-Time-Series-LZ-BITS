@@ -1,0 +1,10 @@
+rename.sh in=Bacillus_subtilis_protein.faa out=Bacillus_subtilis_protein.renamed.faa prefix=Bacillus_subtilis addprefix=t ignorejunk=t
+rename.sh in=Cryptococcus_neoformans_protein.faa out=Cryptococcus_neoformans_protein.renamed.faa prefix=Cryptococcus_neoformans addprefix=t ignorejunk=t
+rename.sh in=Enterococcus_faecalis_protein.faa out=Enterococcus_faecalis_protein.renamed.faa prefix=Enterococcus_faecalis addprefix=t ignorejunk=t
+rename.sh in=Escherichia_coli_protein.faa out=Escherichia_coli_protein.renamed.faa prefix=Escherichia_coli addprefix=t ignorejunk=t
+rename.sh in=Lactobacillus_fermentum_protein.faa out=Lactobacillus_fermentum_protein.renamed.faa prefix=Lactobacillus_fermentum addprefix=t ignorejunk=t
+rename.sh in=Listeria_monocytogenes_protein.faa out=Listeria_monocytogenes_protein.renamed.faa prefix=Listeria_monocytogenes addprefix=t ignorejunk=t
+rename.sh in=Pseudomonas_aeruginosa_protein.faa out=Pseudomonas_aeruginosa_protein.renamed.faa prefix=Pseudomonas_aeruginosa addprefix=t ignorejunk=t
+rename.sh in=Saccharomyces_cerevisiae_protein.faa out=Saccharomyces_cerevisiae_protein.renamed.faa prefix=Saccharomyces_cerevisiae addprefix=t ignorejunk=t
+rename.sh in=Salmonella_enterica_protein.faa out=Salmonella_enterica_protein.renamed.faa prefix=Salmonella_enterica addprefix=t ignorejunk=t
+rename.sh in=Staphylococcus_aureus_protein.faa out=Staphylococcus_aureus_protein.renamed.faa prefix=Staphylococcus_aureus addprefix=t ignorejunk=t

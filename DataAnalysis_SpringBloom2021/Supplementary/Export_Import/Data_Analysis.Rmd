@@ -1,0 +1,2422 @@
+---
+title: "Export Import Transporters"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+############################################################
+# 0) CLEAN START + LOAD PACKAGES + LOAD DATA
+#    (copy/paste as the first cell in your R notebook)
+############################################################
+
+rm(list = ls())
+
+# Avoid legacy plyr masking tidyverse verbs
+if ("package:dplyr" %in% search()) {
+  detach("package:dplyr", unload = TRUE, character.only = TRUE)
+}
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(scales)
+})
+
+# ---- Working directory (project root for this analysis) ----
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/Export_Import/")
+
+# ---- Data inputs (one line each) ----
+protein_final          <- read_csv("../../Figure_04/Data_Filtration/retained_protein_table.csv", show_col_types = FALSE)
+retained_species       <- read_csv("../../Figure_04/Data_Filtration/retained_species.csv", show_col_types = FALSE)
+retained_species_dates <- read_csv("../../Figure_04/Data_Filtration/retained_species_dates.csv", show_col_types = FALSE)
+
+gene_dat <- read_csv("../../../Data/Gene_Data/Final_Data/Gene_Table.csv", show_col_types = FALSE)
+
+transporter_table_raw <- read_csv(
+  "../../../Data/KEGG_Category_Data/Final_Data/KEGG_Transporter_Categories_Curated.csv",
+  show_col_types = FALSE
+)
+
+# ---- (Optional) quick sanity prints ----
+glimpse(protein_final)
+glimpse(retained_species)
+glimpse(retained_species_dates)
+glimpse(gene_dat)
+glimpse(transporter_table_raw)
+
+```
+
+
+```{r}
+############################################################
+# 1) DATA MANIPULATION + CONSTRUCTION OF THE TWO MAIN TABLES
+#
+# OUTPUT TABLES:
+#   (A) gene_retained_annot
+#       - genes from retained species only
+#       - transporter ontology added by KEGG_ID (KO)
+#       - Group_For_Plots added
+#       - KEGG_Subcategory added (mapped from proteomics annotations)
+#
+#   (B) protein_retained_annot
+#       - proteins restricted to the retained species×date universe
+#       - transporter ontology added by KEGG_ID (KO)
+#       - already contains Group_For_Plots + KEGG_Subcategory from protein_final
+#
+#   - strict enforcement of retained species×date universe for proteomics
+#   - one-row-per-KO transporter ontology to prevent double counting
+#   - explicit joins by Species_ID / Date / Protein_ID / KEGG_ID
+############################################################
+
+# ------------------------------------------------------------
+# A) Collapse transporter ontology to ONE ROW PER KO (KEGG_ID)
+#
+# Rationale:
+#   Some KOs appear multiple times in the curated transporter table
+#   (e.g. due to alternative hierarchical placements).
+#   To avoid double counting, we collapse to one row per KO and
+#   merge duplicated annotations by concatenating unique values
+#   with ";" for each annotation category.
+# ------------------------------------------------------------
+
+transporter_table_final <- transporter_table_raw %>%
+  mutate(across(everything(), as.character)) %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    Transporter_Family = paste(sort(unique(na.omit(Transporter_Family))), collapse = ";"),
+    major_group        = paste(sort(unique(na.omit(major_group))), collapse = ";"),
+    brite_id           = paste(sort(unique(na.omit(brite_id))), collapse = ";"),
+    brite_name         = paste(sort(unique(na.omit(brite_name))), collapse = ";"),
+    Path_L1            = paste(sort(unique(na.omit(Path_L1))), collapse = ";"),
+    Path_L2            = paste(sort(unique(na.omit(Path_L2))), collapse = ";"),
+    Path_L3            = paste(sort(unique(na.omit(Path_L3))), collapse = ";"),
+    Path_L4            = paste(sort(unique(na.omit(Path_L4))), collapse = ";"),
+    Substrate_Group   = paste(sort(unique(na.omit(Substrate_Group))), collapse = ";"),
+    Substrate_Category = paste(sort(unique(na.omit(Substrate_Category))), collapse = ";"),
+    Path_L5            = paste(sort(unique(na.omit(Path_L5))), collapse = ";"),
+    path               = paste(sort(unique(na.omit(path))), collapse = ";"),
+    .groups = "drop"
+  )
+
+# ------------------------------------------------------------
+# B) Build the *retained* proteomics table (species×date enforced)
+# ------------------------------------------------------------
+protein_retained_annot <- protein_final %>%
+  semi_join(retained_species_dates %>% select(Species_ID, Date), by = c("Species_ID", "Date")) %>%
+  left_join(gene_dat %>% select(Protein_ID, KEGG_ID) %>% distinct()) %>%
+  left_join(transporter_table_final, by = c("KEGG_ID","Substrate_Category","Transporter_Family"))
+
+# ------------------------------------------------------------
+# C) Build the *retained* gene table (species enforced)
+# ------------------------------------------------------------
+gene_retained_annot <- gene_dat %>%
+  semi_join(retained_species %>% select(Species_ID), by = "Species_ID") %>%
+  left_join(transporter_table_final, by = "KEGG_ID") %>%
+  left_join(retained_species %>% select(Species_ID, Group_For_Plots), by = c("Species_ID"))
+
+# ------------------------------------------------------------
+# D) Add KEGG_Subcategory to genes using a KEGG_ID -> KEGG_Subcategory map
+#    Source-of-truth: protein_retained_annot (observed, retained, annotated proteome)
+#    If a KEGG_ID maps to multiple KEGG_Subcategory strings, collapse with ";"
+# ------------------------------------------------------------
+kegg_subcat_map <- protein_retained_annot %>%
+  select(KEGG_ID, KEGG_Subcategory) %>%
+  filter(!is.na(KEGG_ID), !is.na(KEGG_Subcategory), KEGG_ID != "Unclassified") %>%
+  distinct() %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    KEGG_Subcategory = paste(sort(unique(KEGG_Subcategory)), collapse = ";"),
+    .groups = "drop"
+  )
+
+gene_retained_annot <- gene_retained_annot %>%
+  left_join(kegg_subcat_map, by = "KEGG_ID")
+
+# ------------------------------------------------------------
+# E) Minimal sanity checks (recommended)
+# ------------------------------------------------------------
+
+# 1) Proteomics: every row must be within retained species×date universe
+stopifnot(
+  nrow(anti_join(
+    protein_retained_annot %>% distinct(Species_ID, Date),
+    retained_species_dates %>% distinct(Species_ID, Date),
+    by = c("Species_ID", "Date")
+  )) == 0
+)
+
+# 2) Genes: every species must be in retained_species
+stopifnot(
+  nrow(anti_join(
+    gene_retained_annot %>% distinct(Species_ID),
+    retained_species %>% distinct(Species_ID),
+    by = "Species_ID"
+  )) == 0
+)
+
+# 3) Quick coverage diagnostics
+message("Proteins retained: ", nrow(protein_retained_annot))
+message("Species in proteomics retained: ", n_distinct(protein_retained_annot$Species_ID))
+message("Genes retained: ", nrow(gene_retained_annot))
+message("Species in genes retained: ", n_distinct(gene_retained_annot$Species_ID))
+
+# 4) Confirm KEGG_Subcategory was added to genes (not necessarily complete)
+gene_retained_annot %>%
+  summarise(
+    n_genes = n(),
+    n_with_kegg_id = sum(!is.na(KEGG_ID) & KEGG_ID != "Unclassified"),
+    n_with_subcat  = sum(!is.na(KEGG_Subcategory)),
+    prop_subcat_among_kegg = n_with_subcat / n_with_kegg_id
+  )
+
+# Optional: inspect final tables
+glimpse(protein_retained_annot)
+glimpse(gene_retained_annot)
+```
+
+
+```{r}
+############################################################
+# TRANSPORTER DIRECTION CLASSIFICATION
+#
+# Required objects already present in the R environment:
+#   1. gene_retained_annot
+#   2. protein_retained_annot
+#
+# Final mutually exclusive classes:
+#   - ABC import
+#   - ABC efflux
+#   - Unsure ABC
+#   - Non-ABC import
+#   - Non-ABC efflux
+#   - Unsure non-ABC
+#
+# Interpretation:
+#   - "Genetic potential" contains all encoded transporter
+#     Protein_IDs in gene_retained_annot.
+#
+#   - "Detected proteome" contains the same type of transporter
+#     Protein_IDs, but only when Protein_Abundance_IBAQ_Norm > 0
+#     on at least one sampling date.
+#
+# Important:
+#   Direction is assigned conservatively. Generic ATPases,
+#   permeases, channels, antiporters, and transporters without
+#   explicit directional evidence remain "Unsure".
+############################################################
+
+
+############################################################
+# 0) CHECK INPUTS AND DEFINE OUTPUT DIRECTORY
+############################################################
+
+stopifnot(
+  exists("gene_retained_annot"),
+  exists("protein_retained_annot")
+)
+
+required_gene_columns <- c(
+  "Species_ID", "Protein_ID", "KEGG_ID",
+  "KEGG_Annotation", "Transporter_Family",
+  "Path_L2", "Path_L3", "Path_L4", "Path_L5", "path",
+  "Substrate_Group", "Substrate_Category",
+  "Group_For_Plots"
+)
+
+required_protein_columns <- c(
+  "Date", "Species_ID", "Protein_ID", "KEGG_ID",
+  "Protein_Abundance_IBAQ_Norm",
+  "Group_For_Plots", "TrophicIndex"
+)
+
+stopifnot(
+  all(required_gene_columns %in% names(gene_retained_annot)),
+  all(required_protein_columns %in% names(protein_retained_annot))
+)
+
+output_dir <- "Transporter_Direction_Output"
+dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+
+
+############################################################
+# 1) HELPER FUNCTIONS AND FINAL CLASS ORDER
+############################################################
+
+# Collapse multiple non-empty annotations into one string.
+collapse_unique <- function(x) {
+  x <- str_trim(as.character(x))
+  x <- x[!is.na(x) & x != ""]
+
+  if (length(x) == 0) {
+    return(NA_character_)
+  }
+
+  paste(sort(unique(x)), collapse = "; ")
+}
+
+# Return the first non-missing value while preserving its type.
+first_non_missing <- function(x) {
+  valid <- which(!is.na(x))
+
+  if (length(valid) == 0) {
+    return(x[NA_integer_][1])
+  }
+
+  x[valid[1]]
+}
+
+class_levels <- c(
+  "ABC import",
+  "ABC efflux",
+  "Unsure ABC",
+  "Non-ABC import",
+  "Non-ABC efflux",
+  "Unsure non-ABC"
+)
+
+group_levels <- c(
+  "Oligotroph",
+  "Intermediate",
+  "Copiotroph"
+)
+
+
+############################################################
+# 2) BUILD ONE TRANSPORTER CATALOGUE PER KEGG ORTHOLOGY
+#
+# Transporter_Family determines ABC versus non-ABC.
+#
+# Path_L2 to Path_L5 and path provide the KEGG transporter
+# hierarchy used to determine import versus efflux.
+############################################################
+
+ko_annotations <- gene_retained_annot %>%
+  filter(
+    !is.na(Transporter_Family),
+    str_trim(Transporter_Family) != "",
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    Transporter_Family = collapse_unique(Transporter_Family),
+    KEGG_Annotation    = collapse_unique(KEGG_Annotation),
+    Path_L2            = collapse_unique(Path_L2),
+    Path_L3            = collapse_unique(Path_L3),
+    Path_L4            = collapse_unique(Path_L4),
+    Path_L5            = collapse_unique(Path_L5),
+    path               = collapse_unique(path),
+    Substrate_Group    = collapse_unique(Substrate_Group),
+    Substrate_Category = collapse_unique(Substrate_Category),
+    .groups = "drop"
+  )
+
+stopifnot(
+  nrow(ko_annotations) == n_distinct(ko_annotations$KEGG_ID)
+)
+
+
+############################################################
+# 3) RECORD HOW OFTEN EACH TRANSPORTER KO OCCURS
+#
+# These counts help prioritize the later manual review:
+#   - KOs detected in the proteome are most important.
+#   - Frequently encoded KOs affect more MAGs/proteins.
+############################################################
+
+ko_genome_usage <- gene_retained_annot %>%
+  filter(
+    !is.na(Transporter_Family),
+    str_trim(Transporter_Family) != "",
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  distinct(Species_ID, Protein_ID, KEGG_ID) %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    N_Encoded_ProteinIDs = n(),
+    N_Genomes_Encoded    = n_distinct(Species_ID),
+    .groups = "drop"
+  )
+
+ko_proteome_usage <- protein_retained_annot %>%
+  filter(
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified",
+    !is.na(Protein_Abundance_IBAQ_Norm),
+    Protein_Abundance_IBAQ_Norm > 0
+  ) %>%
+  semi_join(ko_annotations, by = "KEGG_ID") %>%
+  distinct(Species_ID, Protein_ID, KEGG_ID) %>%
+  group_by(KEGG_ID) %>%
+  summarise(
+    N_Detected_ProteinIDs = n(),
+    N_Genomes_Detected    = n_distinct(Species_ID),
+    .groups = "drop"
+  )
+
+
+############################################################
+# 4) DEFINE CONSERVATIVE DIRECTIONAL EVIDENCE
+#
+# Efflux evidence:
+#   Only explicit outward-transport terms are used.
+#   Generic "transporter", "permease", "ATPase", "antiporter",
+#   or a transported substrate alone are NOT sufficient.
+#
+# Import evidence:
+#   Explicit uptake/import terms, substrate-binding proteins,
+#   outer-membrane uptake receptors, PTS systems, and the five
+#   established KEGG prokaryotic ABC-importer branches.
+#
+# If both import and efflux evidence are found, the KO remains
+# Unsure so it can be checked manually.
+############################################################
+
+efflux_pattern <- regex(
+  paste(
+    c(
+      "\\befflux\\b",
+      "\\befflux pump\\b",
+      "\\bexporter\\b",
+      "\\bexport system\\b",
+      "\\bexport protein\\b",
+      "\\bexporting atpase\\b",
+      "\\bextrusion\\b",
+      "\\bmultidrug\\b",
+      "\\bdrug resistance\\b",
+      "\\bantibiotic resistance\\b",
+      "\\bantimicrobial resistance\\b",
+      "\\btoxin exporter\\b",
+      "\\btoxin extrusion\\b",
+      "\\bcation efflux\\b",
+      "\\bmetal efflux\\b",
+      "\\bheavy metal resistance\\b",
+      "\\barsenite exporter\\b",
+      "\\barsenical pump\\b",
+      "\\bchromate exporter\\b",
+      "\\bfluoride exporter\\b",
+      "\\bbacteriocin exporter\\b",
+      "\\blantibiotic exporter\\b"
+    ),
+    collapse = "|"
+  ),
+  ignore_case = TRUE
+)
+
+import_pattern <- regex(
+  paste(
+    c(
+      "\\bimporter\\b",
+      "\\bimport system\\b",
+      "\\buptake\\b",
+      "\\binflux\\b",
+      "substrate[- ]binding protein",
+      "solute[- ]binding protein",
+      "outer ?membrane receptor",
+      "\\bsymporter\\b"
+    ),
+    collapse = "|"
+  ),
+  ignore_case = TRUE
+)
+
+# KEGG prokaryotic ABC branches that primarily describe
+# nutrient and ion import systems.
+abc_importer_branch_pattern <- regex(
+  paste(
+    c(
+      "saccharide.*polyol.*lipid transporters",
+      "phosphate.*amino acid transporters",
+      "peptide.*nickel transporters",
+      "metallic cation.*iron[- ]siderophore.*vitamin b12 transporters",
+      "mineral.*organic ion transporters"
+    ),
+    collapse = "|"
+  ),
+  ignore_case = TRUE
+)
+
+# MFS "Drug transporters" are provisionally classified as
+# efflux because this branch represents drug-efflux systems.
+mfs_drug_branch_pattern <- regex(
+  "drug transporters",
+  ignore_case = TRUE
+)
+
+# PTS systems mediate uptake and phosphorylation of substrates.
+pts_pattern <- regex(
+  "phosphotransferase system|\\bPTS\\b",
+  ignore_case = TRUE
+)
+
+
+############################################################
+# 5) AUTOMATIC KO-LEVEL CLASSIFICATION
+############################################################
+
+ko_auto <- ko_annotations %>%
+  left_join(ko_genome_usage, by = "KEGG_ID") %>%
+  left_join(ko_proteome_usage, by = "KEGG_ID") %>%
+  mutate(
+    across(
+      c(
+        N_Encoded_ProteinIDs,
+        N_Genomes_Encoded,
+        N_Detected_ProteinIDs,
+        N_Genomes_Detected
+      ),
+      ~replace_na(.x, 0L)
+    ),
+
+    # Combine all informative annotation fields for searching.
+    Search_Text = str_squish(str_c(
+      coalesce(Path_L2, ""),
+      coalesce(Path_L3, ""),
+      coalesce(Path_L4, ""),
+      coalesce(Path_L5, ""),
+      coalesce(path, ""),
+      coalesce(KEGG_Annotation, ""),
+      sep = " | "
+    )),
+
+    # ABC can also occur in a semicolon-collapsed annotation.
+    ABC_Flag = str_detect(
+      Transporter_Family,
+      regex("(^|;\\s*)ABC(\\s*;|$)", ignore_case = TRUE)
+    ),
+
+    Mechanism = if_else(
+      ABC_Flag,
+      "ABC",
+      "Non-ABC"
+    ),
+
+    # A semicolon together with ABC indicates that the same KO
+    # received more than one family annotation.
+    Mechanism_Conflict = ABC_Flag &
+      str_detect(Transporter_Family, fixed(";")),
+
+    # Explicit outward-transport annotation.
+    Explicit_Efflux = str_detect(
+      Search_Text,
+      efflux_pattern
+    ),
+
+    # MFS drug-transporter branch provides additional efflux evidence.
+    MFS_Drug_Efflux = Mechanism == "Non-ABC" &
+      str_detect(coalesce(Path_L3, ""), mfs_drug_branch_pattern),
+
+    Efflux_Evidence = Explicit_Efflux | MFS_Drug_Efflux,
+
+    # Explicit import or uptake description.
+    Explicit_Import = str_detect(
+      Search_Text,
+      import_pattern
+    ),
+
+    # KEGG ABC nutrient/ion importer branches.
+    ABC_Importer_Branch = Mechanism == "ABC" &
+      str_detect(
+        coalesce(Path_L3, ""),
+        abc_importer_branch_pattern
+      ),
+
+    # Phosphotransferase systems are non-ABC uptake systems.
+    PTS_Import = Mechanism == "Non-ABC" &
+      str_detect(Search_Text, pts_pattern),
+
+    Import_Evidence = Explicit_Import |
+      ABC_Importer_Branch |
+      PTS_Import,
+
+    # Conservative six-class automatic assignment.
+    Auto_Class = case_when(
+      Mechanism_Conflict ~ "Unsure ABC",
+
+      Efflux_Evidence & Import_Evidence &
+        Mechanism == "ABC" ~ "Unsure ABC",
+
+      Efflux_Evidence & Import_Evidence &
+        Mechanism == "Non-ABC" ~ "Unsure non-ABC",
+
+      Efflux_Evidence &
+        Mechanism == "ABC" ~ "ABC efflux",
+
+      Efflux_Evidence &
+        Mechanism == "Non-ABC" ~ "Non-ABC efflux",
+
+      Import_Evidence &
+        Mechanism == "ABC" ~ "ABC import",
+
+      Import_Evidence &
+        Mechanism == "Non-ABC" ~ "Non-ABC import",
+
+      Mechanism == "ABC" ~ "Unsure ABC",
+
+      TRUE ~ "Unsure non-ABC"
+    ),
+
+    Auto_Rule = case_when(
+      Mechanism_Conflict ~
+        "Conflicting ABC/non-ABC family annotations",
+
+      Efflux_Evidence & Import_Evidence ~
+        "Both import and efflux evidence detected",
+
+      Explicit_Efflux ~
+        "Explicit efflux/export annotation",
+
+      MFS_Drug_Efflux ~
+        "KEGG MFS drug-transporter branch",
+
+      Explicit_Import ~
+        "Explicit import/uptake annotation",
+
+      ABC_Importer_Branch ~
+        "KEGG prokaryotic ABC-importer branch",
+
+      PTS_Import ~
+        "Phosphotransferase uptake system",
+
+      TRUE ~
+        "No unambiguous directional evidence"
+    ),
+
+    Review_Priority = case_when(
+      N_Detected_ProteinIDs > 0 ~ 1L,
+      N_Encoded_ProteinIDs > 0  ~ 2L,
+      TRUE                      ~ 3L
+    )
+  )
+
+
+############################################################
+# 6) OPTIONAL MANUAL OVERRIDES
+#
+# On the first run, the curation CSV is created with an empty
+# Manual_Class column.
+#
+# To revise a KO later:
+#   1. Open Transporter_KO_Direction_Curation.csv
+#   2. Enter one valid class into Manual_Class
+#   3. Add an explanation under Manual_Notes
+#   4. Save the CSV
+#   5. Re-run this complete code block
+#
+# Do not edit Auto_Class. Manual_Class overrides Auto_Class.
+############################################################
+
+curation_path <- file.path(
+  output_dir,
+  "Transporter_KO_Direction_Curation.csv"
+)
+
+if (file.exists(curation_path)) {
+
+  previous_curation <- read_csv(
+    curation_path,
+    show_col_types = FALSE
+  )
+
+  if (!"Manual_Class" %in% names(previous_curation)) {
+    previous_curation$Manual_Class <- NA_character_
+  }
+
+  if (!"Manual_Notes" %in% names(previous_curation)) {
+    previous_curation$Manual_Notes <- NA_character_
+  }
+
+  manual_overrides <- previous_curation %>%
+    transmute(
+      KEGG_ID = as.character(KEGG_ID),
+
+      Manual_Class = na_if(
+        str_trim(as.character(Manual_Class)),
+        ""
+      ),
+
+      Manual_Notes = na_if(
+        str_trim(as.character(Manual_Notes)),
+        ""
+      )
+    ) %>%
+    distinct(KEGG_ID, .keep_all = TRUE)
+
+} else {
+
+  manual_overrides <- tibble(
+    KEGG_ID = character(),
+    Manual_Class = character(),
+    Manual_Notes = character()
+  )
+}
+
+# Stop if a manually entered class does not exactly match one
+# of the six permitted class names.
+invalid_manual_classes <- setdiff(
+  na.omit(unique(manual_overrides$Manual_Class)),
+  class_levels
+)
+
+if (length(invalid_manual_classes) > 0) {
+  stop(
+    "Invalid Manual_Class value(s): ",
+    paste(invalid_manual_classes, collapse = ", "),
+    "\nAllowed values are: ",
+    paste(class_levels, collapse = ", ")
+  )
+}
+
+ko_catalogue <- ko_auto %>%
+  left_join(manual_overrides, by = "KEGG_ID") %>%
+  mutate(
+    Final_Class = coalesce(
+      Manual_Class,
+      Auto_Class
+    ),
+
+    Needs_Review = Final_Class %in% c(
+      "Unsure ABC",
+      "Unsure non-ABC"
+    )
+  ) %>%
+  arrange(
+    Review_Priority,
+    Needs_Review,
+    Final_Class,
+    desc(N_Detected_ProteinIDs),
+    desc(N_Encoded_ProteinIDs),
+    KEGG_ID
+  ) %>%
+  select(
+    KEGG_ID,
+    Final_Class,
+    Manual_Class,
+    Auto_Class,
+    Mechanism,
+    Needs_Review,
+    Auto_Rule,
+    Manual_Notes,
+    Review_Priority,
+    N_Encoded_ProteinIDs,
+    N_Genomes_Encoded,
+    N_Detected_ProteinIDs,
+    N_Genomes_Detected,
+    Transporter_Family,
+    Substrate_Group,
+    Substrate_Category,
+    Path_L2,
+    Path_L3,
+    Path_L4,
+    Path_L5,
+    KEGG_Annotation,
+    path,
+    Mechanism_Conflict,
+    Efflux_Evidence,
+    Import_Evidence,
+    Explicit_Efflux,
+    MFS_Drug_Efflux,
+    Explicit_Import,
+    ABC_Importer_Branch,
+    PTS_Import,
+    Search_Text
+  )
+
+stopifnot(
+  all(ko_catalogue$Final_Class %in% class_levels),
+  nrow(ko_catalogue) == n_distinct(ko_catalogue$KEGG_ID)
+)
+
+# This file can be edited manually and safely reused.
+write_csv(
+  ko_catalogue,
+  curation_path,
+  na = ""
+)
+
+
+############################################################
+# 7) CREATE THE GENETIC-POTENTIAL TRANSPORTER TABLE
+#
+# One row represents one encoded transporter Protein_ID.
+############################################################
+
+ko_classification_key <- ko_catalogue %>%
+  select(
+    KEGG_ID,
+    Final_Class,
+    Auto_Class,
+    Manual_Class,
+    Auto_Rule,
+    Manual_Notes,
+    Needs_Review
+  )
+
+gene_transporter_ids <- gene_retained_annot %>%
+  filter(
+    !is.na(Transporter_Family),
+    str_trim(Transporter_Family) != "",
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  inner_join(
+    ko_classification_key,
+    by = "KEGG_ID"
+  ) %>%
+  select(
+    Species_ID,
+    Contig_ID,
+    Protein_ID,
+    KEGG_ID,
+    Group_For_Plots,
+    Final_Class,
+    Auto_Class,
+    Manual_Class,
+    Auto_Rule,
+    Manual_Notes,
+    Needs_Review,
+    Transporter_Family,
+    Substrate_Group,
+    Substrate_Category,
+    Path_L2,
+    Path_L3,
+    Path_L4,
+    Path_L5,
+    KEGG_Annotation,
+    path
+  ) %>%
+  distinct(
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    .keep_all = TRUE
+  )
+
+
+############################################################
+# 8) CREATE THE DETECTED-PROTEOME TRANSPORTER TABLE
+#
+# A Protein_ID is retained when normalized iBAQ is above zero
+# on at least one date.
+#
+# Multiple positive dates are collapsed to one Protein_ID row.
+############################################################
+
+protein_transporter_positive_rows <- protein_retained_annot %>%
+  filter(
+    !is.na(Protein_Abundance_IBAQ_Norm),
+    Protein_Abundance_IBAQ_Norm > 0,
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  inner_join(
+    ko_classification_key,
+    by = "KEGG_ID"
+  )
+
+protein_transporter_ids <- protein_transporter_positive_rows %>%
+  group_by(
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    Final_Class,
+    Auto_Class,
+    Manual_Class,
+    Auto_Rule,
+    Manual_Notes,
+    Needs_Review
+  ) %>%
+  summarise(
+    Group_For_Plots = first_non_missing(Group_For_Plots),
+    TrophicIndex     = first_non_missing(TrophicIndex),
+
+    Transporter_Family = collapse_unique(Transporter_Family),
+    Substrate_Group    = collapse_unique(Substrate_Group),
+    Substrate_Category = collapse_unique(Substrate_Category),
+    Path_L2            = collapse_unique(Path_L2),
+    Path_L3            = collapse_unique(Path_L3),
+    Path_L4            = collapse_unique(Path_L4),
+    Path_L5            = collapse_unique(Path_L5),
+    KEGG_Annotation    = collapse_unique(KEGG_Annotation),
+    path               = collapse_unique(path),
+
+    N_Dates_Detected = n_distinct(Date),
+
+    Mean_IBAQ_Norm_Positive = mean(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+
+    Maximum_IBAQ_Norm = max(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+
+    Sum_IBAQ_Norm_Across_Dates = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  )
+
+
+############################################################
+# 9) CHECK THAT EACH PROTEIN_ID HAS ONLY ONE CLASS
+############################################################
+
+gene_class_conflicts <- gene_transporter_ids %>%
+  distinct(Species_ID, Protein_ID, Final_Class) %>%
+  count(Species_ID, Protein_ID, name = "N_Classes") %>%
+  filter(N_Classes > 1)
+
+protein_class_conflicts <- protein_transporter_ids %>%
+  distinct(Species_ID, Protein_ID, Final_Class) %>%
+  count(Species_ID, Protein_ID, name = "N_Classes") %>%
+  filter(N_Classes > 1)
+
+if (nrow(gene_class_conflicts) > 0) {
+  write_csv(
+    gene_class_conflicts,
+    file.path(output_dir, "CHECK_Gene_ProteinID_Class_Conflicts.csv")
+  )
+
+  stop(
+    "Some encoded Protein_IDs have more than one transporter class. ",
+    "See CHECK_Gene_ProteinID_Class_Conflicts.csv."
+  )
+}
+
+if (nrow(protein_class_conflicts) > 0) {
+  write_csv(
+    protein_class_conflicts,
+    file.path(output_dir, "CHECK_Protein_ProteinID_Class_Conflicts.csv")
+  )
+
+  stop(
+    "Some detected Protein_IDs have more than one transporter class. ",
+    "See CHECK_Protein_ProteinID_Class_Conflicts.csv."
+  )
+}
+
+
+############################################################
+# 10) CONFIRM THAT DETECTED TRANSPORTERS EXIST IN THE GENOME
+############################################################
+
+detected_not_in_genome <- protein_transporter_ids %>%
+  select(Species_ID, Protein_ID, KEGG_ID) %>%
+  distinct() %>%
+  anti_join(
+    gene_transporter_ids %>%
+      select(Species_ID, Protein_ID, KEGG_ID) %>%
+      distinct(),
+    by = c("Species_ID", "Protein_ID", "KEGG_ID")
+  )
+
+if (nrow(detected_not_in_genome) > 0) {
+  write_csv(
+    detected_not_in_genome,
+    file.path(output_dir, "CHECK_Detected_Transporters_Not_In_Gene_Table.csv")
+  )
+
+  stop(
+    "Some detected transporter Protein_IDs were not found in ",
+    "gene_transporter_ids. See the exported CHECK file."
+  )
+}
+
+
+############################################################
+# 11) BUILD THE SPECIES METADATA TABLE
+############################################################
+
+species_group_check <- gene_retained_annot %>%
+  filter(!is.na(Group_For_Plots)) %>%
+  distinct(Species_ID, Group_For_Plots) %>%
+  count(Species_ID, name = "N_Groups") %>%
+  filter(N_Groups > 1)
+
+if (nrow(species_group_check) > 0) {
+  stop("At least one Species_ID has multiple Group_For_Plots values.")
+}
+
+species_trophic_index <- protein_retained_annot %>%
+  group_by(Species_ID) %>%
+  summarise(
+    TrophicIndex = first_non_missing(TrophicIndex),
+    .groups = "drop"
+  )
+
+species_key <- gene_retained_annot %>%
+  group_by(Species_ID) %>%
+  summarise(
+    Group_For_Plots = first_non_missing(Group_For_Plots),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    species_trophic_index,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Trophic_Group = case_when(
+      Group_For_Plots %in% c("Oligo_like", "Oligotroph") ~
+        "Oligotroph",
+
+      Group_For_Plots == "Intermediate" ~
+        "Intermediate",
+
+      Group_For_Plots %in% c("Copio_like", "Copiotroph") ~
+        "Copiotroph",
+
+      TRUE ~ as.character(Group_For_Plots)
+    ),
+
+    Trophic_Group = factor(
+      Trophic_Group,
+      levels = group_levels
+    )
+  )
+
+
+############################################################
+# 12) FUNCTION TO CREATE IDENTICAL SPECIES-LEVEL SUMMARIES
+#
+# The same function is used for:
+#   - all encoded transporter Protein_IDs;
+#   - detected transporter Protein_IDs.
+#
+# This ensures directly comparable panels.
+############################################################
+
+make_species_transporter_summary <- function(
+    transporter_ids,
+    dataset_label,
+    species_key,
+    class_levels) {
+
+  observed_counts <- transporter_ids %>%
+    distinct(
+      Species_ID,
+      Protein_ID,
+      Final_Class
+    ) %>%
+    count(
+      Species_ID,
+      Final_Class,
+      name = "N_Transporter_ProteinIDs"
+    )
+
+  full_grid <- tidyr::crossing(
+    Species_ID = species_key$Species_ID,
+    Final_Class = class_levels
+  )
+
+  full_grid %>%
+    left_join(
+      observed_counts,
+      by = c("Species_ID", "Final_Class")
+    ) %>%
+    mutate(
+      N_Transporter_ProteinIDs = replace_na(
+        N_Transporter_ProteinIDs,
+        0L
+      )
+    ) %>%
+    left_join(
+      species_key,
+      by = "Species_ID"
+    ) %>%
+    group_by(Species_ID) %>%
+    mutate(
+      Total_Transporter_ProteinIDs =
+        sum(N_Transporter_ProteinIDs),
+
+      Proportion = if_else(
+        Total_Transporter_ProteinIDs > 0,
+        N_Transporter_ProteinIDs /
+          Total_Transporter_ProteinIDs,
+        NA_real_
+      )
+    ) %>%
+    ungroup() %>%
+    mutate(
+      Dataset = dataset_label,
+
+      Final_Class = factor(
+        Final_Class,
+        levels = class_levels
+      )
+    ) %>%
+    arrange(
+      Trophic_Group,
+      TrophicIndex,
+      Species_ID,
+      Final_Class
+    )
+}
+
+
+############################################################
+# 13) CREATE GENOME AND DETECTED-PROTEOME SUMMARIES
+############################################################
+
+genome_species_summary <- make_species_transporter_summary(
+  transporter_ids = gene_transporter_ids,
+  dataset_label = "Genetic potential",
+  species_key = species_key,
+  class_levels = class_levels
+)
+
+proteome_species_summary <- make_species_transporter_summary(
+  transporter_ids = protein_transporter_ids,
+  dataset_label = "Detected proteome",
+  species_key = species_key,
+  class_levels = class_levels
+)
+
+transporter_species_overview_long <- bind_rows(
+  genome_species_summary,
+  proteome_species_summary
+) %>%
+  mutate(
+    Dataset = factor(
+      Dataset,
+      levels = c(
+        "Genetic potential",
+        "Detected proteome"
+      )
+    )
+  )
+
+
+############################################################
+# 14) OPTIONAL WIDE-FORMAT SPECIES TABLE
+############################################################
+
+transporter_species_overview_wide <-
+  transporter_species_overview_long %>%
+  mutate(
+    Class_Name = as.character(Final_Class),
+    Class_Name = str_replace_all(
+      Class_Name,
+      "Non-ABC",
+      "NonABC"
+    ),
+    Class_Name = str_replace_all(
+      Class_Name,
+      "[^A-Za-z0-9]+",
+      "_"
+    )
+  ) %>%
+  select(
+    Dataset,
+    Species_ID,
+    Trophic_Group,
+    TrophicIndex,
+    Total_Transporter_ProteinIDs,
+    Class_Name,
+    N_Transporter_ProteinIDs,
+    Proportion
+  ) %>%
+  pivot_wider(
+    names_from = Class_Name,
+    values_from = c(
+      N_Transporter_ProteinIDs,
+      Proportion
+    ),
+    names_glue = "{.value}_{Class_Name}"
+  )
+
+
+############################################################
+# 15) CREATE THE UNSURE LISTS FOR LATER MANUAL CHECKING
+############################################################
+
+unsure_ko_catalogue <- ko_catalogue %>%
+  filter(
+    Final_Class %in% c(
+      "Unsure ABC",
+      "Unsure non-ABC"
+    )
+  ) %>%
+  arrange(
+    Review_Priority,
+    desc(N_Detected_ProteinIDs),
+    desc(N_Encoded_ProteinIDs),
+    Final_Class,
+    KEGG_ID
+  )
+
+unsure_gene_ids <- gene_transporter_ids %>%
+  filter(
+    Final_Class %in% c(
+      "Unsure ABC",
+      "Unsure non-ABC"
+    )
+  ) %>%
+  arrange(
+    Final_Class,
+    KEGG_ID,
+    Species_ID,
+    Protein_ID
+  )
+
+unsure_protein_ids <- protein_transporter_ids %>%
+  filter(
+    Final_Class %in% c(
+      "Unsure ABC",
+      "Unsure non-ABC"
+    )
+  ) %>%
+  arrange(
+    Final_Class,
+    KEGG_ID,
+    Species_ID,
+    Protein_ID
+  )
+
+
+############################################################
+# 16) EXPORT ALL TABLES
+############################################################
+
+write_csv(
+  gene_transporter_ids,
+  file.path(
+    output_dir,
+    "Transporter_GeneticPotential_ProteinIDs.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  protein_transporter_ids,
+  file.path(
+    output_dir,
+    "Transporter_DetectedProteome_ProteinIDs.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  transporter_species_overview_long,
+  file.path(
+    output_dir,
+    "Transporter_Species_Overview_Long.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  transporter_species_overview_wide,
+  file.path(
+    output_dir,
+    "Transporter_Species_Overview_Wide.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  unsure_ko_catalogue,
+  file.path(
+    output_dir,
+    "Transporter_Unsure_KOs.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  unsure_gene_ids,
+  file.path(
+    output_dir,
+    "Transporter_Unsure_GeneticPotential_ProteinIDs.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  unsure_protein_ids,
+  file.path(
+    output_dir,
+    "Transporter_Unsure_DetectedProteome_ProteinIDs.csv"
+  ),
+  na = ""
+)
+
+
+############################################################
+# 17) FINAL DIAGNOSTICS
+############################################################
+
+message(
+  "Retained species: ",
+  n_distinct(species_key$Species_ID)
+)
+
+message(
+  "Encoded transporter Protein_IDs: ",
+  n_distinct(gene_transporter_ids$Protein_ID)
+)
+
+message(
+  "Detected transporter Protein_IDs: ",
+  n_distinct(protein_transporter_ids$Protein_ID)
+)
+
+message(
+  "Transporter KOs requiring review: ",
+  nrow(unsure_ko_catalogue)
+)
+
+message("\nKO classification:")
+print(
+  ko_catalogue %>%
+    count(Final_Class, name = "N_KOs") %>%
+    complete(
+      Final_Class = class_levels,
+      fill = list(N_KOs = 0L)
+    ) %>%
+    arrange(match(Final_Class, class_levels))
+)
+
+message("\nEncoded Protein_ID classification:")
+print(
+  gene_transporter_ids %>%
+    distinct(Species_ID, Protein_ID, Final_Class) %>%
+    count(Final_Class, name = "N_Encoded_ProteinIDs") %>%
+    complete(
+      Final_Class = class_levels,
+      fill = list(N_Encoded_ProteinIDs = 0L)
+    ) %>%
+    arrange(match(Final_Class, class_levels))
+)
+
+message("\nDetected Protein_ID classification:")
+print(
+  protein_transporter_ids %>%
+    distinct(Species_ID, Protein_ID, Final_Class) %>%
+    count(Final_Class, name = "N_Detected_ProteinIDs") %>%
+    complete(
+      Final_Class = class_levels,
+      fill = list(N_Detected_ProteinIDs = 0L)
+    ) %>%
+    arrange(match(Final_Class, class_levels))
+)
+
+message(
+  "\nFinished. Tables saved in: ",
+  normalizePath(output_dir)
+)
+```
+
+```{r}
+############################################################
+# TRANSPORTER OVERVIEW FIGURE
+#
+# Builds three aligned nested/grouped bar plots:
+#
+#   A. Genetic potential
+#      Distinct encoded transporter Protein_IDs per MAG
+#
+#   B. Detected proteome
+#      Distinct transporter Protein_IDs detected at least once
+#      with Protein_Abundance_IBAQ_Norm > 0
+#
+#   C. Protein abundance
+#      For every species × date × transporter class:
+#        sum Protein_Abundance_IBAQ_Norm across proteins
+#      Then:
+#        mean across retained dates for each species
+#        mean ± SD across species in each trophic group
+#
+# Required existing objects:
+#   - gene_retained_annot
+#   - protein_retained_annot
+#   - ko_catalogue
+#
+# Optional but recommended existing object:
+#   - retained_species_dates
+#
+# ko_catalogue must contain:
+#   - KEGG_ID
+#   - Final_Class
+############################################################
+
+
+############################################################
+# 0) PACKAGES AND INPUT CHECKS
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(readr)
+  library(ggplot2)
+  library(scales)
+})
+
+if (!requireNamespace("patchwork", quietly = TRUE)) {
+  stop(
+    "Package 'patchwork' is required to combine the panels.\n",
+    "Install it once with: install.packages('patchwork')"
+  )
+}
+
+stopifnot(
+  exists("gene_retained_annot"),
+  exists("protein_retained_annot"),
+  exists("ko_catalogue")
+)
+
+required_gene_columns <- c(
+  "Species_ID",
+  "Protein_ID",
+  "KEGG_ID",
+  "Transporter_Family",
+  "Group_For_Plots"
+)
+
+required_protein_columns <- c(
+  "Date",
+  "Species_ID",
+  "Protein_ID",
+  "KEGG_ID",
+  "Protein_Abundance_IBAQ_Norm",
+  "Group_For_Plots",
+  "TrophicIndex"
+)
+
+required_ko_columns <- c(
+  "KEGG_ID",
+  "Final_Class"
+)
+
+stopifnot(
+  all(required_gene_columns %in% names(gene_retained_annot)),
+  all(required_protein_columns %in% names(protein_retained_annot)),
+  all(required_ko_columns %in% names(ko_catalogue))
+)
+
+figure_output_dir <- file.path(
+  "Transporter_Direction_Output",
+  "Transporter_Overview_Figure"
+)
+
+dir.create(
+  figure_output_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+############################################################
+# 1) DEFINE ORDERS, LABELS, AND COLOURS
+############################################################
+
+class_levels <- c(
+  "ABC import",
+  "ABC efflux",
+  "Unsure ABC",
+  "Non-ABC import",
+  "Non-ABC efflux",
+  "Unsure non-ABC"
+)
+
+group_levels <- c(
+  "Oligotroph",
+  "Intermediate",
+  "Copiotroph"
+)
+
+# Established trophic-group palette.
+group_palette <- c(
+  "Oligotroph"  = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copiotroph"   = "#BA5205"
+)
+
+# Two-line labels keep the six classes readable.
+class_axis_labels <- c(
+  "ABC import"          = "ABC\nimport",
+  "ABC efflux"          = "ABC\nefflux",
+  "Unsure ABC"          = "ABC\nunsure",
+  "Non-ABC import"      = "Non-ABC\nimport",
+  "Non-ABC efflux"      = "Non-ABC\nefflux",
+  "Unsure non-ABC"      = "Non-ABC\nunsure"
+)
+
+
+############################################################
+# 2) PREPARE THE FINAL KO CLASSIFICATION KEY
+############################################################
+
+ko_plot_key <- ko_catalogue %>%
+  select(
+    KEGG_ID,
+    Final_Class
+  ) %>%
+  mutate(
+    KEGG_ID = as.character(KEGG_ID),
+    Final_Class = as.character(Final_Class)
+  ) %>%
+  distinct()
+
+# Validate that every KO has exactly one permitted class.
+ko_class_conflicts <- ko_plot_key %>%
+  count(KEGG_ID, name = "N_Classes") %>%
+  filter(N_Classes > 1)
+
+if (nrow(ko_class_conflicts) > 0) {
+  stop(
+    "At least one KEGG_ID has multiple Final_Class values ",
+    "in ko_catalogue."
+  )
+}
+
+invalid_classes <- setdiff(
+  unique(ko_plot_key$Final_Class),
+  class_levels
+)
+
+if (length(invalid_classes) > 0) {
+  stop(
+    "Unexpected Final_Class value(s): ",
+    paste(invalid_classes, collapse = ", ")
+  )
+}
+
+
+############################################################
+# 3) BUILD THE SPECIES METADATA TABLE
+############################################################
+
+species_group_check <- gene_retained_annot %>%
+  filter(!is.na(Group_For_Plots)) %>%
+  distinct(
+    Species_ID,
+    Group_For_Plots
+  ) %>%
+  count(
+    Species_ID,
+    name = "N_Group_Values"
+  ) %>%
+  filter(N_Group_Values > 1)
+
+if (nrow(species_group_check) > 0) {
+  stop(
+    "At least one Species_ID has multiple Group_For_Plots values."
+  )
+}
+
+species_groups <- gene_retained_annot %>%
+  group_by(Species_ID) %>%
+  summarise(
+    Group_For_Plots = first(
+      Group_For_Plots[!is.na(Group_For_Plots)],
+      default = NA_character_
+    ),
+    .groups = "drop"
+  )
+
+species_trophic_index <- protein_retained_annot %>%
+  group_by(Species_ID) %>%
+  summarise(
+    TrophicIndex = first(
+      TrophicIndex[!is.na(TrophicIndex)],
+      default = NA_real_
+    ),
+    .groups = "drop"
+  )
+
+species_plot_key <- species_groups %>%
+  left_join(
+    species_trophic_index,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Trophic_Group = case_when(
+      Group_For_Plots %in% c(
+        "Oligo_like",
+        "Oligotroph"
+      ) ~ "Oligotroph",
+
+      Group_For_Plots == "Intermediate" ~
+        "Intermediate",
+
+      Group_For_Plots %in% c(
+        "Copio_like",
+        "Copiotroph"
+      ) ~ "Copiotroph",
+
+      TRUE ~ NA_character_
+    ),
+
+    Trophic_Group = factor(
+      Trophic_Group,
+      levels = group_levels
+    )
+  )
+
+if (any(is.na(species_plot_key$Trophic_Group))) {
+  problem_species <- species_plot_key %>%
+    filter(is.na(Trophic_Group))
+
+  print(problem_species)
+
+  stop(
+    "Some species could not be assigned to ",
+    "Oligotroph, Intermediate, or Copiotroph."
+  )
+}
+
+message(
+  "Species retained for plotting: ",
+  n_distinct(species_plot_key$Species_ID)
+)
+
+group_sizes <- species_plot_key %>%
+  count(
+    Trophic_Group,
+    name = "N_Species"
+  ) %>%
+  complete(
+    Trophic_Group = factor(
+      group_levels,
+      levels = group_levels
+    ),
+    fill = list(N_Species = 0L)
+  ) %>%
+  arrange(Trophic_Group)
+
+print(group_sizes)
+
+group_legend_labels <- setNames(
+  paste0(
+    as.character(group_sizes$Trophic_Group),
+    " (n = ",
+    group_sizes$N_Species,
+    ")"
+  ),
+  as.character(group_sizes$Trophic_Group)
+)
+
+
+############################################################
+# 4) PANEL A: GENETIC POTENTIAL
+#
+# Count every encoded transporter Protein_ID once per species.
+############################################################
+
+genome_transporter_ids <- gene_retained_annot %>%
+  filter(
+    !is.na(Transporter_Family),
+    str_trim(Transporter_Family) != "",
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  inner_join(
+    ko_plot_key,
+    by = "KEGG_ID"
+  ) %>%
+  distinct(
+    Species_ID,
+    Protein_ID,
+    Final_Class
+  )
+
+# Check that no Protein_ID has multiple classes.
+genome_class_conflicts <- genome_transporter_ids %>%
+  count(
+    Species_ID,
+    Protein_ID,
+    name = "N_Classes"
+  ) %>%
+  filter(N_Classes > 1)
+
+if (nrow(genome_class_conflicts) > 0) {
+  write_csv(
+    genome_class_conflicts,
+    file.path(
+      figure_output_dir,
+      "CHECK_Genome_ProteinID_Class_Conflicts.csv"
+    )
+  )
+
+  stop(
+    "Some encoded Protein_IDs have multiple classes. ",
+    "See CHECK_Genome_ProteinID_Class_Conflicts.csv."
+  )
+}
+
+# Observed species-level counts.
+genome_species_observed <- genome_transporter_ids %>%
+  count(
+    Species_ID,
+    Final_Class,
+    name = "Species_Value"
+  )
+
+# Add all missing species × class combinations as zero.
+species_class_grid <- tidyr::crossing(
+  Species_ID = species_plot_key$Species_ID,
+  Final_Class = class_levels
+)
+
+genome_species_values <- species_class_grid %>%
+  left_join(
+    genome_species_observed,
+    by = c(
+      "Species_ID",
+      "Final_Class"
+    )
+  ) %>%
+  mutate(
+    Species_Value = replace_na(
+      Species_Value,
+      0L
+    ),
+    Panel = "A. Genetic potential",
+    N_Retained_Dates = NA_integer_,
+    Total_Abundance_Across_Dates = NA_real_
+  )
+
+
+############################################################
+# 5) CLASSIFY POSITIVE PROTEOME ROWS
+#
+# These rows are used for both:
+#   B. Number of distinct detected Protein_IDs
+#   C. Summed normalized iBAQ
+############################################################
+
+protein_positive_classified <- protein_retained_annot %>%
+  filter(
+    !is.na(Protein_Abundance_IBAQ_Norm),
+    Protein_Abundance_IBAQ_Norm > 0,
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified"
+  ) %>%
+  inner_join(
+    ko_plot_key,
+    by = "KEGG_ID"
+  ) %>%
+  select(
+    Date,
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    Final_Class,
+    Protein_Abundance_IBAQ_Norm
+  )
+
+# A Protein_ID should occur no more than once per species and date.
+protein_date_duplicates <- protein_positive_classified %>%
+  count(
+    Species_ID,
+    Date,
+    Protein_ID,
+    name = "N_Rows"
+  ) %>%
+  filter(N_Rows > 1)
+
+if (nrow(protein_date_duplicates) > 0) {
+  write_csv(
+    protein_date_duplicates,
+    file.path(
+      figure_output_dir,
+      "CHECK_ProteinID_Date_Duplicates.csv"
+    )
+  )
+
+  stop(
+    "Some Protein_IDs occur more than once per species-date. ",
+    "See CHECK_ProteinID_Date_Duplicates.csv."
+  )
+}
+
+
+############################################################
+# 6) PANEL B: DETECTED TRANSPORTER PROTEINS
+#
+# Count every Protein_ID once if its normalized iBAQ was above
+# zero on at least one retained date.
+############################################################
+
+detected_transporter_ids <- protein_positive_classified %>%
+  distinct(
+    Species_ID,
+    Protein_ID,
+    Final_Class
+  )
+
+detected_class_conflicts <- detected_transporter_ids %>%
+  count(
+    Species_ID,
+    Protein_ID,
+    name = "N_Classes"
+  ) %>%
+  filter(N_Classes > 1)
+
+if (nrow(detected_class_conflicts) > 0) {
+  write_csv(
+    detected_class_conflicts,
+    file.path(
+      figure_output_dir,
+      "CHECK_Detected_ProteinID_Class_Conflicts.csv"
+    )
+  )
+
+  stop(
+    "Some detected Protein_IDs have multiple classes. ",
+    "See CHECK_Detected_ProteinID_Class_Conflicts.csv."
+  )
+}
+
+proteome_species_observed <- detected_transporter_ids %>%
+  count(
+    Species_ID,
+    Final_Class,
+    name = "Species_Value"
+  )
+
+proteome_species_values <- species_class_grid %>%
+  left_join(
+    proteome_species_observed,
+    by = c(
+      "Species_ID",
+      "Final_Class"
+    )
+  ) %>%
+  mutate(
+    Species_Value = replace_na(
+      Species_Value,
+      0L
+    ),
+    Panel = "B. Detected proteins",
+    N_Retained_Dates = NA_integer_,
+    Total_Abundance_Across_Dates = NA_real_
+  )
+
+
+############################################################
+# 7) PREPARE THE VALID SPECIES × DATE UNIVERSE
+#
+# Missing transporter classes at otherwise valid species-dates
+# must be filled with zero before temporal averaging.
+#
+# This prevents averaging only across dates where a transporter
+# was detected, which would inflate its abundance.
+############################################################
+
+if (exists("retained_species_dates")) {
+
+  valid_species_dates <- retained_species_dates %>%
+    select(
+      Species_ID,
+      Date
+    ) %>%
+    distinct()
+
+} else {
+
+  warning(
+    "retained_species_dates was not found. ",
+    "Using species-date combinations present in ",
+    "protein_retained_annot instead."
+  )
+
+  valid_species_dates <- protein_retained_annot %>%
+    select(
+      Species_ID,
+      Date
+    ) %>%
+    distinct()
+}
+
+valid_species_dates <- valid_species_dates %>%
+  semi_join(
+    species_plot_key,
+    by = "Species_ID"
+  )
+
+species_without_dates <- species_plot_key %>%
+  select(Species_ID) %>%
+  anti_join(
+    valid_species_dates %>%
+      distinct(Species_ID),
+    by = "Species_ID"
+  )
+
+
+############################################################
+# 8) PANEL C: SUMMED TRANSPORTER PROTEIN ABUNDANCE
+#
+# Step 1:
+#   Sum normalized iBAQ across all transporter proteins within
+#   each Species_ID × Date × Final_Class.
+#
+# Step 2:
+#   Fill missing classes on valid dates with zero.
+#
+# Step 3:
+#   Calculate the mean class abundance across dates for each
+#   species. Thus, every species contributes one value to the
+#   trophic-group comparison.
+############################################################
+
+protein_class_abundance_by_date <-
+  protein_positive_classified %>%
+  group_by(
+    Species_ID,
+    Date,
+    Final_Class
+  ) %>%
+  summarise(
+    Class_Abundance = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+    N_Detected_ProteinIDs = n_distinct(Protein_ID),
+    .groups = "drop"
+  )
+
+species_date_class_grid <- tidyr::crossing(
+  valid_species_dates,
+  Final_Class = class_levels
+)
+
+protein_class_abundance_complete <-
+  species_date_class_grid %>%
+  left_join(
+    protein_class_abundance_by_date,
+    by = c(
+      "Species_ID",
+      "Date",
+      "Final_Class"
+    )
+  ) %>%
+  mutate(
+    Class_Abundance = replace_na(
+      Class_Abundance,
+      0
+    ),
+
+    N_Detected_ProteinIDs = replace_na(
+      N_Detected_ProteinIDs,
+      0L
+    )
+  )
+
+abundance_species_values <-
+  protein_class_abundance_complete %>%
+  group_by(
+    Species_ID,
+    Final_Class
+  ) %>%
+  summarise(
+    # Value used in panel C:
+    # mean of the within-date protein abundance sums.
+    Species_Value = mean(
+      Class_Abundance,
+      na.rm = TRUE
+    ),
+
+    # Retained for transparency and data export.
+    Total_Abundance_Across_Dates = sum(
+      Class_Abundance,
+      na.rm = TRUE
+    ),
+
+    N_Retained_Dates = n_distinct(Date),
+
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Panel = "C. Protein abundance"
+  )
+
+
+############################################################
+# 9) COMBINE THE THREE SPECIES-LEVEL DATASETS
+############################################################
+
+transporter_figure_species_data <- bind_rows(
+  genome_species_values,
+  proteome_species_values,
+  abundance_species_values
+) %>%
+  left_join(
+    species_plot_key,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Panel = factor(
+      Panel,
+      levels = c(
+        "A. Genetic potential",
+        "B. Detected proteins",
+        "C. Protein abundance"
+      )
+    ),
+
+    Final_Class = factor(
+      Final_Class,
+      levels = class_levels
+    ),
+
+    Trophic_Group = factor(
+      Trophic_Group,
+      levels = group_levels
+    )
+  ) %>%
+  arrange(
+    Panel,
+    Trophic_Group,
+    TrophicIndex,
+    Species_ID,
+    Final_Class
+  )
+
+# Every panel should contain all retained species and all classes.
+expected_rows_per_panel <-
+  n_distinct(species_plot_key$Species_ID) *
+  length(class_levels)
+
+panel_row_check <- transporter_figure_species_data %>%
+  count(
+    Panel,
+    name = "N_Rows"
+  )
+
+print(panel_row_check)
+
+stopifnot(
+  all(panel_row_check$N_Rows == expected_rows_per_panel)
+)
+
+
+############################################################
+# 10) CALCULATE TROPHIC-GROUP MEANS AND SD
+#
+# Species are the biological replicates.
+#
+# We deliberately do not sum or stack species because the
+# trophic groups contain different numbers of species.
+############################################################
+
+transporter_figure_group_summary <-
+  transporter_figure_species_data %>%
+  group_by(
+    Panel,
+    Final_Class,
+    Trophic_Group
+  ) %>%
+  summarise(
+    N_Species = n_distinct(Species_ID),
+
+    Mean = mean(
+      Species_Value,
+      na.rm = TRUE
+    ),
+
+    SD = sd(
+      Species_Value,
+      na.rm = TRUE
+    ),
+
+    Median = median(
+      Species_Value,
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Errorbar_Lower = pmax(
+      0,
+      Mean - SD
+    ),
+
+    Errorbar_Upper = Mean + SD,
+
+    Panel = factor(
+      Panel,
+      levels = c(
+        "A. Genetic potential",
+        "B. Detected proteins",
+        "C. Protein abundance"
+      )
+    ),
+
+    Final_Class = factor(
+      Final_Class,
+      levels = class_levels
+    ),
+
+    Trophic_Group = factor(
+      Trophic_Group,
+      levels = group_levels
+    )
+  ) %>%
+  arrange(
+    Panel,
+    Final_Class,
+    Trophic_Group
+  )
+
+
+############################################################
+# 11) EXPORT THE EXACT PLOTTING DATA
+############################################################
+
+write_csv(
+  transporter_figure_species_data,
+  file.path(
+    figure_output_dir,
+    "Transporter_Figure_SpeciesLevel_Data.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  transporter_figure_group_summary,
+  file.path(
+    figure_output_dir,
+    "Transporter_Figure_GroupSummary_Mean_SD.csv"
+  ),
+  na = ""
+)
+
+write_csv(
+  protein_class_abundance_complete,
+  file.path(
+    figure_output_dir,
+    "Transporter_Abundance_BySpecies_Date_Class.csv"
+  ),
+  na = ""
+)
+
+
+############################################################
+# 12) COMMON PLOT SETTINGS
+############################################################
+
+bar_dodge <- position_dodge(
+  width = 0.82
+)
+
+common_theme <- theme_classic(
+  base_size = 9
+) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0
+    ),
+
+    axis.title = element_text(
+      size = 9
+    ),
+
+    axis.text = element_text(
+      size = 8,
+      colour = "black"
+    ),
+
+    axis.text.x = element_text(
+      lineheight = 0.9,
+      margin = margin(t = 4)
+    ),
+
+    axis.ticks.x = element_blank(),
+
+    legend.position = "top",
+
+    legend.title = element_blank(),
+
+    legend.text = element_text(
+      size = 8
+    ),
+
+    legend.key.width = grid::unit(
+      0.9,
+      "cm"
+    ),
+
+    plot.margin = margin(
+      t = 5,
+      r = 8,
+      b = 5,
+      l = 6
+    )
+  )
+
+
+############################################################
+# 13) FUNCTION FOR THE THREE MATCHED BAR PLOTS
+############################################################
+
+make_transporter_panel <- function(
+    summary_data,
+    panel_name,
+    panel_title,
+    y_title,
+    y_label_function) {
+
+  plot_data <- summary_data %>%
+    filter(Panel == panel_name)
+
+  ggplot(
+    plot_data,
+    aes(
+      x = Final_Class,
+      y = Mean,
+      fill = Trophic_Group
+    )
+  ) +
+    geom_col(
+      position = bar_dodge,
+      width = 0.72,
+      colour = "black",
+      linewidth = 0.25
+    ) +
+    geom_errorbar(
+      aes(
+        ymin = Errorbar_Lower,
+        ymax = Errorbar_Upper
+      ),
+      position = bar_dodge,
+      width = 0.18,
+      linewidth = 0.35
+    ) +
+    scale_fill_manual(
+      values = group_palette,
+      breaks = group_levels,
+      labels = unname(
+        group_legend_labels[group_levels]
+      ),
+      drop = FALSE
+    ) +
+    scale_x_discrete(
+      limits = class_levels,
+      labels = class_axis_labels,
+      drop = FALSE
+    ) +
+    scale_y_continuous(
+      labels = y_label_function,
+      expand = expansion(
+        mult = c(0, 0.10)
+      )
+    ) +
+    labs(
+      title = panel_title,
+      x = "Transporter class",
+      y = y_title
+    ) +
+    coord_cartesian(
+      clip = "off"
+    ) +
+    common_theme
+}
+
+
+############################################################
+# 14) CREATE THE THREE PANELS
+############################################################
+
+plot_A <- make_transporter_panel(
+  summary_data = transporter_figure_group_summary,
+  panel_name = "A. Genetic potential",
+  panel_title = "A   Genetic potential",
+  y_title = "Encoded transporter genes\nper MAG (mean ± SD)",
+  y_label_function = scales::label_number(
+    accuracy = 1
+  )
+)
+
+plot_B <- make_transporter_panel(
+  summary_data = transporter_figure_group_summary,
+  panel_name = "B. Detected proteins",
+  panel_title = "B   Detected transporter proteins",
+  y_title = "Detected transporter proteins\nper MAG (mean ± SD)",
+  y_label_function = scales::label_number(
+    accuracy = 1
+  )
+)
+
+plot_C <- make_transporter_panel(
+  summary_data = transporter_figure_group_summary,
+  panel_name = "C. Protein abundance",
+  panel_title = "C   Transporter protein abundance",
+  y_title = paste0(
+    "Summed normalized iBAQ per MAG and date\n",
+    "(temporal mean; group mean ± SD)"
+  ),
+  y_label_function = scales::label_scientific(
+    digits = 2
+  )
+)
+
+
+############################################################
+# 15) COMBINE THE PANELS
+#
+# The transporter-class labels are shown only below panel C
+# because all three panels have identical x-axis positions.
+############################################################
+
+plot_A_combined <- plot_A +
+  theme(
+    axis.text.x = element_blank(),
+    axis.title.x = element_blank(),
+    legend.position = "top"
+  )
+
+plot_B_combined <- plot_B +
+  theme(
+    axis.text.x = element_blank(),
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+
+plot_C_combined <- plot_C +
+  theme(
+    legend.position = "none"
+  )
+
+transporter_overview_figure <-
+  patchwork::wrap_plots(
+    plot_A_combined,
+    plot_B_combined,
+    plot_C_combined,
+    ncol = 1,
+    heights = c(
+      1,
+      1,
+      1.15
+    )
+  )
+
+
+############################################################
+# 16) SAVE COMBINED AND INDIVIDUAL FIGURES
+############################################################
+
+ggsave(
+  filename = file.path(
+    figure_output_dir,
+    "Transporter_Overview_Genome_Proteome_Abundance.pdf"
+  ),
+  plot = transporter_overview_figure,
+  width = 9.5,
+  height = 9,
+  units = "in"
+)
+
+ggsave(
+  filename = file.path(
+    figure_output_dir,
+    "Transporter_Overview_Genome_Proteome_Abundance.png"
+  ),
+  plot = transporter_overview_figure,
+  width = 9.5,
+  height = 9,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+
+ggsave(
+  filename = file.path(
+    figure_output_dir,
+    "Panel_A_Genetic_Potential.pdf"
+  ),
+  plot = plot_A,
+  width = 9.5,
+  height = 3.6,
+  units = "in"
+)
+
+ggsave(
+  filename = file.path(
+    figure_output_dir,
+    "Panel_B_Detected_Proteins.pdf"
+  ),
+  plot = plot_B,
+  width = 9.5,
+  height = 3.6,
+  units = "in"
+)
+
+ggsave(
+  filename = file.path(
+    figure_output_dir,
+    "Panel_C_Protein_Abundance.pdf"
+  ),
+  plot = plot_C,
+  width = 9.5,
+  height = 3.6,
+  units = "in"
+)
+
+
+############################################################
+# 17) FINAL DATA CHECKS AND DISPLAY
+############################################################
+
+message("\nSpecies represented in every panel:")
+
+print(
+  transporter_figure_species_data %>%
+    distinct(
+      Panel,
+      Species_ID,
+      Trophic_Group
+    ) %>%
+    count(
+      Panel,
+      Trophic_Group,
+      name = "N_Species"
+    )
+)
+
+message("\nGroup-level plotting values:")
+
+print(
+  transporter_figure_group_summary %>%
+    select(
+      Panel,
+      Final_Class,
+      Trophic_Group,
+      N_Species,
+      Mean,
+      SD
+    ),
+  n = Inf
+)
+
+message(
+  "\nFigure and plotting tables saved in:\n",
+  normalizePath(figure_output_dir)
+)
+
+# Display the finished figure in RStudio.
+transporter_overview_figure
+```
+

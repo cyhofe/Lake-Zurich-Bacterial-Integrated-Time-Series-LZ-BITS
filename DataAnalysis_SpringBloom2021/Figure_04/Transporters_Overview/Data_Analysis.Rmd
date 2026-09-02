@@ -1684,6 +1684,132 @@ ggsave(
   width = 15, height = 4, units = "in"
 )
 
+############################################################
+# FIGURE 4A — SOURCE DATA EXPORT
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+############################################################
+# 1) EXACT VALUES SHOWN BY BARS AND PIES
+#    One row per transporter class and trophic group
+############################################################
+
+figure_4a <- pie_counts %>%
+  dplyr::transmute(
+    Date = median_date,
+    Protein_Class = as.character(Class),
+    Trophic_Group = as.character(Group_For_Plots),
+    Protein_Count = Value,
+    Count_Proportion_Within_Class = Prop
+  ) %>%
+  dplyr::left_join(
+    pie_abund %>%
+      dplyr::transmute(
+        Date = median_date,
+        Protein_Class = as.character(Class),
+        Trophic_Group = as.character(Group_For_Plots),
+        Proteome_Abundance = Value,
+        Abundance_Proportion_Within_Class = Prop
+      ),
+    by = c("Date", "Protein_Class", "Trophic_Group")
+  ) %>%
+  dplyr::group_by(Date, Protein_Class) %>%
+  dplyr::mutate(
+    Class_Protein_Count = sum(Protein_Count),
+    Class_Proteome_Abundance = sum(Proteome_Abundance)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    Class_Count_Proportion_of_All =
+      Class_Protein_Count / sum(Protein_Count),
+    Class_Abundance_Proportion_of_All =
+      Class_Proteome_Abundance / sum(Proteome_Abundance)
+  ) %>%
+  dplyr::arrange(Protein_Class, Trophic_Group)
+
+readr::write_csv(
+  figure_4a,
+  file.path(source_dir, "Figure_4a_pies.csv")
+)
+
+############################################################
+# 2) SPECIES-LEVEL CONTRIBUTIONS ON REPRESENTATIVE DATE
+#    Shows which species contributed to each plotted category
+############################################################
+
+figure_4a_species <- median_day_data %>%
+  dplyr::group_by(
+    Date,
+    Species_ID,
+    Group_For_Plots,
+    Class
+  ) %>%
+  dplyr::summarise(
+    Fractional_Protein_Count =
+      sum(Weighted_Count, na.rm = TRUE),
+    Weighted_Proteome_Abundance =
+      sum(Weighted_Abundance, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::transmute(
+    Date,
+    Species_ID,
+    Trophic_Group = as.character(Group_For_Plots),
+    Protein_Class = as.character(Class),
+    Fractional_Protein_Count,
+    Weighted_Proteome_Abundance
+  ) %>%
+  dplyr::arrange(
+    Trophic_Group,
+    Species_ID,
+    Protein_Class
+  )
+
+readr::write_csv(
+  figure_4a_species,
+  file.path(source_dir, "Figure_4a_species.csv")
+)
+
+############################################################
+# 3) ALL-DATE VALUES UNDERLYING THE MIN–MAX OVERLAYS
+#    Species_ID is not applicable because each row represents
+#    the complete lake-community proteome for one date
+############################################################
+
+figure_4a_ranges <- frac_by_date %>%
+  dplyr::transmute(
+    Date,
+    Is_Representative_Date = Date == median_date,
+
+    Total_Protein_Count = Count_total,
+    Transporter_Protein_Count = Count_trans,
+    NonTransporter_Protein_Count =
+      Count_total - Count_trans,
+    Transporter_Count_Proportion =
+      Frac_trans_count,
+    NonTransporter_Count_Proportion =
+      1 - Frac_trans_count,
+
+    Total_Proteome_Abundance = Abund_total,
+    Transporter_Proteome_Abundance = Abund_trans,
+    NonTransporter_Proteome_Abundance =
+      Abund_total - Abund_trans,
+    Transporter_Abundance_Proportion =
+      Frac_trans_abund,
+    NonTransporter_Abundance_Proportion =
+      1 - Frac_trans_abund
+  ) %>%
+  dplyr::arrange(Date)
+
+readr::write_csv(
+  figure_4a_ranges,
+  file.path(source_dir, "Figure_4a_ranges.csv")
+)
+
 ```
 ## Quantification of transporter investment
 

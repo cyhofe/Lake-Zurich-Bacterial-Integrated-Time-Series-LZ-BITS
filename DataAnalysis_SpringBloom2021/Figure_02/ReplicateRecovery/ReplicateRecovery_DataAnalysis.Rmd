@@ -713,5 +713,16 @@ write.csv(percent_summary, "ReplicateOverlap_PercentSummary.csv", row.names = FA
 write.csv(abs_summary,     "ReplicateOverlap_AbsoluteSummary.csv", row.names = FALSE)
 write.csv(per_date_wide,   "ReplicateOverlap_PerDateTable.csv", row.names = FALSE)
 
+readr::write_csv(
+  plot_df %>%
+    dplyr::select(
+      Date,
+      Metric,
+      Presence,
+      Percent
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2c.csv"
+)
+
 ```
 

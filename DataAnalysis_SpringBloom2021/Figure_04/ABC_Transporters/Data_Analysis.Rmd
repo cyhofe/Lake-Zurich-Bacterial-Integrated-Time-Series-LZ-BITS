@@ -1297,4 +1297,91 @@ ggsave(
 grid.newpage(); grid.draw(FIG_substrate_abund)
 ```
 
+```{r}
+############################################################
+# FIGURE 4C — SOURCE DATA EXPORT
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+############################################################
+# 1) TRANSPORTER POOL
+#    Covers genes, detected proteins and protein abundance
+#
+#    Proportions are calculated within each Measure.
+############################################################
+
+figure_4c_transporter_pool <- summary_table_final %>%
+  dplyr::transmute(
+    Measure = as.character(Panel),
+
+    Value_Unit = dplyr::case_when(
+      Measure == "Genes" ~
+        "Number of transporter genes",
+      Measure == "Detected proteins" ~
+        "Number of distinct detected transporter proteins",
+      Measure == "Protein abundance" ~
+        "Summed species-mean iBAQ_norm abundance"
+    ),
+
+    Trophic_Group = as.character(Trophic_group),
+    Transporter_Class = as.character(Transporter_class),
+
+    Absolute_Value = Value_abs,
+    Proportion_of_Measure_Transporter_Pool = Value_prop,
+    Percent_of_Measure_Transporter_Pool = Value_pct,
+
+    Number_of_Contributing_Species = n_species
+  ) %>%
+  dplyr::arrange(
+    Measure,
+    Trophic_Group,
+    Transporter_Class
+  )
+
+readr::write_csv(
+  figure_4c_transporter_pool,
+  file.path(
+    source_dir,
+    "Figure_4c_transporter_pool.csv"
+  )
+)
+
+############################################################
+# 2) TRANSPORTER SUBSTRATE COMPOSITION
+#    Covers both the ABC and Other-transporter panels
+#
+#    Proportions are calculated separately within each
+#    transporter class.
+############################################################
+
+figure_4c_substrate_bins <- summary_table_substrate_abund %>%
+  dplyr::transmute(
+    Transporter_Class = as.character(Class),
+    Trophic_Group = as.character(Trophic_group),
+    Substrate_Bin = as.character(Substrate_Bin),
+
+    Summed_Species_Mean_Abundance_iBAQ_Norm = Value_abs,
+    Proportion_Within_Transporter_Class = Value_prop,
+    Percent_Within_Transporter_Class = Value_pct,
+
+    Number_of_Contributing_Species = n_species
+  ) %>%
+  dplyr::arrange(
+    Transporter_Class,
+    Trophic_Group,
+    Substrate_Bin
+  )
+
+readr::write_csv(
+  figure_4c_substrate_bins,
+  file.path(
+    source_dir,
+    "Figure_4c_substrate_bins.csv"
+  )
+)
+```
 

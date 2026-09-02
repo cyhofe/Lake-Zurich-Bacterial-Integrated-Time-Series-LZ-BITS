@@ -4749,5 +4749,65 @@ cat("\n")
 sink()
 
 cat("\nSaved stats file:\n  ", normalizePath(stats_file), "\n", sep="")
+
+
+############################################################
+# FIGURE 4B — SHARED SOURCE DATA FOR PANELS A, B AND C
+# One row represents one species
+############################################################
+
+# Confirm that panels contain the same species
+stopifnot(
+  setequal(analysis_A$Species_ID, analysis_BC$Species_ID)
+)
+
+figure_4b <- analysis_df %>%
+  dplyr::mutate(
+    Log10_Mean_TPF = log10(
+      pmin(pmax(mean_TPF, eps), 1 - eps)
+    ),
+    Logit_Mean_Bray_Curtis = qlogis(
+      pmin(pmax(mean_bray, eps), 1 - eps)
+    ),
+    Log10_Mean_Bray_Curtis = log10(
+      pmin(pmax(mean_bray, eps), 1 - eps)
+    )
+  ) %>%
+  dplyr::group_by(Group_For_Plots) %>%
+  dplyr::mutate(
+    Trophic_Index_Scaled_Within_Group =
+      scales::rescale(mean_trophic_index, to = c(0, 1))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Strategy = as.character(Group_For_Plots),
+    Phylum,
+    Genus,
+    Highlight_Group = as.character(highlight_label),
+    Number_of_Dates = n_dates,
+    Number_of_Bray_Curtis_Transitions = n_transitions,
+    Mean_Transporter_Proteome_Fraction = mean_TPF,
+    Mean_Bray_Curtis_Dissimilarity = mean_bray,
+    Mean_Detected_Protein_Count = mean_prot_count,
+    Mean_Trophic_Index = mean_trophic_index,
+    Trophic_Index_Scaled_Within_Group,
+    Log10_Mean_TPF,
+    Logit_Mean_Bray_Curtis,
+    Log10_Mean_Bray_Curtis
+  ) %>%
+  dplyr::arrange(
+    Trophic_Strategy,
+    Mean_Transporter_Proteome_Fraction
+  )
+
+readr::write_csv(
+  figure_4b,
+  paste0(
+    "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+    "DataAnalysis_SpringBloom2021/Source_Data_Main/",
+    "Figure_4b.csv"
+  )
+)
 ```
 

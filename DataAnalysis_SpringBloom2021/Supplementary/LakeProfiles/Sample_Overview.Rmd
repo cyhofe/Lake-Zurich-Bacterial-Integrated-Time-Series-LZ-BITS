@@ -18,6 +18,8 @@ Setup:
 ___
 * Libraries:
 ```{r, message=FALSE, warning=FALSE}
+rm(list = ls ())
+
 #Libraries
 library(ggplot2)
 library(dplyr)
@@ -33,6 +35,8 @@ library(hrbrthemes)
 library(webshot)
 library(reticulate)
 library(webexercises)
+
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/LakeProfiles/")
 ```
 ___
 ___
@@ -177,9 +181,9 @@ ___
 * Data:
 ```{r message=FALSE, warning=FALSE}
 #Load the data
-abiotic_LT_dat <- read_excel("Data/Data_2009-2023.xlsx", sheet = "abiotic")
-abiotic_ST_dat <- read_excel("Data/Data_2021.xlsx", sheet = "abiotic")
-biotic_ST_dat <- read_excel("Data/Data_2021.xlsx", sheet = "biotic")
+abiotic_LT_dat <- read_excel("../../../Data/Lake_Data/Raw_Data/Data_2009-2023.xlsx", sheet = "abiotic")
+abiotic_ST_dat <- read_excel("../../../Data/Lake_Data/Raw_Data/Data_2021.xlsx", sheet = "abiotic")
+biotic_ST_dat <- read_excel("../../../Data/Lake_Data/Raw_Data/Data_2021.xlsx", sheet = "biotic")
 ```
 ___
 
@@ -445,6 +449,41 @@ ggsave(
   dpi = 600,
   bg = "white"
 )
+
+# ============================================================
+# Source data export: Supplementary Figure 1
+# One row = one sampling location displayed on the map
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+suppl_figure_1_source <- sites_df |>
+  dplyr::transmute(
+    Sampling_Site = as.character(name),
+    Latitude_Decimal_Degrees = as.numeric(lat),
+    Longitude_Decimal_Degrees = as.numeric(lon),
+    Displayed_Coordinates = as.character(coord_label)
+  )
+
+readr::write_excel_csv(
+  suppl_figure_1_source,
+  file.path(source_dir, "Suppl_Figure_1.csv"),
+  na = ""
+)
 ```
 
 
@@ -642,7 +681,7 @@ PlotProfiles_Fixed <- function(profile, variable, plot_title, legend_title, colo
 ## 4) Load and clean FC data
 ########################
 fc_data <- readr::read_csv(
-  file.path(data_dir, "/LongTermLakeProfiles/Data/FC_FULL.csv"),
+  file.path(data_dir, "../../../Data/Lake_Data/Raw_Data/FC_FULL.csv"),
   show_col_types = FALSE
 )
 
@@ -721,3 +760,3216 @@ export(ST_Bacteria_Plot,"ST_Bacteria_Plot.png")
 ```
  
  
+```{r}
+# ============================================================
+# Source-data export: Supplementary Figure 2
+# One row = one interpolated date × depth grid cell
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+# Temperature profile
+temperature_ST_profile |>
+  dplyr::transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Temperature_C = as.numeric(temperature)
+  ) |>
+  dplyr::arrange(Date, Depth_m) |>
+  readr::write_excel_csv(
+    file.path(source_dir, "Suppl_Figure_2_Temp.csv"),
+    na = ""
+  )
+
+# Oxygen profile
+oxygen_ST_profile |>
+  dplyr::transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Oxygen_mg_per_L = as.numeric(oxygen)
+  ) |>
+  dplyr::arrange(Date, Depth_m) |>
+  readr::write_excel_csv(
+    file.path(source_dir, "Suppl_Figure_2_Oxygen.csv"),
+    na = ""
+  )
+
+# Chlorophyll profile
+chlorophyll_ST_profile |>
+  dplyr::transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Chlorophyll_ug_per_L = as.numeric(chlorophyll)
+  ) |>
+  dplyr::arrange(Date, Depth_m) |>
+  readr::write_excel_csv(
+    file.path(source_dir, "Suppl_Figure_2_Chlorophyll.csv"),
+    na = ""
+  )
+
+# Bacterial-abundance profile
+bacteria_ST_profile |>
+  dplyr::transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Bacterial_Abundance_cells_per_mL = as.numeric(bac_abu)
+  ) |>
+  dplyr::arrange(Date, Depth_m) |>
+  readr::write_excel_csv(
+    file.path(source_dir, "Suppl_Figure_2_Bacteria.csv"),
+    na = ""
+  )
+```
+ 
+ 
+ 
+```{r}
+############################################################
+# 0) LOAD RETAINED DATA (CSV exports from QC pipeline)
+#    Then reproduce transporter vs non-transporter pie charts
+############################################################
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(stringr)
+  library(tidyr)
+  library(ggplot2)
+  library(scales)
+})
+
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/LakeProfiles/")
+
+# ---- Paths (edit if you put the CSVs elsewhere)
+protein_path <- "../../Figure_04/Data_Filtration/retained_protein_table.csv"
+species_path <- "../../Figure_04/Data_Filtration/retained_species.csv"
+keys_path    <- "../../Figure_04/Data_Filtration/retained_species_dates.csv"
+species_summary_path <- "../../../Data/Species_Data/Final_Data/Species_Table.csv"
+
+
+# ---- Load
+protein_final          <- read_csv(protein_path, show_col_types = FALSE)
+retained_species       <- read_csv(species_path, show_col_types = FALSE)
+retained_species_dates <- read_csv(keys_path,    show_col_types = FALSE)
+species_taxonomy <- read_csv(species_summary_path, show_col_types = FALSE)
+species_abundance <- read_csv(species_summary_path, show_col_types = FALSE)
+
+species_abundance <- species_abundance %>%
+  select(Species_ID, Date, Species_Abundance)
+
+species_taxonomy <- species_taxonomy %>%
+  dplyr::select(Species_ID, Phylum, Class, Order, Family, Genus, Species) %>%
+  distinct()
+
+# ---- Basic cleanup / checks
+protein_final <- protein_final %>% mutate(Date = as.Date(Date))
+retained_species_dates <- retained_species_dates %>% mutate(Date = as.Date(Date))
+
+stopifnot(
+  all(c("Species_ID","Protein_ID","Date","Group_For_Plots") %in% names(protein_final)),
+  all(c("Species_ID","Date","Group_For_Plots") %in% names(retained_species_dates))
+)
+
+cat("\n=== Loaded retained datasets ===\n")
+cat("protein_final rows:", nrow(protein_final), "\n")
+cat("retained species×dates:", nrow(retained_species_dates), "\n")
+cat("retained species:", nrow(retained_species), "\n")
+
+glimpse(protein_final)
+glimpse(retained_species)
+glimpse(retained_species_dates)
+glimpse(species_taxonomy)
+glimpse(species_abundance)
+```
+
+```{r}
+############################################################
+# ENVIRONMENTAL CONTEXT AND TRANSPORTER ALLOCATION
+#
+# REQUIRED ALREADY-LOADED OBJECTS
+# -------------------------------
+# protein_final
+# retained_species
+# retained_species_dates
+# abiotic_ST_dat
+#
+# ANALYSIS
+# --------
+# 1. Retain the authoritative species-date combinations.
+# 2. Calculate species-date TPF using the original definition.
+# 3. Calculate abundance-weighted pooled TPF overall and by
+#    trophic strategy.
+# 4. Calculate mean temperature and chlorophyll at 2–8 m.
+# 5. Prepare one polished A4 landscape figure.
+# 6. Export one tidy CSV containing all plotted values.
+#
+# IMPORTANT INTERPRETATION
+# ------------------------
+# The figure describes transporter allocation across measured
+# environmental variation. It does not identify an overturn
+# period or demonstrate environmental causality.
+############################################################
+
+
+############################################################
+# 0. LIBRARIES AND OUTPUT DIRECTORY
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(readr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+
+############################################################
+# 1. GLOBAL FIGURE SETTINGS
+############################################################
+
+# These values are used in every panel to ensure consistent
+# line widths, point sizes and graphical weighting.
+
+LINE_WIDTH   <- 0.75
+POINT_SIZE   <- 1.45
+RIBBON_ALPHA <- 0.20
+
+BASE_SIZE   <- 8.5
+AXIS_SIZE   <- 8.0
+LEGEND_SIZE <- 7.8
+
+
+trophic_colours <- c(
+  "Oligotroph"   = "#99C3E6",
+  "Intermediate" = "#ECEAE9",
+  "Copiotroph"   = "#B25A3C"
+)
+
+environment_colours <- c(
+  "Chlorophyll" = "#238B45",
+  "Temperature" = "#C62828"
+)
+
+protein_class_colours <- c(
+  "Non-transporter" = "#D9D9D9",
+  "Transporter"     = "#5799C6"
+)
+
+
+############################################################
+# 2. COMPACT PUBLICATION THEME
+############################################################
+
+theme_nature <- function(base_size = BASE_SIZE) {
+
+  theme_classic(
+    base_size = base_size,
+    base_family = "sans"
+  ) +
+
+    theme(
+      panel.grid.major.y = element_line(
+        colour = "grey92",
+        linewidth = 0.25
+      ),
+
+      panel.grid.minor = element_blank(),
+
+      axis.line = element_line(
+        colour = "black",
+        linewidth = 0.35
+      ),
+
+      axis.ticks = element_line(
+        colour = "black",
+        linewidth = 0.30
+      ),
+
+      axis.ticks.length = grid::unit(
+        1.4,
+        "mm"
+      ),
+
+      axis.title = element_text(
+        colour = "black",
+        size = AXIS_SIZE
+      ),
+
+      axis.title.y = element_text(
+        margin = margin(r = 3)
+      ),
+
+      axis.title.x = element_text(
+        margin = margin(t = 3)
+      ),
+
+      axis.text = element_text(
+        colour = "black",
+        size = AXIS_SIZE - 0.3
+      ),
+
+      legend.title = element_text(
+        face = "bold",
+        size = LEGEND_SIZE
+      ),
+
+      legend.text = element_text(
+        size = LEGEND_SIZE
+      ),
+
+      legend.key.height = grid::unit(
+        3.4,
+        "mm"
+      ),
+
+      legend.key.width = grid::unit(
+        8,
+        "mm"
+      ),
+
+      legend.spacing.x = grid::unit(
+        1.5,
+        "mm"
+      ),
+
+      legend.spacing.y = grid::unit(
+        0,
+        "mm"
+      ),
+
+      plot.margin = margin(
+        t = 1.4,
+        r = 4,
+        b = 1.4,
+        l = 4,
+        unit = "mm"
+      )
+    )
+}
+
+
+############################################################
+# 3. RECODE TROPHIC-STRATEGY LABELS
+############################################################
+
+recode_trophic_group <- function(x) {
+
+  recoded_group <- dplyr::case_when(
+    x == "Oligo_like"   ~ "Oligotroph",
+    x == "Intermediate" ~ "Intermediate",
+    x == "Copio_like"   ~ "Copiotroph",
+    TRUE                ~ NA_character_
+  )
+
+  factor(
+    recoded_group,
+    levels = c(
+      "Oligotroph",
+      "Intermediate",
+      "Copiotroph"
+    )
+  )
+}
+
+
+############################################################
+# 4. PREPARE DATE COLUMNS
+############################################################
+
+protein_final <- protein_final %>%
+  dplyr::mutate(
+    Date = as.Date(Date)
+  )
+
+retained_species_dates <- retained_species_dates %>%
+  dplyr::mutate(
+    Date = as.Date(Date)
+  )
+
+abiotic_ST_dat <- abiotic_ST_dat %>%
+  dplyr::mutate(
+    date = as.Date(date),
+    depth = as.numeric(depth),
+    temperature = as.numeric(temperature),
+    chlorophyll = as.numeric(chlorophyll)
+  )
+
+
+############################################################
+# 5. DEFINE THE AUTHORITATIVE RETAINED DATASET
+############################################################
+
+# Only the previously retained species and retained species-date
+# combinations are included. No new occurrence filter is added.
+
+retained_keys <- retained_species_dates %>%
+  dplyr::semi_join(
+    retained_species,
+    by = c(
+      "Species_ID",
+      "Group_For_Plots"
+    )
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    Date,
+    Group_For_Plots
+  )
+
+
+############################################################
+# 6. CLASSIFY TRANSPORTER PROTEINS
+############################################################
+
+retained_protein <- protein_final %>%
+  dplyr::inner_join(
+    retained_keys,
+    by = c(
+      "Species_ID",
+      "Date",
+      "Group_For_Plots"
+    )
+  ) %>%
+  dplyr::mutate(
+    # Exact transporter definition used in the original
+    # transporter-investment analysis.
+    is_transporter =
+      !is.na(KEGG_Subcategory) &
+      stringr::str_detect(
+        KEGG_Subcategory,
+        "\\bTransporters\\b"
+      ),
+
+    # Exact normalized abundance measure.
+    Protein_Abundance =
+      Protein_Abundance_IBAQ_Norm,
+
+    TrophicGroupPlot =
+      recode_trophic_group(
+        Group_For_Plots
+      )
+  ) %>%
+  dplyr::filter(
+    !is.na(TrophicGroupPlot),
+    is.finite(Protein_Abundance)
+  )
+
+
+############################################################
+# 7. CALCULATE SPECIES × DATE TPF
+############################################################
+
+# For each species and retained sampling date:
+#
+#       summed transporter protein abundance
+# TPF = -------------------------------------
+#       summed total protein abundance
+
+species_date_tpf <- retained_protein %>%
+  dplyr::group_by(
+    Species_ID,
+    Date,
+    Group_For_Plots,
+    TrophicGroupPlot
+  ) %>%
+  dplyr::summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Transporter_Abundance = sum(
+      Protein_Abundance[is_transporter],
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  dplyr::filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  dplyr::mutate(
+    TPF =
+      Transporter_Abundance /
+      Total_Protein_Abundance,
+
+    TPF_Percent =
+      100 * TPF
+  ) %>%
+  dplyr::arrange(
+    TrophicGroupPlot,
+    Species_ID,
+    Date
+  )
+
+
+############################################################
+# 8. CALCULATE OVERALL POOLED TPF
+############################################################
+
+# Abundances are summed before calculating TPF. Therefore,
+# this is an abundance-weighted pooled fraction and not the
+# arithmetic mean of species-level TPF values.
+
+overall_date_tpf <- retained_protein %>%
+  dplyr::group_by(
+    Date
+  ) %>%
+  dplyr::summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Transporter_Abundance = sum(
+      Protein_Abundance[is_transporter],
+      na.rm = TRUE
+    ),
+
+    N_Contributing_Species = dplyr::n_distinct(
+      Species_ID
+    ),
+
+    .groups = "drop"
+  ) %>%
+  dplyr::filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  dplyr::mutate(
+    Pooled_TPF_Percent =
+      100 *
+      Transporter_Abundance /
+      Total_Protein_Abundance,
+
+    Non_Transporter_Percent =
+      100 - Pooled_TPF_Percent
+  ) %>%
+  dplyr::arrange(
+    Date
+  )
+
+
+############################################################
+# 9. CALCULATE POOLED TPF BY TROPHIC STRATEGY
+############################################################
+
+group_date_tpf <- retained_protein %>%
+  dplyr::group_by(
+    Date,
+    TrophicGroupPlot
+  ) %>%
+  dplyr::summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Transporter_Abundance = sum(
+      Protein_Abundance[is_transporter],
+      na.rm = TRUE
+    ),
+
+    N_Contributing_Species = dplyr::n_distinct(
+      Species_ID
+    ),
+
+    .groups = "drop"
+  ) %>%
+  dplyr::filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  dplyr::mutate(
+    Pooled_TPF_Percent =
+      100 *
+      Transporter_Abundance /
+      Total_Protein_Abundance
+  ) %>%
+  dplyr::arrange(
+    TrophicGroupPlot,
+    Date
+  )
+
+
+############################################################
+# 10. SPECIES-LEVEL TPF DISTRIBUTION
+############################################################
+
+# The interquartile range represents variation among species
+# belonging to each strategy. It is not a confidence interval
+# around the pooled TPF.
+
+species_tpf_distribution <- species_date_tpf %>%
+  dplyr::group_by(
+    Date,
+    TrophicGroupPlot
+  ) %>%
+  dplyr::summarise(
+    TPF_Q1 = stats::quantile(
+      TPF_Percent,
+      probs = 0.25,
+      na.rm = TRUE
+    ),
+
+    TPF_Q3 = stats::quantile(
+      TPF_Percent,
+      probs = 0.75,
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  )
+
+group_date_tpf <- group_date_tpf %>%
+  dplyr::left_join(
+    species_tpf_distribution,
+    by = c(
+      "Date",
+      "TrophicGroupPlot"
+    )
+  )
+
+
+############################################################
+# 11. CALCULATE MEAN ENVIRONMENTAL VALUES AT 2–8 M
+############################################################
+
+# These values are means of the available abiotic measurements
+# collected between 2 and 8 m on each environmental sampling
+# date. No temporal interpolation is performed here.
+
+environment_2_8m <- abiotic_ST_dat %>%
+  dplyr::filter(
+    depth >= 2,
+    depth <= 8
+  ) %>%
+  dplyr::group_by(
+    Date = date
+  ) %>%
+  dplyr::summarise(
+    Temperature = mean(
+      temperature,
+      na.rm = TRUE
+    ),
+
+    Chlorophyll = mean(
+      chlorophyll,
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  dplyr::filter(
+    is.finite(Temperature),
+    is.finite(Chlorophyll)
+  ) %>%
+  dplyr::arrange(
+    Date
+  )
+
+
+############################################################
+# 12. DEFINE THE COMMON FIGURE DATE RANGE
+############################################################
+
+figure_date_limits <- range(
+  overall_date_tpf$Date,
+  na.rm = TRUE
+)
+
+environment_2_8m <- environment_2_8m %>%
+  dplyr::filter(
+    Date >= figure_date_limits[1],
+    Date <= figure_date_limits[2]
+  )
+
+
+common_date_scale <- function() {
+
+  scale_x_date(
+    limits = figure_date_limits,
+    date_breaks = "1 month",
+    date_labels = "%b",
+    expand = expansion(mult = c(0, 0))
+  )
+}
+
+
+############################################################
+# 13. PREPARE TROPHIC-STRATEGY LEGEND LABELS
+############################################################
+
+strategy_breaks <- c(
+  "Oligotroph",
+  "Intermediate",
+  "Copiotroph"
+)
+
+strategy_counts <- retained_species %>%
+  dplyr::transmute(
+    Species_ID,
+
+    TrophicGroupPlot =
+      recode_trophic_group(
+        Group_For_Plots
+      )
+  ) %>%
+  dplyr::filter(
+    !is.na(TrophicGroupPlot)
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    TrophicGroupPlot
+  ) %>%
+  dplyr::count(
+    TrophicGroupPlot,
+    name = "Total_Retained_Species"
+  ) %>%
+  dplyr::arrange(
+    TrophicGroupPlot
+  ) %>%
+  dplyr::mutate(
+    Legend_Label = paste0(
+      as.character(TrophicGroupPlot),
+      " (n = ",
+      Total_Retained_Species,
+      ")"
+    )
+  )
+
+strategy_legend_labels <- stats::setNames(
+  strategy_counts$Legend_Label,
+  as.character(strategy_counts$TrophicGroupPlot)
+)
+
+
+############################################################
+# 14. PREPARE THE SECONDARY ENVIRONMENTAL AXIS
+############################################################
+
+# Temperature is mapped linearly onto the chlorophyll scale.
+# The right y-axis reverses the transformation and displays
+# temperature in its original units.
+
+chlorophyll_min <- min(
+  environment_2_8m$Chlorophyll,
+  na.rm = TRUE
+)
+
+chlorophyll_max <- max(
+  environment_2_8m$Chlorophyll,
+  na.rm = TRUE
+)
+
+temperature_min <- min(
+  environment_2_8m$Temperature,
+  na.rm = TRUE
+)
+
+temperature_max <- max(
+  environment_2_8m$Temperature,
+  na.rm = TRUE
+)
+
+temperature_scale_factor <- (
+  chlorophyll_max - chlorophyll_min
+) / (
+  temperature_max - temperature_min
+)
+
+temperature_offset <-
+  chlorophyll_min -
+  temperature_min * temperature_scale_factor
+
+environment_2_8m <- environment_2_8m %>%
+  dplyr::mutate(
+    Temperature_Scaled =
+      Temperature *
+      temperature_scale_factor +
+      temperature_offset
+  )
+
+
+############################################################
+# 15. BUILD ONE DATASET CONTAINING ALL PLOTTED VALUES
+############################################################
+
+# Original_Value contains the interpretable measurement.
+# Plot_Value contains the exact value passed to ggplot.
+#
+# These differ only for temperature because the secondary
+# y-axis requires a linear transformation.
+
+panel_a_data <- dplyr::bind_rows(
+
+  environment_2_8m %>%
+    dplyr::transmute(
+      Panel = "A_Environment",
+      Date,
+      Series = "Chlorophyll",
+      Original_Value = Chlorophyll,
+      Plot_Value = Chlorophyll,
+      Lower_Value = NA_real_,
+      Upper_Value = NA_real_,
+      Unit = "µg/L",
+      Total_Retained_Species = NA_integer_,
+      Axis_Scale_Factor = 1,
+      Axis_Offset = 0
+    ),
+
+  environment_2_8m %>%
+    dplyr::transmute(
+      Panel = "A_Environment",
+      Date,
+      Series = "Temperature",
+      Original_Value = Temperature,
+      Plot_Value = Temperature_Scaled,
+      Lower_Value = NA_real_,
+      Upper_Value = NA_real_,
+      Unit = "°C",
+      Total_Retained_Species = NA_integer_,
+      Axis_Scale_Factor =
+        temperature_scale_factor,
+      Axis_Offset =
+        temperature_offset
+    )
+)
+
+
+panel_b_data <- overall_date_tpf %>%
+  dplyr::select(
+    Date,
+    Pooled_TPF_Percent,
+    Non_Transporter_Percent
+  ) %>%
+  tidyr::pivot_longer(
+    cols = c(
+      Pooled_TPF_Percent,
+      Non_Transporter_Percent
+    ),
+    names_to = "Series",
+    values_to = "Original_Value"
+  ) %>%
+  dplyr::mutate(
+    Series = dplyr::recode(
+      Series,
+      Pooled_TPF_Percent =
+        "Transporter",
+      Non_Transporter_Percent =
+        "Non-transporter"
+    )
+  ) %>%
+  dplyr::transmute(
+    Panel = "B_Overall_Allocation",
+    Date,
+    Series,
+    Original_Value,
+    Plot_Value = Original_Value,
+    Lower_Value = NA_real_,
+    Upper_Value = NA_real_,
+    Unit = "%",
+    Total_Retained_Species = NA_integer_,
+    Axis_Scale_Factor = NA_real_,
+    Axis_Offset = NA_real_
+  )
+
+
+panel_c_data <- group_date_tpf %>%
+  dplyr::left_join(
+    strategy_counts %>%
+      dplyr::select(
+        TrophicGroupPlot,
+        Total_Retained_Species
+      ),
+    by = "TrophicGroupPlot"
+  ) %>%
+  dplyr::transmute(
+    Panel = "C_Strategy_TPF",
+    Date,
+    Series = as.character(
+      TrophicGroupPlot
+    ),
+    Original_Value = Pooled_TPF_Percent,
+    Plot_Value = Pooled_TPF_Percent,
+    Lower_Value = TPF_Q1,
+    Upper_Value = TPF_Q3,
+    Unit = "%",
+    Total_Retained_Species,
+    Axis_Scale_Factor = NA_real_,
+    Axis_Offset = NA_real_
+  )
+
+
+panel_d_data <- group_date_tpf %>%
+  dplyr::left_join(
+    strategy_counts %>%
+      dplyr::select(
+        TrophicGroupPlot,
+        Total_Retained_Species
+      ),
+    by = "TrophicGroupPlot"
+  ) %>%
+  dplyr::transmute(
+    Panel = "D_Contributing_Species",
+    Date,
+    Series = as.character(
+      TrophicGroupPlot
+    ),
+    Original_Value = as.numeric(
+      N_Contributing_Species
+    ),
+    Plot_Value = as.numeric(
+      N_Contributing_Species
+    ),
+    Lower_Value = NA_real_,
+    Upper_Value = NA_real_,
+    Unit = "species",
+    Total_Retained_Species,
+    Axis_Scale_Factor = NA_real_,
+    Axis_Offset = NA_real_
+  )
+
+
+plot_data_export <- dplyr::bind_rows(
+  panel_a_data,
+  panel_b_data,
+  panel_c_data,
+  panel_d_data
+) %>%
+  dplyr::arrange(
+    Panel,
+    Series,
+    Date
+  )
+
+
+############################################################
+# 16. EXPORT THE SINGLE PLOTTING DATAFILE
+############################################################
+
+readr::write_csv(
+  plot_data_export,
+  file.path(
+    "SupplFig_Environmental_TPF_PlotData.csv"
+  ),
+  na = ""
+)
+
+
+############################################################
+# 17. PANEL A: CHLOROPHYLL AND TEMPERATURE
+############################################################
+
+panel_a_plot_data <- plot_data_export %>%
+  dplyr::filter(
+    Panel == "A_Environment"
+  )
+
+
+Environmental_Plot <- ggplot(
+  panel_a_plot_data,
+  aes(
+    x = Date,
+    y = Plot_Value,
+    colour = Series,
+    group = Series
+  )
+) +
+  geom_line(
+    linewidth = LINE_WIDTH
+  ) +
+  geom_point(
+    size = POINT_SIZE
+  ) +
+  scale_colour_manual(
+    name = "Environmental parameter",
+
+    values = environment_colours,
+
+    breaks = c(
+      "Chlorophyll",
+      "Temperature"
+    ),
+
+    labels = c(
+      "Chlorophyll (mean 2–8 m depth)",
+      "Temperature (mean 2–8 m depth)"
+    ),
+
+    guide = guide_legend(
+      order = 1,
+      nrow = 1,
+      byrow = TRUE,
+      title.position = "left"
+    )
+  ) +
+  scale_y_continuous(
+    name = "Chlorophyll (µg/L)",
+
+    sec.axis = sec_axis(
+      trans = ~ (
+        . - temperature_offset
+      ) / temperature_scale_factor,
+
+      name = "Temperature (°C)"
+    ),
+
+    expand = expansion(
+      mult = c(0.05, 0.05)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = NULL
+  ) +
+  theme_nature() +
+  theme(
+    axis.title.y.left = element_text(
+      colour = environment_colours["Chlorophyll"],
+      face = "bold"
+    ),
+
+    axis.text.y.left = element_text(
+      colour = environment_colours["Chlorophyll"]
+    ),
+
+    axis.title.y.right = element_text(
+      colour = environment_colours["Temperature"],
+      face = "bold",
+      margin = margin(l = 3)
+    ),
+
+    axis.text.y.right = element_text(
+      colour = environment_colours["Temperature"]
+    ),
+
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 18. PANEL B: OVERALL PROTEOME ALLOCATION
+############################################################
+
+panel_b_plot_data <- plot_data_export %>%
+  dplyr::filter(
+    Panel == "B_Overall_Allocation"
+  ) %>%
+  dplyr::mutate(
+    Series = factor(
+      Series,
+      levels = c(
+        "Non-transporter",
+        "Transporter"
+      )
+    )
+  )
+
+
+Overall_Allocation_Plot <- ggplot(
+  panel_b_plot_data,
+  aes(
+    x = Date,
+    y = Plot_Value,
+    fill = Series
+  )
+) +
+  geom_area(
+    position = "stack",
+    alpha = 1
+  ) +
+
+  # Add the transporter boundary using the same graphical
+  # dimensions as the other time-series panels.
+  geom_line(
+    data = panel_b_plot_data %>%
+      dplyr::filter(
+        Series == "Transporter"
+      ),
+    aes(
+      x = Date,
+      y = Plot_Value,
+      group = 1
+    ),
+    inherit.aes = FALSE,
+    colour = protein_class_colours["Transporter"],
+    linewidth = LINE_WIDTH
+  ) +
+
+  geom_point(
+    data = panel_b_plot_data %>%
+      dplyr::filter(
+        Series == "Transporter"
+      ),
+    aes(
+      x = Date,
+      y = Plot_Value
+    ),
+    inherit.aes = FALSE,
+    colour = protein_class_colours["Transporter"],
+    size = POINT_SIZE
+  ) +
+
+  scale_fill_manual(
+    name = "Protein class",
+    values = protein_class_colours,
+    drop = FALSE,
+
+    guide = guide_legend(
+      order = 2,
+      nrow = 1,
+      byrow = TRUE,
+      title.position = "left"
+    )
+  ) +
+
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = c(0, 25, 50, 75, 100),
+    expand = expansion(mult = c(0, 0))
+  ) +
+
+  common_date_scale() +
+
+  labs(
+    x = NULL,
+    y = "Community proteome\nallocation (%)"
+  ) +
+
+  theme_nature() +
+
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 19. PANEL C: TPF BY TROPHIC STRATEGY
+############################################################
+
+panel_c_plot_data <- plot_data_export %>%
+  dplyr::filter(
+    Panel == "C_Strategy_TPF"
+  ) %>%
+  dplyr::mutate(
+    Series = factor(
+      Series,
+      levels = strategy_breaks
+    )
+  )
+
+
+Strategy_TPF_Plot <- ggplot(
+  panel_c_plot_data,
+  aes(
+    x = Date,
+    y = Plot_Value,
+    colour = Series,
+    group = Series
+  )
+) +
+  geom_ribbon(
+    aes(
+      ymin = Lower_Value,
+      ymax = Upper_Value,
+      fill = Series
+    ),
+    alpha = RIBBON_ALPHA,
+    colour = NA,
+    show.legend = FALSE
+  ) +
+  geom_line(
+    linewidth = LINE_WIDTH
+  ) +
+  geom_point(
+    size = POINT_SIZE
+  ) +
+  scale_colour_manual(
+    name = "Trophic strategy",
+    values = trophic_colours,
+    breaks = strategy_breaks,
+
+    labels = strategy_legend_labels[
+      strategy_breaks
+    ],
+
+    drop = FALSE,
+
+    guide = guide_legend(
+      order = 3,
+      nrow = 1,
+      byrow = TRUE,
+      title.position = "left",
+
+      override.aes = list(
+        linewidth = LINE_WIDTH,
+        size = POINT_SIZE
+      )
+    )
+  ) +
+  scale_fill_manual(
+    values = trophic_colours,
+    guide = "none"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = c(0, 25, 50, 75, 100),
+    expand = expansion(mult = c(0, 0.01))
+  ) +
+  common_date_scale() +
+  labs(
+    x = NULL,
+    y = "Pooled transporter\nproteome fraction (%)"
+  ) +
+  theme_nature() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 20. PANEL D: CONTRIBUTING SPECIES
+############################################################
+
+panel_d_plot_data <- plot_data_export %>%
+  dplyr::filter(
+    Panel == "D_Contributing_Species"
+  ) %>%
+  dplyr::mutate(
+    Series = factor(
+      Series,
+      levels = strategy_breaks
+    )
+  )
+
+
+Contributor_Plot <- ggplot(
+  panel_d_plot_data,
+  aes(
+    x = Date,
+    y = Plot_Value,
+    colour = Series,
+    group = Series
+  )
+) +
+  geom_line(
+    linewidth = LINE_WIDTH,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    size = POINT_SIZE,
+    show.legend = FALSE
+  ) +
+  scale_colour_manual(
+    values = trophic_colours
+  ) +
+  scale_y_continuous(
+    limits = c(0, NA),
+    expand = expansion(
+      mult = c(0, 0.05)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = "Date",
+    y = "Detected contributing\nspecies"
+  ) +
+  theme_nature() +
+  theme(
+    legend.position = "none"
+  )
+
+
+############################################################
+# 21. COMBINE PANELS AND COLLECT LEGENDS
+############################################################
+
+Environmental_TPF_Figure <- (
+
+  (
+    Environmental_Plot /
+      Overall_Allocation_Plot /
+      Strategy_TPF_Plot /
+      Contributor_Plot
+  ) +
+
+    patchwork::plot_layout(
+      heights = c(
+        0.85,
+        0.80,
+        1.05,
+        0.65
+      ),
+
+      guides = "collect"
+    ) +
+
+    patchwork::plot_annotation(
+      tag_levels = "A",
+
+      theme = theme(
+        plot.tag = element_text(
+          face = "bold",
+          size = 10
+        )
+      )
+    )
+
+) &
+
+  theme(
+    # Each legend group is given its own compact row below
+    # the figure, preventing cropped legend entries.
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box = "vertical",
+    legend.justification = "center",
+    legend.box.just = "center",
+
+    legend.box.spacing = grid::unit(
+      0.5,
+      "mm"
+    ),
+
+    legend.box.margin = margin(
+      t = 1,
+      r = 0,
+      b = 0,
+      l = 0,
+      unit = "mm"
+    )
+  )
+
+
+############################################################
+# 22. DISPLAY AND EXPORT THE FINAL FIGURE
+############################################################
+
+Environmental_TPF_Figure
+
+
+# Exact A4 landscape dimensions:
+#
+# Width  = 297 mm
+# Height = 210 mm
+
+ggsave(
+  filename = file.path(
+    "SupplFig_Environmental_TPF_A4_Landscape.pdf"
+  ),
+  plot = Environmental_TPF_Figure,
+  width = 297,
+  height = 210,
+  units = "mm",
+  bg = "white"
+)
+
+ggsave(
+  filename = file.path(
+    "SupplFig_Environmental_TPF_A4_Landscape.png"
+  ),
+  plot = Environmental_TPF_Figure,
+  width = 297,
+  height = 210,
+  units = "mm",
+  dpi = 600,
+  bg = "white"
+)
+
+# ============================================================
+# Source-data export: Supplementary Figure 37a-d
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+# ------------------------------------------------------------
+# Supplementary Figure 37a
+# One row = one environmental measurement at one date and depth
+# ------------------------------------------------------------
+
+suppl_figure_37a <- abiotic_ST_dat |>
+  dplyr::filter(
+    depth >= 2,
+    depth <= 8,
+    date %in% environment_2_8m$Date
+  ) |>
+  dplyr::transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Temperature_C = as.numeric(temperature),
+    Chlorophyll_ug_per_L = as.numeric(chlorophyll)
+  ) |>
+  dplyr::arrange(Date, Depth_m)
+
+readr::write_excel_csv(
+  suppl_figure_37a,
+  file.path(source_dir, "Suppl_Figure_37a.csv"),
+  na = ""
+)
+
+
+# ------------------------------------------------------------
+# Supplementary Figure 37b
+# One row = one protein observation for one species and date
+# ------------------------------------------------------------
+
+suppl_figure_37b <- retained_protein |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Protein_ID = as.character(Protein_ID),
+    Trophic_Group = as.character(TrophicGroupPlot),
+    KEGG_Subcategory = as.character(KEGG_Subcategory),
+    Protein_Class = dplyr::if_else(
+      is_transporter,
+      "Transporter",
+      "Non-transporter"
+    ),
+    Normalized_iBAQ = as.numeric(Protein_Abundance)
+  ) |>
+  dplyr::arrange(Date, Species_ID, Protein_ID)
+
+readr::write_excel_csv(
+  suppl_figure_37b,
+  file.path(source_dir, "Suppl_Figure_37b.csv"),
+  na = ""
+)
+
+
+# ------------------------------------------------------------
+# Supplementary Figure 37c
+# One row = one retained species-date TPF observation
+# ------------------------------------------------------------
+
+suppl_figure_37c <- species_date_tpf |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Trophic_Group = as.character(TrophicGroupPlot),
+    Total_Normalized_iBAQ = as.numeric(
+      Total_Protein_Abundance
+    ),
+    Transporter_Normalized_iBAQ = as.numeric(
+      Transporter_Abundance
+    ),
+    Transporter_Proteome_Fraction_Percent = as.numeric(
+      TPF_Percent
+    )
+  ) |>
+  dplyr::arrange(Trophic_Group, Species_ID, Date)
+
+readr::write_excel_csv(
+  suppl_figure_37c,
+  file.path(source_dir, "Suppl_Figure_37c.csv"),
+  na = ""
+)
+
+
+# ------------------------------------------------------------
+# Supplementary Figure 37d
+# One row = one species contributing on one sampling date
+# ------------------------------------------------------------
+
+suppl_figure_37d <- retained_protein |>
+  dplyr::distinct(
+    Species_ID,
+    Date,
+    TrophicGroupPlot
+  ) |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Trophic_Group = as.character(TrophicGroupPlot)
+  ) |>
+  dplyr::arrange(Trophic_Group, Date, Species_ID)
+
+readr::write_excel_csv(
+  suppl_figure_37d,
+  file.path(source_dir, "Suppl_Figure_37d.csv"),
+  na = ""
+)
+```
+
+```{r}
+############################################################
+# ENVIRONMENTAL CONTEXT AND RHODOPSIN PROTEOME ALLOCATION
+# WHOLE-DATASET VERSION USED FOR FIGURE 5
+#
+# A) Mean measured light and temperature at 2–8 m
+# B) Community rhodopsin proteome fraction
+# C) Pooled rhodopsin fraction: Oligotroph versus Other
+# D) Species with detected rhodopsin protein per date
+#
+# Rhodopsin KOs: K04641 and K04643
+# Protein detection: normalized iBAQ > 0
+# Environmental values: measured 2–8 m means; no interpolation
+############################################################
+
+
+############################################################
+# 0. LIBRARIES AND INPUT PATHS
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(stringr)
+  library(readr)
+  library(readxl)
+  library(lubridate)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# Run from the directory containing Sample_Overview.Rmd.
+protein_path <- "../../Figure_03/LakeOverview/Species_Protein_Table.csv"
+species_path <- "../../Figure_03/LakeOverview/Species_Meta_Table.csv"
+gene_path    <- "../../Figure_03/LakeOverview/Species_Gene_Table.csv"
+abiotic_path <- "../../../Data/Lake_Data/Raw_Data/Data_2021.xlsx"
+light_path <- "../../../Data/Lake_Data/Raw_Data/Light_Measurements_2021.xlsx"
+
+############################################################
+# 1. LOAD DATA
+############################################################
+
+protein_table <- read_csv(
+  protein_path,
+  show_col_types = FALSE
+)
+
+species_meta <- read_csv(
+  species_path,
+  show_col_types = FALSE
+)
+
+gene_table <- read_csv(
+  gene_path,
+  show_col_types = FALSE
+)
+
+abiotic_ST_dat <- read_excel(
+  abiotic_path,
+  sheet = "abiotic"
+)
+
+light_raw <- read_excel(light_path)
+
+
+############################################################
+# 2. VALIDATE REQUIRED COLUMNS
+############################################################
+
+check_columns <- function(data, required, object_name) {
+
+  missing_columns <- setdiff(
+    required,
+    names(data)
+  )
+
+  if (length(missing_columns) > 0L) {
+    stop(
+      object_name,
+      " is missing: ",
+      paste(
+        missing_columns,
+        collapse = ", "
+      )
+    )
+  }
+}
+
+check_columns(
+  protein_table,
+  c(
+    "Date",
+    "Species_ID",
+    "Protein_ID",
+    "Protein_Abundance_IBAQ_Norm"
+  ),
+  "Species_Protein_Table.csv"
+)
+
+check_columns(
+  species_meta,
+  c(
+    "Species_ID",
+    "Group_For_Plots"
+  ),
+  "Species_Meta_Table.csv"
+)
+
+check_columns(
+  gene_table,
+  c(
+    "Species_ID",
+    "Protein_ID",
+    "KEGG_ID"
+  ),
+  "Species_Gene_Table.csv"
+)
+
+check_columns(
+  abiotic_ST_dat,
+  c(
+    "date",
+    "depth",
+    "temperature"
+  ),
+  "Data_2021.xlsx: abiotic"
+)
+
+check_columns(
+  light_raw,
+  c(
+    "Day",
+    "Depth",
+    "Licht_spher"
+  ),
+  "Light_Measurements_2021 workbook"
+)
+
+
+############################################################
+# 3. HELPERS AND FIGURE SETTINGS
+############################################################
+
+parse_mixed_date <- function(x) {
+
+  if (inherits(x, "Date")) {
+    return(x)
+  }
+
+  if (inherits(x, c("POSIXct", "POSIXt"))) {
+    return(as.Date(x))
+  }
+
+  if (is.numeric(x)) {
+    return(
+      as.Date(
+        x,
+        origin = "1899-12-30"
+      )
+    )
+  }
+
+  as.Date(
+    parse_date_time(
+      as.character(x),
+      orders = c(
+        "ymd",
+        "mdy",
+        "dmy"
+      ),
+      quiet = TRUE
+    )
+  )
+}
+
+
+# Figure 5 compares oligotroph-like taxa with all remaining taxa.
+#
+# This preserves all 495 species instead of silently discarding
+# taxa whose three-class trophic assignment was filtered.
+recode_figure5_group <- function(x) {
+
+  factor(
+    if_else(
+      x == "Oligo_like",
+      "Oligotroph",
+      "Other",
+      missing = "Other"
+    ),
+    levels = c(
+      "Oligotroph",
+      "Other"
+    )
+  )
+}
+
+
+theme_nature <- function(base_size = 8.5) {
+
+  theme_classic(
+    base_size = base_size,
+    base_family = "sans"
+  ) +
+    theme(
+      axis.title = element_text(
+        colour = "black"
+      ),
+
+      axis.text = element_text(
+        colour = "black"
+      ),
+
+      axis.line = element_line(
+        linewidth = 0.4,
+        colour = "black"
+      ),
+
+      axis.ticks = element_line(
+        linewidth = 0.35,
+        colour = "black"
+      ),
+
+      panel.grid.major.y = element_line(
+        linewidth = 0.25,
+        colour = "#E7E7E7"
+      ),
+
+      panel.grid.minor = element_blank(),
+
+      plot.margin = margin(
+        4, 5, 4, 5
+      ),
+
+      legend.position = "bottom",
+      legend.box = "vertical",
+
+      legend.title = element_text(
+        face = "bold",
+        size = 7.8
+      ),
+
+      legend.text = element_text(
+        size = 7.8
+      ),
+
+      plot.tag = element_text(
+        size = 11,
+        face = "plain"
+      )
+    )
+}
+
+
+group_colours <- c(
+  "Oligotroph" = "#99C3E6",
+  "Other"      = "#777777"
+)
+
+environment_colours <- c(
+  "Light"       = "#D69F00",
+  "Temperature" = "#C62828"
+)
+
+rhodopsin_colour <- "#8E5AA9"
+
+LINE_WIDTH <- 0.75
+POINT_SIZE <- 1.45
+
+rhodo_kos <- c(
+  "K04641",
+  "K04643"
+)
+
+
+############################################################
+# 4. BUILD A UNIQUE RHODOPSIN ANNOTATION MAP
+############################################################
+
+# Collapse the gene table to exactly one row for every
+# Species_ID × Protein_ID.
+#
+# This prevents abundance rows from being duplicated if the
+# gene table contains multiple annotation rows for a protein.
+protein_rhodopsin_map <- gene_table %>%
+  transmute(
+    Species_ID,
+    Protein_ID,
+
+    is_rhodopsin = str_detect(
+      coalesce(
+        as.character(KEGG_ID),
+        ""
+      ),
+      "\\b(K04641|K04643)\\b"
+    )
+  ) %>%
+  group_by(
+    Species_ID,
+    Protein_ID
+  ) %>%
+  summarise(
+    is_rhodopsin =
+      any(is_rhodopsin),
+
+    .groups = "drop"
+  )
+
+
+# Gene carriers are used only as a genomic QC count.
+rhodopsin_gene_species <- protein_rhodopsin_map %>%
+  filter(is_rhodopsin) %>%
+  distinct(Species_ID)
+
+
+############################################################
+# 5. ANNOTATE THE COMPLETE PROTEIN TABLE
+############################################################
+
+species_group_map <- species_meta %>%
+  transmute(
+    Species_ID,
+
+    Figure5_Group =
+      recode_figure5_group(
+        Group_For_Plots
+      )
+  ) %>%
+  distinct()
+
+
+protein_analysis <- protein_table %>%
+  mutate(
+    Date = parse_mixed_date(Date)
+  ) %>%
+  left_join(
+    protein_rhodopsin_map,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  left_join(
+    species_group_map,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    is_rhodopsin =
+      coalesce(
+        is_rhodopsin,
+        FALSE
+      ),
+
+    Protein_Abundance =
+      as.numeric(
+        Protein_Abundance_IBAQ_Norm
+      )
+  ) %>%
+  filter(
+    !is.na(Date),
+    !is.na(Figure5_Group),
+    is.finite(Protein_Abundance),
+
+    # Positive normalized iBAQ defines protein detection.
+    Protein_Abundance > 0
+  )
+
+
+# A detected rhodopsin therefore requires:
+#
+# 1. K04641 or K04643 in the gene annotation;
+# 2. a matching Protein_ID in the protein table;
+# 3. normalized iBAQ greater than zero.
+rhodopsin_detected_species <- protein_analysis %>%
+  filter(is_rhodopsin) %>%
+  distinct(
+    Species_ID,
+    Figure5_Group
+  )
+
+
+############################################################
+# 6. SPECIES-DATE RHODOPSIN PROTEOME FRACTION
+############################################################
+
+# All detected proteins remain in the denominator.
+#
+# Species without detected rhodopsin on a date receive:
+# Rhodopsin_Abundance = 0
+# RPF_Percent = 0
+species_date_rpf <- protein_analysis %>%
+  group_by(
+    Species_ID,
+    Date,
+    Figure5_Group
+  ) %>%
+  summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Rhodopsin_Abundance = sum(
+      Protein_Abundance[is_rhodopsin],
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  mutate(
+    RPF =
+      Rhodopsin_Abundance /
+      Total_Protein_Abundance,
+
+    RPF_Percent =
+      100 * RPF
+  )
+
+
+############################################################
+# 7. COMMUNITY-WIDE RHODOPSIN FRACTION
+############################################################
+
+# Abundances are summed before division.
+#
+# This is a pooled community fraction, not the arithmetic
+# mean of individual species fractions.
+overall_date_rpf <- protein_analysis %>%
+  group_by(Date) %>%
+  summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Rhodopsin_Abundance = sum(
+      Protein_Abundance[is_rhodopsin],
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  mutate(
+    Rhodopsin_Percent =
+      100 *
+      Rhodopsin_Abundance /
+      Total_Protein_Abundance
+  ) %>%
+  arrange(Date)
+
+
+############################################################
+# 8. RHODOPSIN FRACTION BY FIGURE 5 GROUP
+############################################################
+
+# Abundances are summed before division within each group.
+#
+# These are pooled, abundance-weighted group fractions.
+group_date_rpf <- protein_analysis %>%
+  group_by(
+    Date,
+    Figure5_Group
+  ) %>%
+  summarise(
+    Total_Protein_Abundance = sum(
+      Protein_Abundance,
+      na.rm = TRUE
+    ),
+
+    Rhodopsin_Abundance = sum(
+      Protein_Abundance[is_rhodopsin],
+      na.rm = TRUE
+    ),
+
+    .groups = "drop"
+  ) %>%
+  filter(
+    Total_Protein_Abundance > 0
+  ) %>%
+  mutate(
+    Pooled_RPF_Percent =
+      100 *
+      Rhodopsin_Abundance /
+      Total_Protein_Abundance
+  )
+
+
+############################################################
+# 9. DATE-SPECIFIC RHODOPSIN-PROTEIN CONTRIBUTORS
+############################################################
+
+# Count only species with positive detected rhodopsin
+# abundance on each date.
+rhodopsin_contributor_counts <- species_date_rpf %>%
+  filter(
+    Rhodopsin_Abundance > 0
+  ) %>%
+  count(
+    Date,
+    Figure5_Group,
+    name = "N_Rhodopsin_Species"
+  )
+
+
+# Explicitly represent date × group combinations without
+# detected rhodopsin as zero.
+rhodopsin_contributors <- group_date_rpf %>%
+  distinct(
+    Date,
+    Figure5_Group
+  ) %>%
+  left_join(
+    rhodopsin_contributor_counts,
+    by = c(
+      "Date",
+      "Figure5_Group"
+    )
+  ) %>%
+  mutate(
+    N_Rhodopsin_Species =
+      coalesce(
+        N_Rhodopsin_Species,
+        0L
+      )
+  ) %>%
+  arrange(
+    Figure5_Group,
+    Date
+  )
+
+
+# Include the count in the group-level exported table.
+group_date_rpf <- group_date_rpf %>%
+  left_join(
+    rhodopsin_contributors,
+    by = c(
+      "Date",
+      "Figure5_Group"
+    )
+  )
+
+
+############################################################
+# 10. MEAN MEASURED LIGHT AND TEMPERATURE AT 2–8 M
+############################################################
+
+light_clean <- light_raw %>%
+  transmute(
+    Date =
+      parse_mixed_date(Day),
+
+    depth =
+      as.numeric(Depth),
+
+    Light =
+      as.numeric(Licht_spher)
+  ) %>%
+  filter(
+    !is.na(Date),
+    is.finite(depth),
+    is.finite(Light)
+  )
+
+
+temperature_clean <- abiotic_ST_dat %>%
+  transmute(
+    Date =
+      parse_mixed_date(date),
+
+    depth =
+      as.numeric(depth),
+
+    Temperature =
+      as.numeric(temperature)
+  ) %>%
+  filter(
+    !is.na(Date),
+    is.finite(depth),
+    is.finite(Temperature)
+  )
+
+
+light_2_8m <- light_clean %>%
+  filter(
+    depth >= 2,
+    depth <= 8
+  ) %>%
+  group_by(Date) %>%
+  summarise(
+    Light = mean(
+      Light,
+      na.rm = TRUE
+    ),
+
+    N_Light_Depths =
+      n_distinct(depth),
+
+    .groups = "drop"
+  )
+
+
+temperature_2_8m <- temperature_clean %>%
+  filter(
+    depth >= 2,
+    depth <= 8
+  ) %>%
+  group_by(Date) %>%
+  summarise(
+    Temperature = mean(
+      Temperature,
+      na.rm = TRUE
+    ),
+
+    N_Temperature_Depths =
+      n_distinct(depth),
+
+    .groups = "drop"
+  )
+
+
+# Retain only dates measured for both light and temperature.
+#
+# No temporal interpolation or missing-date filling is used.
+environment_2_8m <- inner_join(
+  light_2_8m,
+  temperature_2_8m,
+  by = "Date"
+) %>%
+  arrange(Date)
+
+
+figure_date_limits <- range(
+  overall_date_rpf$Date,
+  na.rm = TRUE
+)
+
+
+environment_2_8m <- environment_2_8m %>%
+  filter(
+    Date >= figure_date_limits[[1]],
+    Date <= figure_date_limits[[2]]
+  )
+
+
+if (nrow(environment_2_8m) == 0L) {
+  stop(
+    "No common 2–8 m light and temperature dates ",
+    "occur in the proteomic time window."
+  )
+}
+
+
+############################################################
+# 11. PREPARE DUAL ENVIRONMENTAL AXIS
+############################################################
+
+light_range <- range(
+  environment_2_8m$Light,
+  na.rm = TRUE
+)
+
+temperature_range <- range(
+  environment_2_8m$Temperature,
+  na.rm = TRUE
+)
+
+
+if (
+  diff(light_range) == 0 ||
+  diff(temperature_range) == 0
+) {
+  stop(
+    "Light and temperature must each contain ",
+    "at least two distinct values."
+  )
+}
+
+
+temperature_scale_factor <-
+  diff(light_range) /
+  diff(temperature_range)
+
+
+temperature_offset <-
+  light_range[[1]] -
+  temperature_range[[1]] *
+  temperature_scale_factor
+
+
+environment_2_8m <- environment_2_8m %>%
+  mutate(
+    Temperature_Scaled =
+      Temperature *
+      temperature_scale_factor +
+      temperature_offset
+  )
+
+
+common_date_scale <- function() {
+
+  scale_x_date(
+    limits = figure_date_limits,
+    date_breaks = "1 month",
+    date_labels = "%b",
+    expand = expansion(
+      mult = c(0, 0)
+    )
+  )
+}
+
+
+############################################################
+# 12. LEGEND LABELS
+############################################################
+
+group_breaks <- c(
+  "Oligotroph",
+  "Other"
+)
+
+
+# These counts should reproduce the Figure 5 values:
+# Oligotroph = 20
+# Other      = 27
+rhodopsin_group_counts <- rhodopsin_detected_species %>%
+  count(
+    Figure5_Group,
+    name = "N_Rhodopsin_Species"
+  ) %>%
+  mutate(
+    Legend_Label = paste0(
+      Figure5_Group,
+      " (rhodopsin n = ",
+      N_Rhodopsin_Species,
+      ")"
+    )
+  )
+
+
+group_legend_labels <- setNames(
+  rhodopsin_group_counts$Legend_Label,
+  as.character(
+    rhodopsin_group_counts$Figure5_Group
+  )
+)
+
+
+############################################################
+# 13. PANEL A: LIGHT AND TEMPERATURE
+############################################################
+
+panel_a_long <- bind_rows(
+
+  environment_2_8m %>%
+    transmute(
+      Date,
+      Series = "Light",
+      Original_Value = Light,
+      Plot_Value = Light,
+      N_Depths = N_Light_Depths
+    ),
+
+  environment_2_8m %>%
+    transmute(
+      Date,
+      Series = "Temperature",
+      Original_Value = Temperature,
+      Plot_Value = Temperature_Scaled,
+      N_Depths = N_Temperature_Depths
+    )
+)
+
+
+Environmental_Plot <- ggplot(
+  panel_a_long,
+  aes(
+    x = Date,
+    y = Plot_Value,
+    colour = Series,
+    group = Series
+  )
+) +
+  geom_line(
+    linewidth = LINE_WIDTH
+  ) +
+  geom_point(
+    size = POINT_SIZE
+  ) +
+  scale_colour_manual(
+    name = "Environmental parameter",
+
+    values = environment_colours,
+
+    breaks = c(
+      "Light",
+      "Temperature"
+    ),
+
+    labels = c(
+      "Light (mean 2–8 m depth)",
+      "Temperature (mean 2–8 m depth)"
+    ),
+
+    guide = guide_legend(
+      order = 1,
+      nrow = 1,
+      byrow = TRUE,
+      title.position = "left"
+    )
+  ) +
+  scale_y_continuous(
+    # Change this label if Licht_spher uses another unit.
+    name = "Spherical light (µmol photons m⁻² s⁻¹)",
+
+    sec.axis = sec_axis(
+      trans = ~ (
+        . - temperature_offset
+      ) / temperature_scale_factor,
+
+      name = "Temperature (°C)"
+    ),
+
+    expand = expansion(
+      mult = c(0.05, 0.05)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = NULL,
+    tag = "A"
+  ) +
+  theme_nature() +
+  theme(
+    axis.title.y.left = element_text(
+      colour =
+        environment_colours[["Light"]],
+      face = "bold"
+    ),
+
+    axis.text.y.left = element_text(
+      colour =
+        environment_colours[["Light"]]
+    ),
+
+    axis.title.y.right = element_text(
+      colour =
+        environment_colours[["Temperature"]],
+      face = "bold"
+    ),
+
+    axis.text.y.right = element_text(
+      colour =
+        environment_colours[["Temperature"]]
+    ),
+
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 14. PANEL B: COMMUNITY RHODOPSIN FRACTION
+############################################################
+
+overall_y_max <- max(
+  overall_date_rpf$Rhodopsin_Percent,
+  na.rm = TRUE
+)
+
+if (
+  !is.finite(overall_y_max) ||
+  overall_y_max <= 0
+) {
+  overall_y_max <- 1
+}
+
+
+Overall_RPF_Plot <- ggplot(
+  overall_date_rpf,
+  aes(
+    x = Date,
+    y = Rhodopsin_Percent
+  )
+) +
+  geom_line(
+    colour = rhodopsin_colour,
+    linewidth = LINE_WIDTH
+  ) +
+  geom_point(
+    colour = rhodopsin_colour,
+    size = POINT_SIZE
+  ) +
+  scale_y_continuous(
+    limits = c(
+      0,
+      1.08 * overall_y_max
+    ),
+    expand = expansion(
+      mult = c(0, 0)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = NULL,
+    y = "Community rhodopsin\nproteome fraction (%)",
+    tag = "B"
+  ) +
+  theme_nature() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 15. PANEL C: RHODOPSIN FRACTION BY FIGURE 5 GROUP
+############################################################
+
+# No species-level IQR ribbons are plotted because those
+# quartiles are not uncertainty intervals around these pooled
+# abundance-weighted curves.
+group_y_max <- max(
+  group_date_rpf$Pooled_RPF_Percent,
+  na.rm = TRUE
+)
+
+if (
+  !is.finite(group_y_max) ||
+  group_y_max <= 0
+) {
+  group_y_max <- 1
+}
+
+
+Strategy_RPF_Plot <- ggplot(
+  group_date_rpf,
+  aes(
+    x = Date,
+    y = Pooled_RPF_Percent,
+    colour = Figure5_Group,
+    group = Figure5_Group
+  )
+) +
+  geom_line(
+    linewidth = LINE_WIDTH
+  ) +
+  geom_point(
+    size = POINT_SIZE
+  ) +
+  scale_colour_manual(
+    name = "Figure 5 group",
+
+    values = group_colours,
+    breaks = group_breaks,
+
+    labels =
+      group_legend_labels[
+        group_breaks
+      ],
+
+    drop = FALSE,
+
+    guide = guide_legend(
+      order = 2,
+      nrow = 1,
+      byrow = TRUE,
+      title.position = "left"
+    )
+  ) +
+  scale_y_continuous(
+    limits = c(
+      0,
+      1.08 * group_y_max
+    ),
+    expand = expansion(
+      mult = c(0, 0)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = NULL,
+    y = "Pooled rhodopsin\nproteome fraction (%)",
+    tag = "C"
+  ) +
+  theme_nature() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+############################################################
+# 16. PANEL D: SPECIES WITH DETECTED RHODOPSIN PROTEIN
+############################################################
+
+Contributor_Plot <- ggplot(
+  rhodopsin_contributors,
+  aes(
+    x = Date,
+    y = N_Rhodopsin_Species,
+    colour = Figure5_Group,
+    group = Figure5_Group
+  )
+) +
+  geom_line(
+    linewidth = LINE_WIDTH,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    size = POINT_SIZE,
+    show.legend = FALSE
+  ) +
+  scale_colour_manual(
+    values = group_colours,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, NA),
+
+    breaks =
+      scales::breaks_pretty(n = 4),
+
+    expand = expansion(
+      mult = c(0, 0.05)
+    )
+  ) +
+  common_date_scale() +
+  labs(
+    x = "Date",
+    y = "Species with detected\nrhodopsin protein",
+    tag = "D"
+  ) +
+  theme_nature() +
+  theme(
+    legend.position = "none"
+  )
+
+
+############################################################
+# 17. COMBINE PANELS
+############################################################
+
+Rhodopsin_Environmental_Figure <- (
+
+  (
+    Environmental_Plot /
+      Overall_RPF_Plot /
+      Strategy_RPF_Plot /
+      Contributor_Plot
+  ) +
+
+    plot_layout(
+      heights = c(
+        1.00,
+        0.72,
+        1.00,
+        0.68
+      ),
+
+      guides = "collect"
+    )
+
+) &
+
+  theme(
+    legend.position = "bottom"
+  )
+
+
+############################################################
+# 18. EXPORT FIGURE AND NUMERICAL DATA
+############################################################
+
+ggsave(
+  filename = file.path(
+    "SupplFig_Environmental_Rhodopsin_A4_Landscape.pdf"
+  ),
+
+  plot =
+    Rhodopsin_Environmental_Figure,
+
+  width = 11.69,
+  height = 8.27,
+  units = "in",
+  device = cairo_pdf
+)
+
+
+ggsave(
+  filename = file.path(
+    "SupplFig_Environmental_Rhodopsin_A4_Landscape.png"
+  ),
+
+  plot =
+    Rhodopsin_Environmental_Figure,
+
+  width = 11.69,
+  height = 8.27,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+
+
+write_csv(
+  environment_2_8m,
+  file.path(
+    "Environment_2_8m_Measured.csv"
+  )
+)
+
+write_csv(
+  overall_date_rpf,
+  file.path(
+    "Overall_Rhodopsin_Fraction.csv"
+  )
+)
+
+write_csv(
+  group_date_rpf,
+  file.path(
+    "Group_Rhodopsin_Fraction.csv"
+  )
+)
+
+write_csv(
+  species_date_rpf,
+  file.path(
+    "Species_Date_Rhodopsin_Fraction.csv"
+  )
+)
+
+write_csv(
+  rhodopsin_contributors,
+  file.path(
+    "Rhodopsin_Contributors_By_Date.csv"
+  )
+)
+
+write_csv(
+  rhodopsin_detected_species,
+  file.path(
+    "Rhodopsin_Detected_Species.csv"
+  )
+)
+
+
+############################################################
+# 19. QC AND CONSISTENCY CHECKS
+############################################################
+
+n_gene_carriers <- n_distinct(
+  rhodopsin_gene_species$Species_ID
+)
+
+n_detected_species <- n_distinct(
+  rhodopsin_detected_species$Species_ID
+)
+
+
+cat(
+  "\n=== Whole-dataset rhodopsin checks ===\n"
+)
+
+cat(
+  "Protein-table rows loaded:",
+  nrow(protein_table),
+  "\n"
+)
+
+cat(
+  "Species-meta rows loaded:",
+  nrow(species_meta),
+  "\n"
+)
+
+cat(
+  "Rhodopsin gene carriers:",
+  n_gene_carriers,
+  "\n"
+)
+
+cat(
+  "Species with detected rhodopsin protein:",
+  n_detected_species,
+  "\n\n"
+)
+
+
+cat(
+  "Detected rhodopsin species by Figure 5 group:\n"
+)
+
+print(
+  rhodopsin_detected_species %>%
+    count(
+      Figure5_Group,
+      name = "N_Rhodopsin_Species"
+    )
+)
+
+
+cat(
+  "\nMaximum detected simultaneously per group:\n"
+)
+
+print(
+  rhodopsin_contributors %>%
+    group_by(Figure5_Group) %>%
+    summarise(
+      Maximum_Detected = max(
+        N_Rhodopsin_Species,
+        na.rm = TRUE
+      ),
+
+      .groups = "drop"
+    )
+)
+
+
+# Panel B must equal the total-proteome-weighted average of
+# the two group curves in panel C.
+pooled_consistency <- group_date_rpf %>%
+  group_by(Date) %>%
+  summarise(
+    Reconstructed_Overall_Percent =
+      100 *
+      sum(Rhodopsin_Abundance) /
+      sum(Total_Protein_Abundance),
+
+    .groups = "drop"
+  ) %>%
+  left_join(
+    overall_date_rpf %>%
+      select(
+        Date,
+        Rhodopsin_Percent
+      ),
+
+    by = "Date"
+  ) %>%
+  mutate(
+    Absolute_Difference =
+      abs(
+        Reconstructed_Overall_Percent -
+          Rhodopsin_Percent
+      )
+  )
+
+
+cat(
+  "\nMaximum panel B/C reconstruction difference:",
+  max(
+    pooled_consistency$Absolute_Difference,
+    na.rm = TRUE
+  ),
+  "\n"
+)
+
+
+if (n_detected_species != 47L) {
+  warning(
+    "Expected 47 rhodopsin-protein-positive species from Figure 5, ",
+    "but detected ",
+    n_detected_species,
+    ". Inspect Rhodopsin_Detected_Species.csv and confirm that ",
+    "the KO-only rule matches the manually curated Figure 5 ",
+    "rhodopsin catalogue."
+  )
+}
+
+
+
+Rhodopsin_Environmental_Figure
+```
+
+```{r}
+# ============================================================
+# SOURCE DATA: SUPPLEMENTARY FIGURE 43
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+# ============================================================
+# Suppl. Figure 43a
+# One row = one measured environmental value at one depth/date
+# ============================================================
+
+suppl_figure_43a <- dplyr::bind_rows(
+
+  light_clean |>
+    dplyr::filter(
+      depth >= 2,
+      depth <= 8,
+      Date %in% environment_2_8m$Date
+    ) |>
+    dplyr::transmute(
+      Date = as.Date(Date),
+      Depth_m = as.numeric(depth),
+      Environmental_Parameter = "Spherical light",
+      Measured_Value = as.numeric(Light),
+      Unit = "µmol photons m^-2 s^-1"
+    ),
+
+  temperature_clean |>
+    dplyr::filter(
+      depth >= 2,
+      depth <= 8,
+      Date %in% environment_2_8m$Date
+    ) |>
+    dplyr::transmute(
+      Date = as.Date(Date),
+      Depth_m = as.numeric(depth),
+      Environmental_Parameter = "Temperature",
+      Measured_Value = as.numeric(Temperature),
+      Unit = "°C"
+    )
+) |>
+  dplyr::arrange(
+    Date,
+    Environmental_Parameter,
+    Depth_m
+  )
+
+readr::write_excel_csv(
+  suppl_figure_43a,
+  file.path(source_dir, "Suppl_Figure_43a.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Suppl. Figure 43b
+# One row = one detected protein from one species/date
+# ============================================================
+
+suppl_figure_43b <- protein_analysis |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Protein_ID = as.character(Protein_ID),
+    Figure5_Group = as.character(Figure5_Group),
+    Protein_Class = dplyr::if_else(
+      is_rhodopsin,
+      "Rhodopsin",
+      "Other detected protein"
+    ),
+    Normalized_iBAQ = as.numeric(Protein_Abundance)
+  ) |>
+  dplyr::arrange(
+    Date,
+    Figure5_Group,
+    Species_ID,
+    Protein_ID
+  )
+
+readr::write_excel_csv(
+  suppl_figure_43b,
+  file.path(source_dir, "Suppl_Figure_43b.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Suppl. Figure 43c
+# One row = one species-date rhodopsin fraction
+# ============================================================
+
+suppl_figure_43c <- species_date_rpf |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Figure5_Group = as.character(Figure5_Group),
+    Total_Normalized_iBAQ = as.numeric(
+      Total_Protein_Abundance
+    ),
+    Rhodopsin_Normalized_iBAQ = as.numeric(
+      Rhodopsin_Abundance
+    ),
+    Rhodopsin_Proteome_Fraction_Percent = as.numeric(
+      RPF_Percent
+    )
+  ) |>
+  dplyr::arrange(
+    Figure5_Group,
+    Species_ID,
+    Date
+  )
+
+readr::write_excel_csv(
+  suppl_figure_43c,
+  file.path(source_dir, "Suppl_Figure_43c.csv"),
+  na = ""
+)
+
+
+# ============================================================
+# Suppl. Figure 43d
+# One row = one rhodopsin-expressing species/date observation
+# ============================================================
+
+suppl_figure_43d <- species_date_rpf |>
+  dplyr::semi_join(
+    rhodopsin_detected_species,
+    by = c("Species_ID", "Figure5_Group")
+  ) |>
+  dplyr::transmute(
+    Date = as.Date(Date),
+    Species_ID = as.character(Species_ID),
+    Figure5_Group = as.character(Figure5_Group),
+    Rhodopsin_Normalized_iBAQ = as.numeric(
+      Rhodopsin_Abundance
+    ),
+    Rhodopsin_Detected =
+      Rhodopsin_Abundance > 0
+  ) |>
+  dplyr::arrange(
+    Figure5_Group,
+    Date,
+    Species_ID
+  )
+
+readr::write_excel_csv(
+  suppl_figure_43d,
+  file.path(source_dir, "Suppl_Figure_43d.csv"),
+  na = ""
+)
+```
+
+
+
+```{r}
+############################################################
+# EPILIMNETIC BACTERIAL ABUNDANCE VS TEMPERATURE
+#
+# INPUTS
+# ------
+# biotic_ST_dat:
+#   date, bacteria
+#   Bacterial abundance from the pooled 2–8 m sample.
+#
+# temperature_ST_profile:
+#   date, depth, temperature
+#   Interpolated temperature profile.
+#
+# MODELS
+# ------
+# 1. Pearson correlation:
+#      bacterial abundance ~ mean 2–8 m temperature
+#
+# 2. Log-linear regression:
+#      log(bacterial abundance) ~ mean 2–8 m temperature
+#
+# The log-linear temperature coefficient is converted to the
+# percentage change in abundance per 1 °C.
+#
+# Only measured bacterial sampling dates are observations.
+# No AR(1) correction is applied.
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tibble)
+})
+
+ANALYSIS_START <- as.Date("2021-03-02")
+ANALYSIS_END   <- as.Date("2021-06-04")
+
+EPI_DEPTH_MIN <- 2
+EPI_DEPTH_MAX <- 8
+
+
+########################
+## 1) Measured bacterial abundance
+########################
+
+bacteria_epilimnion <- biotic_ST_dat %>%
+  transmute(
+    Date = as.Date(date),
+    Bacteria_Cells_Per_mL = as.numeric(bacteria)
+  ) %>%
+  filter(
+    Date >= ANALYSIS_START,
+    Date <= ANALYSIS_END,
+    is.finite(Bacteria_Cells_Per_mL),
+    Bacteria_Cells_Per_mL > 0
+  ) %>%
+  arrange(Date)
+
+
+########################
+## 2) Mean 2–8 m temperature
+########################
+
+temperature_epilimnion <- temperature_ST_profile %>%
+  ungroup() %>%
+  transmute(
+    Date = as.Date(date),
+    Depth_m = as.numeric(depth),
+    Temperature_C = as.numeric(temperature)
+  ) %>%
+  filter(
+    Date >= ANALYSIS_START,
+    Date <= ANALYSIS_END,
+    is.finite(Depth_m),
+    is.finite(Temperature_C),
+    Depth_m >= EPI_DEPTH_MIN,
+    Depth_m <= EPI_DEPTH_MAX
+  ) %>%
+  semi_join(
+    bacteria_epilimnion %>% select(Date),
+    by = "Date"
+  ) %>%
+  group_by(Date) %>%
+  summarise(
+    Temperature_C = mean(Temperature_C),
+    .groups = "drop"
+  )
+
+
+########################
+## 3) Pair abundance and temperature
+########################
+
+bacteria_temperature <- bacteria_epilimnion %>%
+  inner_join(
+    temperature_epilimnion,
+    by = "Date"
+  ) %>%
+  filter(
+    is.finite(Bacteria_Cells_Per_mL),
+    is.finite(Temperature_C)
+  ) %>%
+  arrange(Date)
+
+if (nrow(bacteria_temperature) != 37L) {
+  stop(
+    "Expected 37 paired sampling dates, but found ",
+    nrow(bacteria_temperature), "."
+  )
+}
+
+
+########################
+## 4) Abundance summary
+########################
+
+abundance_summary <- bacteria_epilimnion %>%
+  summarise(
+    N_Sampling_Dates =
+      n(),
+
+    Minimum_Cells_Per_mL =
+      min(Bacteria_Cells_Per_mL),
+
+    Minimum_Date =
+      Date[which.min(Bacteria_Cells_Per_mL)][1],
+
+    Maximum_Cells_Per_mL =
+      max(Bacteria_Cells_Per_mL),
+
+    Maximum_Date =
+      Date[which.max(Bacteria_Cells_Per_mL)][1],
+
+    Fold_Change =
+      Maximum_Cells_Per_mL /
+      Minimum_Cells_Per_mL
+  )
+
+
+########################
+## 5) Pearson correlation
+########################
+
+pearson_test <- cor.test(
+  bacteria_temperature$Bacteria_Cells_Per_mL,
+  bacteria_temperature$Temperature_C,
+  method = "pearson",
+  alternative = "two.sided",
+  conf.level = 0.95
+)
+
+pearson_summary <- tibble(
+  N_Paired_Dates =
+    nrow(bacteria_temperature),
+
+  Pearson_r =
+    unname(pearson_test$estimate),
+
+  CI_95_Lower =
+    unname(pearson_test$conf.int[1]),
+
+  CI_95_Upper =
+    unname(pearson_test$conf.int[2]),
+
+  Test_Statistic_t =
+    unname(pearson_test$statistic),
+
+  Degrees_Of_Freedom =
+    unname(pearson_test$parameter),
+
+  P_Value =
+    pearson_test$p.value
+)
+
+
+########################
+## 6) Log-linear model
+########################
+
+temperature_model <- lm(
+  log(Bacteria_Cells_Per_mL) ~ Temperature_C,
+  data = bacteria_temperature
+)
+
+coefficient_table <- coef(
+  summary(temperature_model)
+)
+
+coefficient_confidence <- confint(
+  temperature_model,
+  level = 0.95
+)
+
+model_parameters <- tibble(
+  Term =
+    rownames(coefficient_table),
+
+  Estimate =
+    coefficient_table[, "Estimate"],
+
+  Standard_Error =
+    coefficient_table[, "Std. Error"],
+
+  Test_Statistic_t =
+    coefficient_table[, "t value"],
+
+  P_Value =
+    coefficient_table[, "Pr(>|t|)"],
+
+  CI_95_Lower =
+    coefficient_confidence[, 1],
+
+  CI_95_Upper =
+    coefficient_confidence[, 2]
+) %>%
+  mutate(
+    Percent_Change_Per_Degree_C =
+      if_else(
+        Term == "Temperature_C",
+        100 * expm1(Estimate),
+        NA_real_
+      ),
+
+    Percent_Change_CI_95_Lower =
+      if_else(
+        Term == "Temperature_C",
+        100 * expm1(CI_95_Lower),
+        NA_real_
+      ),
+
+    Percent_Change_CI_95_Upper =
+      if_else(
+        Term == "Temperature_C",
+        100 * expm1(CI_95_Upper),
+        NA_real_
+      )
+  )
+
+model_fit <- summary(temperature_model)
+model_f <- model_fit$fstatistic
+
+model_summary <- tibble(
+  Model =
+    "lm(log(Bacterial abundance) ~ mean 2–8 m temperature)",
+
+  N_Paired_Dates =
+    nobs(temperature_model),
+
+  R_Squared =
+    model_fit$r.squared,
+
+  Adjusted_R_Squared =
+    model_fit$adj.r.squared,
+
+  Residual_SD_Log_Scale =
+    model_fit$sigma,
+
+  Model_F =
+    unname(model_f[1]),
+
+  Numerator_DF =
+    unname(model_f[2]),
+
+  Denominator_DF =
+    unname(model_f[3]),
+
+  Model_P_Value =
+    pf(
+      model_f[1],
+      model_f[2],
+      model_f[3],
+      lower.tail = FALSE
+    )
+)
+
+
+########################
+## 7) Print outputs
+########################
+
+print(
+  abundance_summary,
+  width = Inf
+)
+
+print(
+  pearson_summary,
+  width = Inf
+)
+
+print(
+  model_parameters,
+  width = Inf
+)
+
+print(
+  model_summary,
+  width = Inf
+)
+```

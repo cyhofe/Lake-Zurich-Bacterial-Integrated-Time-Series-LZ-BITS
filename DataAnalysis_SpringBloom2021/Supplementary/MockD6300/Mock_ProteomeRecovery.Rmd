@@ -1,0 +1,1739 @@
+---
+title: "Proteome Recovery Mock Community"
+date: "09.04.2025"
+author: "Cyrill Hofer"
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: true
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data preparation
+
+This notebook evaluates identification overlap, quantitative reproducibility, filtering specificity, community composition, and proteome recovery for the MockD6300 DIA proteomics dataset.
+
+```{r setup, message=FALSE, warning=FALSE}
+rm(list = ls())
+
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/MockD6300/")
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(forcats)
+library(stringr)
+library(patchwork)
+
+source("ColorPalette.R")
+
+protein_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/Protein_Table_Combined_Filtered.csv",
+  show_col_types = FALSE
+)
+peptide_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/Peptide_Table_Combined_Filtered.csv",
+  show_col_types = FALSE
+)
+gene_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/Database/MockD6300.Genes.Perpared.csv",
+  show_col_types = FALSE
+)
+genome_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/Database/organisms_genome_summary.csv",
+  show_col_types = FALSE
+)
+protein_raw_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/Protein_Table_Replicates.csv",
+  show_col_types = FALSE
+)
+peptide_raw_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/Peptide_Table_Replicates.csv",
+  show_col_types = FALSE
+)
+
+diann_dat <- read_tsv(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/diann-report.tsv",
+  show_col_types = FALSE
+)
+
+prolefqua_peptide_dat <- readxl::read_excel(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/proteinAbundances_.xlsx",
+  sheet = "peptide_wide"
+)
+
+prolefqua_protein_dat <- readxl::read_excel(
+  "../../../Data/Mock_Data/Proteomic/DIA_Proteomics/proteinAbundances_.xlsx",
+  sheet = "prot_IBAQ_estimate"
+)
+
+species_dat <- read_csv(
+  "../../../Data/Mock_Data/Proteomic/Database/organisms_genome_summary.csv")
+
+dir.create("Results", showWarnings = FALSE)
+dir.create("Results/Replicate_Overlap", recursive = TRUE, showWarnings = FALSE)
+dir.create("Results/Quantitative_Reproducibility", recursive = TRUE, showWarnings = FALSE)
+dir.create("Results/Species_Specificity_Filtering", recursive = TRUE, showWarnings = FALSE)
+dir.create("Results/Community_Proteome_Recovery", recursive = TRUE, showWarnings = FALSE)
+
+sample_order <- c("MockD6300-1", "MockD6300-2")
+presence_order <- c(
+  "Detected in both replicates",
+  "Detected in one replicate only"
+)
+presence_cols <- c(
+  "Detected in both replicates" = "#669BBC",
+  "Detected in one replicate only" = "#FFB703"
+)
+replicate_cols <- c("MockD6300-1" = "#669BBC", "MockD6300-2" = "#FFB703")
+specificity_cols <- c("Species-specific" = "#669BBC", "Not species-specific" = "#FFB703")
+
+species_order <- c(
+  "Cryptococcus_neoformans", "Saccharomyces_cerevisiae",
+  "Bacillus_subtilis", "Listeria_monocytogenes",
+  "Staphylococcus_aureus", "Enterococcus_faecalis",
+  "Lactobacillus_fermentum", "Salmonella_enterica",
+  "Escherichia_coli", "Pseudomonas_aeruginosa"
+)
+species_cols <- c(
+  "Cryptococcus_neoformans" = "#477A45",
+  "Saccharomyces_cerevisiae" = "#A7B58F",
+  "Bacillus_subtilis" = "#D4D0C6",
+  "Listeria_monocytogenes" = "#C8162B",
+  "Staphylococcus_aureus" = "#7F0000",
+  "Enterococcus_faecalis" = "#ED6A00",
+  "Lactobacillus_fermentum" = "#FFB703",
+  "Salmonella_enterica" = "#003B53",
+  "Escherichia_coli" = "#669BBC",
+  "Pseudomonas_aeruginosa" = "#8ECAE6"
+)
+
+species_from_id <- function(x) {
+  case_when(
+    is.na(x) ~ NA_character_,
+    str_detect(x, regex("Cont|fgcz", ignore_case = TRUE)) ~ "Contaminant",
+    TRUE ~ str_extract(x, "^[^_]+_[^_]+")
+  )
+}
+
+group_specificity <- function(x) {
+  vapply(x, function(group) {
+    members <- unlist(str_split(group, ";"), use.names = FALSE)
+    taxa <- unique(na.omit(species_from_id(members)))
+    if (length(taxa) == 1L) "Species-specific" else "Not species-specific"
+  }, character(1))
+}
+
+theme_mock <- theme_bw(base_size = 9) +
+  theme(
+    panel.grid = element_blank(),
+    panel.border = element_rect(colour = "#9A9A9A", fill = NA, linewidth = 0.6),
+    axis.text = element_text(colour = "black"),
+    plot.title = element_text(face = "bold", size = 10, hjust = 0.5),
+    legend.title = element_blank()
+  )
+```
+
+# Replicate overlap and signal contribution
+
+This figure separates peptide and protein identifications detected in both technical replicates from those detected in one replicate only, using identification counts and summed median-centred signal.
+
+```{r replicate-overlap-and-signal, fig.width=12, fig.height=4.5, message=FALSE, warning=FALSE}
+peptide_presence <- peptide_raw_dat %>%
+  group_by(Peptide_ID) %>%
+  summarise(
+    N_Replicates = sum(!is.na(Peptide_Abundance)),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Presence = if_else(
+      N_Replicates == length(sample_order),
+      presence_order[1],
+      presence_order[2]
+    )
+  )
+
+peptide_overlap <- peptide_raw_dat %>%
+  left_join(
+    peptide_presence %>% select(Peptide_ID, Presence),
+    by = "Peptide_ID"
+  ) %>%
+  filter(!is.na(Peptide_Abundance), Peptide_Abundance > 0) %>%
+  mutate(
+    Sample = factor(Sample, levels = sample_order),
+    Presence = factor(Presence, levels = presence_order)
+  ) %>%
+  group_by(Sample) %>%
+  mutate(
+    Median_Centered_Signal =
+      Peptide_Abundance / median(Peptide_Abundance)
+  ) %>%
+  ungroup()
+
+protein_presence <- protein_raw_dat %>%
+  group_by(Protein_ID) %>%
+  summarise(
+    N_Replicates = sum(!is.na(Protein_Abundance_IBAQ)),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Presence = if_else(
+      N_Replicates == length(sample_order),
+      presence_order[1],
+      presence_order[2]
+    )
+  )
+
+protein_overlap <- protein_raw_dat %>%
+  left_join(
+    protein_presence %>% select(Protein_ID, Presence),
+    by = "Protein_ID"
+  ) %>%
+  filter(
+    !is.na(Protein_Abundance_IBAQ),
+    Protein_Abundance_IBAQ > 0
+  ) %>%
+  mutate(
+    Sample = factor(Sample, levels = sample_order),
+    Presence = factor(Presence, levels = presence_order)
+  ) %>%
+  group_by(Sample) %>%
+  mutate(
+    Median_Centered_Signal =
+      Protein_Abundance_IBAQ /
+      median(Protein_Abundance_IBAQ)
+  ) %>%
+  ungroup()
+
+replicate_overlap_source <- bind_rows(
+  peptide_overlap %>%
+    count(Sample, Presence, name = "Value") %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Identification count"
+    ),
+
+  peptide_overlap %>%
+    group_by(Sample, Presence) %>%
+    summarise(
+      Value = sum(Median_Centered_Signal),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Median-centered abundance"
+    ),
+
+  protein_overlap %>%
+    count(Sample, Presence, name = "Value") %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Identification count"
+    ),
+
+  protein_overlap %>%
+    group_by(Sample, Presence) %>%
+    summarise(
+      Value = sum(Median_Centered_Signal),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Median-centered iBAQ"
+    )
+) %>%
+  select(Data_Level, Metric, Sample, Presence, Value)
+
+replicate_overlap_statistics <- bind_rows(
+  peptide_presence %>%
+    count(Presence, name = "Value") %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Identifications"
+    ),
+
+  protein_presence %>%
+    count(Presence, name = "Value") %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Identifications"
+    ),
+
+  peptide_overlap %>%
+    group_by(Presence) %>%
+    summarise(
+      Value = sum(Median_Centered_Signal),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Median-centered abundance"
+    ),
+
+  protein_overlap %>%
+    group_by(Presence) %>%
+    summarise(
+      Value = sum(Median_Centered_Signal),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Median-centered iBAQ"
+    )
+) %>%
+  group_by(Data_Level, Metric) %>%
+  mutate(
+    Total = sum(Value),
+    Percentage = 100 * Value / Total
+  ) %>%
+  ungroup()
+
+write_csv(
+  replicate_overlap_source,
+  "Results/Replicate_Overlap/Replicate_Overlap_Source_Data.csv"
+)
+
+write_csv(
+  replicate_overlap_statistics,
+  "Results/Replicate_Overlap/Replicate_Overlap_Summary_Statistics.csv"
+)
+
+# Shared panel styling
+overlap_panel_theme <- theme_mock +
+  theme(
+    axis.title = element_blank(),
+    axis.text.x = element_text(size = 8),
+    axis.text.y = element_text(size = 8),
+    axis.ticks = element_line(
+      colour = "#777777",
+      linewidth = 0.35
+    ),
+    plot.title = element_text(
+      face = "bold",
+      size = 10,
+      hjust = 0.5
+    ),
+    plot.margin = margin(5.5, 5.5, 5.5, 5.5)
+  )
+
+# Peptide identification counts
+peptide_count_plot <- replicate_overlap_source %>%
+  filter(
+    Data_Level == "Peptide",
+    Metric == "Identification count"
+  ) %>%
+  ggplot(aes(Sample, Value, fill = Presence)) +
+  geom_col(
+    width = 0.65,
+    colour = "#666666",
+    linewidth = 0.35
+  ) +
+  scale_fill_manual(
+    values = presence_cols,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 45000, 5000),
+    limits = c(0, 46000),
+    labels = label_number(
+      accuracy = 1,
+      big.mark = ""
+    ),
+    expand = c(0, 0)
+  ) +
+  labs(title = "Peptide counts (n)") +
+  overlap_panel_theme
+
+# Summed median-centered peptide abundance
+peptide_abundance_plot <- replicate_overlap_source %>%
+  filter(
+    Data_Level == "Peptide",
+    Metric == "Median-centered abundance"
+  ) %>%
+  ggplot(aes(Sample, Value, fill = Presence)) +
+  geom_col(
+    width = 0.65,
+    colour = "#666666",
+    linewidth = 0.35
+  ) +
+  scale_fill_manual(
+    values = presence_cols,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 250000, 50000),
+    limits = c(0, 265000),
+    labels = label_scientific(digits = 1),
+    expand = c(0, 0)
+  ) +
+  labs(title = "Peptide abundance") +
+  overlap_panel_theme
+
+# Protein identification counts
+protein_count_plot <- replicate_overlap_source %>%
+  filter(
+    Data_Level == "Protein",
+    Metric == "Identification count"
+  ) %>%
+  ggplot(aes(Sample, Value, fill = Presence)) +
+  geom_col(
+    width = 0.65,
+    colour = "#666666",
+    linewidth = 0.35
+  ) +
+  scale_fill_manual(
+    values = presence_cols,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 10000, 1000),
+    limits = c(0, 10200),
+    labels = label_number(
+      accuracy = 1,
+      big.mark = ""
+    ),
+    expand = c(0, 0)
+  ) +
+  labs(title = "Protein counts (n)") +
+  overlap_panel_theme
+
+# Summed median-centered protein iBAQ
+protein_abundance_plot <- replicate_overlap_source %>%
+  filter(
+    Data_Level == "Protein",
+    Metric == "Median-centered iBAQ"
+  ) %>%
+  ggplot(aes(Sample, Value, fill = Presence)) +
+  geom_col(
+    width = 0.65,
+    colour = "#666666",
+    linewidth = 0.35
+  ) +
+  scale_fill_manual(
+    values = presence_cols,
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 80000, 20000),
+    limits = c(0, 85000),
+    labels = label_scientific(digits = 1),
+    expand = c(0, 0)
+  ) +
+  labs(title = "Protein abundance (iBAQ)") +
+  overlap_panel_theme
+
+# Assemble the four panels
+replicate_overlap_plot <- wrap_plots(
+  peptide_count_plot,
+  peptide_abundance_plot,
+  protein_count_plot,
+  protein_abundance_plot,
+  ncol = 4,
+  guides = "collect"
+) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "center",
+    legend.text = element_text(size = 8),
+    legend.key.size = grid::unit(0.42, "cm")
+  )
+
+# Export using the wide aspect ratio of the reference figure
+ggsave(
+  "Results/Replicate_Overlap/Replicate_Overlap_and_Signal_Contribution.png",
+  replicate_overlap_plot,
+  width = 12,
+  height = 4.45,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+replicate_overlap_plot
+```
+
+# Signal distributions and quantitative reproducibility
+
+Raw and median-centred signal distributions are compared between replicates, followed by peptide- and protein-level correlations for features quantified in both runs.
+
+```{r signal-distributions-and-reproducibility, fig.width=14, fig.height=7.5, message=FALSE, warning=FALSE}
+peptide_distribution <- peptide_raw_dat %>%
+  filter(!is.na(Peptide_Abundance), Peptide_Abundance > 0) %>%
+  transmute(Data_Level = "Peptides", Sample, Log10_Signal = log10(Peptide_Abundance)) %>%
+  group_by(Sample) %>%
+  mutate(Centered_Log10_Signal = Log10_Signal - median(Log10_Signal)) %>%
+  ungroup()
+
+protein_distribution <- protein_raw_dat %>%
+  filter(!is.na(Protein_Abundance_IBAQ), Protein_Abundance_IBAQ > 0) %>%
+  transmute(Data_Level = "Proteins", Sample, Log10_Signal = log10(Protein_Abundance_IBAQ)) %>%
+  group_by(Sample) %>%
+  mutate(Centered_Log10_Signal = Log10_Signal - median(Log10_Signal)) %>%
+  ungroup()
+
+reproducibility_distribution_source <- bind_rows(peptide_distribution, protein_distribution)
+
+make_pairs <- function(data, id_col, abundance_col) {
+  data %>%
+    select(Feature_ID = all_of(id_col), Sample, Signal = all_of(abundance_col)) %>%
+    filter(!is.na(Signal), Signal > 0) %>%
+    distinct() %>%
+    pivot_wider(names_from = Sample, values_from = Signal) %>%
+    filter(if_all(all_of(sample_order), ~ !is.na(.x))) %>%
+    transmute(
+      Feature_ID,
+      Replicate_1 = .data[[sample_order[1]]],
+      Replicate_2 = .data[[sample_order[2]]],
+      Log10_Replicate_1 = log10(Replicate_1),
+      Log10_Replicate_2 = log10(Replicate_2)
+    )
+}
+
+peptide_pairs <- make_pairs(peptide_raw_dat, "Peptide_ID", "Peptide_Abundance")
+protein_pairs <- make_pairs(protein_raw_dat, "Protein_ID", "Protein_Abundance_IBAQ")
+
+summarise_reproducibility <- function(pairs, level) {
+  pearson <- cor.test(pairs$Log10_Replicate_1, pairs$Log10_Replicate_2, method = "pearson")
+  spearman <- cor.test(pairs$Log10_Replicate_1, pairs$Log10_Replicate_2,
+                       method = "spearman", exact = FALSE)
+  model <- lm(Log10_Replicate_2 ~ Log10_Replicate_1, data = pairs)
+  tibble(
+    Data_Level = level,
+    N = nrow(pairs),
+    Pearson_r = unname(pearson$estimate),
+    Pearson_p = pearson$p.value,
+    Spearman_rho = unname(spearman$estimate),
+    Spearman_p = spearman$p.value,
+    Intercept = unname(coef(model)[1]),
+    Slope = unname(coef(model)[2]),
+    R_squared = summary(model)$r.squared,
+    Adjusted_R_squared = summary(model)$adj.r.squared
+  )
+}
+
+peptide_model <- lm(Log10_Replicate_2 ~ Log10_Replicate_1, data = peptide_pairs)
+protein_model <- lm(Log10_Replicate_2 ~ Log10_Replicate_1, data = protein_pairs)
+reproducibility_statistics <- bind_rows(
+  summarise_reproducibility(peptide_pairs, "Peptide"),
+  summarise_reproducibility(protein_pairs, "Protein")
+)
+
+write_csv(
+  reproducibility_distribution_source,
+  "Results/Quantitative_Reproducibility/Signal_Distribution_Source_Data.csv"
+)
+write_csv(
+  peptide_pairs,
+  "Results/Quantitative_Reproducibility/Peptide_Replicate_Pairs.csv"
+)
+write_csv(
+  protein_pairs,
+  "Results/Quantitative_Reproducibility/Protein_Replicate_Pairs.csv"
+)
+write_tsv(
+  reproducibility_statistics,
+  "Results/Quantitative_Reproducibility/Reproducibility_Statistics.tsv"
+)
+
+model_lines <- capture.output({
+  cat("MockD6300 technical-replicate reproducibility\n")
+  cat("Matched positive signals; log10 transformation; ordinary least-squares models.\n\n")
+  cat("PEPTIDES\n")
+  print(summary(peptide_model))
+  print(confint(peptide_model))
+  cat("\nPROTEINS\n")
+  print(summary(protein_model))
+  print(confint(protein_model))
+})
+write_lines(
+  model_lines,
+  "Results/Quantitative_Reproducibility/Reproducibility_Model_Summaries.txt"
+)
+
+density_panel <- function(data, level, variable, title, x_label) {
+  ggplot(filter(data, Data_Level == level), aes(x = .data[[variable]], colour = Sample, fill = Sample)) +
+    geom_density(alpha = 0.18, linewidth = 0.8) +
+    scale_colour_manual(values = replicate_cols) +
+    scale_fill_manual(values = replicate_cols) +
+    labs(title = title, x = x_label, y = "Density") +
+    theme_mock
+}
+
+scatter_panel <- function(pairs, level, colour) {
+  stat_row <- filter(reproducibility_statistics, Data_Level == level)
+  annotation <- sprintf(
+    "n = %s\nr = %.3f\nrho = %.3f\nR^2 = %.3f",
+    comma(stat_row$N), stat_row$Pearson_r, stat_row$Spearman_rho, stat_row$R_squared
+  )
+  ggplot(pairs, aes(Log10_Replicate_1, Log10_Replicate_2)) +
+    geom_point(colour = colour, alpha = 0.35, size = 0.7) +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "black", linewidth = 0.7) +
+    annotate("text", x = -Inf, y = Inf, label = annotation, hjust = -0.05, vjust = 1.15, size = 3) +
+    labs(
+      title = paste0(level, "s"),
+      x = expression(log[10]~"signal, replicate 1"),
+      y = expression(log[10]~"signal, replicate 2")
+    ) +
+    theme_mock
+}
+
+peptide_raw_distribution_plot <- density_panel(
+  reproducibility_distribution_source, "Peptides", "Log10_Signal",
+  "Peptides, raw", expression(log[10]~abundance)
+)
+protein_raw_distribution_plot <- density_panel(
+  reproducibility_distribution_source, "Proteins", "Log10_Signal",
+  "Proteins, raw", expression(log[10]~iBAQ)
+)
+peptide_centered_distribution_plot <- density_panel(
+  reproducibility_distribution_source, "Peptides", "Centered_Log10_Signal",
+  "Peptides, median-centered", expression("Centered "*log[10]~abundance)
+) +
+  geom_vline(xintercept = 0, linetype = 2, colour = "#777777")
+protein_centered_distribution_plot <- density_panel(
+  reproducibility_distribution_source, "Proteins", "Centered_Log10_Signal",
+  "Proteins, median-centered", expression("Centered "*log[10]~iBAQ)
+) +
+  geom_vline(xintercept = 0, linetype = 2, colour = "#777777")
+peptide_reproducibility_plot <- scatter_panel(peptide_pairs, "Peptide", "#669BBC")
+protein_reproducibility_plot <- scatter_panel(protein_pairs, "Protein", "#FFB703")
+
+distribution_plots <- wrap_plots(
+  peptide_raw_distribution_plot,
+  protein_raw_distribution_plot,
+  peptide_centered_distribution_plot,
+  protein_centered_distribution_plot,
+  ncol = 2,
+  guides = "collect"
+) &
+  theme(legend.position = "top")
+correlation_plots <- wrap_plots(
+  peptide_reproducibility_plot,
+  protein_reproducibility_plot,
+  ncol = 1
+)
+quantitative_reproducibility_plot <- wrap_plots(
+  distribution_plots,
+  correlation_plots,
+  ncol = 2,
+  widths = c(1, 2)
+)
+
+ggsave(
+  "Results/Quantitative_Reproducibility/Signal_Distributions_and_Quantitative_Reproducibility.png",
+  quantitative_reproducibility_plot,
+  width = 14,
+  height = 7.5,
+  units = "in",
+  dpi = 300
+)
+
+quantitative_reproducibility_plot
+```
+
+# Quality filtering and species specificity
+
+Successive filtering stages are evaluated for species-specific assignment. The retained protein counts and iBAQ signal are then compared with excluded non-species-specific assignments.
+
+```{r quality-filtering-and-species-specificity, fig.width=11, fig.height=8, message=FALSE, warning=FALSE}
+############################################################
+# Quality filtering and species specificity
+#
+# Purpose:
+#   Follow identifications through three filtering stages:
+#     1. 1% peptide-level FDR
+#     2. 1% peptide- and protein-level FDR
+#     3. At least two peptides per protein group
+#
+# Contaminant handling:
+#   Protein groups containing contaminant database entries are
+#   removed before any filtering statistics are calculated.
+#   All counts and percentages therefore describe only proteins
+#   and peptides assigned to the mock-community organisms.
+#
+# Required input:
+#   diann_dat  = DIA-NN report loaded from diann-report.tsv
+#   protein_dat = final combined protein table
+#
+# Required shared objects:
+#   specificity_cols
+#   theme_mock
+############################################################
+
+
+# ----------------------------------------------------------
+# 1. Helper functions
+# ----------------------------------------------------------
+
+contains_contaminant <- function(x) {
+  str_detect(
+    coalesce(as.character(x), ""),
+    regex(
+      "(^|;)Cont_|fgcz|\\|Cont_",
+      ignore_case = TRUE
+    )
+  )
+}
+
+
+remove_diann_contaminants <- function(data) {
+  data %>%
+    filter(!contains_contaminant(Protein.Group))
+}
+
+
+remove_processed_contaminants <- function(data) {
+  data %>%
+    filter(
+      !str_detect(
+        coalesce(as.character(Species_ID), ""),
+        regex("^Cont_|fgcz", ignore_case = TRUE)
+      ),
+      !contains_contaminant(Protein_Group)
+    )
+}
+
+
+group_specificity_interest <- function(protein_groups) {
+  vapply(
+    protein_groups,
+    function(group) {
+      protein_ids <- str_split(
+        coalesce(group, ""),
+        ";",
+        simplify = FALSE
+      )[[1]]
+
+      species_ids <- protein_ids %>%
+        str_trim() %>%
+        str_extract("^[^_]+_[^_]+") %>%
+        na.omit() %>%
+        unique()
+
+      if (length(species_ids) == 1L) {
+        "Species-specific"
+      } else {
+        "Not species-specific"
+      }
+    },
+    character(1)
+  )
+}
+
+
+classify_diann_peptides <- function(data) {
+  data %>%
+    group_by(Stripped.Sequence) %>%
+    summarise(
+      Protein_Group = paste(
+        unique(Protein.Group),
+        collapse = ";"
+      ),
+      .groups = "drop"
+    ) %>%
+    transmute(
+      Feature_ID = Stripped.Sequence,
+      Protein_Group,
+      Specificity =
+        group_specificity_interest(Protein_Group)
+    )
+}
+
+
+classify_diann_proteins <- function(data) {
+  data %>%
+    distinct(Protein.Group) %>%
+    transmute(
+      Feature_ID = Protein.Group,
+      Protein_Group = Protein.Group,
+      Specificity =
+        group_specificity_interest(Protein_Group)
+    )
+}
+
+
+# ----------------------------------------------------------
+# 2. Remove contaminants before filtering
+# ----------------------------------------------------------
+
+diann_interest <- diann_dat %>%
+  remove_diann_contaminants()
+
+protein_final <- protein_dat %>%
+  remove_processed_contaminants() %>%
+  mutate(
+    Specificity =
+      group_specificity_interest(Protein_Group)
+  ) %>%
+  distinct(Protein_ID, .keep_all = TRUE)
+
+
+# ----------------------------------------------------------
+# 3. Apply the successive DIA-NN filtering stages
+# ----------------------------------------------------------
+
+# Stage 1: peptide-level FDR below 1%
+diann_peptide_fdr <- diann_interest %>%
+  filter(
+    !is.na(Q.Value),
+    Q.Value < 0.01
+  )
+
+
+# Stage 2: peptide- and protein-level FDR below 1%
+diann_protein_fdr <- diann_peptide_fdr %>%
+  filter(
+    !is.na(Lib.PG.Q.Value),
+    !is.na(PG.Q.Value),
+    Lib.PG.Q.Value < 0.01,
+    PG.Q.Value < 0.01
+  )
+
+
+# Stage 3: at least two distinct peptides per protein group
+diann_two_peptides <- diann_protein_fdr %>%
+  group_by(Protein.Group) %>%
+  filter(
+    n_distinct(Stripped.Sequence) >= 2
+  ) %>%
+  ungroup()
+
+
+# ----------------------------------------------------------
+# 4. Classify peptides and proteins at every stage
+# ----------------------------------------------------------
+
+peptide_stage1 <- classify_diann_peptides(
+  diann_peptide_fdr
+)
+
+peptide_stage2 <- classify_diann_peptides(
+  diann_protein_fdr
+)
+
+peptide_stage3 <- classify_diann_peptides(
+  diann_two_peptides
+)
+
+
+protein_stage1 <- classify_diann_proteins(
+  diann_peptide_fdr
+)
+
+protein_stage2 <- classify_diann_proteins(
+  diann_protein_fdr
+)
+
+protein_stage3 <- classify_diann_proteins(
+  diann_two_peptides
+)
+
+
+# ----------------------------------------------------------
+# 5. Prepare stacked-bar source data
+# ----------------------------------------------------------
+
+filter_order <- c(
+  "1% peptide FDR",
+  "1% protein FDR",
+  ">=2 peptides per protein"
+)
+
+specificity_order <- c(
+  "Species-specific",
+  "Not species-specific"
+)
+
+
+filtering_source <- bind_rows(
+  peptide_stage1 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Peptides",
+      Filter = filter_order[1]
+    ),
+
+  peptide_stage2 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Peptides",
+      Filter = filter_order[2]
+    ),
+
+  peptide_stage3 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Peptides",
+      Filter = filter_order[3]
+    ),
+
+  protein_stage1 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Proteins",
+      Filter = filter_order[1]
+    ),
+
+  protein_stage2 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Proteins",
+      Filter = filter_order[2]
+    ),
+
+  protein_stage3 %>%
+    count(Specificity, name = "Count") %>%
+    mutate(
+      Data_Level = "Proteins",
+      Filter = filter_order[3]
+    )
+) %>%
+  complete(
+    Data_Level,
+    Filter,
+    Specificity,
+    fill = list(Count = 0)
+  ) %>%
+  group_by(Data_Level, Filter) %>%
+  mutate(
+    Total = sum(Count),
+    Percentage = 100 * Count / Total
+  ) %>%
+  ungroup() %>%
+  mutate(
+    Filter = factor(
+      Filter,
+      levels = filter_order
+    ),
+    Specificity = factor(
+      Specificity,
+      levels = specificity_order
+    )
+  ) %>%
+  arrange(
+    Data_Level,
+    Filter,
+    Specificity
+  )
+
+
+# ----------------------------------------------------------
+# 6. Calculate final protein retention
+#
+# Species-specific proteins are retained.
+# Non-species-specific protein groups are excluded.
+# Contaminants have already been removed.
+# ----------------------------------------------------------
+
+specificity_retention_source <- bind_rows(
+  protein_final %>%
+    mutate(
+      Status = if_else(
+        Specificity == "Species-specific",
+        "Species-specific",
+        "Excluded"
+      )
+    ) %>%
+    count(Status, name = "Value") %>%
+    mutate(Metric = "Protein IDs"),
+
+  protein_final %>%
+    mutate(
+      Status = if_else(
+        Specificity == "Species-specific",
+        "Species-specific",
+        "Excluded"
+      )
+    ) %>%
+    group_by(Status) %>%
+    summarise(
+      Value = sum(
+        Protein_Abundance_IBAQ,
+        na.rm = TRUE
+      ),
+      .groups = "drop"
+    ) %>%
+    mutate(Metric = "Protein abundance")
+) %>%
+  group_by(Metric) %>%
+  mutate(
+    Total = sum(Value),
+    Percentage = 100 * Value / Total
+  ) %>%
+  ungroup()
+
+
+# ----------------------------------------------------------
+# 7. Export figure source data and statistics
+# ----------------------------------------------------------
+
+output_directory <-
+  "Results/Species_Specificity_Filtering"
+
+dir.create(
+  output_directory,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+write_csv(
+  filtering_source,
+  file.path(
+    output_directory,
+    "Filtering_Source_Data.csv"
+  )
+)
+
+
+write_csv(
+  specificity_retention_source,
+  file.path(
+    output_directory,
+    "Species_Specificity_Retention_Source_Data.csv"
+  )
+)
+
+
+write_csv(
+  specificity_retention_source %>%
+    select(
+      Metric,
+      Status,
+      Value,
+      Total,
+      Percentage
+    ),
+  file.path(
+    output_directory,
+    "Filtering_Summary_Statistics.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 8. Stacked-bar plotting function
+#
+# reverse = TRUE places the yellow non-specific segment
+# above the blue species-specific segment.
+# ----------------------------------------------------------
+
+filter_panel <- function(level) {
+  panel_data <- filtering_source %>%
+    filter(Data_Level == level)
+
+  if (level == "Peptides") {
+    y_scale <- scale_y_continuous(
+      breaks = seq(0, 50000, 10000),
+      limits = c(0, 50000),
+      labels = comma,
+      expand = c(0, 0)
+    )
+  } else {
+    y_scale <- scale_y_continuous(
+      breaks = seq(0, 12500, 2500),
+      limits = c(0, 12500),
+      labels = comma,
+      expand = c(0, 0)
+    )
+  }
+
+  ggplot(
+    panel_data,
+    aes(
+      x = Filter,
+      y = Count,
+      fill = Specificity
+    )
+  ) +
+    geom_col(
+      width = 0.7,
+      position = position_stack(reverse = TRUE)
+    ) +
+    geom_text(
+      aes(
+        label = sprintf(
+          "%s\n(%.1f%%)",
+          comma(Count),
+          Percentage
+        )
+      ),
+      position = position_stack(
+        vjust = 0.5,
+        reverse = TRUE
+      ),
+      size = 2.7
+    ) +
+    scale_fill_manual(
+      values = specificity_cols,
+      breaks = specificity_order,
+      drop = FALSE
+    ) +
+    y_scale +
+    labs(
+      title = level,
+      x = NULL,
+      y = "Count"
+    ) +
+    theme_mock +
+    theme(
+      axis.text.x = element_text(
+        angle = 38,
+        hjust = 1
+      ),
+      legend.title = element_blank()
+    )
+}
+
+
+# ----------------------------------------------------------
+# 9. Retention-pie plotting function
+# ----------------------------------------------------------
+
+pie_panel <- function(metric, title) {
+  pie_data <- specificity_retention_source %>%
+    filter(Metric == metric) %>%
+    mutate(
+      Status = factor(
+        Status,
+        levels = c(
+          "Species-specific",
+          "Excluded"
+        )
+      )
+    )
+
+  ggplot(
+    pie_data,
+    aes(
+      x = "",
+      y = Value,
+      fill = Status
+    )
+  ) +
+    geom_col(
+      width = 1,
+      colour = "#555555",
+      linewidth = 0.35
+    ) +
+    coord_polar(theta = "y") +
+    geom_text(
+      aes(
+        label = sprintf(
+          "%s\n%.1f%%",
+          Status,
+          Percentage
+        )
+      ),
+      position = position_stack(vjust = 0.5),
+      size = 2.8
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Species-specific" = "#8ECAE6",
+        "Excluded" = "#D0D0D0"
+      )
+    ) +
+    labs(title = title) +
+    theme_void(base_size = 9) +
+    theme(
+      plot.title = element_text(
+        face = "bold",
+        hjust = 0.5
+      ),
+      legend.position = "none"
+    )
+}
+
+
+# ----------------------------------------------------------
+# 10. Combine the two filtering panels
+#
+# A single collected legend is placed below both bar plots.
+# ----------------------------------------------------------
+
+filtering_bar_plots <- wrap_plots(
+  filter_panel("Peptides"),
+  filter_panel("Proteins"),
+  ncol = 1,
+  guides = "collect"
+) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "center"
+  )
+
+
+retention_pie_plots <- wrap_plots(
+  pie_panel(
+    "Protein IDs",
+    "Protein IDs retained vs excluded"
+  ),
+  pie_panel(
+    "Protein abundance",
+    "Protein abundance retained vs excluded"
+  ),
+  ncol = 1
+)
+
+
+quality_filtering_plot <- wrap_plots(
+  filtering_bar_plots,
+  retention_pie_plots,
+  ncol = 2,
+  widths = c(2.2, 1)
+)
+
+
+# ----------------------------------------------------------
+# 11. Export the combined figure
+# ----------------------------------------------------------
+
+ggsave(
+  file.path(
+    output_directory,
+    "Quality_Filtering_and_Species_Specificity.png"
+  ),
+  quality_filtering_plot,
+  width = 11,
+  height = 8,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+
+quality_filtering_plot
+```
+
+# Community composition and proteome recovery
+
+The theoretical community is compared with detected-protein counts and summed iBAQ abundance. Detected proteins are also expressed relative to each organism's reference coding capacity.
+
+```{r}
+############################################################
+# Community composition and detected proteome coverage
+#
+# The community-composition legend is generated from
+# species_dat and reports:
+#
+#   Species name (G+/G-, genome size in Mbp)
+#
+# For the two fungi, Gram status is replaced by "Yeast".
+# Because species_dat$bases is missing for both yeasts, their
+# D6300 reference genome sizes are supplied explicitly:
+#
+#   Saccharomyces cerevisiae: 12.1 Mbp
+#   Cryptococcus neoformans: 18.9 Mbp
+#
+# The coverage plot reports:
+#   - detected and not-detected protein counts inside each bar
+#   - detected-proteome percentage above each bar
+############################################################
+library(tibble)
+
+# ----------------------------------------------------------
+# 1. Prepare species metadata and legend labels
+# ----------------------------------------------------------
+
+species_reference <- species_dat %>%
+  transmute(
+    Species = str_replace_all(organism, " ", "_"),
+    Organism = organism,
+    Gram,
+    Genome_Size_Mb = case_when(
+      !is.na(bases) ~ bases / 1e6,
+      organism == "Saccharomyces cerevisiae" ~ 12.1,
+      organism == "Cryptococcus neoformans" ~ 18.9,
+      TRUE ~ NA_real_
+    ),
+    Reference_Proteins = coalesce(CDS, gene),
+    Organism_Type = case_when(
+      organism %in% c(
+        "Saccharomyces cerevisiae",
+        "Cryptococcus neoformans"
+      ) ~ "Yeast",
+      Gram == "+" ~ "G+",
+      Gram == "-" ~ "G-",
+      TRUE ~ "Gram status unavailable"
+    ),
+    Legend_Label = sprintf(
+      "%s (%s, %.1f Mbp)",
+      Organism,
+      Organism_Type,
+      Genome_Size_Mb
+    )
+  ) %>%
+  filter(Species %in% species_order)
+
+
+species_legend_labels <- species_reference %>%
+  select(Species, Legend_Label) %>%
+  deframe()
+
+
+# ----------------------------------------------------------
+# 2. Define the theoretical community composition
+# ----------------------------------------------------------
+
+theoretical <- tibble(
+  Species = species_order,
+  Relative_Contribution = c(
+    0.02,
+    0.02,
+    rep(0.12, 8)
+  )
+)
+
+
+# ----------------------------------------------------------
+# 3. Select species-specific detected proteins
+# ----------------------------------------------------------
+
+detected_species <- protein_dat %>%
+  mutate(
+    Species = species_from_id(Species_ID),
+    Specificity = group_specificity(Protein_Group)
+  ) %>%
+  filter(
+    Specificity == "Species-specific",
+    Species %in% species_order
+  ) %>%
+  distinct(Protein_ID, .keep_all = TRUE)
+
+
+# ----------------------------------------------------------
+# 4. Calculate detected-protein contributions
+# ----------------------------------------------------------
+
+detected_counts <- detected_species %>%
+  count(Species, name = "Value") %>%
+  mutate(
+    Relative_Contribution = Value / sum(Value)
+  )
+
+
+detected_abundance <- detected_species %>%
+  group_by(Species) %>%
+  summarise(
+    Value = sum(
+      Protein_Abundance_IBAQ,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Relative_Contribution = Value / sum(Value)
+  )
+
+
+# ----------------------------------------------------------
+# 5. Prepare community-composition source data
+# ----------------------------------------------------------
+
+community_composition_source <- bind_rows(
+  theoretical %>%
+    mutate(
+      Community_Measure = "Theoretical",
+      Value = Relative_Contribution
+    ),
+
+  detected_counts %>%
+    mutate(
+      Community_Measure = "Proteins detected"
+    ),
+
+  detected_abundance %>%
+    mutate(
+      Community_Measure = "Protein abundance"
+    )
+) %>%
+  mutate(
+    Species = factor(
+      Species,
+      levels = species_order
+    ),
+    Community_Measure = factor(
+      Community_Measure,
+      levels = c(
+        "Theoretical",
+        "Proteins detected",
+        "Protein abundance"
+      )
+    )
+  )
+
+
+# ----------------------------------------------------------
+# 6. Calculate detected proteome coverage
+# ----------------------------------------------------------
+
+reference_counts <- species_reference %>%
+  select(
+    Species,
+    Organism,
+    Organism_Type,
+    Gram,
+    Genome_Size_Mb,
+    Reference_Proteins
+  )
+
+
+proteome_recovery_source <- reference_counts %>%
+  left_join(
+    detected_counts %>%
+      select(
+        Species,
+        Detected_Proteins = Value
+      ),
+    by = "Species"
+  ) %>%
+  mutate(
+    Detected_Proteins = replace_na(
+      Detected_Proteins,
+      0L
+    ),
+    Not_Detected = pmax(
+      Reference_Proteins - Detected_Proteins,
+      0
+    ),
+    Recovery_Percentage =
+      100 * Detected_Proteins / Reference_Proteins,
+    Species = factor(
+      Species,
+      levels = rev(species_order)
+    )
+  )
+
+
+# ----------------------------------------------------------
+# 7. Calculate summary statistics and models
+# ----------------------------------------------------------
+
+composition_wide <- community_composition_source %>%
+  select(
+    Species,
+    Community_Measure,
+    Relative_Contribution
+  ) %>%
+  pivot_wider(
+    names_from = Community_Measure,
+    values_from = Relative_Contribution
+  )
+
+
+composition_model <- lm(
+  `Protein abundance` ~ Theoretical,
+  data = composition_wide
+)
+
+
+coverage_model <- lm(
+  Recovery_Percentage ~ Reference_Proteins,
+  data = proteome_recovery_source
+)
+
+
+community_recovery_statistics <- tibble(
+  Analysis = c(
+    "Theoretical vs detected protein abundance",
+    "Proteome recovery vs reference proteome size"
+  ),
+  N = c(
+    nrow(composition_wide),
+    nrow(proteome_recovery_source)
+  ),
+  Pearson_r = c(
+    cor(
+      composition_wide$Theoretical,
+      composition_wide$`Protein abundance`,
+      use = "complete.obs"
+    ),
+    cor(
+      proteome_recovery_source$Reference_Proteins,
+      proteome_recovery_source$Recovery_Percentage,
+      use = "complete.obs"
+    )
+  ),
+  R_squared = c(
+    summary(composition_model)$r.squared,
+    summary(coverage_model)$r.squared
+  )
+)
+
+
+# ----------------------------------------------------------
+# 8. Export source data and statistics
+# ----------------------------------------------------------
+
+output_directory <-
+  "Results/Community_Proteome_Recovery"
+
+dir.create(
+  output_directory,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+write_csv(
+  community_composition_source,
+  file.path(
+    output_directory,
+    "Community_Composition_Source_Data.csv"
+  )
+)
+
+
+write_csv(
+  proteome_recovery_source,
+  file.path(
+    output_directory,
+    "Proteome_Recovery_Source_Data.csv"
+  )
+)
+
+
+write_csv(
+  species_reference,
+  file.path(
+    output_directory,
+    "Species_Reference_and_Legend_Data.csv"
+  )
+)
+
+
+write_csv(
+  community_recovery_statistics,
+  file.path(
+    output_directory,
+    "Community_Recovery_Summary_Statistics.csv"
+  )
+)
+
+
+community_recovery_model_lines <- capture.output({
+  cat(
+    paste0(
+      "COMMUNITY COMPOSITION\n",
+      "Protein abundance ~ theoretical contribution\n\n"
+    )
+  )
+  print(summary(composition_model))
+  print(confint(composition_model))
+
+  cat(
+    paste0(
+      "\nPROTEOME RECOVERY\n",
+      "Recovery percentage ~ reference proteome size\n\n"
+    )
+  )
+  print(summary(coverage_model))
+  print(confint(coverage_model))
+})
+
+
+write_lines(
+  community_recovery_model_lines,
+  file.path(
+    output_directory,
+    "Community_Recovery_Model_Summaries.txt"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 9. Community-composition stacked bars
+# ----------------------------------------------------------
+
+community_composition_plot <- ggplot(
+  community_composition_source,
+  aes(
+    x = Community_Measure,
+    y = Relative_Contribution,
+    fill = Species
+  )
+) +
+  geom_col(
+    width = 0.65,
+    colour = "#555555",
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(
+    values = species_cols,
+    breaks = rev(species_order),
+    labels = species_legend_labels[rev(species_order)],
+    drop = FALSE
+  ) +
+  scale_y_continuous(
+    labels = percent,
+    limits = c(0, 1),
+    expand = c(0, 0)
+  ) +
+  labs(
+    title = "Community overview",
+    x = NULL,
+    y = "Relative contribution"
+  ) +
+  theme_mock +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 0.5
+    ),
+    legend.position = "right",
+    legend.text = element_text(size = 7.5),
+    legend.key.height = grid::unit(0.42, "cm")
+  )
+
+
+# ----------------------------------------------------------
+# 10. Prepare stacked proteome-coverage data
+# ----------------------------------------------------------
+
+recovery_long <- proteome_recovery_source %>%
+  select(
+    Species,
+    Detected_Proteins,
+    Not_Detected
+  ) %>%
+  pivot_longer(
+    cols = c(
+      Detected_Proteins,
+      Not_Detected
+    ),
+    names_to = "Status",
+    values_to = "Count"
+  ) %>%
+  mutate(
+    Status = factor(
+      Status,
+      levels = c(
+        "Detected_Proteins",
+        "Not_Detected"
+      )
+    )
+  )
+
+
+# ----------------------------------------------------------
+# 11. Detected proteome coverage
+#
+# Small numbers inside each stacked segment report the
+# absolute detected and not-detected protein counts.
+# Percentages above the bars report proteome recovery.
+# ----------------------------------------------------------
+
+proteome_coverage_plot <- ggplot(
+  recovery_long,
+  aes(
+    x = Species,
+    y = Count,
+    fill = Status
+  )
+) +
+  geom_col(
+    width = 0.7,
+    colour = "#555555",
+    linewidth = 0.25
+  ) +
+  geom_text(
+    aes(
+      label = comma(
+        Count,
+        accuracy = 1
+      )
+    ),
+    position = position_stack(vjust = 0.5),
+    size = 2.0,
+    colour = "black"
+  ) +
+  geom_text(
+    data = proteome_recovery_source,
+    aes(
+      x = Species,
+      y = Reference_Proteins,
+      label = sprintf(
+        "%.1f%%",
+        Recovery_Percentage
+      )
+    ),
+    inherit.aes = FALSE,
+    vjust = -0.4,
+    size = 2.6,
+    fontface = "bold"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Detected_Proteins" = "#1F78B4",
+      "Not_Detected" = "#CFCFCF"
+    ),
+    breaks = c(
+      "Detected_Proteins",
+      "Not_Detected"
+    ),
+    labels = c(
+      "Detected proteins",
+      "Not detected"
+    )
+  ) +
+  scale_y_continuous(
+    labels = comma,
+    expand = expansion(
+      mult = c(0, 0.08)
+    )
+  ) +
+  labs(
+    title = "Detected proteome coverage",
+    x = NULL,
+    y = "Gene count"
+  ) +
+  theme_mock +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 7
+    ),
+    legend.position = "right"
+  )
+
+
+# ----------------------------------------------------------
+# 12. Assemble and export the combined figure
+# ----------------------------------------------------------
+
+community_proteome_recovery_plot <-
+  community_composition_plot +
+  proteome_coverage_plot +
+  plot_layout(
+    widths = c(1.15, 1.35)
+  )
+
+
+ggsave(
+  file.path(
+    output_directory,
+    "Community_Composition_and_Proteome_Recovery.png"
+  ),
+  community_proteome_recovery_plot,
+  width = 14,
+  height = 6.5,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
+
+community_proteome_recovery_plot
+```
+

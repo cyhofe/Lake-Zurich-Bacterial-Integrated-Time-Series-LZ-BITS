@@ -1,0 +1,3884 @@
+---
+title: "Defence systems and biosynthetic gene clusters"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+############################################################
+# DATA PREPARATION: DEFENSE SYSTEMS AND BGCs
+############################################################
+
+rm(list = ls())
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+
+############################################################
+# 1. WORKING DIRECTORY
+############################################################
+
+setwd(
+  "/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/BGC_DefenceMechanisms/"
+)
+
+
+############################################################
+# 2. LOAD DEFENSEFINDER AND ANTISMASH RESULTS
+############################################################
+
+# Species-level summaries
+defence <- read_tsv(
+  "DefenseFinder_species_summary.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+bgc <- read_tsv(
+  "AntiSMASH_species_summary.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+# Gene-level DefenseFinder inventory
+defence_genes <- read_tsv(
+  "DefenseFinder_gene_inventory.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID),
+    Protein_ID = sub("\\.MAG-", ".MAG_", Protein_ID),
+    Protein_ID = sub("-contig-", "-contig_", Protein_ID, fixed = TRUE)
+  )
+
+
+# Gene-level antiSMASH inventory
+bgc_genes <- read_tsv(
+  "AntiSMASH_BGC_gene_inventory.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID),
+
+    # Retain the original antiSMASH identifier for traceability
+    AntiSMASH_Protein_ID = Protein_ID,
+
+    # Convert:
+    # NZE01APR2102.contig-14980-cds52
+    # into:
+    # NZE01APR2102.MAG_346-contig_14980-cds52
+    Protein_ID = paste0(
+      Species_ID,
+      "-contig_",
+      sub("^.*contig[-_]", "", AntiSMASH_Protein_ID)
+    )
+  )
+
+
+############################################################
+# 3. LOAD SPECIES, GENE AND PROTEIN TABLES
+############################################################
+
+species <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Meta_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+genes <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Gene_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID),
+    Protein_ID = sub("\\.MAG-", ".MAG_", Protein_ID),
+    Protein_ID = sub("-contig-", "-contig_", Protein_ID, fixed = TRUE)
+  )
+
+
+proteins <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Protein_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID = sub("\\.MAG-", ".MAG_", Species_ID),
+    Protein_ID = sub("\\.MAG-", ".MAG_", Protein_ID),
+    Protein_ID = sub("-contig-", "-contig_", Protein_ID, fixed = TRUE)
+  )
+
+
+############################################################
+# 4. PREPARE TAXONOMIC AND GENE-ANNOTATION LOOKUPS
+############################################################
+
+# One row per species containing all taxonomic, trophic and
+# species-level proteomic information
+species_lookup <- species %>%
+  distinct(Species_ID, .keep_all = TRUE)
+
+
+# Relevant functional annotations for each predicted gene
+gene_annotations <- genes %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory,
+
+    COG_ID,
+    COG_Annotation,
+    TIGR_ID,
+    TIGR_Annotation,
+    PFAM_ID,
+    PFAM_Annotation,
+    PHOBIUS_Annotation,
+
+    Transporter_Family,
+    Substracte_Group,
+    Substrate_Category,
+
+    Protein_Length
+  ) %>%
+  distinct(Species_ID, Protein_ID, .keep_all = TRUE)
+
+
+############################################################
+# 5. SUMMARIZE METAPROTEOMIC DETECTION PER PROTEIN
+############################################################
+
+# The protein table contains repeated observations across dates.
+# Summarize these first so that every predicted gene remains one
+# row after joining.
+
+n_proteomics_dates <- n_distinct(proteins$Date)
+
+
+protein_expression <- proteins %>%
+  mutate(
+    Protein_Abundance_IBAQ_Norm =
+      coalesce(Protein_Abundance_IBAQ_Norm, 0)
+  ) %>%
+  group_by(Species_ID, Protein_ID) %>%
+  summarise(
+    # TRUE if detected on at least one sampling date
+    Detected_In_Proteome =
+      any(Protein_Abundance_IBAQ_Norm > 0),
+
+    # Number of sampling dates with positive abundance
+    N_Dates_Detected =
+      n_distinct(Date[Protein_Abundance_IBAQ_Norm > 0]),
+
+    # Mean across all proteomic dates, treating missing dates as zero
+    Mean_Protein_Abundance_IBAQ_Norm =
+      sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE) /
+      n_proteomics_dates,
+
+    # Highest normalized abundance observed on any date
+    Max_Protein_Abundance_IBAQ_Norm =
+      max(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+
+    .groups = "drop"
+  )
+
+
+############################################################
+# 6. ADD SPECIES INFORMATION TO SPECIES-LEVEL SUMMARIES
+############################################################
+
+defence <- defence %>%
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  )
+
+
+bgc <- bgc %>%
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  )
+
+
+############################################################
+# 7. COMPLETE DEFENSE GENE/PROTEIN TABLE
+############################################################
+
+defence_gene_protein <- defence_genes %>%
+
+  # Add KEGG, COG, TIGR and PFAM annotations
+  left_join(
+    gene_annotations,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+
+  # Add taxonomy and trophic strategy
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  ) %>%
+
+  # Add metaproteomic detection and abundance
+  left_join(
+    protein_expression,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+
+  mutate(
+    # Indicates whether the Protein_ID matched the gene table
+    Gene_Annotation_Matched = !is.na(Contig_ID),
+
+    # Missing proteins were not detected in the metaproteome
+    Detected_In_Proteome =
+      coalesce(Detected_In_Proteome, FALSE),
+
+    N_Dates_Detected =
+      coalesce(N_Dates_Detected, 0L),
+
+    Mean_Protein_Abundance_IBAQ_Norm =
+      coalesce(Mean_Protein_Abundance_IBAQ_Norm, 0),
+
+    Max_Protein_Abundance_IBAQ_Norm =
+      coalesce(Max_Protein_Abundance_IBAQ_Norm, 0)
+  ) %>%
+
+  relocate(
+    Species_ID,
+    Protein_ID,
+
+    Defense_Type,
+    Defense_Subtype,
+    Defense_System_ID,
+    Defense_Gene,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    TrophicIndex,
+    TrophicGroup,
+    Group_For_Plots,
+
+    Detected_In_Proteome,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory
+  )
+
+
+############################################################
+# 8. COMPLETE BGC GENE/PROTEIN TABLE
+############################################################
+
+bgc_gene_protein <- bgc_genes %>%
+
+  # Add KEGG, COG, TIGR and PFAM annotations
+  left_join(
+    gene_annotations,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+
+  # Add taxonomy and trophic strategy
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  ) %>%
+
+  # Add metaproteomic detection and abundance
+  left_join(
+    protein_expression,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+
+  mutate(
+    # Indicates whether the reconstructed antiSMASH ID matched
+    # an entry in the gene table
+    Gene_Annotation_Matched = !is.na(Contig_ID),
+
+    Detected_In_Proteome =
+      coalesce(Detected_In_Proteome, FALSE),
+
+    N_Dates_Detected =
+      coalesce(N_Dates_Detected, 0L),
+
+    Mean_Protein_Abundance_IBAQ_Norm =
+      coalesce(Mean_Protein_Abundance_IBAQ_Norm, 0),
+
+    Max_Protein_Abundance_IBAQ_Norm =
+      coalesce(Max_Protein_Abundance_IBAQ_Norm, 0)
+  ) %>%
+
+  relocate(
+    Species_ID,
+    Protein_ID,
+    AntiSMASH_Protein_ID,
+
+    BGC_Type,
+    BGC_Region,
+    Contig_Edge,
+    Gene_Kind,
+    AntiSMASH_Gene_Functions,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    TrophicIndex,
+    TrophicGroup,
+    Group_For_Plots,
+
+    Detected_In_Proteome,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory
+  )
+
+
+############################################################
+# 9. FINAL DATA CHECK
+############################################################
+
+analysis_overview <- bind_rows(
+
+  defence_gene_protein %>%
+    summarise(
+      Dataset = "DefenseFinder",
+      N_Hit_Rows = n(),
+      N_Unique_Genes = n_distinct(Protein_ID),
+      N_Annotation_Matches = sum(Gene_Annotation_Matched),
+      N_Proteins_Detected = sum(Detected_In_Proteome)
+    ),
+
+  bgc_gene_protein %>%
+    summarise(
+      Dataset = "antiSMASH BGC",
+      N_Hit_Rows = n(),
+      N_Unique_Genes = n_distinct(Protein_ID),
+      N_Annotation_Matches = sum(Gene_Annotation_Matched),
+      N_Proteins_Detected = sum(Detected_In_Proteome)
+    )
+)
+
+analysis_overview
+```
+
+
+
+```{r}
+############################################################
+# ANTISMASH BGC GENE CLEANING
+#
+# CLEANING AND CONFIDENCE RULES
+# --------------------------------
+# antiSMASH does not use one universal minimum number of genes
+# to call a BGC. Each BGC type has its own domain-combination
+# and gene-proximity detection rule.
+#
+# REGION CONFIDENCE:
+# - High: at least one antiSMASH biosynthetic/rule-based gene
+#         was recovered and the region is not at a contig edge.
+# - Moderate: at least one biosynthetic/rule-based gene was
+#             recovered, but the region is at a contig edge
+#             and may therefore be incomplete.
+# - Excluded: no biosynthetic/rule-based gene was recovered
+#             from the region inventory. These regions are
+#             retained in the audit table for inspection.
+#
+# GENE RETENTION:
+# - Retained: biosynthetic, biosynthetic-additional, transport,
+#             regulatory and resistance genes assigned by
+#             antiSMASH.
+# - Excluded from the clean BGC-gene table: Gene_Kind "other"
+#             or missing. These genes lie inside the extended
+#             antiSMASH region but have no antiSMASH evidence
+#             of BGC involvement. They remain in the audit table.
+#
+# KEGG/COG/PFAM annotations are not used to decide BGC
+# membership. They are retained for biological interpretation.
+#
+# Protein abundance is also not used to decide BGC membership.
+# Abundance > 0 only indicates detection in the metaproteome.
+############################################################
+
+
+############################################################
+# 1. DEFINE THE THREE ANALYSIS GROUPS
+############################################################
+
+group_levels <- c(
+  "Oligo_like",
+  "Intermediate",
+  "Copio_like"
+)
+
+
+############################################################
+# 2. CLASSIFY ALL GENES IN THE ANTISMASH REGIONS
+############################################################
+
+bgc_gene_classified <- bgc_gene_protein %>%
+
+  filter(
+    Group_For_Plots %in% group_levels
+  ) %>%
+
+  mutate(
+    BGC_Region_ID = paste(
+      Species_ID,
+      BGC_Region,
+      sep = "__"
+    ),
+
+    # Explicit rule-based antiSMASH function
+    Rule_Based_Biosynthetic_Gene =
+      grepl(
+        "biosynthetic \\(rule-based-clusters\\)",
+        coalesce(
+          AntiSMASH_Gene_Functions,
+          ""
+        ),
+        ignore.case = TRUE
+      ),
+
+    # Core biosynthetic gene according to antiSMASH
+    Core_Biosynthetic_Gene =
+      Gene_Kind == "biosynthetic" |
+      Rule_Based_Biosynthetic_Gene,
+
+    # Additional secondary-metabolism gene
+    Additional_Biosynthetic_Gene =
+      Gene_Kind == "biosynthetic-additional" |
+      grepl(
+        "biosynthetic-additional",
+        coalesce(
+          AntiSMASH_Gene_Functions,
+          ""
+        ),
+        ignore.case = TRUE
+      ),
+
+    # Possible transport, regulation or resistance function
+    Accessory_BGC_Gene =
+      Gene_Kind %in% c(
+        "transport",
+        "regulatory",
+        "resistance"
+      ),
+
+    # Keep core, additional and accessory BGC genes
+    Keep_As_BGC_Gene =
+      Core_Biosynthetic_Gene |
+      Additional_Biosynthetic_Gene |
+      Accessory_BGC_Gene,
+
+    # Compact gene-evidence classification
+    BGC_Gene_Evidence = case_when(
+      Core_Biosynthetic_Gene ~
+        "Core biosynthetic",
+
+      Additional_Biosynthetic_Gene ~
+        "Additional biosynthetic",
+
+      Accessory_BGC_Gene ~
+        "Accessory BGC gene",
+
+      TRUE ~
+        "Neighbourhood only"
+    ),
+
+    # Protein detected with normalized abundance > 0
+    Proteome_Detected =
+      coalesce(
+        Max_Protein_Abundance_IBAQ_Norm,
+        0
+      ) > 0,
+
+    # Used only when duplicate gene-region records occur
+    Gene_Evidence_Order = case_when(
+      Core_Biosynthetic_Gene ~ 1L,
+      Additional_Biosynthetic_Gene ~ 2L,
+      Accessory_BGC_Gene ~ 3L,
+      TRUE ~ 4L
+    )
+  ) %>%
+
+  # If duplicate records exist, retain the strongest
+  # antiSMASH gene assignment.
+  arrange(
+    Gene_Evidence_Order
+  ) %>%
+
+  distinct(
+    Species_ID,
+    BGC_Region,
+    BGC_Type,
+    Protein_ID,
+    .keep_all = TRUE
+  )
+
+
+############################################################
+# 3. ASSESS EACH ANTISMASH REGION
+############################################################
+
+bgc_region_assessment <- bgc_gene_classified %>%
+
+  group_by(
+    Group_For_Plots,
+    Species_ID,
+    BGC_Region_ID,
+    BGC_Region,
+    BGC_Type,
+    Contig_Edge
+  ) %>%
+
+  summarise(
+    # All genes inside the antiSMASH region boundary
+    N_All_Genes_In_Region =
+      n_distinct(Protein_ID),
+
+    # Genes retained as BGC genes
+    N_BGC_Genes =
+      n_distinct(
+        Protein_ID[Keep_As_BGC_Gene]
+      ),
+
+    # Core biosynthetic genes
+    N_Core_Biosynthetic_Genes =
+      n_distinct(
+        Protein_ID[Core_Biosynthetic_Gene]
+      ),
+
+    # Additional biosynthetic genes
+    N_Additional_Biosynthetic_Genes =
+      n_distinct(
+        Protein_ID[Additional_Biosynthetic_Gene]
+      ),
+
+    # Transport, regulatory and resistance genes
+    N_Accessory_BGC_Genes =
+      n_distinct(
+        Protein_ID[Accessory_BGC_Gene]
+      ),
+
+    # Neighbouring genes excluded from BGC interpretation
+    N_Neighbourhood_Genes_Excluded =
+      n_distinct(
+        Protein_ID[!Keep_As_BGC_Gene]
+      ),
+
+    # Proteomic detection of retained BGC genes
+    N_BGC_Proteins_Detected =
+      n_distinct(
+        Protein_ID[
+          Keep_As_BGC_Gene &
+          Proteome_Detected
+        ]
+      ),
+
+    # Stronger evidence: core biosynthetic protein detected
+    N_Core_Proteins_Detected =
+      n_distinct(
+        Protein_ID[
+          Core_Biosynthetic_Gene &
+          Proteome_Detected
+        ]
+      ),
+
+    .groups = "drop"
+  ) %>%
+
+  mutate(
+    # A retained region must contain at least one gene that
+    # antiSMASH classified as biosynthetic/rule-based.
+    Keep_Region =
+      N_Core_Biosynthetic_Genes >= 1,
+
+    Region_Confidence = case_when(
+      !Keep_Region ~
+        "Excluded: no core biosynthetic gene recovered",
+
+      is.na(Contig_Edge) ~
+        "Moderate: core present, edge status unknown",
+
+      Contig_Edge ~
+        "Moderate: core present, contig edge",
+
+      TRUE ~
+        "High: core present, non-edge"
+    ),
+
+    Percent_BGC_Genes_Detected =
+      if_else(
+        N_BGC_Genes > 0,
+        100 *
+          N_BGC_Proteins_Detected /
+          N_BGC_Genes,
+        0
+      ),
+
+    Region_Proteomic_Support = case_when(
+      N_Core_Proteins_Detected > 0 ~
+        "Core biosynthetic protein detected",
+
+      N_BGC_Proteins_Detected > 0 ~
+        "Only additional/accessory protein detected",
+
+      TRUE ~
+        "No BGC protein detected"
+    )
+  )
+
+
+############################################################
+# 4. ADD REGION CONFIDENCE TO EVERY GENE
+############################################################
+
+bgc_gene_assessed <- bgc_gene_classified %>%
+
+  left_join(
+    bgc_region_assessment %>%
+      select(
+        Species_ID,
+        BGC_Region,
+        BGC_Type,
+
+        Keep_Region,
+        Region_Confidence,
+        Region_Proteomic_Support,
+
+        N_All_Genes_In_Region,
+        N_BGC_Genes,
+        N_Core_Biosynthetic_Genes,
+        N_Additional_Biosynthetic_Genes,
+        N_Accessory_BGC_Genes,
+        N_Neighbourhood_Genes_Excluded,
+
+        N_BGC_Proteins_Detected,
+        N_Core_Proteins_Detected,
+        Percent_BGC_Genes_Detected
+      ),
+
+    by = c(
+      "Species_ID",
+      "BGC_Region",
+      "BGC_Type"
+    )
+  )
+
+
+############################################################
+# 5. CLEAN GENE TABLE READY FOR ANALYSIS
+############################################################
+
+# Retain:
+# - regions containing at least one biosynthetic/core gene
+# - genes with an antiSMASH biosynthetic or accessory role
+#
+# Neighbourhood-only genes such as an unrelated LivK are
+# excluded here but remain available in the audit table below.
+
+bgc_gene_clean <- bgc_gene_assessed %>%
+
+  filter(
+    Keep_Region,
+    Keep_As_BGC_Gene
+  ) %>%
+
+  arrange(
+    Group_For_Plots,
+    Species_ID,
+    BGC_Region,
+    Gene_Evidence_Order,
+    Protein_ID
+  ) %>%
+
+  relocate(
+    Species_ID,
+    Group_For_Plots,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    BGC_Region_ID,
+    BGC_Region,
+    BGC_Type,
+    Contig_Edge,
+    Region_Confidence,
+
+    Protein_ID,
+    Gene_Kind,
+    BGC_Gene_Evidence,
+    AntiSMASH_Gene_Functions,
+
+    Proteome_Detected,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+    Region_Proteomic_Support,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory,
+
+    COG_ID,
+    COG_Annotation,
+    TIGR_ID,
+    TIGR_Annotation,
+    PFAM_ID,
+    PFAM_Annotation,
+
+    N_All_Genes_In_Region,
+    N_BGC_Genes,
+    N_Core_Biosynthetic_Genes,
+    N_Additional_Biosynthetic_Genes,
+    N_Accessory_BGC_Genes,
+    N_Neighbourhood_Genes_Excluded,
+    N_BGC_Proteins_Detected,
+    N_Core_Proteins_Detected,
+    Percent_BGC_Genes_Detected
+  ) %>%
+
+  select(
+    -Gene_Evidence_Order,
+    -Keep_As_BGC_Gene,
+    -Keep_Region
+  )
+
+
+############################################################
+# 6. REGION TABLE READY FOR LATER ANALYSIS
+############################################################
+
+bgc_region_clean <- bgc_region_assessment %>%
+
+  filter(
+    Keep_Region
+  ) %>%
+
+  arrange(
+    Group_For_Plots,
+    Species_ID,
+    BGC_Region
+  )
+
+
+############################################################
+# 7. AUDIT TABLE: EVERYTHING EXCLUDED
+############################################################
+
+# Nothing is silently deleted. This table contains:
+# - neighbouring/passenger genes from retained regions
+# - every gene from a region without a recovered core gene
+
+bgc_gene_excluded <- bgc_gene_assessed %>%
+
+  filter(
+    !Keep_Region |
+    !Keep_As_BGC_Gene
+  ) %>%
+
+  mutate(
+    Exclusion_Reason = case_when(
+      !Keep_Region ~
+        paste(
+          "Region excluded because no antiSMASH",
+          "biosynthetic/core gene was recovered"
+        ),
+
+      !Keep_As_BGC_Gene ~
+        paste(
+          "Gene excluded because antiSMASH classified it",
+          "as other or provided no BGC-related gene role"
+        )
+    )
+  ) %>%
+
+  arrange(
+    Group_For_Plots,
+    Species_ID,
+    BGC_Region,
+    Protein_ID
+  )
+
+
+############################################################
+# 8. CLEANING SUMMARY
+############################################################
+
+bgc_cleaning_summary <- bind_rows(
+
+  bgc_gene_assessed %>%
+    summarise(
+      Table = "All genes inside antiSMASH regions",
+      N_Rows = n(),
+      N_Regions = n_distinct(BGC_Region_ID),
+      N_Genes = n_distinct(Protein_ID)
+    ),
+
+  bgc_gene_clean %>%
+    summarise(
+      Table = "Genes retained for BGC analysis",
+      N_Rows = n(),
+      N_Regions = n_distinct(BGC_Region_ID),
+      N_Genes = n_distinct(Protein_ID)
+    ),
+
+  bgc_gene_excluded %>%
+    summarise(
+      Table = "Excluded audit rows",
+      N_Rows = n(),
+      N_Regions = n_distinct(BGC_Region_ID),
+      N_Genes = n_distinct(Protein_ID)
+    )
+)
+
+bgc_cleaning_summary
+
+
+############################################################
+# 9. EXPORT THE CLEAN AND AUDIT SHEETS
+############################################################
+
+write_csv(
+  bgc_gene_clean,
+  "AntiSMASH_BGC_gene_clean.csv"
+)
+
+write_csv(
+  bgc_gene_excluded,
+  "AntiSMASH_BGC_gene_excluded_audit.csv"
+)
+```
+
+```{r}
+############################################################
+# DEFENSEFINDER AND ANTISMASH DATA PREPARATION
+# ANTISMASH CLEANING AND FINAL TWO-PANEL FIGURE
+#
+# ANALYSIS UNIVERSE
+# ----------------------------------------------------------
+# Only MAGs present in BOTH the DefenseFinder and antiSMASH
+# species summaries are retained throughout the analysis.
+#
+# ANTISMASH CLEANING
+# ----------------------------------------------------------
+# Retained regions:
+#   At least one antiSMASH core or rule-based biosynthetic
+#   gene must be recovered.
+#
+# Retained genes:
+#   - biosynthetic
+#   - biosynthetic-additional
+#   - transport
+#   - regulatory
+#   - resistance
+#
+# Excluded genes:
+#   Genes classified as "other" or without an antiSMASH BGC
+#   role. These can be neighbouring genes located inside the
+#   extended antiSMASH region boundary.
+#
+# PANEL B LABELS
+# ----------------------------------------------------------
+# "n = ..." above each prevalence bar is the number of unique
+# retained BGC-associated proteins detected in the metaproteome
+# for that trophic strategy and BGC type.
+#
+# OUTPUTS
+# ----------------------------------------------------------
+# 1. AntiSMASH_BGC_clean_gene_protein.csv
+# 2. AntiSMASH_BGC_overview.pdf
+# 3. AntiSMASH_BGC_overview.png
+############################################################
+
+
+############################################################
+# 0. START CLEAN AND LOAD PACKAGES
+############################################################
+
+rm(list = ls())
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(patchwork)
+})
+
+
+############################################################
+# 1. WORKING DIRECTORY
+############################################################
+
+setwd(
+  paste0(
+    "/SynologyDrive/PhD/Projects/SpringBloom2021/",
+    "DataAnalysis_SpringBloom2021/Supplementary/",
+    "BGC_DefenceMechanisms/"
+  )
+)
+
+
+############################################################
+# 2. ANALYSIS AND PLOTTING SETTINGS
+############################################################
+
+group_levels <- c(
+  "Oligo_like",
+  "Intermediate",
+  "Copio_like"
+)
+
+trophic_levels <- c(
+  "Oligotroph",
+  "Intermediate",
+  "Copiotroph"
+)
+
+trophic_cols <- c(
+  "Oligotroph"   = "#93C2E6",
+  "Intermediate" = "#EDEAE9",
+  "Copiotroph"   = "#BA5205"
+)
+
+output_directory <- "AntiSMASH_BGC_Overview"
+
+dir.create(
+  output_directory,
+  showWarnings = FALSE
+)
+
+
+############################################################
+# 3. LOAD DEFENSEFINDER AND ANTISMASH RESULTS
+############################################################
+
+# Species-level summaries include species with zero predictions
+defence_raw <- read_tsv(
+  "DefenseFinder_species_summary.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+bgc_raw <- read_tsv(
+  "AntiSMASH_species_summary.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+# Gene-level DefenseFinder inventory
+defence_genes_raw <- read_tsv(
+  "DefenseFinder_gene_inventory.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID),
+
+    Protein_ID =
+      sub("\\.MAG-", ".MAG_", Protein_ID),
+
+    Protein_ID =
+      sub(
+        "-contig-",
+        "-contig_",
+        Protein_ID,
+        fixed = TRUE
+      )
+  )
+
+
+# Gene-level antiSMASH inventory
+bgc_genes_raw <- read_tsv(
+  "AntiSMASH_BGC_gene_inventory.tsv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID),
+
+    # Preserve the original antiSMASH identifier
+    AntiSMASH_Protein_ID = Protein_ID,
+
+    # Convert the antiSMASH ID into the format used by the
+    # complete gene and protein tables
+    Protein_ID = paste0(
+      Species_ID,
+      "-contig_",
+      sub(
+        "^.*contig[-_]",
+        "",
+        AntiSMASH_Protein_ID
+      )
+    )
+  )
+
+
+############################################################
+# 4. LOAD SPECIES, GENE AND PROTEIN TABLES
+############################################################
+
+species_raw <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Meta_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID)
+  )
+
+
+genes_raw <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Gene_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID),
+
+    Protein_ID =
+      sub("\\.MAG-", ".MAG_", Protein_ID),
+
+    Protein_ID =
+      sub(
+        "-contig-",
+        "-contig_",
+        Protein_ID,
+        fixed = TRUE
+      )
+  )
+
+
+proteins_raw <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Protein_Table.csv",
+  show_col_types = FALSE
+) %>%
+  mutate(
+    Species_ID =
+      sub("\\.MAG-", ".MAG_", Species_ID),
+
+    Protein_ID =
+      sub("\\.MAG-", ".MAG_", Protein_ID),
+
+    Protein_ID =
+      sub(
+        "-contig-",
+        "-contig_",
+        Protein_ID,
+        fixed = TRUE
+      )
+  )
+
+
+############################################################
+# 5. DEFINE THE COMMON ANALYSIS SPECIES
+############################################################
+
+# Intersection of the two species-level result tables
+common_species_ids <- inner_join(
+  defence_raw %>%
+    distinct(Species_ID),
+
+  bgc_raw %>%
+    distinct(Species_ID),
+
+  by = "Species_ID"
+)
+
+
+species_lookup_all <- species_raw %>%
+  distinct(
+    Species_ID,
+    .keep_all = TRUE
+  )
+
+
+# Attach metadata and retain the three analysis groups
+analysis_species <- common_species_ids %>%
+  inner_join(
+    species_lookup_all,
+    by = "Species_ID"
+  ) %>%
+  filter(
+    Group_For_Plots %in% group_levels
+  ) %>%
+  mutate(
+    Group_For_Plots = factor(
+      Group_For_Plots,
+      levels = group_levels
+    ),
+
+    Trophic_Strategy = recode(
+      as.character(Group_For_Plots),
+      "Oligo_like"   = "Oligotroph",
+      "Intermediate" = "Intermediate",
+      "Copio_like"   = "Copiotroph"
+    ),
+
+    Trophic_Strategy = factor(
+      Trophic_Strategy,
+      levels = trophic_levels
+    )
+  )
+
+
+analysis_species_ids <- analysis_species %>%
+  distinct(Species_ID)
+
+
+############################################################
+# 6. VERIFY THE ANALYSIS UNIVERSE
+############################################################
+
+analysis_universe_summary <- tibble(
+  Dataset = c(
+    "DefenseFinder species summary",
+    "antiSMASH species summary",
+    "Species present in both summaries",
+    "Common species in the three trophic groups"
+  ),
+
+  N_Species = c(
+    n_distinct(defence_raw$Species_ID),
+    n_distinct(bgc_raw$Species_ID),
+    n_distinct(common_species_ids$Species_ID),
+    n_distinct(analysis_species$Species_ID)
+  )
+)
+
+
+analysis_group_sizes <- analysis_species %>%
+  count(
+    Trophic_Strategy,
+    name = "N_MAGs"
+  )
+
+
+analysis_universe_summary
+analysis_group_sizes
+
+# Expected total: 170 MAGs
+n_distinct(analysis_species$Species_ID)
+
+
+############################################################
+# 7. RESTRICT EVERY DATASET TO THE COMMON SPECIES
+############################################################
+
+defence <- defence_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    analysis_species,
+    by = "Species_ID"
+  )
+
+
+bgc <- bgc_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    analysis_species,
+    by = "Species_ID"
+  )
+
+
+defence_genes <- defence_genes_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  )
+
+
+bgc_genes <- bgc_genes_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  )
+
+
+genes <- genes_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  )
+
+
+proteins <- proteins_raw %>%
+  semi_join(
+    analysis_species_ids,
+    by = "Species_ID"
+  )
+
+
+############################################################
+# 8. PREPARE SPECIES AND GENE-ANNOTATION LOOKUPS
+############################################################
+
+species_lookup <- analysis_species %>%
+  distinct(
+    Species_ID,
+    .keep_all = TRUE
+  )
+
+
+gene_annotations <- genes %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory,
+
+    COG_ID,
+    COG_Annotation,
+
+    TIGR_ID,
+    TIGR_Annotation,
+
+    PFAM_ID,
+    PFAM_Annotation,
+
+    PHOBIUS_Annotation,
+
+    Transporter_Family,
+    Substracte_Group,
+    Substrate_Category,
+
+    Protein_Length
+  ) %>%
+  distinct(
+    Species_ID,
+    Protein_ID,
+    .keep_all = TRUE
+  )
+
+
+############################################################
+# 9. SUMMARIZE METAPROTEOMIC DETECTION PER PROTEIN
+############################################################
+
+# The protein table contains repeated observations across dates.
+# It is reduced to one row per predicted protein before joining.
+
+n_proteomics_dates <- n_distinct(
+  proteins$Date
+)
+
+
+protein_expression <- proteins %>%
+  mutate(
+    Protein_Abundance_IBAQ_Norm =
+      coalesce(
+        Protein_Abundance_IBAQ_Norm,
+        0
+      )
+  ) %>%
+  group_by(
+    Species_ID,
+    Protein_ID
+  ) %>%
+  summarise(
+    # Detected on at least one sampling date
+    Detected_In_Proteome =
+      any(
+        Protein_Abundance_IBAQ_Norm > 0
+      ),
+
+    N_Dates_Detected =
+      n_distinct(
+        Date[
+          Protein_Abundance_IBAQ_Norm > 0
+        ]
+      ),
+
+    # Mean across every metaproteomic date; missing dates
+    # contribute zero abundance
+    Mean_Protein_Abundance_IBAQ_Norm =
+      sum(
+        Protein_Abundance_IBAQ_Norm,
+        na.rm = TRUE
+      ) /
+      n_proteomics_dates,
+
+    Max_Protein_Abundance_IBAQ_Norm =
+      max(
+        Protein_Abundance_IBAQ_Norm,
+        na.rm = TRUE
+      ),
+
+    .groups = "drop"
+  )
+
+
+############################################################
+# 10. CONSOLIDATE THE DEFENSEFINDER GENE–PROTEIN TABLE
+############################################################
+
+defence_gene_protein <- defence_genes %>%
+  left_join(
+    gene_annotations,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    protein_expression,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  mutate(
+    Gene_Annotation_Matched =
+      !is.na(Contig_ID),
+
+    Detected_In_Proteome =
+      coalesce(
+        Detected_In_Proteome,
+        FALSE
+      ),
+
+    N_Dates_Detected =
+      coalesce(
+        N_Dates_Detected,
+        0L
+      ),
+
+    Mean_Protein_Abundance_IBAQ_Norm =
+      coalesce(
+        Mean_Protein_Abundance_IBAQ_Norm,
+        0
+      ),
+
+    Max_Protein_Abundance_IBAQ_Norm =
+      coalesce(
+        Max_Protein_Abundance_IBAQ_Norm,
+        0
+      )
+  ) %>%
+  relocate(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots,
+
+    Protein_ID,
+
+    Defense_Type,
+    Defense_Subtype,
+    Defense_System_ID,
+    Defense_Gene,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    Detected_In_Proteome,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory
+  )
+
+
+############################################################
+# 11. CONSOLIDATE THE ANTISMASH GENE–PROTEIN TABLE
+############################################################
+
+bgc_gene_protein <- bgc_genes %>%
+  left_join(
+    gene_annotations,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  left_join(
+    species_lookup,
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    protein_expression,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  mutate(
+    Gene_Annotation_Matched =
+      !is.na(Contig_ID),
+
+    Detected_In_Proteome =
+      coalesce(
+        Detected_In_Proteome,
+        FALSE
+      ),
+
+    N_Dates_Detected =
+      coalesce(
+        N_Dates_Detected,
+        0L
+      ),
+
+    Mean_Protein_Abundance_IBAQ_Norm =
+      coalesce(
+        Mean_Protein_Abundance_IBAQ_Norm,
+        0
+      ),
+
+    Max_Protein_Abundance_IBAQ_Norm =
+      coalesce(
+        Max_Protein_Abundance_IBAQ_Norm,
+        0
+      )
+  ) %>%
+  relocate(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots,
+
+    Protein_ID,
+    AntiSMASH_Protein_ID,
+
+    BGC_Type,
+    BGC_Region,
+    Contig_Edge,
+    Gene_Kind,
+    AntiSMASH_Gene_Functions,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    Detected_In_Proteome,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory
+  )
+
+
+############################################################
+# 12. CHECK IDENTIFIER MATCHING
+############################################################
+
+consolidation_summary <- bind_rows(
+  defence_gene_protein %>%
+    summarise(
+      Dataset = "DefenseFinder",
+      N_Rows = n(),
+      N_Unique_Proteins =
+        n_distinct(Protein_ID),
+      N_Annotation_Matches =
+        sum(Gene_Annotation_Matched),
+      N_Proteins_Detected =
+        sum(Detected_In_Proteome)
+    ),
+
+  bgc_gene_protein %>%
+    summarise(
+      Dataset = "antiSMASH",
+      N_Rows = n(),
+      N_Unique_Proteins =
+        n_distinct(Protein_ID),
+      N_Annotation_Matches =
+        sum(Gene_Annotation_Matched),
+      N_Proteins_Detected =
+        sum(Detected_In_Proteome)
+    )
+)
+
+consolidation_summary
+
+
+############################################################
+# 13. CLASSIFY GENES INSIDE ANTISMASH REGIONS
+############################################################
+
+bgc_gene_classified <- bgc_gene_protein %>%
+  mutate(
+    BGC_Region_ID = paste(
+      Species_ID,
+      BGC_Region,
+      sep = "__"
+    ),
+
+    Rule_Based_Biosynthetic_Gene =
+      str_detect(
+        coalesce(
+          AntiSMASH_Gene_Functions,
+          ""
+        ),
+        regex(
+          "biosynthetic \\(rule-based-clusters\\)",
+          ignore_case = TRUE
+        )
+      ),
+
+    Core_Biosynthetic_Gene =
+      coalesce(Gene_Kind, "") ==
+        "biosynthetic" |
+      Rule_Based_Biosynthetic_Gene,
+
+    Additional_Biosynthetic_Gene =
+      coalesce(Gene_Kind, "") ==
+        "biosynthetic-additional" |
+      str_detect(
+        coalesce(
+          AntiSMASH_Gene_Functions,
+          ""
+        ),
+        regex(
+          "biosynthetic-additional",
+          ignore_case = TRUE
+        )
+      ),
+
+    Accessory_BGC_Gene =
+      coalesce(Gene_Kind, "") %in% c(
+        "transport",
+        "regulatory",
+        "resistance"
+      ),
+
+    Keep_As_BGC_Gene =
+      Core_Biosynthetic_Gene |
+      Additional_Biosynthetic_Gene |
+      Accessory_BGC_Gene,
+
+    BGC_Gene_Evidence = case_when(
+      Core_Biosynthetic_Gene ~
+        "Core biosynthetic",
+
+      Additional_Biosynthetic_Gene ~
+        "Additional biosynthetic",
+
+      Accessory_BGC_Gene ~
+        "Accessory BGC gene",
+
+      TRUE ~
+        "Neighbourhood only"
+    ),
+
+    Proteome_Detected =
+      coalesce(
+        Max_Protein_Abundance_IBAQ_Norm,
+        0
+      ) > 0,
+
+    Gene_Evidence_Order = case_when(
+      Core_Biosynthetic_Gene ~ 1L,
+      Additional_Biosynthetic_Gene ~ 2L,
+      Accessory_BGC_Gene ~ 3L,
+      TRUE ~ 4L
+    )
+  ) %>%
+  arrange(
+    Gene_Evidence_Order
+  ) %>%
+  distinct(
+    Species_ID,
+    BGC_Region_ID,
+    BGC_Type,
+    Protein_ID,
+    .keep_all = TRUE
+  )
+
+
+############################################################
+# 14. ASSESS EACH ANTISMASH REGION
+############################################################
+
+bgc_region_assessment <- bgc_gene_classified %>%
+  group_by(
+    Group_For_Plots,
+    Trophic_Strategy,
+    Species_ID,
+    BGC_Region_ID,
+    BGC_Region,
+    BGC_Type
+  ) %>%
+  summarise(
+    Contig_Edge =
+      first(Contig_Edge),
+
+    N_All_Genes_In_Region =
+      n_distinct(Protein_ID),
+
+    N_BGC_Genes =
+      n_distinct(
+        Protein_ID[
+          Keep_As_BGC_Gene
+        ]
+      ),
+
+    N_Core_Biosynthetic_Genes =
+      n_distinct(
+        Protein_ID[
+          Core_Biosynthetic_Gene
+        ]
+      ),
+
+    N_Additional_Biosynthetic_Genes =
+      n_distinct(
+        Protein_ID[
+          Additional_Biosynthetic_Gene
+        ]
+      ),
+
+    N_Accessory_BGC_Genes =
+      n_distinct(
+        Protein_ID[
+          Accessory_BGC_Gene
+        ]
+      ),
+
+    N_Neighbourhood_Genes_Excluded =
+      n_distinct(
+        Protein_ID[
+          !Keep_As_BGC_Gene
+        ]
+      ),
+
+    N_BGC_Proteins_Detected =
+      n_distinct(
+        Protein_ID[
+          Keep_As_BGC_Gene &
+            Proteome_Detected
+        ]
+      ),
+
+    N_Core_Proteins_Detected =
+      n_distinct(
+        Protein_ID[
+          Core_Biosynthetic_Gene &
+            Proteome_Detected
+        ]
+      ),
+
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Keep_Region =
+      N_Core_Biosynthetic_Genes >= 1,
+
+    Region_Confidence = case_when(
+      !Keep_Region ~
+        "Excluded: no core biosynthetic gene recovered",
+
+      is.na(Contig_Edge) ~
+        "Moderate: core present, edge status unknown",
+
+      Contig_Edge ~
+        "Moderate: core present, contig edge",
+
+      TRUE ~
+        "High: core present, non-edge"
+    ),
+
+    Percent_BGC_Genes_Detected = if_else(
+      N_BGC_Genes > 0,
+      100 *
+        N_BGC_Proteins_Detected /
+        N_BGC_Genes,
+      0
+    ),
+
+    Region_Proteomic_Support = case_when(
+      N_Core_Proteins_Detected > 0 ~
+        "Core biosynthetic protein detected",
+
+      N_BGC_Proteins_Detected > 0 ~
+        "Only additional/accessory protein detected",
+
+      TRUE ~
+        "No BGC protein detected"
+    )
+  )
+
+
+############################################################
+# 15. ADD REGION ASSESSMENT TO EACH GENE
+############################################################
+
+bgc_gene_assessed <- bgc_gene_classified %>%
+  left_join(
+    bgc_region_assessment %>%
+      select(
+        Species_ID,
+        BGC_Region_ID,
+        BGC_Type,
+
+        Keep_Region,
+        Region_Confidence,
+        Region_Proteomic_Support,
+
+        N_All_Genes_In_Region,
+        N_BGC_Genes,
+        N_Core_Biosynthetic_Genes,
+        N_Additional_Biosynthetic_Genes,
+        N_Accessory_BGC_Genes,
+        N_Neighbourhood_Genes_Excluded,
+
+        N_BGC_Proteins_Detected,
+        N_Core_Proteins_Detected,
+        Percent_BGC_Genes_Detected
+      ),
+
+    by = c(
+      "Species_ID",
+      "BGC_Region_ID",
+      "BGC_Type"
+    )
+  )
+
+
+############################################################
+# 16. FINAL CLEAN BGC GENE–PROTEIN TABLE
+############################################################
+
+bgc_clean_gene_protein <- bgc_gene_assessed %>%
+  filter(
+    Keep_Region,
+    Keep_As_BGC_Gene
+  ) %>%
+  arrange(
+    Trophic_Strategy,
+    Species_ID,
+    BGC_Region,
+    Gene_Evidence_Order,
+    Protein_ID
+  ) %>%
+  relocate(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots,
+
+    Domain,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Genus,
+    Species,
+
+    BGC_Region_ID,
+    BGC_Region,
+    BGC_Type,
+    Contig_Edge,
+    Region_Confidence,
+
+    Protein_ID,
+    AntiSMASH_Protein_ID,
+
+    Gene_Kind,
+    BGC_Gene_Evidence,
+    Rule_Based_Biosynthetic_Gene,
+    Core_Biosynthetic_Gene,
+    Additional_Biosynthetic_Gene,
+    Accessory_BGC_Gene,
+    AntiSMASH_Gene_Functions,
+
+    Proteome_Detected,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+    Region_Proteomic_Support,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory,
+
+    COG_ID,
+    COG_Annotation,
+    TIGR_ID,
+    TIGR_Annotation,
+    PFAM_ID,
+    PFAM_Annotation,
+
+    N_All_Genes_In_Region,
+    N_BGC_Genes,
+    N_Core_Biosynthetic_Genes,
+    N_Additional_Biosynthetic_Genes,
+    N_Accessory_BGC_Genes,
+    N_Neighbourhood_Genes_Excluded,
+    N_BGC_Proteins_Detected,
+    N_Core_Proteins_Detected,
+    Percent_BGC_Genes_Detected
+  ) %>%
+  select(
+    -Gene_Evidence_Order,
+    -Keep_As_BGC_Gene,
+    -Keep_Region
+  )
+
+
+# One row per retained region for plotting
+bgc_region_clean <- bgc_region_assessment %>%
+  filter(
+    Keep_Region
+  ) %>%
+  arrange(
+    Trophic_Strategy,
+    Species_ID,
+    BGC_Region
+  )
+
+
+# Excluded rows remain available in R for auditing
+bgc_gene_excluded <- bgc_gene_assessed %>%
+  filter(
+    !Keep_Region |
+      !Keep_As_BGC_Gene
+  ) %>%
+  mutate(
+    Exclusion_Reason = case_when(
+      !Keep_Region ~
+        paste(
+          "Region excluded because no antiSMASH",
+          "core biosynthetic gene was recovered"
+        ),
+
+      !Keep_As_BGC_Gene ~
+        paste(
+          "Gene excluded because antiSMASH provided",
+          "no BGC-related gene role"
+        )
+    )
+  )
+
+
+############################################################
+# 17. CLEANING SUMMARY
+############################################################
+
+bgc_cleaning_summary <- bind_rows(
+  bgc_gene_assessed %>%
+    summarise(
+      Table =
+        "All genes inside antiSMASH regions",
+
+      N_Rows = n(),
+      N_Regions =
+        n_distinct(BGC_Region_ID),
+      N_Genes =
+        n_distinct(Protein_ID)
+    ),
+
+  bgc_clean_gene_protein %>%
+    summarise(
+      Table =
+        "Genes retained for BGC analysis",
+
+      N_Rows = n(),
+      N_Regions =
+        n_distinct(BGC_Region_ID),
+      N_Genes =
+        n_distinct(Protein_ID)
+    ),
+
+  bgc_gene_excluded %>%
+    summarise(
+      Table =
+        "Excluded audit rows",
+
+      N_Rows = n(),
+      N_Regions =
+        n_distinct(BGC_Region_ID),
+      N_Genes =
+        n_distinct(Protein_ID)
+    )
+)
+
+bgc_cleaning_summary
+
+
+############################################################
+# 18. EXPORT THE SINGLE CLEAN SCREENING TABLE
+############################################################
+
+write_csv(
+  bgc_clean_gene_protein,
+  file.path(
+    output_directory,
+    "AntiSMASH_BGC_clean_gene_protein.csv"
+  )
+)
+
+
+############################################################
+# 19. PREPARE PANEL A: RETAINED BGC REGIONS PER MAG
+############################################################
+
+# analysis_species is the authoritative denominator and
+# therefore retains MAGs without a cleaned BGC region.
+
+bgc_per_mag <- analysis_species %>%
+  select(
+    Species_ID,
+    Trophic_Strategy
+  ) %>%
+  left_join(
+    bgc_region_clean %>%
+      count(
+        Species_ID,
+        Trophic_Strategy,
+        name = "N_BGC_Regions"
+      ),
+
+    by = c(
+      "Species_ID",
+      "Trophic_Strategy"
+    )
+  ) %>%
+  mutate(
+    N_BGC_Regions =
+      replace_na(
+        N_BGC_Regions,
+        0L
+      )
+  )
+
+
+group_sizes <- bgc_per_mag %>%
+  count(
+    Trophic_Strategy,
+    name = "N_MAGs"
+  )
+
+
+# These counts should be 62, 94 and 14 and sum to 170
+group_sizes
+sum(group_sizes$N_MAGs)
+
+
+trophic_axis_labels <- setNames(
+  paste0(
+    as.character(
+      group_sizes$Trophic_Strategy
+    ),
+    "\n(n = ",
+    group_sizes$N_MAGs,
+    " MAGs)"
+  ),
+
+  as.character(
+    group_sizes$Trophic_Strategy
+  )
+)
+
+
+############################################################
+# 20. PREPARE PANEL B: BGC-TYPE PREVALENCE AND PROTEINS
+############################################################
+
+# First calculate the number of regions and MAGs carrying each
+# retained BGC type.
+
+bgc_type_counts <- bgc_region_clean %>%
+  filter(
+    !is.na(BGC_Type),
+    BGC_Type != ""
+  ) %>%
+  group_by(
+    Trophic_Strategy,
+    BGC_Type
+  ) %>%
+  summarise(
+    N_Regions = n(),
+
+    N_MAGs_With_Type =
+      n_distinct(Species_ID),
+
+    .groups = "drop"
+  )
+
+
+# Count unique retained BGC-associated proteins for each type.
+# A detected protein has normalized abundance > 0 on at least
+# one metaproteomic date.
+
+bgc_type_protein_counts <- bgc_clean_gene_protein %>%
+  filter(
+    !is.na(BGC_Type),
+    BGC_Type != ""
+  ) %>%
+  group_by(
+    Trophic_Strategy,
+    BGC_Type
+  ) %>%
+  summarise(
+    N_Retained_BGC_Proteins =
+      n_distinct(Protein_ID),
+
+    N_Detected_BGC_Proteins =
+      n_distinct(
+        Protein_ID[
+          Proteome_Detected
+        ]
+      ),
+
+    .groups = "drop"
+  )
+
+
+# Join the regional and protein summaries
+bgc_type_counts <- bgc_type_counts %>%
+  left_join(
+    bgc_type_protein_counts,
+    by = c(
+      "Trophic_Strategy",
+      "BGC_Type"
+    )
+  )
+
+
+# Create every trophic-strategy × BGC-type combination so that
+# absent types are explicitly represented by zero.
+
+all_bgc_type_combinations <- expand_grid(
+  Trophic_Strategy = trophic_levels,
+
+  BGC_Type = sort(
+    unique(
+      bgc_type_counts$BGC_Type
+    )
+  )
+) %>%
+  mutate(
+    Trophic_Strategy = factor(
+      Trophic_Strategy,
+      levels = trophic_levels
+    )
+  )
+
+
+bgc_type_prevalence <- all_bgc_type_combinations %>%
+  left_join(
+    bgc_type_counts,
+    by = c(
+      "Trophic_Strategy",
+      "BGC_Type"
+    )
+  ) %>%
+  left_join(
+    group_sizes,
+    by = "Trophic_Strategy"
+  ) %>%
+  mutate(
+    across(
+      c(
+        N_Regions,
+        N_MAGs_With_Type,
+        N_Retained_BGC_Proteins,
+        N_Detected_BGC_Proteins
+      ),
+      ~ replace_na(.x, 0L)
+    ),
+
+    Percent_MAGs_With_Type =
+      100 *
+      N_MAGs_With_Type /
+      N_MAGs,
+
+    # Show a label only when the BGC type is present.
+    # BGC types that are present but have no detected protein
+    # are labelled n = 0.
+    Detected_Protein_Label = if_else(
+      N_Regions > 0,
+      paste0(
+        "n = ",
+        N_Detected_BGC_Proteins
+      ),
+      ""
+    ),
+
+    # Position the label just beyond the end of the bar
+    Protein_Label_Position =
+      Percent_MAGs_With_Type + 1.5
+  )
+
+
+# Order BGC types from rarest to most widespread so that the
+# most prevalent types appear at the top after coord_flip().
+
+bgc_type_order <- bgc_type_prevalence %>%
+  group_by(BGC_Type) %>%
+  summarise(
+    Total_MAGs_With_Type =
+      sum(N_MAGs_With_Type),
+
+    Total_Regions =
+      sum(N_Regions),
+
+    .groups = "drop"
+  ) %>%
+  arrange(
+    Total_MAGs_With_Type,
+    Total_Regions
+  ) %>%
+  pull(BGC_Type)
+
+
+bgc_type_prevalence <- bgc_type_prevalence %>%
+  mutate(
+    BGC_Type = factor(
+      BGC_Type,
+      levels = bgc_type_order
+    )
+  )
+
+
+############################################################
+# 21. PANEL A: VIOLIN PLOT WITH INDIVIDUAL MAGs
+############################################################
+
+maximum_regions <- max(
+  bgc_per_mag$N_BGC_Regions,
+  na.rm = TRUE
+)
+
+
+plot_regions_per_mag <- ggplot(
+  bgc_per_mag,
+  aes(
+    x = Trophic_Strategy,
+    y = N_BGC_Regions,
+    fill = Trophic_Strategy
+  )
+) +
+  geom_violin(
+    trim = TRUE,
+    scale = "width",
+    adjust = 0.8,
+    alpha = 0.75,
+    colour = "grey25",
+    linewidth = 0.4
+  ) +
+  geom_jitter(
+    width = 0.13,
+    height = 0.05,
+    shape = 21,
+    size = 1.8,
+    stroke = 0.25,
+    alpha = 0.70,
+    colour = "grey20"
+  ) +
+  stat_summary(
+    fun = median,
+    geom = "point",
+    shape = 23,
+    size = 3.2,
+    fill = "white",
+    colour = "black"
+  ) +
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+  scale_x_discrete(
+    labels = trophic_axis_labels
+  ) +
+  scale_y_continuous(
+    breaks = 0:maximum_regions,
+    expand = expansion(
+      mult = c(0.02, 0.08)
+    )
+  ) +
+  coord_cartesian(
+    ylim = c(
+      -0.12,
+      maximum_regions + 0.4
+    )
+  ) +
+  labs(
+    title =
+      "Retained antiSMASH BGC regions per MAG",
+
+    subtitle =
+      "Dots represent individual MAGs; white diamonds show medians",
+
+    x = NULL,
+
+    y =
+      "Number of retained BGC regions"
+  ) +
+  guides(
+    fill = "none"
+  ) +
+  theme_classic(
+    base_size = 11
+  ) +
+  theme(
+    plot.title = element_text(
+      face = "bold"
+    ),
+
+    plot.subtitle = element_text(
+      size = 9,
+      colour = "grey30"
+    ),
+
+    axis.title.y = element_text(
+      face = "bold"
+    )
+  )
+
+
+############################################################
+# 22. PANEL B: NESTED BARS WITH DETECTED-PROTEIN COUNTS
+############################################################
+
+plot_bgc_prevalence <- ggplot(
+  bgc_type_prevalence,
+  aes(
+    x = BGC_Type,
+    y = Percent_MAGs_With_Type,
+    fill = Trophic_Strategy
+  )
+) +
+  geom_col(
+    position = position_dodge2(
+      width = 0.85,
+      preserve = "single",
+      padding = 0.08
+    ),
+    width = 0.72,
+    colour = "grey30",
+    linewidth = 0.25
+  ) +
+
+  # Protein counts use exactly the same dodging as the bars.
+  # Labels are placed beyond the bar ends because the bars are
+  # horizontal after coord_flip().
+  geom_text(
+    aes(
+      y = Protein_Label_Position,
+      label = Detected_Protein_Label
+    ),
+    position = position_dodge2(
+      width = 0.85,
+      preserve = "single",
+      padding = 0.08
+    ),
+    hjust = 0,
+    size = 2.4,
+    colour = "grey15",
+    show.legend = FALSE
+  ) +
+  coord_flip(
+    clip = "off"
+  ) +
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+  scale_x_discrete(
+    labels = function(x) {
+      str_replace_all(
+        x,
+        "_",
+        "-"
+      )
+    }
+  ) +
+
+  # Extra horizontal space is provided for protein labels.
+  # Axis tick marks remain restricted to prevalence values
+  # between 0% and 100%.
+  scale_y_continuous(
+    limits = c(0, 112),
+
+    breaks = seq(
+      0,
+      100,
+      20
+    ),
+
+    labels = function(x) {
+      paste0(x, "%")
+    },
+
+    expand = expansion(
+      mult = c(0, 0)
+    )
+  ) +
+  labs(
+    title =
+      "Prevalence of antiSMASH BGC types",
+
+    subtitle =
+      "Bars show MAG prevalence; labels show detected BGC-associated proteins",
+
+    x = NULL,
+
+    y =
+      "MAGs containing BGC type",
+
+    fill =
+      "Trophic strategy"
+  ) +
+  theme_classic(
+    base_size = 11
+  ) +
+  theme(
+    plot.title = element_text(
+      face = "bold"
+    ),
+
+    plot.subtitle = element_text(
+      size = 9,
+      colour = "grey30"
+    ),
+
+    axis.text.y = element_text(
+      size = 7.5
+    ),
+
+    legend.position = "top",
+
+    legend.title = element_blank(),
+
+    panel.grid.major.y = element_line(
+      colour = "grey92",
+      linewidth = 0.3
+    ),
+
+    plot.margin = margin(
+      5.5,
+      16,
+      5.5,
+      5.5
+    )
+  )
+
+
+############################################################
+# 23. COMBINE AND EXPORT THE FINAL FIGURE
+############################################################
+
+bgc_overview_figure <- (
+  plot_regions_per_mag |
+    plot_bgc_prevalence
+) +
+  plot_layout(
+    widths = c(0.85, 1.65),
+    guides = "collect"
+  ) +
+  plot_annotation(
+    tag_levels = "A",
+
+    title =
+      "Biosynthetic gene-cluster potential across trophic strategies",
+
+    theme = theme(
+      plot.title = element_text(
+        face = "bold",
+        size = 14
+      ),
+
+      plot.tag = element_text(
+        face = "bold",
+        size = 13
+      )
+    )
+  ) &
+  theme(
+    legend.position = "top"
+  )
+
+
+bgc_overview_figure
+
+
+ggsave(
+  filename = file.path(
+    output_directory,
+    "AntiSMASH_BGC_overview.pdf"
+  ),
+  plot = bgc_overview_figure,
+  width = 13,
+  height = 8,
+  units = "in"
+)
+
+
+ggsave(
+  filename = file.path(
+    output_directory,
+    "AntiSMASH_BGC_overview.png"
+  ),
+  plot = bgc_overview_figure,
+  width = 13,
+  height = 13,
+  units = "in",
+  dpi = 600
+)
+```
+
+```{r}
+############################################################
+# 20. PREPARE PANEL B: PREVALENCE AND PROTEIN DETECTION
+############################################################
+
+# Count retained regions and the number of MAGs containing
+# each antiSMASH BGC type.
+bgc_type_counts <- bgc_region_clean %>%
+  filter(
+    !is.na(BGC_Type),
+    BGC_Type != ""
+  ) %>%
+  group_by(
+    Trophic_Strategy,
+    BGC_Type
+  ) %>%
+  summarise(
+    N_Regions = n(),
+
+    N_MAGs_With_Type =
+      n_distinct(Species_ID),
+
+    .groups = "drop"
+  )
+
+
+# Count unique retained and detected BGC-associated proteins.
+#
+# The resulting figure label is:
+#   (detected proteins / retained proteins)
+#
+# For example, (2/200) means that 2 of 200 retained proteins
+# assigned to that BGC type were detected in the metaproteome.
+bgc_type_protein_counts <- bgc_clean_gene_protein %>%
+  filter(
+    !is.na(BGC_Type),
+    BGC_Type != ""
+  ) %>%
+  group_by(
+    Trophic_Strategy,
+    BGC_Type
+  ) %>%
+  summarise(
+    N_Retained_BGC_Proteins =
+      n_distinct(Protein_ID),
+
+    N_Detected_BGC_Proteins =
+      n_distinct(
+        Protein_ID[
+          Proteome_Detected
+        ]
+      ),
+
+    .groups = "drop"
+  )
+
+
+# Combine region, MAG and protein information
+bgc_type_counts <- bgc_type_counts %>%
+  left_join(
+    bgc_type_protein_counts,
+    by = c(
+      "Trophic_Strategy",
+      "BGC_Type"
+    )
+  )
+
+
+# Create every trophic-strategy × BGC-type combination so that
+# absent BGC types are explicitly represented by zero.
+all_bgc_type_combinations <- expand_grid(
+  Trophic_Strategy = trophic_levels,
+
+  BGC_Type = sort(
+    unique(
+      bgc_type_counts$BGC_Type
+    )
+  )
+) %>%
+  mutate(
+    Trophic_Strategy = factor(
+      Trophic_Strategy,
+      levels = trophic_levels
+    )
+  )
+
+
+bgc_type_prevalence <- all_bgc_type_combinations %>%
+  left_join(
+    bgc_type_counts,
+    by = c(
+      "Trophic_Strategy",
+      "BGC_Type"
+    )
+  ) %>%
+  left_join(
+    group_sizes,
+    by = "Trophic_Strategy"
+  ) %>%
+  mutate(
+    across(
+      c(
+        N_Regions,
+        N_MAGs_With_Type,
+        N_Retained_BGC_Proteins,
+        N_Detected_BGC_Proteins
+      ),
+      ~ replace_na(.x, 0L)
+    ),
+
+    Percent_MAGs_With_Type =
+      100 *
+      N_MAGs_With_Type /
+      N_MAGs,
+
+    # Label only combinations where the BGC type occurs.
+    # A present type without protein detection receives (0/x).
+    Protein_Detection_Label = if_else(
+      N_Regions > 0,
+      paste0(
+        "(",
+        N_Detected_BGC_Proteins,
+        "/",
+        N_Retained_BGC_Proteins,
+        ")"
+      ),
+      ""
+    ),
+
+    # Place the label just beyond the end of its bar
+    Protein_Label_Position =
+      Percent_MAGs_With_Type + 1
+  )
+
+
+# Order BGC types from rarest to most widespread.
+# The most prevalent type appears at the top after coord_flip().
+bgc_type_order <- bgc_type_prevalence %>%
+  group_by(BGC_Type) %>%
+  summarise(
+    Total_MAGs_With_Type =
+      sum(N_MAGs_With_Type),
+
+    Total_Regions =
+      sum(N_Regions),
+
+    .groups = "drop"
+  ) %>%
+  arrange(
+    Total_MAGs_With_Type,
+    Total_Regions
+  ) %>%
+  pull(BGC_Type)
+
+
+bgc_type_prevalence <- bgc_type_prevalence %>%
+  mutate(
+    BGC_Type = factor(
+      BGC_Type,
+      levels = bgc_type_order
+    )
+  )
+
+
+############################################################
+# 21. PANEL A: VIOLIN PLOT WITH INDIVIDUAL MAGs
+############################################################
+
+maximum_regions <- max(
+  bgc_per_mag$N_BGC_Regions,
+  na.rm = TRUE
+)
+
+
+plot_regions_per_mag <- ggplot(
+  bgc_per_mag,
+  aes(
+    x = Trophic_Strategy,
+    y = N_BGC_Regions,
+    fill = Trophic_Strategy
+  )
+) +
+  geom_violin(
+    trim = TRUE,
+    scale = "width",
+    adjust = 0.8,
+    alpha = 0.75,
+    colour = "grey25",
+    linewidth = 0.4
+  ) +
+  geom_jitter(
+    width = 0.13,
+    height = 0.05,
+    shape = 21,
+    size = 1.7,
+    stroke = 0.25,
+    alpha = 0.70,
+    colour = "grey20"
+  ) +
+  stat_summary(
+    fun = median,
+    geom = "point",
+    shape = 23,
+    size = 3,
+    fill = "white",
+    colour = "black"
+  ) +
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+  scale_x_discrete(
+    labels = trophic_axis_labels
+  ) +
+  scale_y_continuous(
+    breaks = 0:maximum_regions,
+    expand = expansion(
+      mult = c(0.02, 0.08)
+    )
+  ) +
+  coord_cartesian(
+    ylim = c(
+      -0.12,
+      maximum_regions + 0.4
+    )
+  ) +
+  labs(
+    # Panel letter is part of the title so that it remains
+    # correctly aligned with the panel.
+    title =
+      "A   Retained antiSMASH BGC regions per MAG",
+
+    subtitle =
+      "Dots represent individual MAGs; white diamonds show medians",
+
+    x = NULL,
+
+    y =
+      "Number of retained BGC regions"
+  ) +
+  guides(
+    fill = "none"
+  ) +
+  theme_classic(
+    base_size = 10
+  ) +
+  theme(
+    plot.title.position = "panel",
+
+    plot.title = element_text(
+      face = "bold",
+      size = 11
+    ),
+
+    plot.subtitle = element_text(
+      size = 8,
+      colour = "grey30"
+    ),
+
+    axis.title.y = element_text(
+      face = "bold",
+      size = 9.5
+    ),
+
+    axis.text = element_text(
+      size = 8.5
+    )
+  )
+
+
+############################################################
+# 22. PANEL B: NESTED BARS WITH PROTEIN DETECTION
+############################################################
+
+plot_bgc_prevalence <- ggplot(
+  bgc_type_prevalence,
+  aes(
+    x = BGC_Type,
+    y = Percent_MAGs_With_Type,
+    fill = Trophic_Strategy
+  )
+) +
+
+  # Narrower bars and greater padding provide more separation
+  # among the three trophic strategies.
+  geom_col(
+    position = position_dodge2(
+      width = 0.82,
+      preserve = "single",
+      padding = 0.16
+    ),
+    width = 0.64,
+    colour = "grey30",
+    linewidth = 0.20
+  ) +
+
+  # Labels show detected/retained unique BGC proteins.
+  # The same dodge settings keep labels aligned with their bars.
+  geom_text(
+    aes(
+      y = Protein_Label_Position,
+      label = Protein_Detection_Label
+    ),
+    position = position_dodge2(
+      width = 0.82,
+      preserve = "single",
+      padding = 0.16
+    ),
+    hjust = 0,
+    size = 1.9,
+    colour = "grey15",
+    show.legend = FALSE
+  ) +
+
+  coord_flip(
+    clip = "off"
+  ) +
+
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+
+  scale_x_discrete(
+    labels = function(x) {
+      str_replace_all(
+        x,
+        "_",
+        "-"
+      )
+    }
+  ) +
+
+  # The extra space beyond 100% is used only for labels.
+  # Axis tick marks still stop at 100%.
+  scale_y_continuous(
+    limits = c(0, 122),
+
+    breaks = seq(
+      0,
+      100,
+      20
+    ),
+
+    labels = function(x) {
+      paste0(x, "%")
+    },
+
+    expand = expansion(
+      mult = c(0, 0)
+    )
+  ) +
+
+  labs(
+    title =
+      "B   Prevalence of antiSMASH BGC types",
+
+    subtitle = paste(
+      "Bars show MAG prevalence;",
+      "labels show detected/retained BGC-associated proteins"
+    ),
+
+    x = NULL,
+
+    y =
+      "MAG prevalence",
+
+    fill =
+      "Trophic strategy"
+  ) +
+
+  theme_classic(
+    base_size = 10
+  ) +
+
+  theme(
+    plot.title.position = "panel",
+
+    plot.title = element_text(
+      face = "bold",
+      size = 11
+    ),
+
+    plot.subtitle = element_text(
+      size = 8,
+      colour = "grey30"
+    ),
+
+    axis.title.x = element_text(
+      face = "bold",
+      size = 9.5
+    ),
+
+    # Reduced font size keeps the complete BGC-type list clear
+    axis.text.y = element_text(
+      size = 6.4
+    ),
+
+    axis.text.x = element_text(
+      size = 8
+    ),
+
+    legend.position = "top",
+
+    legend.title = element_blank(),
+
+    legend.text = element_text(
+      size = 8
+    ),
+
+    legend.key.size = grid::unit(
+      0.42,
+      "cm"
+    ),
+
+    panel.grid.major.y = element_line(
+      colour = "grey92",
+      linewidth = 0.25
+    ),
+
+    plot.margin = margin(
+      5.5,
+      20,
+      5.5,
+      5.5
+    )
+  )
+
+
+############################################################
+# 23. COMBINE AND EXPORT THE FINAL FIGURE
+############################################################
+
+# Automatic patchwork tags are no longer used because the
+# panel letters are included directly in the panel titles.
+bgc_overview_figure <- (
+  plot_regions_per_mag |
+    plot_bgc_prevalence
+) +
+  plot_layout(
+    widths = c(0.80, 1.80),
+    guides = "collect"
+  ) +
+  plot_annotation(
+    title =
+      "Biosynthetic gene-cluster potential across trophic strategies",
+
+    theme = theme(
+      plot.title = element_text(
+        face = "bold",
+        size = 13
+      )
+    )
+  ) &
+  theme(
+    legend.position = "top"
+  )
+
+
+bgc_overview_figure
+
+
+# A slightly larger figure height separates the nested bars
+# and their detected/retained protein labels.
+ggsave(
+  filename = file.path(
+    output_directory,
+    "AntiSMASH_BGC_overview.pdf"
+  ),
+  plot = bgc_overview_figure,
+  width = 14,
+  height = 9.5,
+  units = "in"
+)
+
+
+ggsave(
+  filename = file.path(
+    output_directory,
+    "AntiSMASH_BGC_overview.png"
+  ),
+  plot = bgc_overview_figure,
+  width = 14,
+  height = 9.5,
+  units = "in",
+  dpi = 600
+)
+```
+
+```{r}
+############################################################
+# DEFENSEFINDER OVERVIEW
+#
+# PANEL A
+#   Number of predicted defence systems per MAG.
+#   Counts come from DefenseFinder_species_summary.tsv so that
+#   all 170 MAGs, including zero-system MAGs, are retained.
+#
+# PANEL B
+#   MAG prevalence of each DefenseFinder system type.
+#   Labels show:
+#       (detected / retained defence-associated proteins)
+#
+# EXPRESSION
+#   A protein is detected when normalized iBAQ > 0 on at least
+#   one metaproteomic sampling date.
+#
+# OUTPUTS
+#   1. DefenseFinder_gene_protein_clean.csv
+#   2. DefenseFinder_system_overview.csv
+#   3. DefenseFinder_MAG_overview.csv
+#   4. DefenseFinder_type_prevalence.csv
+#   5. DefenseFinder_count_discrepancies.csv
+#   6. DefenseFinder_overview.pdf
+#   7. DefenseFinder_overview.png
+############################################################
+
+
+############################################################
+# 1. OUTPUT DIRECTORY
+############################################################
+
+defence_output_directory <- "DefenseFinder_Overview"
+
+dir.create(
+  defence_output_directory,
+  showWarnings = FALSE
+)
+
+
+############################################################
+# 2. CLEAN DEFENSEFINDER GENE–PROTEIN TABLE
+############################################################
+
+# DefenseFinder has already assigned these genes to predicted
+# defence systems, so no antiSMASH-like region cleaning is needed.
+
+defence_clean_gene_protein <- defence_gene_protein %>%
+  filter(
+    !is.na(Defense_System_ID),
+    Defense_System_ID != "",
+    !is.na(Defense_Type),
+    Defense_Type != "",
+    !is.na(Protein_ID),
+    Protein_ID != ""
+  ) %>%
+  mutate(
+    Proteome_Detected =
+      coalesce(Detected_In_Proteome, FALSE)
+  ) %>%
+
+  # Remove only repeated rows for the same protein assignment.
+  # A protein assigned to two different systems remains in both.
+  distinct(
+    Species_ID,
+    Defense_System_ID,
+    Defense_Type,
+    Protein_ID,
+    .keep_all = TRUE
+  ) %>%
+  arrange(
+    Trophic_Strategy,
+    Species_ID,
+    Defense_Type,
+    Defense_System_ID,
+    Protein_ID
+  ) %>%
+  relocate(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots,
+
+    Defense_System_ID,
+    Defense_Type,
+    Defense_Subtype,
+    Defense_Gene,
+    Protein_ID,
+
+    Proteome_Detected,
+    N_Dates_Detected,
+    Mean_Protein_Abundance_IBAQ_Norm,
+    Max_Protein_Abundance_IBAQ_Norm,
+
+    Gene_Annotation_Matched,
+    Contig_ID,
+
+    KEGG_ID,
+    KEGG_Annotation,
+    KEGG_Category,
+    KEGG_Subcategory_ID,
+    KEGG_Subcategory
+  )
+
+
+############################################################
+# 3. ONE ROW PER DEFENCE SYSTEM
+############################################################
+
+defence_system_overview <- defence_clean_gene_protein %>%
+  group_by(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots,
+    Defense_System_ID,
+    Defense_Type,
+    Defense_Subtype
+  ) %>%
+  summarise(
+    N_Defense_Proteins =
+      n_distinct(Protein_ID),
+
+    N_Detected_Defense_Proteins =
+      n_distinct(
+        Protein_ID[Proteome_Detected]
+      ),
+
+    Any_Component_Detected =
+      N_Detected_Defense_Proteins > 0,
+
+    All_Components_Detected =
+      N_Defense_Proteins > 0 &
+      N_Detected_Defense_Proteins == N_Defense_Proteins,
+
+    Percent_Components_Detected =
+      100 *
+      N_Detected_Defense_Proteins /
+      N_Defense_Proteins,
+
+    .groups = "drop"
+  )
+
+
+############################################################
+# 4. ONE ROW PER MAG
+############################################################
+
+# Number of systems that have entries in the gene inventory.
+inventory_systems_per_mag <- defence_system_overview %>%
+  group_by(Species_ID) %>%
+  summarise(
+    N_Systems_With_Gene_Rows =
+      n_distinct(Defense_System_ID),
+
+    N_Systems_With_Any_Protein_Detected =
+      n_distinct(
+        Defense_System_ID[Any_Component_Detected]
+      ),
+
+    N_Systems_With_All_Proteins_Detected =
+      n_distinct(
+        Defense_System_ID[All_Components_Detected]
+      ),
+
+    .groups = "drop"
+  )
+
+
+# The summary table remains authoritative for the predicted
+# number of systems because it contains all 170 MAGs.
+defence_mag_overview <- analysis_species %>%
+  select(
+    Species_ID,
+    Trophic_Strategy,
+    Group_For_Plots
+  ) %>%
+  left_join(
+    defence %>%
+      distinct(Species_ID, .keep_all = TRUE) %>%
+      select(
+        Species_ID,
+        Has_Defense_System,
+        N_Defense_Systems
+      ),
+
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    inventory_systems_per_mag,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    Has_Defense_System =
+      coalesce(Has_Defense_System, FALSE),
+
+    N_Predicted_Defense_Systems =
+      replace_na(N_Defense_Systems, 0),
+
+    across(
+      c(
+        N_Systems_With_Gene_Rows,
+        N_Systems_With_Any_Protein_Detected,
+        N_Systems_With_All_Proteins_Detected
+      ),
+      ~ replace_na(.x, 0L)
+    )
+  ) %>%
+  select(
+    -N_Defense_Systems
+  ) %>%
+  arrange(
+    Trophic_Strategy,
+    desc(N_Predicted_Defense_Systems),
+    Species_ID
+  )
+
+
+############################################################
+# 5. CHECK SUMMARY VERSUS GENE INVENTORY
+############################################################
+
+defence_count_audit <- tibble(
+  Source = c(
+    "DefenseFinder species summary",
+    "Unique system IDs in gene inventory"
+  ),
+
+  N_Systems = c(
+    sum(
+      defence_mag_overview$N_Predicted_Defense_Systems
+    ),
+
+    sum(
+      defence_mag_overview$N_Systems_With_Gene_Rows
+    )
+  )
+)
+
+
+defence_system_count_discrepancies <-
+  defence_mag_overview %>%
+  filter(
+    N_Predicted_Defense_Systems !=
+      N_Systems_With_Gene_Rows
+  ) %>%
+  select(
+    Species_ID,
+    Trophic_Strategy,
+    N_Predicted_Defense_Systems,
+    N_Systems_With_Gene_Rows
+  )
+
+
+defence_count_audit
+defence_system_count_discrepancies
+
+
+############################################################
+# 6. GROUP-LEVEL OVERVIEW
+############################################################
+
+defence_group_overview <- defence_mag_overview %>%
+  group_by(Trophic_Strategy) %>%
+  summarise(
+    N_MAGs = n(),
+
+    N_MAGs_With_Defense =
+      sum(N_Predicted_Defense_Systems > 0),
+
+    Percent_MAGs_With_Defense =
+      100 *
+      N_MAGs_With_Defense /
+      N_MAGs,
+
+    Total_Predicted_Systems =
+      sum(N_Predicted_Defense_Systems),
+
+    Median_Systems_Per_MAG =
+      median(N_Predicted_Defense_Systems),
+
+    N_MAGs_With_Detected_Defense_Protein =
+      sum(
+        N_Systems_With_Any_Protein_Detected > 0
+      ),
+
+    .groups = "drop"
+  )
+
+defence_group_overview
+
+
+############################################################
+# 7. RECOVER DEFENCE-TYPE COUNTS FROM THE SPECIES SUMMARY
+############################################################
+
+# The summary stores type-specific system counts in columns such
+# as N_Type_AbiE, N_Type_RM_Type_I and N_Type_CBASS.
+#
+# Construct a lookup restoring the exact Defense_Type labels
+# used in the gene inventory.
+
+defence_type_lookup <- defence_clean_gene_protein %>%
+  distinct(Defense_Type) %>%
+  mutate(
+    Defense_Type_Key =
+      str_replace_all(
+        Defense_Type,
+        "[^A-Za-z0-9_]",
+        "_"
+      )
+  )
+
+
+if (
+  nrow(defence_type_lookup) !=
+    n_distinct(defence_type_lookup$Defense_Type_Key)
+) {
+  stop(
+    "Multiple Defense_Type values map to the same summary-column key."
+  )
+}
+
+
+defence_type_by_mag <- defence %>%
+  distinct(Species_ID, .keep_all = TRUE) %>%
+  select(
+    Species_ID,
+    Trophic_Strategy,
+    matches("^N_Type_")
+  ) %>%
+  pivot_longer(
+    cols = matches("^N_Type_"),
+    names_to = "Defense_Type_Key",
+    names_prefix = "N_Type_",
+    values_to = "N_Systems_Of_Type"
+  ) %>%
+  mutate(
+    N_Systems_Of_Type =
+      replace_na(N_Systems_Of_Type, 0)
+  ) %>%
+  filter(
+    N_Systems_Of_Type > 0
+  ) %>%
+  left_join(
+    defence_type_lookup,
+    by = "Defense_Type_Key"
+  )
+
+
+if (any(is.na(defence_type_by_mag$Defense_Type))) {
+  stop(
+    "At least one DefenseFinder summary type could not be matched ",
+    "to a Defense_Type in the gene inventory."
+  )
+}
+
+
+############################################################
+# 8. PREPARE PANEL A
+############################################################
+
+defence_per_mag <- defence_mag_overview %>%
+  select(
+    Species_ID,
+    Trophic_Strategy,
+    N_Predicted_Defense_Systems
+  )
+
+
+group_sizes <- defence_per_mag %>%
+  count(
+    Trophic_Strategy,
+    name = "N_MAGs"
+  )
+
+
+# Expected: 62, 94 and 14; total = 170.
+group_sizes
+sum(group_sizes$N_MAGs)
+
+
+trophic_axis_labels <- setNames(
+  paste0(
+    as.character(group_sizes$Trophic_Strategy),
+    "\n(n = ",
+    group_sizes$N_MAGs,
+    " MAGs)"
+  ),
+
+  as.character(group_sizes$Trophic_Strategy)
+)
+
+
+############################################################
+# 9. PREPARE PANEL B: TYPE PREVALENCE
+############################################################
+
+# System and MAG counts come from the species summary.
+defence_type_counts <- defence_type_by_mag %>%
+  group_by(
+    Trophic_Strategy,
+    Defense_Type
+  ) %>%
+  summarise(
+    N_Systems =
+      sum(N_Systems_Of_Type),
+
+    N_MAGs_With_Type =
+      n_distinct(Species_ID),
+
+    .groups = "drop"
+  )
+
+
+# Protein counts come from the gene–proteome table.
+defence_type_protein_counts <-
+  defence_clean_gene_protein %>%
+  group_by(
+    Trophic_Strategy,
+    Defense_Type
+  ) %>%
+  summarise(
+    N_Retained_Defense_Proteins =
+      n_distinct(Protein_ID),
+
+    N_Detected_Defense_Proteins =
+      n_distinct(
+        Protein_ID[Proteome_Detected]
+      ),
+
+    .groups = "drop"
+  )
+
+
+defence_type_counts <- defence_type_counts %>%
+  left_join(
+    defence_type_protein_counts,
+    by = c(
+      "Trophic_Strategy",
+      "Defense_Type"
+    )
+  )
+
+
+# Explicitly create all group × type combinations so absent
+# types receive zero rather than disappearing from the plot.
+all_defence_type_combinations <- expand_grid(
+  Trophic_Strategy = trophic_levels,
+
+  Defense_Type = sort(
+    unique(defence_type_counts$Defense_Type)
+  )
+) %>%
+  mutate(
+    Trophic_Strategy = factor(
+      Trophic_Strategy,
+      levels = trophic_levels
+    )
+  )
+
+
+defence_type_prevalence <-
+  all_defence_type_combinations %>%
+  left_join(
+    defence_type_counts,
+    by = c(
+      "Trophic_Strategy",
+      "Defense_Type"
+    )
+  ) %>%
+  left_join(
+    group_sizes,
+    by = "Trophic_Strategy"
+  ) %>%
+  mutate(
+    across(
+      c(
+        N_Systems,
+        N_MAGs_With_Type,
+        N_Retained_Defense_Proteins,
+        N_Detected_Defense_Proteins
+      ),
+      ~ replace_na(.x, 0)
+    ),
+
+    Percent_MAGs_With_Type =
+      100 *
+      N_MAGs_With_Type /
+      N_MAGs,
+
+    # Example: (2/200) means that 2 of 200 unique defence
+    # proteins assigned to this type were detected.
+    Protein_Detection_Label = if_else(
+      N_MAGs_With_Type > 0,
+      paste0(
+        "(",
+        N_Detected_Defense_Proteins,
+        "/",
+        N_Retained_Defense_Proteins,
+        ")"
+      ),
+      ""
+    ),
+
+    Protein_Label_Position =
+      Percent_MAGs_With_Type + 1
+  )
+
+
+# Rarest types first so that the most prevalent appear at the
+# top after coord_flip().
+defence_type_order <- defence_type_prevalence %>%
+  group_by(Defense_Type) %>%
+  summarise(
+    Total_MAGs_With_Type =
+      sum(N_MAGs_With_Type),
+
+    Total_Systems =
+      sum(N_Systems),
+
+    .groups = "drop"
+  ) %>%
+  arrange(
+    Total_MAGs_With_Type,
+    Total_Systems
+  ) %>%
+  pull(Defense_Type)
+
+
+defence_type_prevalence <-
+  defence_type_prevalence %>%
+  mutate(
+    Defense_Type = factor(
+      Defense_Type,
+      levels = defence_type_order
+    )
+  )
+
+
+############################################################
+# 10. EXPORT CLEAN TABLES
+############################################################
+
+write_csv(
+  defence_clean_gene_protein,
+  file.path(
+    defence_output_directory,
+    "DefenseFinder_gene_protein_clean.csv"
+  )
+)
+
+
+write_csv(
+  defence_system_overview,
+  file.path(
+    defence_output_directory,
+    "DefenseFinder_system_overview.csv"
+  )
+)
+
+
+write_csv(
+  defence_mag_overview,
+  file.path(
+    defence_output_directory,
+    "DefenseFinder_MAG_overview.csv"
+  )
+)
+
+
+write_csv(
+  defence_type_prevalence,
+  file.path(
+    defence_output_directory,
+    "DefenseFinder_type_prevalence.csv"
+  )
+)
+
+
+write_csv(
+  defence_system_count_discrepancies,
+  file.path(
+    defence_output_directory,
+    "DefenseFinder_count_discrepancies.csv"
+  )
+)
+
+
+############################################################
+# 11. PANEL A: DEFENCE SYSTEMS PER MAG
+############################################################
+
+maximum_systems <- max(
+  defence_per_mag$N_Predicted_Defense_Systems,
+  na.rm = TRUE
+)
+
+
+plot_defence_per_mag <- ggplot(
+  defence_per_mag,
+  aes(
+    x = Trophic_Strategy,
+    y = N_Predicted_Defense_Systems,
+    fill = Trophic_Strategy
+  )
+) +
+  geom_violin(
+    trim = TRUE,
+    scale = "width",
+    adjust = 0.8,
+    alpha = 0.75,
+    colour = "grey25",
+    linewidth = 0.4
+  ) +
+  geom_jitter(
+    width = 0.13,
+    height = 0.10,
+    shape = 21,
+    size = 1.7,
+    stroke = 0.25,
+    alpha = 0.70,
+    colour = "grey20"
+  ) +
+  stat_summary(
+    fun = median,
+    geom = "point",
+    shape = 23,
+    size = 3,
+    fill = "white",
+    colour = "black"
+  ) +
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+  scale_x_discrete(
+    labels = trophic_axis_labels
+  ) +
+  scale_y_continuous(
+    breaks = scales::breaks_pretty(n = 8),
+    expand = expansion(
+      mult = c(0.02, 0.08)
+    )
+  ) +
+  coord_cartesian(
+    ylim = c(
+      -0.5,
+      maximum_systems + 2
+    )
+  ) +
+  labs(
+    title =
+      "A   Predicted DefenseFinder systems per MAG",
+
+    subtitle =
+      "Dots represent individual MAGs; white diamonds show medians",
+
+    x = NULL,
+
+    y =
+      "Number of predicted defence systems"
+  ) +
+  guides(
+    fill = "none"
+  ) +
+  theme_classic(
+    base_size = 10
+  ) +
+  theme(
+    plot.title.position = "panel",
+
+    plot.title = element_text(
+      face = "bold",
+      size = 11
+    ),
+
+    plot.subtitle = element_text(
+      size = 8,
+      colour = "grey30"
+    ),
+
+    axis.title.y = element_text(
+      face = "bold",
+      size = 9.5
+    ),
+
+    axis.text = element_text(
+      size = 8.5
+    )
+  )
+
+
+############################################################
+# 12. PANEL B: DEFENCE-TYPE PREVALENCE
+############################################################
+
+plot_defence_prevalence <- ggplot(
+  defence_type_prevalence,
+  aes(
+    x = Defense_Type,
+    y = Percent_MAGs_With_Type,
+    fill = Trophic_Strategy
+  )
+) +
+  geom_col(
+    position = position_dodge2(
+      width = 0.82,
+      preserve = "single",
+      padding = 0.16
+    ),
+    width = 0.64,
+    colour = "grey30",
+    linewidth = 0.20
+  ) +
+  geom_text(
+    aes(
+      y = Protein_Label_Position,
+      label = Protein_Detection_Label
+    ),
+    position = position_dodge2(
+      width = 0.82,
+      preserve = "single",
+      padding = 0.16
+    ),
+    hjust = 0,
+    size = 1.9,
+    colour = "grey15",
+    show.legend = FALSE
+  ) +
+  coord_flip(
+    clip = "off"
+  ) +
+  scale_fill_manual(
+    values = trophic_cols
+  ) +
+  scale_x_discrete(
+    labels = function(x) {
+      str_replace_all(x, "_", "-")
+    }
+  ) +
+  scale_y_continuous(
+    limits = c(0, 125),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0))
+  ) +
+  labs(
+    title =
+      "B   Prevalence of DefenseFinder system types",
+
+    subtitle = paste(
+      "Bars show MAG prevalence;",
+      "labels show detected/retained defence-associated proteins"
+    ),
+
+    x = NULL,
+    y = "MAG prevalence",
+    fill = "Trophic strategy"
+  ) +
+  theme_classic(
+    base_size = 10
+  ) +
+  theme(
+    plot.title.position = "panel",
+
+    plot.title = element_text(
+      face = "bold",
+      size = 11
+    ),
+
+    plot.subtitle = element_text(
+      size = 8,
+      colour = "grey30"
+    ),
+
+    axis.title.x = element_text(
+      face = "bold",
+      size = 9.5
+    ),
+
+    axis.text.y = element_text(
+      size = 6
+    ),
+
+    axis.text.x = element_text(
+      size = 8
+    ),
+
+    legend.position = "top",
+    legend.title = element_blank(),
+
+    legend.text = element_text(
+      size = 8
+    ),
+
+    legend.key.size = grid::unit(
+      0.42,
+      "cm"
+    ),
+
+    panel.grid.major.y = element_line(
+      colour = "grey92",
+      linewidth = 0.25
+    ),
+
+    plot.margin = margin(
+      5.5,
+      20,
+      5.5,
+      5.5
+    )
+  )
+
+
+############################################################
+# 13. COMBINE AND EXPORT
+############################################################
+
+defence_overview_figure <- (
+  plot_defence_per_mag |
+    plot_defence_prevalence
+) +
+  plot_layout(
+    widths = c(0.80, 1.80),
+    guides = "collect"
+  ) +
+  plot_annotation(
+    title =
+      "Antiphage defence-system potential across trophic strategies",
+
+    theme = theme(
+      plot.title = element_text(
+        face = "bold",
+        size = 13
+      )
+    )
+  ) &
+  theme(
+    legend.position = "top"
+  )
+
+
+defence_overview_figure
+
+
+# DefenseFinder contains substantially more types than antiSMASH.
+# The export height therefore increases automatically.
+n_defence_types <- n_distinct(
+  defence_type_prevalence$Defense_Type
+)
+
+defence_figure_height <- max(
+  10,
+  3.2 + 0.16 * n_defence_types
+)
+
+
+ggsave(
+  filename = file.path(
+    defence_output_directory,
+    "DefenseFinder_overview.pdf"
+  ),
+  plot = defence_overview_figure,
+  width = 14,
+  height = defence_figure_height,
+  units = "in"
+)
+
+
+ggsave(
+  filename = file.path(
+    defence_output_directory,
+    "DefenseFinder_overview.png"
+  ),
+  plot = defence_overview_figure,
+  width = 14,
+  height = defence_figure_height,
+  units = "in",
+  dpi = 600
+)
+```
+

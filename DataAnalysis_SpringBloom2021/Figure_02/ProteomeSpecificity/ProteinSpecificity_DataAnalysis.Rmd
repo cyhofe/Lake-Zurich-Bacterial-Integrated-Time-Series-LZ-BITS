@@ -163,6 +163,17 @@ ggsave(
   device   = "pdf"
 )
 
+
+readr::write_csv(
+  dplyr::bind_rows(
+    plot_dat_counts %>%
+      dplyr::mutate(Metric = "Protein groups (counts)"),
+    plot_dat_abund_norm %>%
+      dplyr::mutate(Metric = "Protein abundance (summed normalized IBAQ)")
+  ) %>%
+    dplyr::select(Metric, Category, Value, Percent),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2e.csv"
+)
 ```
 
 

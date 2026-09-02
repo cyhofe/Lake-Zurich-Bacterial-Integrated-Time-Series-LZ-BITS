@@ -313,6 +313,53 @@ print(p_overview_vertical)
 # Optional save
 ggsave("Fig_Overview_TrophicStrategy_vertical.pdf", p_overview_vertical,
        width = 7, height = 4, units = "in", dpi = 300)
+
+
+############################################################
+# FIGURE 3D — SOURCE DATA
+# Exact absolute values and proportions displayed in the bars
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+figure_3d <- overview_long %>%
+  dplyr::transmute(
+    Metric = as.character(Metric),
+    Trophic_Group = as.character(Plot_Group),
+
+    Value_Unit = dplyr::case_when(
+      Metric == "Species" ~
+        "Number of species",
+      Metric == "Genes" ~
+        "Number of distinct genes",
+      Metric == "Proteins" ~
+        "Number of distinct detected proteins",
+      Metric == "Metagenome abundance" ~
+        "Summed species abundance",
+      Metric == "Proteome abundance" ~
+        "Summed normalized iBAQ abundance"
+    ),
+
+    Absolute_Value = Value,
+    Total_Across_All_Groups = Total,
+    Proportion_of_Total = Prop,
+    Percent_of_Total = Prop * 100
+  ) %>%
+  dplyr::arrange(
+    Metric,
+    factor(
+      Trophic_Group,
+      levels = group_levels
+    )
+  )
+
+readr::write_csv(
+  figure_3d,
+  file.path(source_dir, "Figure_3d.csv")
+)
 ```
 ## Dataset overview: trophic strategies vs *Filtered*
 
@@ -1414,9 +1461,24 @@ cat("SESSION INFO:\n")
 print(sessionInfo())
 
 sink()
+
 ############################################################
-# END
+# FIGURE 3E — INDIVIDUAL SPECIES-LEVEL SOURCE DATA
 ############################################################
+
+figure_3e_data <- all_layers_3modules %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Group = as.character(Group_For_Plots),
+    Layer = as.character(Layer),
+    Functional_Category = as.character(Module4),
+    Proportion_of_all_modules = Prop
+  )
+
+readr::write_csv(
+  figure_3e_data,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_3e.csv"
+)
 ```
 
 

@@ -90,5 +90,10 @@ ggsave(
   units    = "in",
   dpi      = 300
 )
+
+readr::write_csv(
+  dat,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2d.csv"
+)
 ```
 

@@ -217,6 +217,10 @@ ggsave(
   dpi      = 300
 )
 
+readr::write_csv(
+  bar_data,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2a.csv"
+)
 ```
 
 ## Species-specificity assignment for proteins and peptides

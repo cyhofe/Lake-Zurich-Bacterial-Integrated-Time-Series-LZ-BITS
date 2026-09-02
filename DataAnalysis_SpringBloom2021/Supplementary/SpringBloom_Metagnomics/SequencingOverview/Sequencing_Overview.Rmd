@@ -1,0 +1,1178 @@
+---
+title: Sequencing Overview
+date: 09.04.2025
+author: Cyrill Hofer
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    self_contained: true
+    code_folding: hide
+    thumbnails: true
+    gallery: false
+    fig_width: 15
+    df_print: kable
+    fig_caption: yes
+    use_bookdown: true
+    css: custom.css
+---
+
+# Data Preparation
+- Note: This data does not contain and protein identifications from contaminants
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+############################################################
+# Sequencing performance before and after quality filtering
+############################################################
+
+
+############################################################
+# 1) Clear R's brain
+############################################################
+
+rm(list = ls())
+
+
+############################################################
+# 2) Set the working directory
+############################################################
+
+setwd(
+  "/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/SpringBloom_Metagnomics/SequencingOverview/"
+)
+
+
+############################################################
+# 3) Load libraries
+############################################################
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(plotly)
+library(tidyr)
+library(scales)
+library(forcats)
+library(patchwork)
+
+
+############################################################
+# 4) Load color palette and data
+############################################################
+
+source("ColorPalette.R")
+
+dat <- read_csv(
+  "../../../../Data/Sequencing_Data/Raw_Data/Quality_Trimming/QualityFilteringStats.csv",
+  show_col_types = FALSE
+)
+
+glimpse(dat)
+```
+
+```{r}
+############################################################
+# 5) Validate the input table
+############################################################
+
+required_columns <- c(
+  "Sample",
+  "Sampling_Date",
+  "Technology",
+  "Data_Type",
+  "Mean_Read_Length",
+  "Mean_Read_Quality",
+  "Number_Of_Reads",
+  "Total_Bases"
+)
+
+missing_columns <- setdiff(
+  required_columns,
+  names(dat)
+)
+
+if (length(missing_columns) > 0L) {
+  stop(
+    "The following required columns are missing from dat: ",
+    paste(missing_columns, collapse = ", ")
+  )
+}
+
+dat <- dat %>%
+  mutate(
+    Sampling_Date = as.Date(Sampling_Date)
+  )
+
+if (any(is.na(dat$Sampling_Date))) {
+  stop(
+    "At least one Sampling_Date could not be converted to a date."
+  )
+}
+
+
+############################################################
+# 6) Define plotting order and colors
+############################################################
+
+technology_levels <- c(
+  "Illumina",
+  "Nanopore"
+)
+
+processing_levels <- c(
+  "Raw",
+  "Processed"
+)
+
+filtering_levels <- c(
+  "Removed during filtering",
+  "Retained after filtering"
+)
+
+# Exact colors used in the reference figure
+technology_colours <- c(
+  Illumina = "#D65C6C",
+  Nanopore = "#9AD0E9"
+)
+
+processing_alpha <- c(
+  Raw = 0.25,
+  Processed = 1
+)
+
+filtering_alpha <- c(
+  "Removed during filtering" = 0.25,
+  "Retained after filtering" = 1
+)
+
+
+############################################################
+# 7) Prepare dates and processing labels
+############################################################
+
+sampling_date_levels <- dat %>%
+  distinct(Sampling_Date) %>%
+  arrange(Sampling_Date) %>%
+  mutate(
+    Sampling_Date_Label = format(
+      Sampling_Date,
+      "%d-%m-%Y"
+    )
+  ) %>%
+  pull(Sampling_Date_Label)
+
+
+sequencing_data <- dat %>%
+  mutate(
+    Technology = factor(
+      Technology,
+      levels = technology_levels
+    ),
+
+    Processing = case_when(
+      Data_Type == "Raw" ~ "Raw",
+      Data_Type == "QualityFiltered" ~ "Processed",
+      TRUE ~ NA_character_
+    ),
+
+    Processing = factor(
+      Processing,
+      levels = processing_levels
+    ),
+
+    Sampling_Date_Label = factor(
+      format(
+        Sampling_Date,
+        "%d-%m-%Y"
+      ),
+      levels = sampling_date_levels
+    )
+  )
+
+
+if (any(is.na(sequencing_data$Technology))) {
+  stop(
+    "The Technology column contains values other than ",
+    "'Illumina' and 'Nanopore'."
+  )
+}
+
+if (any(is.na(sequencing_data$Processing))) {
+  stop(
+    "The Data_Type column contains values other than ",
+    "'Raw' and 'QualityFiltered'."
+  )
+}
+
+
+############################################################
+# 8) Check for missing or duplicated observations
+############################################################
+
+processing_check <- sequencing_data %>%
+  count(
+    Sampling_Date,
+    Technology,
+    Processing,
+    name = "Number_Of_Rows"
+  )
+
+incorrect_combinations <- processing_check %>%
+  filter(Number_Of_Rows != 1L)
+
+if (nrow(incorrect_combinations) > 0L) {
+  stop(
+    "At least one date, technology and processing combination ",
+    "is missing or duplicated."
+  )
+}
+
+expected_combinations <- expand_grid(
+  Sampling_Date = sort(
+    unique(sequencing_data$Sampling_Date)
+  ),
+  Technology = factor(
+    technology_levels,
+    levels = technology_levels
+  ),
+  Processing = factor(
+    processing_levels,
+    levels = processing_levels
+  )
+)
+
+missing_combinations <- expected_combinations %>%
+  anti_join(
+    sequencing_data %>%
+      distinct(
+        Sampling_Date,
+        Technology,
+        Processing
+      ),
+    by = c(
+      "Sampling_Date",
+      "Technology",
+      "Processing"
+    )
+  )
+
+if (nrow(missing_combinations) > 0L) {
+  stop(
+    "At least one raw or processed observation is missing."
+  )
+}
+
+
+############################################################
+# 9) Convert the data to before/after wide format
+############################################################
+
+sequencing_wide <- sequencing_data %>%
+  select(
+    Sample,
+    Sampling_Date,
+    Sampling_Date_Label,
+    Technology,
+    Processing,
+    Number_Of_Reads,
+    Total_Bases,
+    Mean_Read_Length,
+    Mean_Read_Quality
+  ) %>%
+  pivot_wider(
+    names_from = Processing,
+    values_from = c(
+      Number_Of_Reads,
+      Total_Bases,
+      Mean_Read_Length,
+      Mean_Read_Quality
+    ),
+    names_glue = "{.value}_{Processing}"
+  )
+
+
+############################################################
+# 10) Prepare stacked read-count data
+############################################################
+
+# The full stacked bar represents the raw number of reads.
+#
+# Dark section:
+#   reads retained after quality filtering
+#
+# Pale section:
+#   reads removed during quality filtering
+
+read_count_bar_data <- sequencing_wide %>%
+  transmute(
+    Sampling_Date,
+    Sampling_Date_Label,
+    Technology,
+
+    `Removed during filtering` = pmax(
+      Number_Of_Reads_Raw -
+        Number_Of_Reads_Processed,
+      0
+    ),
+
+    `Retained after filtering` =
+      Number_Of_Reads_Processed
+  ) %>%
+  pivot_longer(
+    cols = all_of(filtering_levels),
+    names_to = "Filtering_Status",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Filtering_Status = factor(
+      Filtering_Status,
+      levels = filtering_levels
+    )
+  )
+
+
+############################################################
+# 11) Prepare stacked sequencing-yield data
+############################################################
+
+# Convert total bases to gigabase pairs.
+
+sequencing_yield_bar_data <- sequencing_wide %>%
+  transmute(
+    Sampling_Date,
+    Sampling_Date_Label,
+    Technology,
+
+    `Removed during filtering` = pmax(
+      Total_Bases_Raw -
+        Total_Bases_Processed,
+      0
+    ) / 1e9,
+
+    `Retained after filtering` =
+      Total_Bases_Processed / 1e9
+  ) %>%
+  pivot_longer(
+    cols = all_of(filtering_levels),
+    names_to = "Filtering_Status",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Filtering_Status = factor(
+      Filtering_Status,
+      levels = filtering_levels
+    )
+  )
+
+
+############################################################
+# 12) Prepare mean-read-length data
+############################################################
+
+mean_read_length_data <- sequencing_data %>%
+  transmute(
+    Sampling_Date,
+    Sampling_Date_Label,
+    Technology,
+    Processing,
+    Value = Mean_Read_Length
+  )
+
+
+############################################################
+# 13) Prepare mean-read-quality data
+############################################################
+
+mean_read_quality_data <- sequencing_data %>%
+  transmute(
+    Sampling_Date,
+    Sampling_Date_Label,
+    Technology,
+    Processing,
+    Value = Mean_Read_Quality
+  )
+
+
+############################################################
+# 14) NA-safe axis formatting functions
+############################################################
+
+# Format read counts in millions.
+#
+# Examples:
+# 200000000 -> 200M
+#   5000000 -> 5M
+format_read_counts <- function(x) {
+
+  output <- rep(
+    NA_character_,
+    length(x)
+  )
+
+  valid_values <- is.finite(x)
+  zero_values <- valid_values & x == 0
+  nonzero_values <- valid_values & x != 0
+
+  output[zero_values] <- "0"
+
+  output[nonzero_values] <- paste0(
+    format(
+      x[nonzero_values] / 1e6,
+      trim = TRUE,
+      scientific = FALSE,
+      big.mark = " "
+    ),
+    "M"
+  )
+
+  output
+}
+
+
+# Generate separate read-count intervals for the two
+# independently scaled technology facets.
+read_count_breaks <- function(limits) {
+
+  finite_limits <- limits[
+    is.finite(limits)
+  ]
+
+  if (length(finite_limits) == 0L) {
+    return(numeric())
+  }
+
+  upper_limit <- max(finite_limits)
+
+  interval <- if (
+    upper_limit >= 1e8
+  ) {
+    2e8
+  } else {
+    5e6
+  }
+
+  seq(
+    from = 0,
+    to = ceiling(upper_limit / interval) * interval,
+    by = interval
+  )
+}
+
+
+# Generate sequencing-yield intervals.
+sequencing_yield_breaks <- function(limits) {
+
+  finite_limits <- limits[
+    is.finite(limits)
+  ]
+
+  if (length(finite_limits) == 0L) {
+    return(numeric())
+  }
+
+  upper_limit <- max(finite_limits)
+
+  interval <- if (
+    upper_limit > 60
+  ) {
+    20
+  } else {
+    10
+  }
+
+  seq(
+    from = 0,
+    to = ceiling(upper_limit / interval) * interval,
+    by = interval
+  )
+}
+
+
+# Generate approximately 2-bp breaks for Illumina and
+# 1000-bp breaks for Nanopore.
+mean_read_length_breaks <- function(limits) {
+
+  finite_limits <- limits[
+    is.finite(limits)
+  ]
+
+  if (length(finite_limits) == 0L) {
+    return(numeric())
+  }
+
+  lower_limit <- min(finite_limits)
+  upper_limit <- max(finite_limits)
+
+  if (upper_limit < 1000) {
+
+    seq(
+      from = floor(lower_limit / 2) * 2,
+      to = ceiling(upper_limit / 2) * 2,
+      by = 2
+    )
+
+  } else {
+
+    seq(
+      from = floor(lower_limit / 1000) * 1000,
+      to = ceiling(upper_limit / 1000) * 1000,
+      by = 1000
+    )
+  }
+}
+
+
+# Format long-read lengths in kilobases.
+#
+# Examples:
+# 150  -> 150
+# 2000 -> 2K
+format_read_length <- function(x) {
+
+  output <- rep(
+    NA_character_,
+    length(x)
+  )
+
+  valid_values <- is.finite(x)
+  short_values <- valid_values & abs(x) < 1000
+  long_values <- valid_values & abs(x) >= 1000
+
+  output[short_values] <- format(
+    x[short_values],
+    trim = TRUE,
+    scientific = FALSE
+  )
+
+  output[long_values] <- paste0(
+    format(
+      x[long_values] / 1000,
+      trim = TRUE,
+      scientific = FALSE
+    ),
+    "K"
+  )
+
+  output
+}
+
+
+# Use one decimal place for Illumina quality and avoid
+# unnecessary decimal places for Nanopore quality.
+format_read_quality <- function(x) {
+
+  output <- rep(
+    NA_character_,
+    length(x)
+  )
+
+  valid_values <- is.finite(x)
+
+  if (!any(valid_values)) {
+    return(output)
+  }
+
+  if (max(x[valid_values]) >= 30) {
+
+    output[valid_values] <- sprintf(
+      "%.1f",
+      x[valid_values]
+    )
+
+  } else {
+
+    output[valid_values] <- format(
+      x[valid_values],
+      trim = TRUE,
+      scientific = FALSE
+    )
+  }
+
+  output
+}
+
+
+############################################################
+# 15) Shared plot theme
+############################################################
+
+sequencing_theme <- theme_bw(
+  base_size = 9
+) +
+  theme(
+    panel.background = element_rect(
+      fill = "white",
+      colour = NA
+    ),
+
+    panel.grid.major.y = element_line(
+      colour = "#E5E5E5",
+      linewidth = 0.35
+    ),
+
+    panel.grid.minor.y = element_line(
+      colour = "#F2F2F2",
+      linewidth = 0.25
+    ),
+
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+
+    panel.border = element_rect(
+      fill = NA,
+      colour = "#4D4D4D",
+      linewidth = 0.55
+    ),
+
+    strip.background = element_rect(
+      fill = "#F2F2F2",
+      colour = "#7A7A7A",
+      linewidth = 0.45
+    ),
+
+    strip.text = element_text(
+      colour = "black",
+      face = "bold",
+      size = 7.5,
+      margin = margin(
+        t = 2,
+        r = 2,
+        b = 2,
+        l = 2
+      )
+    ),
+
+    axis.title = element_text(
+      colour = "black",
+      face = "bold",
+      size = 9
+    ),
+
+    axis.text = element_text(
+      colour = "#333333",
+      size = 7.5
+    ),
+
+    axis.text.x = element_text(
+      angle = 90,
+      hjust = 1,
+      vjust = 0.5
+    ),
+
+    axis.ticks = element_line(
+      colour = "#4D4D4D",
+      linewidth = 0.35
+    ),
+
+    axis.ticks.length = grid::unit(
+      2,
+      "pt"
+    ),
+
+    plot.title = element_text(
+      colour = "black",
+      face = "bold",
+      size = 10,
+      hjust = 0,
+      margin = margin(
+        b = 4
+      )
+    ),
+
+    panel.spacing.y = grid::unit(
+      0.10,
+      "cm"
+    ),
+
+    legend.title = element_blank(),
+
+    legend.text = element_text(
+      colour = "black",
+      size = 7.5
+    ),
+
+    legend.key = element_rect(
+      fill = "white",
+      colour = NA
+    ),
+
+    legend.key.width = grid::unit(
+      14,
+      "pt"
+    ),
+
+    legend.key.height = grid::unit(
+      10,
+      "pt"
+    ),
+
+    legend.spacing.x = grid::unit(
+      3,
+      "pt"
+    ),
+
+    legend.margin = margin(
+      t = 0,
+      r = 0,
+      b = 0,
+      l = 0
+    ),
+
+    plot.margin = margin(
+      t = 3,
+      r = 4,
+      b = 3,
+      l = 4
+    )
+  )
+
+
+# Hide sampling-date labels in the first three sections.
+hide_sampling_dates <- theme(
+  axis.text.x = element_blank(),
+  axis.ticks.x = element_blank(),
+  axis.title.x = element_blank()
+)
+
+
+############################################################
+# 16) Read-count plot
+############################################################
+
+Read_Counts_Plot <- ggplot(
+  read_count_bar_data,
+  aes(
+    x = Sampling_Date_Label,
+    y = Value,
+    fill = Technology,
+    alpha = Filtering_Status
+  )
+) +
+  geom_col(
+    width = 0.80,
+    colour = "#333333",
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_alpha_manual(
+    values = filtering_alpha,
+    breaks = filtering_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_x_discrete(
+    drop = FALSE,
+    expand = expansion(
+      add = c(0.50, 0.50)
+    )
+  ) +
+  scale_y_continuous(
+    breaks = read_count_breaks,
+    labels = format_read_counts,
+    expand = expansion(
+      mult = c(0, 0.05)
+    )
+  ) +
+  facet_wrap(
+    vars(Technology),
+    ncol = 1,
+    scales = "free_y"
+  ) +
+  guides(
+    fill = guide_legend(
+      order = 1,
+      override.aes = list(
+        alpha = 1,
+        colour = "#555555",
+        linewidth = 0.35
+      )
+    ),
+
+    alpha = guide_legend(
+      order = 2,
+      override.aes = list(
+        fill = "#808080",
+        colour = "#555555",
+        linewidth = 0.35
+      )
+    )
+  ) +
+  labs(
+    title = "Read counts",
+    x = NULL,
+    y = "Number of reads",
+    fill = NULL,
+    alpha = NULL
+  ) +
+  sequencing_theme +
+  hide_sampling_dates
+
+
+############################################################
+# 17) Sequencing-yield plot
+############################################################
+
+Sequencing_Yield_Plot <- ggplot(
+  sequencing_yield_bar_data,
+  aes(
+    x = Sampling_Date_Label,
+    y = Value,
+    fill = Technology,
+    alpha = Filtering_Status
+  )
+) +
+  geom_col(
+    width = 0.80,
+    colour = "#333333",
+    linewidth = 0.25
+  ) +
+  scale_fill_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_alpha_manual(
+    values = filtering_alpha,
+    breaks = filtering_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_x_discrete(
+    drop = FALSE,
+    expand = expansion(
+      add = c(0.50, 0.50)
+    )
+  ) +
+  scale_y_continuous(
+    breaks = sequencing_yield_breaks,
+    labels = scales::label_number(
+      accuracy = 1,
+      big.mark = " ",
+      decimal.mark = "."
+    ),
+    expand = expansion(
+      mult = c(0, 0.05)
+    )
+  ) +
+  facet_wrap(
+    vars(Technology),
+    ncol = 1,
+    scales = "free_y"
+  ) +
+  guides(
+    fill = guide_legend(
+      order = 1,
+      override.aes = list(
+        alpha = 1,
+        colour = "#555555",
+        linewidth = 0.35
+      )
+    ),
+
+    alpha = guide_legend(
+      order = 2,
+      override.aes = list(
+        fill = "#808080",
+        colour = "#555555",
+        linewidth = 0.35
+      )
+    )
+  ) +
+  labs(
+    title = "Sequencing yield",
+    x = NULL,
+    y = "Sequencing yield (Gbp)",
+    fill = NULL,
+    alpha = NULL
+  ) +
+  sequencing_theme +
+  hide_sampling_dates
+
+
+############################################################
+# 18) Mean-read-length plot
+############################################################
+
+Mean_Read_Length_Plot <- ggplot(
+  mean_read_length_data,
+  aes(
+    x = Sampling_Date_Label,
+    y = Value
+  )
+) +
+  geom_segment(
+    data = sequencing_wide,
+    aes(
+      x = Sampling_Date_Label,
+      xend = Sampling_Date_Label,
+      y = Mean_Read_Length_Raw,
+      yend = Mean_Read_Length_Processed,
+      colour = Technology
+    ),
+    inherit.aes = FALSE,
+    linewidth = 0.35,
+    alpha = 0.35,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    aes(
+      colour = Technology,
+      alpha = Processing
+    ),
+    size = 1.8
+  ) +
+  scale_colour_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_alpha_manual(
+    values = processing_alpha,
+    breaks = processing_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_x_discrete(
+    drop = FALSE,
+    expand = expansion(
+      add = c(0.50, 0.50)
+    )
+  ) +
+  scale_y_continuous(
+    breaks = mean_read_length_breaks,
+    labels = format_read_length,
+    expand = expansion(
+      mult = c(0.07, 0.07)
+    )
+  ) +
+  facet_wrap(
+    vars(Technology),
+    ncol = 1,
+    scales = "free_y"
+  ) +
+  guides(
+    alpha = guide_legend(
+      order = 3,
+      override.aes = list(
+        colour = "#666666",
+        size = 1.8
+      )
+    ),
+
+    colour = guide_legend(
+      order = 4,
+      override.aes = list(
+        alpha = 1,
+        size = 1.8
+      )
+    )
+  ) +
+  labs(
+    title = "Mean read length",
+    x = NULL,
+    y = "Mean read length (bp)",
+    colour = NULL,
+    alpha = NULL
+  ) +
+  sequencing_theme +
+  hide_sampling_dates
+
+
+############################################################
+# 19) Mean-read-quality plot
+############################################################
+
+Mean_Read_Quality_Plot <- ggplot(
+  mean_read_quality_data,
+  aes(
+    x = Sampling_Date_Label,
+    y = Value
+  )
+) +
+  geom_segment(
+    data = sequencing_wide,
+    aes(
+      x = Sampling_Date_Label,
+      xend = Sampling_Date_Label,
+      y = Mean_Read_Quality_Raw,
+      yend = Mean_Read_Quality_Processed,
+      colour = Technology
+    ),
+    inherit.aes = FALSE,
+    linewidth = 0.35,
+    alpha = 0.35,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    aes(
+      colour = Technology,
+      alpha = Processing
+    ),
+    size = 1.8
+  ) +
+  scale_colour_manual(
+    values = technology_colours,
+    breaks = technology_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_alpha_manual(
+    values = processing_alpha,
+    breaks = processing_levels,
+    drop = FALSE,
+    na.translate = FALSE
+  ) +
+  scale_x_discrete(
+    drop = FALSE,
+    expand = expansion(
+      add = c(0.50, 0.50)
+    )
+  ) +
+  scale_y_continuous(
+    breaks = scales::breaks_pretty(
+      n = 5
+    ),
+    labels = format_read_quality,
+    expand = expansion(
+      mult = c(0.07, 0.07)
+    )
+  ) +
+  facet_wrap(
+    vars(Technology),
+    ncol = 1,
+    scales = "free_y"
+  ) +
+  guides(
+    alpha = guide_legend(
+      order = 3,
+      override.aes = list(
+        colour = "#666666",
+        size = 1.8
+      )
+    ),
+
+    colour = guide_legend(
+      order = 4,
+      override.aes = list(
+        alpha = 1,
+        size = 1.8
+      )
+    )
+  ) +
+  labs(
+    title = "Mean read quality",
+    x = "Sampling date",
+    y = "Mean read quality (Phred Q score)",
+    colour = NULL,
+    alpha = NULL
+  ) +
+  sequencing_theme
+
+
+############################################################
+# 20) Combine the four sections
+############################################################
+
+Sequencing_Performance_Overview <- (
+  Read_Counts_Plot /
+    Sequencing_Yield_Plot /
+    Mean_Read_Length_Plot /
+    Mean_Read_Quality_Plot
+) +
+  plot_layout(
+    heights = c(
+      1,
+      1,
+      1,
+      1.15
+    ),
+    guides = "collect"
+  )
+
+
+############################################################
+# 21) Place the collected legends at the top
+############################################################
+
+Sequencing_Performance_Overview <-
+  Sequencing_Performance_Overview &
+  theme(
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.box = "horizontal",
+    legend.box.just = "center"
+  )
+
+
+############################################################
+# 22) Display the completed figure
+############################################################
+
+print(
+  Sequencing_Performance_Overview
+)
+
+ggsave(
+  filename = "Sequencing_Performance_Overview_A4.png",
+  plot = Sequencing_Performance_Overview,
+  device = "png",
+  width = 210,
+  height = 297,
+  units = "mm",
+  dpi = 600,
+  bg = "white"
+)
+```
+
+```{r}
+# ============================================================
+# Source data export: Supplementary Figure 10
+# One row = one date × technology × processing state
+# ============================================================
+
+base_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021"
+)
+
+source_dir <- file.path(
+  base_dir,
+  "Source_Data_Supplement"
+)
+
+dir.create(
+  source_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+suppl_figure_10 <- sequencing_data |>
+  dplyr::transmute(
+    Sample = as.character(Sample),
+    Sampling_Date = as.Date(Sampling_Date),
+    Sequencing_Technology = as.character(Technology),
+    Processing_State = as.character(Processing),
+    Number_Of_Reads = as.numeric(Number_Of_Reads),
+    Sequencing_Yield_Gbp = as.numeric(Total_Bases) / 1e9,
+    Mean_Read_Length_bp = as.numeric(Mean_Read_Length),
+    Mean_Read_Quality_Phred = as.numeric(Mean_Read_Quality)
+  ) |>
+  dplyr::arrange(
+    Sampling_Date,
+    Sequencing_Technology,
+    Processing_State
+  )
+
+readr::write_excel_csv(
+  suppl_figure_10,
+  file.path(source_dir, "Suppl_Figure_10.csv"),
+  na = ""
+)
+```
+

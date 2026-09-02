@@ -311,7 +311,7 @@ cat(mock_line, "\n")
 
 ```{r}
 # =============================================================================
-# Reviewer-safe figure + summary table:
+#  figure + summary table:
 #   - ONLY CostumDB, NcbiRefSeq, UniProtDB
 #   - Mock Community fully excluded (plot AND table)
 #   - NA / unexpected Database categories removed
@@ -436,8 +436,9 @@ write.csv(
   row.names = FALSE
 )
 
-# =============================================================================
-# END (reviewer-proof, deterministic, no mock anywhere)
-# =============================================================================
+readr::write_csv(
+  clean_dat,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2b.csv"
+)
 ```
 

@@ -749,6 +749,103 @@ cat("========================================\n")
 cat("Counts summary: ", summary_file_counts, "\n", sep = "")
 cat("Abundance summary: ", summary_file_abund, "\n", sep = "")
 cat("Stats report: ", stats_file, "\n", sep = "")
+
+############################################################
+# FIGURE 5 — SOURCE DATA EXPORT
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+############################################################
+# FIGURE 5A — GENOME AND EXPRESSION PREVALENCE
+# Panels A and B
+# One row represents one species
+############################################################
+
+figure_5a <- species_status %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Group = as.character(Group_For_Plots),
+
+    Has_Rhodopsin_Gene = has_rhodo_gene,
+    Has_Detected_Rhodopsin_Protein = has_rhodo_detected,
+
+    Genome_Prevalence_Category =
+      as.character(genome_class),
+
+    Included_in_Expression_Prevalence =
+      has_rhodo_gene,
+
+    Expression_Prevalence_Category =
+      as.character(detect_class)
+  ) %>%
+  dplyr::arrange(
+    Genome_Prevalence_Category,
+    Trophic_Group,
+    Species_ID
+  )
+
+readr::write_csv(
+  figure_5a,
+  file.path(source_dir, "Figure_5a.csv")
+)
+
+############################################################
+# FIGURE 5B — RHODOPSIN DETECTION AND SPECIES ABUNDANCE
+# Panel C
+# One row represents one rhodopsin-carrying species
+############################################################
+
+dates_per_species_5b <- species_abundance %>%
+  dplyr::group_by(Date) %>%
+  dplyr::mutate(
+    Relative_Abundance =
+      Species_Abundance /
+      sum(Species_Abundance, na.rm = TRUE)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(Species_ID) %>%
+  dplyr::summarise(
+    Number_of_Dates_Averaged =
+      dplyr::n_distinct(Date[!is.na(Relative_Abundance)]),
+    .groups = "drop"
+  )
+
+figure_5b <- panelC_data %>%
+  dplyr::left_join(
+    dates_per_species_5b,
+    by = "Species_ID"
+  ) %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Group = as.character(Group_For_Plots),
+
+    Has_Rhodopsin_Gene = has_rhodo_gene,
+    Has_Detected_Rhodopsin_Protein = has_rhodo_detected,
+
+    Detection_Group = as.character(detect_binary),
+    Point_Colour_Group = as.character(point_class),
+
+    Number_of_Dates_Averaged,
+
+    Mean_Relative_Abundance =
+      mean_rel_abundance,
+
+    Mean_Relative_Abundance_Percent =
+      mean_rel_abundance * 100
+  ) %>%
+  dplyr::arrange(
+    Detection_Group,
+    Mean_Relative_Abundance
+  )
+
+readr::write_csv(
+  figure_5b,
+  file.path(source_dir, "Figure_5b.csv")
+)
 ```
 
 
@@ -1412,6 +1509,268 @@ cat("Final plot: ", plot_file, "\n", sep = "")
 cat("Final stats: ", stats_file, "\n", sep = "")
 cat("Species retained: ", length(filtered_species), "\n", sep = "")
 cat("Positive significant hits: ", nrow(corr_hits_pos), "\n", sep = "")
+
+############################################################
+# FIGURE 5C — SOURCE DATA EXPORT
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+############################################################
+# 1) EXACT VALUES DISPLAYED IN FIGURE 5C
+#    One row per group, metric and functional category
+############################################################
+
+figure_5c <- plot_all %>%
+  dplyr::transmute(
+    Species_Group = as.character(Group),
+    Metric = as.character(Metric),
+    Functional_Category = as.character(Plot_Category2),
+
+    Value_Unit = dplyr::case_when(
+      Metric == "Proteins" ~
+        "Fractionally weighted protein count",
+      Metric == "Protein abundance" ~
+        "Fractionally weighted mean iBAQ_norm abundance"
+    ),
+
+    Weighted_Value = value,
+    Proportion_Within_Group_and_Metric = prop,
+    Percent_Within_Group_and_Metric = prop * 100,
+
+    Number_of_Contributing_Species = n_species,
+    Number_of_Contributing_Proteins = n_proteins
+  ) %>%
+  dplyr::arrange(
+    Species_Group,
+    Metric,
+    dplyr::desc(Proportion_Within_Group_and_Metric)
+  )
+
+readr::write_csv(
+  figure_5c,
+  file.path(source_dir, "Figure_5c.csv")
+)
+
+############################################################
+# EXPORT SPECIES LISTS FOR EACH CORRELATION CATEGORY
+#
+# PURPOSE
+#   Export one CSV per functional category showing:
+#     - species containing positively correlated proteins
+#     - number of correlating proteins in that category
+#     - total correlating proteins in the species
+#     - percentage assigned to the category
+#     - identities and correlation statistics of the proteins
+#
+# INPUT OBJECTS
+#   - df_long
+#   - corr_hits_pos
+#   - suffix_tag
+#
+# OUTPUT
+#   - one combined species-by-category table
+#   - one species-total table
+#   - one CSV for each functional category
+############################################################
+
+category_export_dir <- paste0(
+  "Rhodopsin_correlation_species_tables_",
+  suffix_tag
+)
+
+dir.create(category_export_dir, showWarnings = FALSE)
+
+############################################################
+# 1) TOTAL NUMBER OF CORRELATING PROTEINS PER SPECIES
+############################################################
+
+species_correlation_totals <- corr_hits_pos %>%
+  distinct(Group, Species_ID, Protein_ID) %>%
+  count(
+    Group,
+    Species_ID,
+    name = "Total_Correlating_Proteins"
+  )
+
+############################################################
+# 2) DISTINCT CORRELATING PROTEINS WITHIN EACH CATEGORY
+#
+# Plot_Category is used instead of Plot_Category2 so that
+# categories lumped into "Other" remain biologically visible.
+############################################################
+
+category_protein_hits <- df_long %>%
+  transmute(
+    Group = as.character(Group),
+    Species_ID,
+    Protein_ID,
+    Correlation_Category = as.character(Plot_Category),
+    rho,
+    p_adj,
+    n_pairs
+  ) %>%
+  distinct(
+    Group,
+    Species_ID,
+    Correlation_Category,
+    Protein_ID,
+    .keep_all = TRUE
+  )
+
+############################################################
+# 3) SPECIES-BY-CATEGORY SUMMARY
+############################################################
+
+species_by_category <- category_protein_hits %>%
+  group_by(
+    Group,
+    Correlation_Category,
+    Species_ID
+  ) %>%
+  summarise(
+    Correlating_Proteins_In_Category = n_distinct(Protein_ID),
+
+    Correlating_Protein_IDs = paste(
+      sort(unique(Protein_ID)),
+      collapse = ";"
+    ),
+
+    Median_Rho = median(rho, na.rm = TRUE),
+    Maximum_Rho = max(rho, na.rm = TRUE),
+    Minimum_Adjusted_P = min(p_adj, na.rm = TRUE),
+    Minimum_Paired_Dates = min(n_pairs, na.rm = TRUE),
+
+    .groups = "drop"
+  ) %>%
+  left_join(
+    species_correlation_totals,
+    by = c("Group", "Species_ID")
+  ) %>%
+  mutate(
+    Percent_of_Species_Correlating_Proteins = 100 *
+      Correlating_Proteins_In_Category /
+      Total_Correlating_Proteins
+  ) %>%
+  arrange(
+    Correlation_Category,
+    Group,
+    desc(Correlating_Proteins_In_Category),
+    Species_ID
+  )
+
+############################################################
+# 4) CATEGORY OVERVIEW
+############################################################
+
+category_overview <- species_by_category %>%
+  group_by(Correlation_Category) %>%
+  summarise(
+    Number_of_Species = n_distinct(Species_ID),
+    Number_of_Oligo_like_Species =
+      n_distinct(Species_ID[Group == "Oligo-like"]),
+    Number_of_Rest_Species =
+      n_distinct(Species_ID[Group == "Rest"]),
+    Number_of_Species_Protein_Hits =
+      sum(Correlating_Proteins_In_Category),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(Number_of_Species))
+
+############################################################
+# 5) CREATE SAFE AND UNIQUE CATEGORY FILENAMES
+############################################################
+
+category_file_index <- species_by_category %>%
+  distinct(Correlation_Category) %>%
+  arrange(Correlation_Category) %>%
+  mutate(
+    Category_Number = sprintf("%02d", row_number()),
+
+    Safe_Category_Name = Correlation_Category %>%
+      str_replace_all("[^A-Za-z0-9]+", "_") %>%
+      str_replace_all("^_|_$", ""),
+
+    File_Name = paste0(
+      Category_Number,
+      "_",
+      Safe_Category_Name,
+      ".csv"
+    )
+  )
+
+############################################################
+# 6) EXPORT COMBINED SUMMARY TABLES
+############################################################
+
+write_csv(
+  species_by_category,
+  file.path(
+    category_export_dir,
+    "All_categories_species_summary.csv"
+  )
+)
+
+write_csv(
+  category_overview,
+  file.path(
+    category_export_dir,
+    "Category_overview.csv"
+  )
+)
+
+write_csv(
+  species_correlation_totals,
+  file.path(
+    category_export_dir,
+    "Species_total_correlating_proteins.csv"
+  )
+)
+
+write_csv(
+  category_file_index,
+  file.path(
+    category_export_dir,
+    "Category_file_index.csv"
+  )
+)
+
+############################################################
+# 7) EXPORT ONE TABLE PER FUNCTIONAL CATEGORY
+############################################################
+
+for (i in seq_len(nrow(category_file_index))) {
+
+  current_category <- category_file_index$Correlation_Category[i]
+  current_file <- category_file_index$File_Name[i]
+
+  category_table <- species_by_category %>%
+    filter(Correlation_Category == current_category) %>%
+    arrange(
+      Group,
+      desc(Correlating_Proteins_In_Category),
+      Species_ID
+    )
+
+  write_csv(
+    category_table,
+    file.path(category_export_dir, current_file)
+  )
+}
+
+############################################################
+# 8) CONSOLE SUMMARY
+############################################################
+
+cat("\nCategory-specific species tables exported to:\n")
+cat(category_export_dir, "\n")
+cat("Number of functional categories: ",
+    nrow(category_file_index), "\n", sep = "")
+cat("Number of species represented: ",
+    n_distinct(species_by_category$Species_ID), "\n", sep = "")
 ```
 
 # how abundant are rhodopsins vs the rest of the rhodopsin expressing proteomes
@@ -3224,6 +3583,50 @@ cat("\nDone.\n")
 cat("Main plot    :", pdf_file_main, "\n")
 cat("Diagnostics  :", diag_pdf_file, "\n")
 cat("Stats        :", stats_file, "\n")
+
+
+############################################################
+# FIGURE 5D — OBSERVATION-LEVEL SOURCE DATA
+# One row represents one protein observation used in the figure
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Main"
+)
+
+figure_5d <- dat %>%
+  dplyr::transmute(
+    Species_ID,
+    Date,
+    Protein_ID,
+
+    Species_Group = as.character(Group2),
+    Protein_Class = as.character(ProteinClass),
+
+    KEGG_ID,
+    KEGG_Subcategory,
+    PHOBIUS_Annotation,
+
+    Species_Abundance,
+    Protein_Abundance_iBAQ_Norm =
+      Protein_Abundance_IBAQ_Norm,
+
+    Log10_Species_Abundance = logA,
+    Log10_Protein_Abundance_iBAQ_Norm = logP
+  ) %>%
+  dplyr::arrange(
+    Species_Group,
+    Protein_Class,
+    Species_ID,
+    Date,
+    Protein_ID
+  )
+
+readr::write_csv(
+  figure_5d,
+  file.path(source_dir, "Figure_5d.csv")
+)
 ```
 
 # Output fasta files with rhodopsins for alignment

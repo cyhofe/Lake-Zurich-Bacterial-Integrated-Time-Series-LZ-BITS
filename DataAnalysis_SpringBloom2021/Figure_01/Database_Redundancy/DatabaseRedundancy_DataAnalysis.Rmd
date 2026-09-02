@@ -692,6 +692,27 @@ ggsave(
   dpi      = 300
 )
 
+# Figure 1d
+readr::write_csv(
+  final_dat %>%
+    dplyr::select(
+      Database,
+      ClusteringThreshold,
+      PercentRedundant
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_1d.csv"
+)
+
+# Figure 1e
+readr::write_csv(
+  pep_dat %>%
+    dplyr::select(
+      Database,
+      Percent
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_1e.csv"
+)
+
 ```
 
 ```{r}

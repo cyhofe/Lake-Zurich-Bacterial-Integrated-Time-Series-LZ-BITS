@@ -66,6 +66,7 @@ glimpse(species_taxonomy)
 glimpse(species_abundance)
 ```
 
+
 ```{r}
 ####################################################################################################
 # BLOCK A — NON-AGGREGATED ROBUSTNESS MODELS MATCHING THE PRIMARY MODEL DEFINITIONS
@@ -582,8 +583,7 @@ model_table_raw <- bind_rows(
     `TI SE`          = fix_tpf$std_error,
     `TI p`           = fix_tpf$p_value,
     `Marginal R2`    = safe_numeric(r2_tpf$R2_marginal),
-    `Conditional R2` = safe_numeric(r2_tpf$R2_conditional),
-    `Key conclusion` = "The negative trophic-index association with transporter allocation is retained without species-level averaging."
+    `Conditional R2` = safe_numeric(r2_tpf$R2_conditional)
   ),
   tibble(
     Response         = "Transition-level transporter Bray-Curtis",
@@ -596,8 +596,7 @@ model_table_raw <- bind_rows(
     `TI SE`          = fix_bc$std_error,
     `TI p`           = fix_bc$p_value,
     `Marginal R2`    = safe_numeric(r2_bc$R2_marginal),
-    `Conditional R2` = safe_numeric(r2_bc$R2_conditional),
-    `Key conclusion` = "The positive trophic-index association with transporter variability is retained without species-level averaging."
+    `Conditional R2` = safe_numeric(r2_bc$R2_conditional)
   )
 )
 
@@ -753,8 +752,7 @@ model_table_portrait <- tibble(
     "Trophic-index SE",
     "Trophic-index p",
     "Marginal R²",
-    "Conditional R²",
-    "Key conclusion"
+    "Conditional R²"
   ),
   `TPF model` = c(
     "Transporter proteome fraction",
@@ -762,13 +760,38 @@ model_table_portrait <- tibble(
     "Beta (logit)",
     "Trophic index + n dates + species-date protein recovery",
     "(1 | Phylum) + (1 | Species_ID)",
-    as.character(model_table_raw$N[model_table_raw$Response == "Date-level TPF"]),
-    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Date-level TPF"], 3),
-    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Date-level TPF"], 3),
-    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Date-level TPF"]),
-    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Date-level TPF"], 3),
-    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Date-level TPF"], 3),
-    model_table_raw$`Key conclusion`[model_table_raw$Response == "Date-level TPF"]
+    as.character(model_table_raw$N[
+      model_table_raw$Response == "Date-level TPF"
+    ]),
+    fmt_num(
+      model_table_raw$`TI estimate`[
+        model_table_raw$Response == "Date-level TPF"
+      ],
+      3
+    ),
+    fmt_num(
+      model_table_raw$`TI SE`[
+        model_table_raw$Response == "Date-level TPF"
+      ],
+      3
+    ),
+    fmt_p(
+      model_table_raw$`TI p`[
+        model_table_raw$Response == "Date-level TPF"
+      ]
+    ),
+    fmt_num(
+      model_table_raw$`Marginal R2`[
+        model_table_raw$Response == "Date-level TPF"
+      ],
+      3
+    ),
+    fmt_num(
+      model_table_raw$`Conditional R2`[
+        model_table_raw$Response == "Date-level TPF"
+      ],
+      3
+    )
   ),
   `Bray-Curtis model` = c(
     "Transporter Bray-Curtis dissimilarity",
@@ -776,19 +799,53 @@ model_table_portrait <- tibble(
     "Gaussian on logit scale",
     "Trophic index + species-date protein recovery (paired consecutive dates)",
     "(1 | Phylum) + (1 | Species_ID)",
-    as.character(model_table_raw$N[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]),
-    fmt_num(model_table_raw$`TI estimate`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
-    fmt_num(model_table_raw$`TI SE`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
-    fmt_p(model_table_raw$`TI p`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]),
-    fmt_num(model_table_raw$`Marginal R2`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
-    fmt_num(model_table_raw$`Conditional R2`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"], 3),
-    model_table_raw$`Key conclusion`[model_table_raw$Response == "Transition-level transporter Bray-Curtis"]
+    as.character(model_table_raw$N[
+      model_table_raw$Response ==
+        "Transition-level transporter Bray-Curtis"
+    ]),
+    fmt_num(
+      model_table_raw$`TI estimate`[
+        model_table_raw$Response ==
+          "Transition-level transporter Bray-Curtis"
+      ],
+      3
+    ),
+    fmt_num(
+      model_table_raw$`TI SE`[
+        model_table_raw$Response ==
+          "Transition-level transporter Bray-Curtis"
+      ],
+      3
+    ),
+    fmt_p(
+      model_table_raw$`TI p`[
+        model_table_raw$Response ==
+          "Transition-level transporter Bray-Curtis"
+      ]
+    ),
+    fmt_num(
+      model_table_raw$`Marginal R2`[
+        model_table_raw$Response ==
+          "Transition-level transporter Bray-Curtis"
+      ],
+      3
+    ),
+    fmt_num(
+      model_table_raw$`Conditional R2`[
+        model_table_raw$Response ==
+          "Transition-level transporter Bray-Curtis"
+      ],
+      3
+    )
   )
 )
 
 write.csv(
   model_table_portrait,
-  file = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.csv"),
+  file = file.path(
+    out_dir,
+    "BlockA_nonaggregated_model_summary_portrait.csv"
+  ),
   row.names = FALSE
 )
 
@@ -796,7 +853,10 @@ model_table_gt <- model_table_portrait %>%
   gt() %>%
   tab_header(
     title = md("**Non-aggregated robustness model summary**"),
-    subtitle = "Primary response definitions retained, fitted at the native observation level"
+    subtitle = paste(
+      "Primary response definitions retained,",
+      "fitted at the native observation level"
+    )
   ) %>%
   cols_align(
     align = "left",
@@ -832,7 +892,15 @@ model_table_gt <- model_table_portrait %>%
   ) %>%
   tab_source_note(
     source_note = md(
-      "Bray–Curtis dissimilarity was calculated from transporter-only KEGG intensity profiles between adjacent dates in each species’ filtered retained time series. In contrast to the primary cross-species models, these robustness models retain all species-level repeated observations and therefore include Species_ID as an additional random intercept."
+      paste(
+        "Bray–Curtis dissimilarity was calculated from",
+        "transporter-only KEGG intensity profiles between",
+        "adjacent dates in each species’ filtered retained",
+        "time series. In contrast to the primary cross-species",
+        "models, these robustness models retain all species-level",
+        "repeated observations and therefore include Species_ID",
+        "as an additional random intercept."
+      )
     )
   )
 
@@ -840,14 +908,20 @@ print(model_table_gt)
 
 gtsave(
   model_table_gt,
-  filename = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.png"),
+  filename = file.path(
+    out_dir,
+    "BlockA_nonaggregated_model_summary_portrait.png"
+  ),
   vwidth = 1200,
   vheight = 1500
 )
 
 gtsave(
   model_table_gt,
-  filename = file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.html")
+  filename = file.path(
+    out_dir,
+    "BlockA_nonaggregated_model_summary_portrait.html"
+  )
 )
 
 ############################################################
@@ -878,78 +952,85 @@ cat(file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.png"), "\n")
 
 ```{r}
 ####################################################################################################
-# BLOCK B — TAXONOMY ROBUSTNESS (FINAL TABLE FORMAT)
+# BLOCK B — TAXONOMY ROBUSTNESS
 #
 # PURPOSE
 # -------
-# Test whether the trophic-index associations for transporter proteome fraction (TPF) and
-# transporter Bray–Curtis dissimilarity persist after accounting for phylum-level taxonomy,
-# and whether the same association is retained when phylum is modeled as a fixed effect
-# rather than a random effect.
+# Test whether the trophic-index associations with:
 #
-# THIS VERSION
-# ------------
-# 1) keeps only:
-#      - global phylum-adjusted models
-#      - pooled within-phylum models
-# 2) removes per-phylum models entirely
-# 3) formats the summary table in the same portrait style as your other supplementary tables
-# 4) handles R² explicitly:
-#      - global mixed models: marginal + conditional R² from Nakagawa
-#      - pooled within-phylum models: standard model R² only, reported as "Marginal R²";
-#        "Conditional R²" is set to NA by design because there is no random-effect variance
-#        component in those fixed-effect phylum models
+#   1) mean transporter proteome fraction (TPF), and
+#   2) mean transporter Bray–Curtis dissimilarity
+#
+# remain after accounting for phylum-level taxonomy.
+#
+# Two complementary model formulations are compared for each response:
+#
+#   GLOBAL PHYLUM-ADJUSTED MODEL
+#     Phylum is included as a random intercept:
+#       (1 | Phylum)
+#
+#   POOLED WITHIN-PHYLUM MODEL
+#     Phylum is included as a fixed effect:
+#       + Phylum
+#
+# The pooled model therefore estimates the trophic-index association from
+# within-phylum variation while allowing each phylum to have its own intercept.
+#
 #
 # EXPECTED OBJECTS ALREADY IN MEMORY
 # ----------------------------------
-#   protein_final
-#   retained_species
-#   retained_species_dates
-#   species_taxonomy
+# protein_final
+# retained_species
+# retained_species_dates
+# species_taxonomy
+#
 #
 # OUTPUT
 # ------
 # Folder:
 #   BlockB_Taxonomy_Robustness/
+#
+# Files:
+#   BlockB_global_and_withinphylum_models.csv
+#   BlockB_taxonomy_robustness_summary_table_portrait.csv
+#   BlockB_taxonomy_robustness_summary_table_portrait.png
+#   BlockB_taxonomy_robustness_summary_table_portrait.html
+#
 ####################################################################################################
+
 
 suppressPackageStartupMessages({
   library(dplyr)
   library(stringr)
   library(tidyr)
-  library(ggplot2)
   library(vegan)
   library(glmmTMB)
   library(performance)
-  library(patchwork)
-  library(scales)
   library(readr)
   library(gt)
-  library(broom)
-  library(broom.mixed)
 })
 
 set.seed(1)
+
 
 ############################################################
 # 1) SETTINGS
 ############################################################
 
 out_dir <- "BlockB_Taxonomy_Robustness"
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-dpi_out <- 300
+dir.create(
+  out_dir,
+  showWarnings = FALSE,
+  recursive = TRUE
+)
+
 eps <- 1e-6
 min_valid_dates_per_species <- 5
 
-trophic_cols <- c(
-  "Oligotroph"   = "#99C3E6",
-  "Intermediate" = "#ECEAE9",
-  "Copiotroph"   = "#B25009"
-)
 
 ############################################################
-# 2) BASIC CHECKS
+# 2) CHECK REQUIRED INPUT OBJECTS AND COLUMNS
 ############################################################
 
 stopifnot(
@@ -960,19 +1041,44 @@ stopifnot(
 )
 
 required_protein_cols <- c(
-  "Species_ID", "Protein_ID", "Date", "Group_For_Plots",
-  "TrophicIndex", "Protein_Abundance_IBAQ_Norm",
-  "KEGG_Subcategory", "KEGG_ID"
+  "Species_ID",
+  "Protein_ID",
+  "Date",
+  "Group_For_Plots",
+  "TrophicIndex",
+  "Protein_Abundance_IBAQ_Norm",
+  "KEGG_Subcategory",
+  "KEGG_ID"
 )
 
-required_species_cols <- c("Species_ID", "Group_For_Plots")
-required_species_date_cols <- c("Species_ID", "Date", "Group_For_Plots")
-required_tax_cols <- c("Species_ID", "Phylum", "Class")
+required_species_cols <- c(
+  "Species_ID",
+  "Group_For_Plots"
+)
 
-stopifnot(all(required_protein_cols %in% names(protein_final)))
-stopifnot(all(required_species_cols %in% names(retained_species)))
-stopifnot(all(required_species_date_cols %in% names(retained_species_dates)))
-stopifnot(all(required_tax_cols %in% names(species_taxonomy)))
+required_species_date_cols <- c(
+  "Species_ID",
+  "Date",
+  "Group_For_Plots"
+)
+
+required_tax_cols <- c(
+  "Species_ID",
+  "Phylum",
+  "Class"
+)
+
+stopifnot(
+  all(required_protein_cols %in% names(protein_final)),
+  all(required_species_cols %in% names(retained_species)),
+  all(required_species_date_cols %in% names(retained_species_dates)),
+  all(required_tax_cols %in% names(species_taxonomy))
+)
+
+
+############################################################
+# 3) BASIC DATA PREPARATION
+############################################################
 
 protein_final <- protein_final %>%
   mutate(Date = as.Date(Date))
@@ -981,165 +1087,292 @@ retained_species_dates <- retained_species_dates %>%
   mutate(Date = as.Date(Date))
 
 species_taxonomy_use <- species_taxonomy %>%
-  dplyr::select(Species_ID, Phylum, Class) %>%
+  select(
+    Species_ID,
+    Phylum,
+    Class
+  ) %>%
   distinct()
 
+species_traits <- protein_final %>%
+  distinct(
+    Species_ID,
+    TrophicIndex,
+    Group_For_Plots
+  )
+
+
 ############################################################
-# 3) HELPERS
+# 4) HELPER FUNCTIONS
 ############################################################
 
-theme_nat <- function(base_size = 11) {
-  theme_bw(base_size = base_size) +
-    theme(
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      strip.background = element_blank(),
-      strip.text = element_text(face = "bold"),
-      plot.title = element_text(face = "bold", size = base_size + 1),
-      plot.subtitle = element_text(size = base_size - 1),
-      axis.title = element_text(size = base_size),
-      axis.text = element_text(size = base_size - 1, colour = "black"),
-      legend.position = "bottom",
-      legend.title = element_blank(),
-      legend.key = element_blank(),
-      plot.margin = margin(6, 6, 6, 6)
-    )
-}
-
+# Convert plotting-group names into the three trophic categories.
 recode_plot_group <- function(x) {
-  out <- dplyr::case_when(
+
+  out <- case_when(
     x == "Oligo_like"   ~ "Oligotroph",
-    x == "Copio_like"   ~ "Copiotroph",
     x == "Intermediate" ~ "Intermediate",
+    x == "Copio_like"   ~ "Copiotroph",
     TRUE                ~ NA_character_
   )
-  factor(out, levels = c("Oligotroph", "Intermediate", "Copiotroph"))
+
+  factor(
+    out,
+    levels = c(
+      "Oligotroph",
+      "Intermediate",
+      "Copiotroph"
+    )
+  )
 }
 
-logit_bounded <- function(x, eps = 1e-6) {
-  x2 <- pmin(pmax(x, eps), 1 - eps)
-  qlogis(x2)
-}
 
-inv_logit <- function(x) {
-  plogis(x)
-}
-
+# Standardize a numeric variable.
+# If there is no variance, return zero rather than generating NaN values.
 scale_z <- function(x) {
+
   s <- sd(x, na.rm = TRUE)
-  if (!is.finite(s) || s == 0) return(rep(0, length(x)))
+
+  if (!is.finite(s) || s == 0) {
+    return(rep(0, length(x)))
+  }
+
   as.numeric(scale(x))
 }
 
+
+# Logit-transform a proportion while preventing exactly 0 or 1.
+logit_bounded <- function(x, eps = 1e-6) {
+
+  x <- pmin(
+    pmax(x, eps),
+    1 - eps
+  )
+
+  qlogis(x)
+}
+
+
+# Format numerical values for the final table.
 fmt_num_scalar <- function(x, digits = 3) {
-  if (length(x) == 0 || is.na(x) || !is.finite(x)) return("NA")
-  formatC(x, digits = digits, format = "fg", flag = "#")
-}
 
-fmt_p_scalar <- function(x) {
-  if (length(x) == 0 || is.na(x) || !is.finite(x)) return("NA")
-  if (x < 0.001) return("<0.001")
-  formatC(x, digits = 3, format = "fg", flag = "#")
-}
-
-extract_glmmtmb_term <- function(model, term_name = "TrophicIndex_z") {
-  sm <- summary(model)$coefficients$cond
-  if (!term_name %in% rownames(sm)) {
-    return(tibble(
-      estimate = NA_real_,
-      std_error = NA_real_,
-      p_value = NA_real_
-    ))
+  if (
+    length(x) == 0 ||
+    is.na(x) ||
+    !is.finite(x)
+  ) {
+    return("NA")
   }
-  tibble(
-    estimate  = unname(sm[term_name, "Estimate"]),
-    std_error = unname(sm[term_name, "Std. Error"]),
-    p_value   = unname(sm[term_name, "Pr(>|z|)"])
+
+  formatC(
+    x,
+    digits = digits,
+    format = "fg",
+    flag = "#"
   )
 }
 
-safe_numeric <- function(x) {
-  out <- suppressWarnings(as.numeric(x))
-  if (length(out) == 0 || all(is.na(out))) NA_real_ else out[1]
+
+# Format p-values for the final table.
+fmt_p_scalar <- function(x) {
+
+  if (
+    length(x) == 0 ||
+    is.na(x) ||
+    !is.finite(x)
+  ) {
+    return("NA")
+  }
+
+  if (x < 0.001) {
+    return("<0.001")
+  }
+
+  formatC(
+    x,
+    digits = 3,
+    format = "fg",
+    flag = "#"
+  )
 }
 
+
+# Extract estimate, standard error and p-value for one glmmTMB term.
+extract_glmmtmb_term <- function(
+  model,
+  term_name = "TrophicIndex_z"
+) {
+
+  sm <- summary(model)$coefficients$cond
+
+  if (!term_name %in% rownames(sm)) {
+
+    return(
+      tibble(
+        estimate = NA_real_,
+        std_error = NA_real_,
+        p_value = NA_real_
+      )
+    )
+  }
+
+  tibble(
+    estimate = unname(
+      sm[term_name, "Estimate"]
+    ),
+    std_error = unname(
+      sm[term_name, "Std. Error"]
+    ),
+    p_value = unname(
+      sm[term_name, "Pr(>|z|)"]
+    )
+  )
+}
+
+
+# Extract marginal and conditional Nakagawa R² from mixed models.
 safe_r2_mixed <- function(model) {
-  out <- c(Marginal_R2 = NA_real_, Conditional_R2 = NA_real_)
+
+  out <- c(
+    Marginal_R2 = NA_real_,
+    Conditional_R2 = NA_real_
+  )
 
   r2_obj <- tryCatch(
-    suppressWarnings(suppressMessages(performance::r2_nakagawa(model))),
+    suppressWarnings(
+      suppressMessages(
+        performance::r2_nakagawa(model)
+      )
+    ),
     error = function(e) NULL
   )
 
-  if (is.null(r2_obj)) return(out)
-
-  if (is.atomic(r2_obj) && !is.null(names(r2_obj))) {
-    if ("R2_marginal" %in% names(r2_obj)) {
-      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_marginal"])[1])
-    }
-    if ("R2_conditional" %in% names(r2_obj)) {
-      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj["R2_conditional"])[1])
-    }
+  if (is.null(r2_obj)) {
+    return(out)
   }
 
-  if (!is.atomic(r2_obj)) {
-    if (!is.null(r2_obj$R2_marginal)) {
-      out["Marginal_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_marginal)[1])
-    }
-    if (!is.null(r2_obj$R2_conditional)) {
-      out["Conditional_R2"] <- suppressWarnings(as.numeric(r2_obj$R2_conditional)[1])
-    }
+  if (!is.null(r2_obj$R2_marginal)) {
+    out["Marginal_R2"] <- as.numeric(
+      r2_obj$R2_marginal
+    )[1]
+  }
+
+  if (!is.null(r2_obj$R2_conditional)) {
+    out["Conditional_R2"] <- as.numeric(
+      r2_obj$R2_conditional
+    )[1]
   }
 
   out
 }
 
+
+# Extract model R² for models containing phylum only as a fixed effect.
+#
+# This is reported in the table under "Marginal R²".
+#
+# Conditional R² is not applicable because there is no random-effect
+# variance component.
 safe_r2_fixed <- function(model) {
-  # For pooled within-phylum models without random effects,
-  # use a generic model R² and report it as "Marginal R²".
-  # Conditional R² is intentionally NA because there is no random-effect variance part.
+
   r2_obj <- tryCatch(
-    suppressWarnings(suppressMessages(performance::r2(model))),
+    suppressWarnings(
+      suppressMessages(
+        performance::r2(model)
+      )
+    ),
     error = function(e) NULL
   )
 
-  if (is.null(r2_obj)) return(NA_real_)
+  if (is.null(r2_obj)) {
+    return(NA_real_)
+  }
 
-  vals <- suppressWarnings(as.numeric(r2_obj))
-  vals <- vals[is.finite(vals)]
-  if (length(vals) == 0) return(NA_real_)
+  vals <- suppressWarnings(
+    as.numeric(r2_obj)
+  )
+
+  vals <- vals[
+    is.finite(vals)
+  ]
+
+  if (length(vals) == 0) {
+    return(NA_real_)
+  }
+
   vals[1]
 }
 
+
 ############################################################
-# 4) BUILD SPECIES-LEVEL TPF DATA
+# 5) SPECIES-LEVEL PROTEIN RECOVERY
+#
+# Used as a covariate in both analyses.
 ############################################################
 
-protein_flagged <- protein_final %>%
-  mutate(
-    is_transporter = !is.na(KEGG_Subcategory) &
-      str_detect(KEGG_Subcategory, "\\bTransporters\\b"),
-    abund = Protein_Abundance_IBAQ_Norm
-  )
-
-species_date_qc <- protein_flagged %>%
-  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
-  group_by(Species_ID, Date) %>%
+species_date_protein_counts <- protein_final %>%
+  semi_join(
+    retained_species_dates,
+    by = c(
+      "Species_ID",
+      "Date"
+    )
+  ) %>%
+  group_by(
+    Species_ID,
+    Date
+  ) %>%
   summarise(
     N_prot_detected = n_distinct(Protein_ID),
     .groups = "drop"
   )
 
-species_date_tpf <- protein_flagged %>%
-  semi_join(retained_species_dates, by = c("Species_ID", "Date")) %>%
-  group_by(Species_ID, Date) %>%
+
+############################################################
+# 6) BUILD SPECIES-LEVEL MEAN TPF DATA
+#
+# Internal model dataset only; not exported.
+############################################################
+
+species_date_tpf <- protein_final %>%
+  semi_join(
+    retained_species_dates,
+    by = c(
+      "Species_ID",
+      "Date"
+    )
+  ) %>%
+  mutate(
+    is_transporter =
+      !is.na(KEGG_Subcategory) &
+      str_detect(
+        KEGG_Subcategory,
+        "\\bTransporters\\b"
+      )
+  ) %>%
+  group_by(
+    Species_ID,
+    Date
+  ) %>%
   summarise(
-    abund_total = sum(abund, na.rm = TRUE),
-    abund_trans = sum(abund[is_transporter], na.rm = TRUE),
+    abund_total = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+    abund_trans = sum(
+      Protein_Abundance_IBAQ_Norm[is_transporter],
+      na.rm = TRUE
+    ),
     TPF = abund_trans / abund_total,
     .groups = "drop"
   ) %>%
-  left_join(species_date_qc, by = c("Species_ID", "Date")) %>%
+  left_join(
+    species_date_protein_counts,
+    by = c(
+      "Species_ID",
+      "Date"
+    )
+  ) %>%
   filter(
     is.finite(TPF),
     abund_total > 0,
@@ -1147,18 +1380,38 @@ species_date_tpf <- protein_flagged %>%
     TPF < 1
   )
 
-species_traits <- protein_final %>%
-  distinct(Species_ID, TrophicIndex, Group_For_Plots)
 
 species_tpf_df <- species_date_tpf %>%
-  left_join(species_traits, by = "Species_ID") %>%
-  left_join(species_taxonomy_use, by = "Species_ID") %>%
-  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
-  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  left_join(
+    species_traits,
+    by = "Species_ID"
+  ) %>%
+  left_join(
+    species_taxonomy_use,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    TrophicGroupPlot =
+      recode_plot_group(Group_For_Plots)
+  ) %>%
+  group_by(
+    Species_ID,
+    TrophicIndex,
+    Group_For_Plots,
+    TrophicGroupPlot,
+    Phylum,
+    Class
+  ) %>%
   summarise(
-    n_dates            = n(),
-    mean_TPF           = mean(TPF, na.rm = TRUE),
-    mean_prot_detected = mean(N_prot_detected, na.rm = TRUE),
+    n_dates = n(),
+    mean_TPF = mean(
+      TPF,
+      na.rm = TRUE
+    ),
+    mean_prot_detected = mean(
+      N_prot_detected,
+      na.rm = TRUE
+    ),
     .groups = "drop"
   ) %>%
   filter(
@@ -1174,80 +1427,153 @@ species_tpf_df <- species_date_tpf %>%
     !is.na(Class)
   ) %>%
   mutate(
-    TrophicIndex_z      = scale_z(TrophicIndex),
-    n_dates_z           = scale_z(n_dates),
-    log_prot_detected_z = scale_z(log1p(mean_prot_detected)),
-    Phylum              = factor(Phylum),
-    Class               = factor(Class)
+    TrophicIndex_z =
+      scale_z(TrophicIndex),
+
+    n_dates_z =
+      scale_z(n_dates),
+
+    log_prot_detected_z =
+      scale_z(
+        log1p(mean_prot_detected)
+      ),
+
+    Phylum = factor(Phylum),
+    Class = factor(Class)
   )
 
-write_csv(
-  species_tpf_df,
-  file.path(out_dir, "BlockB_species_level_TPF_data.csv")
-)
 
 ############################################################
-# 5) BUILD SPECIES-LEVEL TRANSPORTER BRAY-CURTIS DATA
+# 7) BUILD SPECIES-LEVEL TRANSPORTER BRAY–CURTIS DATA
+#
+# Internal model dataset only; not exported.
 ############################################################
 
 analysis_species_dates <- retained_species_dates %>%
-  semi_join(retained_species, by = c("Species_ID", "Group_For_Plots")) %>%
-  left_join(species_traits, by = c("Species_ID", "Group_For_Plots")) %>%
-  left_join(species_taxonomy_use, by = "Species_ID") %>%
-  mutate(TrophicGroupPlot = recode_plot_group(Group_For_Plots)) %>%
-  distinct(Species_ID, Date, Group_For_Plots, TrophicIndex, TrophicGroupPlot, Phylum, Class) %>%
+  semi_join(
+    retained_species,
+    by = c(
+      "Species_ID",
+      "Group_For_Plots"
+    )
+  ) %>%
+  left_join(
+    species_traits,
+    by = c(
+      "Species_ID",
+      "Group_For_Plots"
+    )
+  ) %>%
+  left_join(
+    species_taxonomy_use,
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    TrophicGroupPlot =
+      recode_plot_group(Group_For_Plots)
+  ) %>%
+  left_join(
+    species_date_protein_counts,
+    by = c(
+      "Species_ID",
+      "Date"
+    )
+  ) %>%
+  distinct(
+    Species_ID,
+    Date,
+    Group_For_Plots,
+    TrophicIndex,
+    TrophicGroupPlot,
+    Phylum,
+    Class,
+    N_prot_detected
+  ) %>%
   filter(
     is.finite(TrophicIndex),
     !is.na(TrophicGroupPlot),
     !is.na(Phylum),
     !is.na(Class)
   ) %>%
-  arrange(Species_ID, Date)
-
-prot_counts <- protein_final %>%
-  semi_join(
-    analysis_species_dates %>% select(Species_ID, Date),
-    by = c("Species_ID", "Date")
-  ) %>%
-  group_by(Species_ID, Date) %>%
-  summarise(
-    N_prot_detected = n_distinct(Protein_ID),
-    .groups = "drop"
+  arrange(
+    Species_ID,
+    Date
   )
 
-analysis_species_dates <- analysis_species_dates %>%
-  left_join(prot_counts, by = c("Species_ID", "Date"))
 
+# Transporter abundance per species × date × KEGG ID.
 kegg_sd_trans <- protein_final %>%
   semi_join(
-    analysis_species_dates %>% select(Species_ID, Date),
-    by = c("Species_ID", "Date")
+    analysis_species_dates %>%
+      select(
+        Species_ID,
+        Date
+      ),
+    by = c(
+      "Species_ID",
+      "Date"
+    )
   ) %>%
   filter(
     !is.na(KEGG_ID),
     !is.na(KEGG_Subcategory),
-    str_detect(KEGG_Subcategory, "\\bTransporters\\b")
+    str_detect(
+      KEGG_Subcategory,
+      "\\bTransporters\\b"
+    )
   ) %>%
-  group_by(Species_ID, Date, KEGG_ID) %>%
+  group_by(
+    Species_ID,
+    Date,
+    KEGG_ID
+  ) %>%
   summarise(
-    kegg_abund = sum(Protein_Abundance_IBAQ_Norm, na.rm = TRUE),
+    kegg_abund = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
     .groups = "drop"
   ) %>%
-  filter(is.finite(kegg_abund), kegg_abund > 0)
+  filter(
+    is.finite(kegg_abund),
+    kegg_abund > 0
+  )
 
-compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
+
+# Calculate Bray–Curtis dissimilarity between successive available dates
+# for each species.
+compute_species_transitions_bc <- function(
+  sp_id,
+  keep_tbl,
+  kegg_tbl
+) {
 
   dates_tbl <- keep_tbl %>%
-    filter(Species_ID == sp_id) %>%
+    filter(
+      Species_ID == sp_id
+    ) %>%
     arrange(Date)
 
   dates <- dates_tbl$Date
-  if (length(dates) < 2) return(NULL)
+
+  if (length(dates) < 2) {
+    return(NULL)
+  }
+
 
   mat_wide <- kegg_tbl %>%
-    filter(Species_ID == sp_id, Date %in% dates) %>%
-    mutate(Date_chr = as.character(Date)) %>%
-    select(Date_chr, KEGG_ID, kegg_abund) %>%
+    filter(
+      Species_ID == sp_id,
+      Date %in% dates
+    ) %>%
+    mutate(
+      Date_chr = as.character(Date)
+    ) %>%
+    select(
+      Date_chr,
+      KEGG_ID,
+      kegg_abund
+    ) %>%
     pivot_wider(
       names_from = KEGG_ID,
       values_from = kegg_abund,
@@ -1255,61 +1581,114 @@ compute_species_transitions_bc <- function(sp_id, keep_tbl, kegg_tbl) {
     ) %>%
     arrange(Date_chr)
 
-  if (nrow(mat_wide) < 2 || ncol(mat_wide) < 2) return(NULL)
 
-  present_dates_chr <- mat_wide$Date_chr
-  present_dates <- as.Date(present_dates_chr)
+  if (
+    nrow(mat_wide) < 2 ||
+    ncol(mat_wide) < 2
+  ) {
+    return(NULL)
+  }
 
-  M_abs <- as.matrix(mat_wide %>% select(-Date_chr))
-  rownames(M_abs) <- present_dates_chr
+
+  present_dates <- as.Date(
+    mat_wide$Date_chr
+  )
+
+  M_abs <- as.matrix(
+    mat_wide %>%
+      select(-Date_chr)
+  )
+
+  rownames(M_abs) <- as.character(
+    present_dates
+  )
+
 
   pair_tbl <- tibble(
-    Date1 = present_dates[-length(present_dates)],
+    Date1 = present_dates[
+      -length(present_dates)
+    ],
     Date2 = present_dates[-1]
   )
 
-  out <- lapply(seq_len(nrow(pair_tbl)), function(i) {
-    d1 <- as.character(pair_tbl$Date1[i])
-    d2 <- as.character(pair_tbl$Date2[i])
 
-    bc_abs <- as.numeric(
-      vegan::vegdist(
-        M_abs[c(d1, d2), , drop = FALSE],
-        method = "bray"
-      )
+  bind_rows(
+    lapply(
+      seq_len(nrow(pair_tbl)),
+      function(i) {
+
+        d1 <- pair_tbl$Date1[i]
+        d2 <- pair_tbl$Date2[i]
+
+        bc_abs <- as.numeric(
+          vegan::vegdist(
+            M_abs[
+              c(
+                as.character(d1),
+                as.character(d2)
+              ),
+              ,
+              drop = FALSE
+            ],
+            method = "bray"
+          )
+        )
+
+
+        nd1 <- keep_tbl %>%
+          filter(
+            Species_ID == sp_id,
+            Date == d1
+          ) %>%
+          pull(N_prot_detected)
+
+
+        nd2 <- keep_tbl %>%
+          filter(
+            Species_ID == sp_id,
+            Date == d2
+          ) %>%
+          pull(N_prot_detected)
+
+
+        tibble(
+          Species_ID = sp_id,
+          Date1 = d1,
+          Date2 = d2,
+          bc_abs = bc_abs,
+          N_prot_pair = mean(
+            c(nd1, nd2),
+            na.rm = TRUE
+          )
+        )
+      }
     )
-
-    nd1 <- keep_tbl %>%
-      filter(Species_ID == sp_id, Date == as.Date(d1)) %>%
-      pull(N_prot_detected)
-
-    nd2 <- keep_tbl %>%
-      filter(Species_ID == sp_id, Date == as.Date(d2)) %>%
-      pull(N_prot_detected)
-
-    tibble(
-      Species_ID  = sp_id,
-      Date1       = as.Date(d1),
-      Date2       = as.Date(d2),
-      bc_abs      = bc_abs,
-      N_prot_pair = mean(c(nd1, nd2), na.rm = TRUE)
-    )
-  })
-
-  bind_rows(out)
+  )
 }
 
-all_species <- sort(unique(analysis_species_dates$Species_ID))
 
-transitions <- bind_rows(lapply(
-  all_species,
-  compute_species_transitions_bc,
-  keep_tbl = analysis_species_dates,
-  kegg_tbl = kegg_sd_trans
-)) %>%
+transitions <- bind_rows(
+  lapply(
+    sort(
+      unique(
+        analysis_species_dates$Species_ID
+      )
+    ),
+    compute_species_transitions_bc,
+    keep_tbl = analysis_species_dates,
+    kegg_tbl = kegg_sd_trans
+  )
+) %>%
   left_join(
     analysis_species_dates %>%
-      distinct(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class),
+      distinct(
+        Species_ID,
+        TrophicIndex,
+        Group_For_Plots,
+        TrophicGroupPlot,
+        Phylum,
+        Class
+      ),
     by = "Species_ID"
   ) %>%
   filter(
@@ -1320,12 +1699,29 @@ transitions <- bind_rows(lapply(
     !is.na(Class)
   )
 
+
 species_bc_df <- transitions %>%
-  group_by(Species_ID, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class) %>%
+  group_by(
+    Species_ID,
+    TrophicIndex,
+    Group_For_Plots,
+    TrophicGroupPlot,
+    Phylum,
+    Class
+  ) %>%
   summarise(
-    n_transitions  = n(),
-    mean_bc_abs    = mean(bc_abs, na.rm = TRUE),
-    mean_prot_pair = mean(N_prot_pair, na.rm = TRUE),
+    n_transitions = n(),
+
+    mean_bc_abs = mean(
+      bc_abs,
+      na.rm = TRUE
+    ),
+
+    mean_prot_pair = mean(
+      N_prot_pair,
+      na.rm = TRUE
+    ),
+
     .groups = "drop"
   ) %>%
   filter(
@@ -1340,351 +1736,395 @@ species_bc_df <- transitions %>%
     !is.na(Class)
   ) %>%
   mutate(
-    mean_bc_abs_logit = logit_bounded(mean_bc_abs, eps = eps),
-    TrophicIndex_z    = scale_z(TrophicIndex),
-    log_prot_pair_z   = scale_z(log1p(mean_prot_pair)),
-    Phylum            = factor(Phylum),
-    Class             = factor(Class)
+    mean_bc_abs_logit =
+      logit_bounded(
+        mean_bc_abs,
+        eps = eps
+      ),
+
+    TrophicIndex_z =
+      scale_z(TrophicIndex),
+
+    log_prot_pair_z =
+      scale_z(
+        log1p(mean_prot_pair)
+      ),
+
+    Phylum = factor(Phylum),
+    Class = factor(Class)
   )
 
-write_csv(
-  species_bc_df,
-  file.path(out_dir, "BlockB_species_level_transporter_BrayCurtis_data.csv")
-)
 
 ############################################################
-# 6) GLOBAL PHYLUM-ADJUSTED MODELS
+# 8) FIT THE FOUR TAXONOMY-ROBUSTNESS MODELS
 ############################################################
+
+# ----------------------------------------------------------
+# TPF: global phylum-adjusted model
+# ----------------------------------------------------------
 
 m_tpf_global <- glmmTMB(
-  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + (1 | Phylum),
-  family = beta_family(link = "logit"),
+  mean_TPF ~
+    TrophicIndex_z +
+    n_dates_z +
+    log_prot_detected_z +
+    (1 | Phylum),
+  family = beta_family(
+    link = "logit"
+  ),
   data = species_tpf_df
 )
 
-m_bc_global <- glmmTMB(
-  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + (1 | Phylum),
-  family = gaussian(),
-  data = species_bc_df
-)
 
-############################################################
-# 7) WITHIN-PHYLUM POOLED MODELS
-############################################################
+# ----------------------------------------------------------
+# TPF: pooled within-phylum model
+# ----------------------------------------------------------
 
 m_tpf_within_pool <- glmmTMB(
-  mean_TPF ~ TrophicIndex_z + n_dates_z + log_prot_detected_z + Phylum,
-  family = beta_family(link = "logit"),
+  mean_TPF ~
+    TrophicIndex_z +
+    n_dates_z +
+    log_prot_detected_z +
+    Phylum,
+  family = beta_family(
+    link = "logit"
+  ),
   data = species_tpf_df
 )
 
-m_bc_within_pool <- glmmTMB(
-  mean_bc_abs_logit ~ TrophicIndex_z + log_prot_pair_z + Phylum,
+
+# ----------------------------------------------------------
+# Bray–Curtis: global phylum-adjusted model
+# ----------------------------------------------------------
+
+m_bc_global <- glmmTMB(
+  mean_bc_abs_logit ~
+    TrophicIndex_z +
+    log_prot_pair_z +
+    (1 | Phylum),
   family = gaussian(),
   data = species_bc_df
 )
 
+
+# ----------------------------------------------------------
+# Bray–Curtis: pooled within-phylum model
+# ----------------------------------------------------------
+
+m_bc_within_pool <- glmmTMB(
+  mean_bc_abs_logit ~
+    TrophicIndex_z +
+    log_prot_pair_z +
+    Phylum,
+  family = gaussian(),
+  data = species_bc_df
+)
+
+
 ############################################################
-# 8) EXTRACT MODEL SUMMARIES
+# 9) EXTRACT MODEL RESULTS
 ############################################################
 
-fix_tpf_global <- extract_glmmtmb_term(m_tpf_global, "TrophicIndex_z")
-fix_bc_global  <- extract_glmmtmb_term(m_bc_global, "TrophicIndex_z")
+# Helper to turn one fitted model into one row of the
+# machine-readable model-summary table.
+summarise_taxonomy_model <- function(
+  model,
+  response,
+  model_name,
+  taxonomy_test,
+  family_label,
+  fixed_effects_label,
+  random_effects_label,
+  n_species,
+  mixed_model = FALSE
+) {
 
-fix_tpf_within <- extract_glmmtmb_term(m_tpf_within_pool, "TrophicIndex_z")
-fix_bc_within  <- extract_glmmtmb_term(m_bc_within_pool, "TrophicIndex_z")
+  trophic_effect <- extract_glmmtmb_term(
+    model,
+    "TrophicIndex_z"
+  )
 
-r2_tpf_global <- safe_r2_mixed(m_tpf_global)
-r2_bc_global  <- safe_r2_mixed(m_bc_global)
+  if (mixed_model) {
 
-r2_tpf_within_marg <- safe_r2_fixed(m_tpf_within_pool)
-r2_bc_within_marg  <- safe_r2_fixed(m_bc_within_pool)
+    r2 <- safe_r2_mixed(model)
+
+    marginal_r2 <- unname(
+      r2["Marginal_R2"]
+    )
+
+    conditional_r2 <- unname(
+      r2["Conditional_R2"]
+    )
+
+  } else {
+
+    marginal_r2 <-
+      safe_r2_fixed(model)
+
+    conditional_r2 <-
+      NA_real_
+  }
+
+
+  tibble(
+    Response = response,
+    Model_name = model_name,
+    Taxonomy_test = taxonomy_test,
+    Family = family_label,
+    Fixed_effects = fixed_effects_label,
+    Random_effects = random_effects_label,
+    N_species = n_species,
+    estimate = trophic_effect$estimate,
+    std_error = trophic_effect$std_error,
+    p_value = trophic_effect$p_value,
+    Marginal_R2 = marginal_r2,
+    Conditional_R2 = conditional_r2
+  )
+}
+
 
 global_pooled_tbl <- bind_rows(
-  tibble(
-    Response           = "Mean TPF",
-    Model_name         = "TPF global",
-    Taxonomy_test      = "Global phylum-adjusted model",
-    Family             = "Beta (logit)",
-    Fixed_effects      = "Trophic index + n dates + mean species protein recovery",
-    Random_effects     = "(1 | Phylum)",
-    N_species          = nrow(species_tpf_df),
-    estimate           = fix_tpf_global$estimate,
-    std_error          = fix_tpf_global$std_error,
-    p_value            = fix_tpf_global$p_value,
-    Marginal_R2        = safe_numeric(r2_tpf_global["Marginal_R2"]),
-    Conditional_R2     = safe_numeric(r2_tpf_global["Conditional_R2"]),
-    Interpretation     = "Trophic-index effect after accounting for phylum as random effect."
+
+  summarise_taxonomy_model(
+    model = m_tpf_global,
+    response = "Mean TPF",
+    model_name = "TPF global",
+    taxonomy_test = "Global phylum-adjusted model",
+    family_label = "Beta (logit)",
+    fixed_effects_label = paste(
+      "Trophic index + n dates +",
+      "mean species protein recovery"
+    ),
+    random_effects_label = "(1 | Phylum)",
+    n_species = nrow(species_tpf_df),
+    mixed_model = TRUE
   ),
-  tibble(
-    Response           = "Mean TPF",
-    Model_name         = "TPF pooled",
-    Taxonomy_test      = "Within-phylum pooled model",
-    Family             = "Beta (logit)",
-    Fixed_effects      = "Trophic index + n dates + mean species protein recovery + Phylum",
-    Random_effects     = "None",
-    N_species          = nrow(species_tpf_df),
-    estimate           = fix_tpf_within$estimate,
-    std_error          = fix_tpf_within$std_error,
-    p_value            = fix_tpf_within$p_value,
-    Marginal_R2        = r2_tpf_within_marg,
-    Conditional_R2     = NA_real_,
-    Interpretation     = "Common trophic-index slope estimated while controlling for phylum as fixed effect."
+
+
+  summarise_taxonomy_model(
+    model = m_tpf_within_pool,
+    response = "Mean TPF",
+    model_name = "TPF pooled within-phylum",
+    taxonomy_test = "Within-phylum pooled model",
+    family_label = "Beta (logit)",
+    fixed_effects_label = paste(
+      "Trophic index + n dates +",
+      "mean species protein recovery + Phylum"
+    ),
+    random_effects_label = "None",
+    n_species = nrow(species_tpf_df),
+    mixed_model = FALSE
   ),
-  tibble(
-    Response           = "Mean transporter Bray-Curtis",
-    Model_name         = "BC global",
-    Taxonomy_test      = "Global phylum-adjusted model",
-    Family             = "Gaussian on logit scale",
-    Fixed_effects      = "Trophic index + mean species protein recovery (paired consecutive dates)",
-    Random_effects     = "(1 | Phylum)",
-    N_species          = nrow(species_bc_df),
-    estimate           = fix_bc_global$estimate,
-    std_error          = fix_bc_global$std_error,
-    p_value            = fix_bc_global$p_value,
-    Marginal_R2        = safe_numeric(r2_bc_global["Marginal_R2"]),
-    Conditional_R2     = safe_numeric(r2_bc_global["Conditional_R2"]),
-    Interpretation     = "Trophic-index effect after accounting for phylum as random effect."
+
+
+  summarise_taxonomy_model(
+    model = m_bc_global,
+    response = "Mean transporter Bray-Curtis",
+    model_name = "Bray-Curtis global",
+    taxonomy_test = "Global phylum-adjusted model",
+    family_label = "Gaussian on logit scale",
+    fixed_effects_label = paste(
+      "Trophic index + mean species protein recovery",
+      "(paired consecutive dates)"
+    ),
+    random_effects_label = "(1 | Phylum)",
+    n_species = nrow(species_bc_df),
+    mixed_model = TRUE
   ),
-  tibble(
-    Response           = "Mean transporter Bray-Curtis",
-    Model_name         = "BC pooled",
-    Taxonomy_test      = "Within-phylum pooled model",
-    Family             = "Gaussian on logit scale",
-    Fixed_effects      = "Trophic index + mean species protein recovery (paired consecutive dates) + Phylum",
-    Random_effects     = "None",
-    N_species          = nrow(species_bc_df),
-    estimate           = fix_bc_within$estimate,
-    std_error          = fix_bc_within$std_error,
-    p_value            = fix_bc_within$p_value,
-    Marginal_R2        = r2_bc_within_marg,
-    Conditional_R2     = NA_real_,
-    Interpretation     = "Common trophic-index slope estimated while controlling for phylum as fixed effect."
+
+
+  summarise_taxonomy_model(
+    model = m_bc_within_pool,
+    response = "Mean transporter Bray-Curtis",
+    model_name = "Bray-Curtis pooled within-phylum",
+    taxonomy_test = "Within-phylum pooled model",
+    family_label = "Gaussian on logit scale",
+    fixed_effects_label = paste(
+      "Trophic index + mean species protein recovery",
+      "(paired consecutive dates) + Phylum"
+    ),
+    random_effects_label = "None",
+    n_species = nrow(species_bc_df),
+    mixed_model = FALSE
   )
 )
 
+
+# Machine-readable source table underlying the formatted summary.
 write_csv(
   global_pooled_tbl,
-  file.path(out_dir, "BlockB_global_and_withinphylum_models.csv")
+  file.path(
+    out_dir,
+    "BlockB_global_and_withinphylum_models.csv"
+  )
 )
 
+
 ############################################################
-# 9) BUILD PREDICTION CURVES
+# 10) CONVERT MODEL RESULTS TO PORTRAIT TABLE FORMAT
 ############################################################
 
-pred_tpf_within <- tibble(
-  TrophicIndex = seq(
-    min(species_tpf_df$TrophicIndex, na.rm = TRUE),
-    max(species_tpf_df$TrophicIndex, na.rm = TRUE),
-    length.out = 300
-  )
-) %>%
+model_order <- c(
+  "TPF global",
+  "TPF pooled within-phylum",
+  "Bray-Curtis global",
+  "Bray-Curtis pooled within-phylum"
+)
+
+metric_order <- c(
+  "Response",
+  "Family",
+  "Fixed effects",
+  "Random effects",
+  "N",
+  "Trophic-index estimate",
+  "Trophic-index SE",
+  "Trophic-index p",
+  "Marginal R²",
+  "Conditional R²"
+)
+
+
+# Format all values exactly as they should appear in the final table.
+table_source <- global_pooled_tbl %>%
   mutate(
-    TrophicIndex_z      = (TrophicIndex - mean(species_tpf_df$TrophicIndex, na.rm = TRUE)) /
-      sd(species_tpf_df$TrophicIndex, na.rm = TRUE),
-    n_dates_z           = 0,
-    log_prot_detected_z = 0,
-    Phylum              = factor(levels(species_tpf_df$Phylum)[1], levels = levels(species_tpf_df$Phylum))
+    Model_name = factor(
+      Model_name,
+      levels = model_order
+    ),
+
+    Response = as.character(Response),
+    Family = as.character(Family),
+    `Fixed effects` = as.character(Fixed_effects),
+    `Random effects` = as.character(Random_effects),
+
+    N = as.character(N_species),
+
+    `Trophic-index estimate` = vapply(
+      estimate,
+      fmt_num_scalar,
+      character(1),
+      digits = 3
+    ),
+
+    `Trophic-index SE` = vapply(
+      std_error,
+      fmt_num_scalar,
+      character(1),
+      digits = 3
+    ),
+
+    `Trophic-index p` = vapply(
+      p_value,
+      fmt_p_scalar,
+      character(1)
+    ),
+
+    `Marginal R²` = vapply(
+      Marginal_R2,
+      fmt_num_scalar,
+      character(1),
+      digits = 3
+    ),
+
+    `Conditional R²` = vapply(
+      Conditional_R2,
+      fmt_num_scalar,
+      character(1),
+      digits = 3
+    )
+  ) %>%
+  select(
+    Model_name,
+    Response,
+    Family,
+    `Fixed effects`,
+    `Random effects`,
+    N,
+    `Trophic-index estimate`,
+    `Trophic-index SE`,
+    `Trophic-index p`,
+    `Marginal R²`,
+    `Conditional R²`
   )
 
-pred_tpf_within$fit <- predict(
-  m_tpf_within_pool,
-  newdata = pred_tpf_within,
-  type = "response"
-)
 
-pred_bc_within <- tibble(
-  TrophicIndex = seq(
-    min(species_bc_df$TrophicIndex, na.rm = TRUE),
-    max(species_bc_df$TrophicIndex, na.rm = TRUE),
-    length.out = 300
-  )
-) %>%
+# Turn the one-row-per-model representation into the
+# portrait orientation used in the supplementary table.
+table_rows <- table_source %>%
+  pivot_longer(
+    cols = -Model_name,
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
   mutate(
-    TrophicIndex_z  = (TrophicIndex - mean(species_bc_df$TrophicIndex, na.rm = TRUE)) /
-      sd(species_bc_df$TrophicIndex, na.rm = TRUE),
-    log_prot_pair_z = 0,
-    Phylum          = factor(levels(species_bc_df$Phylum)[1], levels = levels(species_bc_df$Phylum))
+    Metric = factor(
+      Metric,
+      levels = metric_order
+    )
+  ) %>%
+  arrange(
+    Metric,
+    Model_name
+  ) %>%
+  pivot_wider(
+    names_from = Model_name,
+    values_from = Value
+  ) %>%
+  mutate(
+    Metric = as.character(Metric)
   )
 
-pred_bc_within$fit_logit <- predict(
-  m_bc_within_pool,
-  newdata = pred_bc_within,
-  type = "response"
-)
 
-pred_bc_within <- pred_bc_within %>%
-  mutate(fit_bc_raw = inv_logit(fit_logit))
-
-############################################################
-# 10) FIGURE — WITHIN-PHYLUM POOLED FITS
-############################################################
-
-p_tpf_within <- ggplot(
-  species_tpf_df,
-  aes(x = TrophicIndex, y = mean_TPF, fill = TrophicGroupPlot)
-) +
-  geom_point(
-    shape = 21,
-    colour = "black",
-    size = 2.1,
-    stroke = 0.25,
-    alpha = 0.90
-  ) +
-  geom_line(
-    data = pred_tpf_within,
-    aes(x = TrophicIndex, y = fit),
-    inherit.aes = FALSE,
-    linewidth = 1,
-    colour = "black"
-  ) +
-  facet_wrap(~ Phylum, scales = "free_x") +
-  scale_fill_manual(values = trophic_cols, drop = FALSE) +
-  coord_cartesian(ylim = c(0, 1)) +
-  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
-  labs(
-    title = "Block B | Within-phylum transporter allocation",
-    subtitle = "Species-level mean TPF with pooled within-phylum trophic-index fit",
-    x = "Trophic index",
-    y = "Mean transporter proteome fraction"
-  ) +
-  theme_nat(base_size = 10)
-
-p_bc_within <- ggplot(
-  species_bc_df,
-  aes(x = TrophicIndex, y = mean_bc_abs, fill = TrophicGroupPlot)
-) +
-  geom_point(
-    shape = 21,
-    colour = "black",
-    size = 2.1,
-    stroke = 0.25,
-    alpha = 0.90
-  ) +
-  geom_line(
-    data = pred_bc_within,
-    aes(x = TrophicIndex, y = fit_bc_raw),
-    inherit.aes = FALSE,
-    linewidth = 1,
-    colour = "black"
-  ) +
-  facet_wrap(~ Phylum, scales = "free_x") +
-  scale_fill_manual(values = trophic_cols, drop = FALSE) +
-  coord_cartesian(ylim = c(0, 1)) +
-  scale_y_continuous(labels = number_format(accuracy = 0.01)) +
-  labs(
-    title = "Block B | Within-phylum transporter variability",
-    subtitle = "Species-level mean transporter Bray–Curtis with pooled within-phylum trophic-index fit",
-    x = "Trophic index",
-    y = "Mean transporter Bray–Curtis dissimilarity"
-  ) +
-  theme_nat(base_size = 10)
-
-blockB_fit_fig <- p_tpf_within / p_bc_within
-
-ggsave(
-  filename = file.path(out_dir, "BlockB_within_phylum_fits.png"),
-  plot = blockB_fit_fig,
-  width = 12,
-  height = 10,
-  dpi = dpi_out,
-  bg = "white"
-)
-
-############################################################
-# 11) SUMMARY TABLE — SAME PORTRAIT STYLE AS OTHER TABLES
-############################################################
-
-table_rows <- tibble(
-  Metric = c(
-    "Response",
-    "Family",
-    "Fixed effects",
-    "Random effects",
-    "N",
-    "Trophic-index estimate",
-    "Trophic-index SE",
-    "Trophic-index p",
-    "Marginal R²",
-    "Conditional R²",
-    "Key conclusion"
-  ),
-  `TPF global` = c(
-    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "TPF global"],
-    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "TPF global"],
-    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "TPF global"],
-    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "TPF global"],
-    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "TPF global"]),
-    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "TPF global"], 3),
-    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "TPF global"], 3),
-    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "TPF global"]),
-    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "TPF global"], 3),
-    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "TPF global"], 3),
-    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "TPF global"]
-  ),
-  `TPF pooled within-phylum` = c(
-    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "TPF pooled"],
-    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "TPF pooled"],
-    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "TPF pooled"],
-    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "TPF pooled"],
-    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "TPF pooled"]),
-    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "TPF pooled"], 3),
-    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "TPF pooled"], 3),
-    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "TPF pooled"]),
-    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "TPF pooled"], 3),
-    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "TPF pooled"], 3),
-    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "TPF pooled"]
-  ),
-  `Bray-Curtis global` = c(
-    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "BC global"],
-    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "BC global"],
-    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "BC global"],
-    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "BC global"],
-    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "BC global"]),
-    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "BC global"], 3),
-    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "BC global"], 3),
-    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "BC global"]),
-    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "BC global"], 3),
-    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "BC global"], 3),
-    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "BC global"]
-  ),
-  `Bray-Curtis pooled within-phylum` = c(
-    global_pooled_tbl$Response[global_pooled_tbl$Model_name == "BC pooled"],
-    global_pooled_tbl$Family[global_pooled_tbl$Model_name == "BC pooled"],
-    global_pooled_tbl$Fixed_effects[global_pooled_tbl$Model_name == "BC pooled"],
-    global_pooled_tbl$Random_effects[global_pooled_tbl$Model_name == "BC pooled"],
-    as.character(global_pooled_tbl$N_species[global_pooled_tbl$Model_name == "BC pooled"]),
-    fmt_num_scalar(global_pooled_tbl$estimate[global_pooled_tbl$Model_name == "BC pooled"], 3),
-    fmt_num_scalar(global_pooled_tbl$std_error[global_pooled_tbl$Model_name == "BC pooled"], 3),
-    fmt_p_scalar(global_pooled_tbl$p_value[global_pooled_tbl$Model_name == "BC pooled"]),
-    fmt_num_scalar(global_pooled_tbl$Marginal_R2[global_pooled_tbl$Model_name == "BC pooled"], 3),
-    fmt_num_scalar(global_pooled_tbl$Conditional_R2[global_pooled_tbl$Model_name == "BC pooled"], 3),
-    global_pooled_tbl$Interpretation[global_pooled_tbl$Model_name == "BC pooled"]
-  )
-)
-
+# Export exactly the values displayed in the final table.
 write_csv(
   table_rows,
-  file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.csv")
+  file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.csv"
+  )
 )
 
+
+############################################################
+# 11) FORMAT FINAL SUPPLEMENTARY TABLE
+############################################################
+
 summary_table_gt <- table_rows %>%
+
   gt() %>%
+
   tab_header(
-    title = md("**Taxonomy robustness of trophic-index associations**"),
-    subtitle = "Global phylum-adjusted and pooled within-phylum model summaries"
+    title = md(
+      "**Taxonomy robustness of trophic-index associations**"
+    ),
+    subtitle = paste(
+      "Global phylum-adjusted and pooled",
+      "within-phylum model summaries"
+    )
   ) %>%
+
   cols_label(
     Metric = "",
-    `TPF global` = "TPF (global)",
-    `TPF pooled within-phylum` = "TPF (pooled within-phylum)",
-    `Bray-Curtis global` = "Bray–Curtis (global)",
-    `Bray-Curtis pooled within-phylum` = "Bray–Curtis (pooled within-phylum)"
+
+    `TPF global` =
+      "TPF (global)",
+
+    `TPF pooled within-phylum` =
+      "TPF (pooled within-phylum)",
+
+    `Bray-Curtis global` =
+      "Bray–Curtis (global)",
+
+    `Bray-Curtis pooled within-phylum` =
+      "Bray–Curtis (pooled within-phylum)"
   ) %>%
+
   cols_align(
     align = "left",
     columns = Metric
   ) %>%
+
   cols_align(
     align = "center",
     columns = c(
@@ -1694,6 +2134,7 @@ summary_table_gt <- table_rows %>%
       `Bray-Curtis pooled within-phylum`
     )
   ) %>%
+
   cols_width(
     Metric ~ px(240),
     `TPF global` ~ px(235),
@@ -1701,7 +2142,9 @@ summary_table_gt <- table_rows %>%
     `Bray-Curtis global` ~ px(235),
     `Bray-Curtis pooled within-phylum` ~ px(270)
   ) %>%
+
   opt_row_striping() %>%
+
   tab_options(
     table.font.size = px(10),
     data_row.padding = px(5),
@@ -1709,50 +2152,102 @@ summary_table_gt <- table_rows %>%
     heading.title.font.size = px(13),
     heading.subtitle.font.size = px(10)
   ) %>%
+
   tab_source_note(
     source_note = md(
-      "Global phylum-adjusted models estimate the trophic-index effect after accounting for phylum as a random intercept. Pooled within-phylum models instead include phylum as a fixed effect, so the trophic-index slope is estimated from within-phylum structure. For the pooled models, conditional R² is not applicable because no random-effect variance component is modeled."
+      paste(
+        "Global phylum-adjusted models estimate the",
+        "trophic-index effect after accounting for phylum",
+        "as a random intercept. Pooled within-phylum models",
+        "instead include phylum as a fixed effect, so the",
+        "trophic-index slope is estimated from within-phylum",
+        "structure. For the pooled models, conditional R² is",
+        "not applicable because no random-effect variance",
+        "component is modeled."
+      )
     )
   )
 
+
+############################################################
+# 12) DISPLAY AND EXPORT FINAL TABLE
+############################################################
+
 print(summary_table_gt)
+
 
 gtsave(
   summary_table_gt,
-  filename = file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"),
+  filename = file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.png"
+  ),
   vwidth = 1700,
   vheight = 1200
 )
 
+
 gtsave(
   summary_table_gt,
-  filename = file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.html")
+  filename = file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.html"
+  )
 )
 
+
 ############################################################
-# 12) CONSOLE SUMMARY
+# 13) CONSOLE SUMMARY
 ############################################################
 
-cat("\nDone.\n")
-cat("Outputs written to: ", out_dir, "\n", sep = "")
-cat("\nResponses analysed:\n")
-cat("- Species-level mean transporter proteome fraction (TPF)\n")
-cat("- Species-level mean transporter Bray–Curtis dissimilarity\n\n")
+cat("\n")
+cat("Block B taxonomy-robustness analysis complete.\n")
+cat("Outputs written to:\n")
+cat(out_dir, "\n\n")
 
-cat("Files:\n")
-cat(file.path(out_dir, "BlockB_species_level_TPF_data.csv"), "\n")
-cat(file.path(out_dir, "BlockB_species_level_transporter_BrayCurtis_data.csv"), "\n")
-cat(file.path(out_dir, "BlockB_global_and_withinphylum_models.csv"), "\n")
-cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.csv"), "\n")
-cat(file.path(out_dir, "BlockB_within_phylum_fits.png"), "\n")
-cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"), "\n")
+cat("Files created:\n")
+
+cat(
+  "-",
+  file.path(
+    out_dir,
+    "BlockB_global_and_withinphylum_models.csv"
+  ),
+  "\n"
+)
+
+cat(
+  "-",
+  file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.csv"
+  ),
+  "\n"
+)
+
+cat(
+  "-",
+  file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.png"
+  ),
+  "\n"
+)
+
+cat(
+  "-",
+  file.path(
+    out_dir,
+    "BlockB_taxonomy_robustness_summary_table_portrait.html"
+  ),
+  "\n"
+)
 ```
-
 
 
 ```{r}
 ####################################################################################################
-# FINAL UNIFIED FUNCTIONAL SPECIFICITY ANALYSIS
+#  FUNCTIONAL SPECIFICITY ANALYSIS
 #
 # PURPOSE
 # -------
@@ -1760,7 +2255,6 @@ cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"),
 # resource-acquisition functions rather than reflecting a general property of species abundance,
 # total proteome structure, or other broad proteome categories.
 #
-# THIS VERSION
 # ------------
 # - keeps the same analysis backbone
 # - EXCLUDES the separate transporter-only model from the final summary table
@@ -1778,18 +2272,11 @@ cat(file.path(out_dir, "BlockB_taxonomy_robustness_summary_table_portrait.png"),
 #       * marginal and conditional R²
 #       * TI10 -> TI90 response change
 #
-# EXPECTED OBJECTS ALREADY IN MEMORY
-# ----------------------------------
-#   protein_final
-#   retained_species
-#   retained_species_dates
-#   species_taxonomy
-#   species_abundance
 #
 # OUTPUT
 # ------
 # Folder:
-#   Final_Unified_FunctionalSpecificity/
+#   BlockC_Unified_FunctionalSpecificity/
 ####################################################################################################
 
 suppressPackageStartupMessages({
@@ -1853,7 +2340,7 @@ trophic_cols <- c(
   "Copio_like"   = "#BA5205"
 )
 
-outdir <- "Final_Unified_FunctionalSpecificity"
+outdir <- "BlockC_Unified_FunctionalSpecificity"
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 ####################################################################################################
@@ -2994,16 +3481,3358 @@ cat(file.path(outdir, "Excluded_species_by_analysis.csv"), "\n")
 ```
 
 
+# Phylogenetic analysis #############################################################################
+```{r}
+############################################################
+# BLOCK D — OVERALL PHYLOGENETIC MODELS
+#
+# PURPOSE
+# -------
+# Test the two species-level transporter responses against
+# trophic index while accounting for shared evolutionary history.
+#
+# RESPONSE 1: mean transporter proteome fraction (TPF)
+# RESPONSE 2: mean transporter Bray-Curtis dissimilarity
+#
+# METHODS
+# -------
+# PGLS is the primary phylogenetic model. Pagel's lambda is
+# estimated by maximum likelihood.
+#
+# PIC is the complementary Brownian-motion sensitivity model.
+# PIC regressions are fitted through the origin.
+#
+# REQUIRED OBJECTS FROM THE UPSTREAM ANALYSIS
+# -------------------------------------------
+# species_tpf_df
+# species_bc_df
+#
+# REQUIRED TREE
+# -------------
+# Prepared_Tree/SpringBloom_rooted_cleaned_for_analysis.nwk
+#
+# OUTPUT DIRECTORY
+# ----------------
+# BlockD_Overall_Phylogenetic_Tables/
+############################################################
 
 
+############################################################
+# 1. PACKAGES AND SETTINGS
+############################################################
+
+suppressPackageStartupMessages({
+  library(ape)
+  library(caper)
+  library(dplyr)
+  library(gt)
+  library(readr)
+  library(tibble)
+})
+
+overall_out_dir <- "BlockD_Overall_Phylogenetic_Tables"
+tree_file <- "Prepared_Tree/SpringBloom_rooted_cleaned_for_analysis.nwk"
+
+# Bray-Curtis may equal 0 or 1. The small boundary adjustment
+# is required before applying the logit transformation.
+bc_epsilon <- 1e-6
+
+# Allow the PGLS maximum-likelihood estimate of lambda to reach 0.
+lambda_bounds <- list(
+  lambda = c(0, 1)
+)
+
+dir.create(
+  overall_out_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
 
 
+############################################################
+# 2. CONFIRM THE TWO REQUIRED INPUT TABLES AND TREE
+############################################################
+
+if (!exists("species_tpf_df") || !exists("species_bc_df")) {
+  stop(
+    "Run the upstream response-preparation analysis first. ",
+    "This block requires species_tpf_df and species_bc_df."
+  )
+}
+
+if (!file.exists(tree_file)) {
+  stop(
+    "Tree not found: ",
+    tree_file,
+    ". Run this chunk from the Robustness_Analysis directory."
+  )
+}
 
 
+############################################################
+# 3. SMALL HELPER FUNCTIONS
+############################################################
+
+z_scale <- function(x) {
+
+  x <- as.numeric(x)
+
+  if (!is.finite(stats::sd(x)) || stats::sd(x) == 0) {
+    stop("A model variable has zero or undefined variance.")
+  }
+
+  as.numeric(scale(x))
+}
+
+bounded_logit <- function(x, epsilon = bc_epsilon) {
+  stats::qlogis(
+    pmin(
+      pmax(as.numeric(x), epsilon),
+      1 - epsilon
+    )
+  )
+}
+
+formula_text <- function(x) {
+  paste(deparse(x), collapse = " ")
+}
+
+format_number <- function(x, digits = 3L) {
+  ifelse(
+    is.na(x),
+    "--",
+    formatC(
+      as.numeric(x),
+      format = "f",
+      digits = digits
+    )
+  )
+}
+
+format_p <- function(x) {
+  ifelse(
+    is.na(x),
+    "--",
+    ifelse(
+      x < 0.001,
+      "<0.001",
+      formatC(
+        as.numeric(x),
+        format = "f",
+        digits = 3
+      )
+    )
+  )
+}
+
+format_ci <- function(low, high) {
+  paste0(
+    "[",
+    format_number(low),
+    ", ",
+    format_number(high),
+    "]"
+  )
+}
 
 
+############################################################
+# VALIDATE ONE PRUNED TREE AGAINST ITS MODEL DATA
+#
+# Purpose:
+#   Confirm that the response-specific tree produced inside
+#   match_response_to_tree() is rooted, bifurcating, and matched
+#   exactly to the Species_ID values used by PGLS and PIC.
+#
+# Important:
+#   The archaeal outgroup is allowed to be absent from model_data.
+#   It has already established the root of master_phy and is then
+#   removed when master_phy is pruned to the bacterial species.
+############################################################
+
+validate_analysis_tree <- function(
+    analysis_tree,
+    model_data,
+    response_name) {
+
+  if (!inherits(analysis_tree, "phylo")) {
+    stop(response_name, ": analysis_tree is not a phylo object.")
+  }
+
+  if (!ape::is.rooted(analysis_tree)) {
+    stop(response_name, ": pruned analysis tree is not rooted.")
+  }
+
+  if (!ape::is.binary(analysis_tree)) {
+    stop(
+      response_name,
+      ": pruned analysis tree is not fully bifurcating."
+    )
+  }
+
+  if (anyDuplicated(analysis_tree$tip.label)) {
+    stop(response_name, ": pruned tree has duplicate tip labels.")
+  }
+
+  if (ape::Ntip(analysis_tree) != nrow(model_data)) {
+    stop(
+      response_name,
+      ": number of tree tips does not equal number of data rows."
+    )
+  }
+
+  if (!setequal(
+    analysis_tree$tip.label,
+    model_data$Species_ID
+  )) {
+    stop(
+      response_name,
+      ": tree tips and model Species_ID values do not match."
+    )
+  }
+
+  if (!identical(
+    analysis_tree$tip.label,
+    as.character(model_data$Species_ID)
+  )) {
+    stop(
+      response_name,
+      ": model rows are not ordered in tree-tip order."
+    )
+  }
+
+  if (is.null(analysis_tree$edge.length)) {
+    stop(response_name, ": pruned tree has no branch lengths.")
+  }
+
+  if (
+    anyNA(analysis_tree$edge.length) ||
+      any(!is.finite(analysis_tree$edge.length)) ||
+      any(analysis_tree$edge.length < 0)
+  ) {
+    stop(
+      response_name,
+      ": pruned tree has missing, non-finite, or negative ",
+      "branch lengths."
+    )
+  }
+
+  n_zero_length_edges <- sum(
+    analysis_tree$edge.length == 0
+  )
+
+  if (n_zero_length_edges > 0L) {
+    warning(
+      response_name,
+      ": pruned tree contains ",
+      n_zero_length_edges,
+      " zero-length edge(s); inspect these before interpreting PIC.",
+      call. = FALSE
+    )
+  }
+
+  invisible(
+    list(
+      rooted = TRUE,
+      binary = TRUE,
+      n_tips = ape::Ntip(analysis_tree),
+      n_zero_length_edges = n_zero_length_edges
+    )
+  )
+}
 
 
+############################################################
+# 4. LOAD AND CHECK THE PREPARED PHYLOGENY
+############################################################
+
+master_phy <- ape::read.tree(tree_file)
+master_phy$node.label <- NULL
+
+if (anyDuplicated(master_phy$tip.label)) {
+  stop("The prepared tree contains duplicate tip labels.")
+}
+
+if (!ape::is.rooted(master_phy)) {
+  stop("The prepared tree is not rooted.")
+}
+
+if (!ape::is.binary(master_phy)) {
+  stop("The prepared tree is not fully bifurcating.")
+}
+
+if (is.null(master_phy$edge.length)) {
+  stop("The prepared tree has no branch lengths.")
+}
+
+if (
+  anyNA(master_phy$edge.length) ||
+    any(!is.finite(master_phy$edge.length)) ||
+    any(master_phy$edge.length < 0)
+) {
+  stop(
+    "The prepared tree contains missing, non-finite, or negative ",
+    "branch lengths."
+  )
+}
 
 
+############################################################
+# 5. PREPARE AND MATCH ONE RESPONSE TABLE TO THE TREE
+#
+# The function keeps only complete model records, prunes the
+# phylogeny to those species, and orders the data by tree tip.
+############################################################
+
+match_response_to_tree <- function(
+    data,
+    required_columns,
+    response_name) {
+
+  missing_columns <- setdiff(
+    required_columns,
+    names(data)
+  )
+
+  if (length(missing_columns) > 0L) {
+    stop(
+      response_name,
+      " is missing: ",
+      paste(missing_columns, collapse = ", ")
+    )
+  }
+
+  analysis_data <- data %>%
+    dplyr::mutate(
+      Species_ID = as.character(Species_ID)
+    ) %>%
+    as.data.frame()
+
+  analysis_data <- analysis_data[
+    stats::complete.cases(
+      analysis_data[, required_columns, drop = FALSE]
+    ),
+    ,
+    drop = FALSE
+  ]
+
+  if (anyDuplicated(analysis_data$Species_ID)) {
+    stop(response_name, " contains duplicate Species_ID values.")
+  }
+
+  common_species <- intersect(
+    master_phy$tip.label,
+    analysis_data$Species_ID
+  )
+
+  species_after_complete_case_filtering <- nrow(analysis_data)
+
+  data_species_absent_from_tree <- length(
+    setdiff(analysis_data$Species_ID, master_phy$tip.label)
+  )
+
+  if (length(common_species) < 4L) {
+    stop(response_name, " has fewer than four tree-matched species.")
+  }
+
+  analysis_tree <- ape::keep.tip(
+    master_phy,
+    common_species
+  )
+
+  analysis_tree$node.label <- NULL
+
+  analysis_data <- analysis_data %>%
+    dplyr::filter(
+      Species_ID %in% common_species
+    ) %>%
+    dplyr::arrange(
+      match(Species_ID, analysis_tree$tip.label)
+    ) %>%
+    as.data.frame()
+
+  rownames(analysis_data) <- analysis_data$Species_ID
+
+  tree_validation <- validate_analysis_tree(
+    analysis_tree = analysis_tree,
+    model_data = analysis_data,
+    response_name = response_name
+  )
+
+  audit <- tibble::tibble(
+    Response = response_name,
+    Master_tree_tips = ape::Ntip(master_phy),
+    Species_before_filtering = nrow(data),
+    Species_after_complete_case_filtering =
+      species_after_complete_case_filtering,
+    Species_used = length(common_species),
+    Data_species_absent_from_tree =
+      data_species_absent_from_tree,
+    Master_tree_tips_excluded =
+      ape::Ntip(master_phy) - length(common_species),
+    Pruned_tree_rooted = tree_validation$rooted,
+    Pruned_tree_binary = tree_validation$binary,
+    Zero_length_edges = tree_validation$n_zero_length_edges
+  )
+
+  list(
+    data = analysis_data,
+    tree = analysis_tree,
+    audit = audit
+  )
+}
+
+
+############################################################
+# 6. PREPARE MEAN TPF
+#
+# TPF is a proportion that must be strictly between 0 and 1.
+# Unlike Bray-Curtis, TPF values are not moved away from a
+# boundary: invalid boundary values are excluded explicitly.
+############################################################
+
+tpf_input <- species_tpf_df %>%
+  dplyr::filter(
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1
+  )
+
+tpf_matched <- match_response_to_tree(
+  data = tpf_input,
+  required_columns = c(
+    "Species_ID",
+    "Phylum",
+    "mean_TPF",
+    "TrophicIndex",
+    "n_dates",
+    "mean_prot_detected"
+  ),
+  response_name = "Mean TPF"
+)
+
+tpf_data <- tpf_matched$data %>%
+  dplyr::mutate(
+    mean_TPF_logit = stats::qlogis(mean_TPF),
+    TrophicIndex_z = z_scale(TrophicIndex),
+    n_dates_z = z_scale(n_dates),
+    log_prot_detected_z = z_scale(
+      log1p(mean_prot_detected)
+    )
+  ) %>%
+  as.data.frame()
+
+rownames(tpf_data) <- tpf_data$Species_ID
+tpf_tree <- tpf_matched$tree
+
+
+############################################################
+# 7. PREPARE MEAN TRANSPORTER BRAY-CURTIS
+#
+# Bray-Curtis is bounded from 0 to 1 and may legitimately equal
+# either boundary. Values are therefore moved inward by epsilon
+# before the logit transformation.
+############################################################
+
+bc_input <- species_bc_df %>%
+  dplyr::filter(
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1
+  )
+
+bc_matched <- match_response_to_tree(
+  data = bc_input,
+  required_columns = c(
+    "Species_ID",
+    "Phylum",
+    "mean_bc_abs",
+    "TrophicIndex",
+    "mean_prot_pair"
+  ),
+  response_name = "Mean transporter Bray-Curtis"
+)
+
+bc_data <- bc_matched$data %>%
+  dplyr::mutate(
+    mean_bc_abs_logit = bounded_logit(mean_bc_abs),
+    TrophicIndex_z = z_scale(TrophicIndex),
+    log_prot_pair_z = z_scale(
+      log1p(mean_prot_pair)
+    )
+  ) %>%
+  as.data.frame()
+
+rownames(bc_data) <- bc_data$Species_ID
+bc_tree <- bc_matched$tree
+
+overall_tree_matching <- dplyr::bind_rows(
+  tpf_matched$audit,
+  bc_matched$audit
+)
+
+
+############################################################
+# 8. FIT A PGLS FULL MODEL AND ITS REDUCED MODEL
+#
+# The reduced model removes only trophic index. The likelihood-
+# ratio test therefore evaluates the added contribution of
+# trophic index after the response-specific coverage covariates.
+############################################################
+
+fit_pgls <- function(
+    data,
+    tree,
+    response,
+    full_formula,
+    reduced_formula,
+    covariates) {
+
+  comparative_data <- caper::comparative.data(
+    phy = tree,
+    data = data,
+    names.col = "Species_ID",
+    vcv = TRUE,
+    na.omit = FALSE,
+    warn.dropped = TRUE
+  )
+
+  full_model <- caper::pgls(
+    formula = full_formula,
+    data = comparative_data,
+    lambda = "ML",
+    param.CI = 0.95,
+    bounds = lambda_bounds
+  )
+
+  reduced_model <- caper::pgls(
+    formula = reduced_formula,
+    data = comparative_data,
+    lambda = "ML",
+    param.CI = 0.95,
+    bounds = lambda_bounds
+  )
+
+  model_summary <- summary(full_model)
+  coefficient_table <- model_summary$coefficients
+
+  estimate <- as.numeric(
+    coefficient_table["TrophicIndex_z", "Estimate"]
+  )
+
+  standard_error <- as.numeric(
+    coefficient_table["TrophicIndex_z", "Std. Error"]
+  )
+
+  residual_df <- as.numeric(
+    full_model$n - nrow(coefficient_table)
+  )
+
+  critical_t <- stats::qt(
+    0.975,
+    df = residual_df
+  )
+
+  likelihood_ratio <- max(
+    0,
+    2 * (
+      as.numeric(stats::logLik(full_model)) -
+        as.numeric(stats::logLik(reduced_model))
+    )
+  )
+
+  lambda_ci <- tryCatch(
+    as.numeric(
+      full_model$param.CI$lambda$ci.val[1:2]
+    ),
+    error = function(e) {
+      c(NA_real_, NA_real_)
+    }
+  )
+
+  if (length(lambda_ci) != 2L) {
+    lambda_ci <- c(NA_real_, NA_real_)
+  }
+
+  result <- tibble::tibble(
+    Response = response,
+    Method = "PGLS",
+    N_species = as.integer(full_model$n),
+    N_contrasts = NA_integer_,
+    Estimate = estimate,
+    SE = standard_error,
+    CI_low = as.numeric(
+      estimate - critical_t * standard_error
+    ),
+    CI_high = as.numeric(
+      estimate + critical_t * standard_error
+    ),
+    Test = "1-df likelihood-ratio test",
+    Test_statistic = as.numeric(likelihood_ratio),
+    Test_p = as.numeric(
+      stats::pchisq(
+        likelihood_ratio,
+        df = 1,
+        lower.tail = FALSE
+      )
+    ),
+    Lambda = as.numeric(
+      full_model$param["lambda"]
+    ),
+    Lambda_CI_low = as.numeric(lambda_ci[1]),
+    Lambda_CI_high = as.numeric(lambda_ci[2]),
+    Adjusted_R2 = as.numeric(
+      model_summary$adj.r.squared
+    ),
+    Covariates = covariates,
+    Full_model = formula_text(full_formula),
+    Reduced_model = formula_text(reduced_formula)
+  )
+
+  list(
+    full = full_model,
+    reduced = reduced_model,
+    comparative_data = comparative_data,
+    result = result
+  )
+}
+
+
+############################################################
+# 9. FIT PIC FULL AND REDUCED MODELS THROUGH THE ORIGIN
+############################################################
+
+make_pic_data <- function(data, tree, variables) {
+
+  contrasts <- lapply(
+    variables,
+    function(variable) {
+      as.numeric(
+        ape::pic(
+          x = stats::setNames(
+            data[[variable]],
+            data$Species_ID
+          ),
+          phy = tree,
+          scaled = TRUE
+        )
+      )
+    }
+  )
+
+  names(contrasts) <- variables
+  as.data.frame(contrasts)
+}
+
+fit_pic <- function(
+    data,
+    tree,
+    response,
+    response_variable,
+    covariates,
+    covariate_description) {
+
+  variables <- c(
+    response_variable,
+    "TrophicIndex_z",
+    covariates
+  )
+
+  pic_data <- make_pic_data(
+    data = data,
+    tree = tree,
+    variables = variables
+  )
+
+  full_formula <- stats::reformulate(
+    c("TrophicIndex_z", covariates),
+    response = response_variable,
+    intercept = FALSE
+  )
+
+  reduced_formula <- stats::reformulate(
+    covariates,
+    response = response_variable,
+    intercept = FALSE
+  )
+
+  full_model <- stats::lm(
+    full_formula,
+    data = pic_data
+  )
+
+  reduced_model <- stats::lm(
+    reduced_formula,
+    data = pic_data
+  )
+
+  model_summary <- summary(full_model)
+  coefficient_table <- model_summary$coefficients
+  model_test <- stats::anova(reduced_model, full_model)
+
+  coefficient_ci <- stats::confint(
+    full_model,
+    parm = "TrophicIndex_z",
+    level = 0.95
+  )
+
+  result <- tibble::tibble(
+    Response = response,
+    Method = "PIC",
+    N_species = as.integer(length(tree$tip.label)),
+    N_contrasts = as.integer(stats::nobs(full_model)),
+    Estimate = as.numeric(
+      coefficient_table["TrophicIndex_z", "Estimate"]
+    ),
+    SE = as.numeric(
+      coefficient_table["TrophicIndex_z", "Std. Error"]
+    ),
+    CI_low = as.numeric(coefficient_ci[1]),
+    CI_high = as.numeric(coefficient_ci[2]),
+    Test = "Nested-model F-test",
+    Test_statistic = as.numeric(model_test$F[2]),
+    Test_p = as.numeric(model_test$`Pr(>F)`[2]),
+    Lambda = NA_real_,
+    Lambda_CI_low = NA_real_,
+    Lambda_CI_high = NA_real_,
+    Adjusted_R2 = as.numeric(
+      model_summary$adj.r.squared
+    ),
+    Covariates = covariate_description,
+    Full_model = formula_text(full_formula),
+    Reduced_model = formula_text(reduced_formula)
+  )
+
+  list(
+    full = full_model,
+    reduced = reduced_model,
+    contrasts = pic_data,
+    result = result
+  )
+}
+
+
+############################################################
+# 10. FIT THE FOUR OVERALL PHYLOGENETIC MODELS
+############################################################
+
+tpf_pgls <- fit_pgls(
+  data = tpf_data,
+  tree = tpf_tree,
+  response = "Mean TPF",
+  full_formula = mean_TPF_logit ~
+    TrophicIndex_z +
+    n_dates_z +
+    log_prot_detected_z,
+  reduced_formula = mean_TPF_logit ~
+    n_dates_z +
+    log_prot_detected_z,
+  covariates = "Number of dates + mean species protein recovery"
+)
+
+tpf_pic <- fit_pic(
+  data = tpf_data,
+  tree = tpf_tree,
+  response = "Mean TPF",
+  response_variable = "mean_TPF_logit",
+  covariates = c(
+    "n_dates_z",
+    "log_prot_detected_z"
+  ),
+  covariate_description =
+    "Contrasts in number of dates + mean species protein recovery"
+)
+
+bc_pgls <- fit_pgls(
+  data = bc_data,
+  tree = bc_tree,
+  response = "Mean transporter Bray-Curtis",
+  full_formula = mean_bc_abs_logit ~
+    TrophicIndex_z +
+    log_prot_pair_z,
+  reduced_formula = mean_bc_abs_logit ~
+    log_prot_pair_z,
+  covariates =
+    "Mean protein recovery across paired consecutive dates"
+)
+
+bc_pic <- fit_pic(
+  data = bc_data,
+  tree = bc_tree,
+  response = "Mean transporter Bray-Curtis",
+  response_variable = "mean_bc_abs_logit",
+  covariates = "log_prot_pair_z",
+  covariate_description =
+    "Contrast in mean protein recovery across paired dates"
+)
+
+
+############################################################
+# 11. KEEP PGLS AND PIC RESULTS IN SEPARATE DATA TABLES
+#
+# PURPOSE
+# -------
+# PGLS and PIC answer the same ecological question but have
+# different method-specific quantities. Keeping them separate
+# avoids empty or inapplicable columns:
+#
+#   PGLS: N species, beta, likelihood-ratio test, lambda, R2
+#   PIC:  N species, N contrasts, beta, nested F-test, R2
+############################################################
+
+pgls_results <- dplyr::bind_rows(
+  tpf_pgls$result,
+  bc_pgls$result
+) %>%
+  dplyr::mutate(
+    dplyr::across(
+      c(
+        N_species,
+        Estimate,
+        SE,
+        CI_low,
+        CI_high,
+        Test_statistic,
+        Test_p,
+        Lambda,
+        Lambda_CI_low,
+        Lambda_CI_high,
+        Adjusted_R2
+      ),
+      as.numeric
+    )
+  )
+
+pic_results <- dplyr::bind_rows(
+  tpf_pic$result,
+  bc_pic$result
+) %>%
+  dplyr::mutate(
+    dplyr::across(
+      c(
+        N_species,
+        N_contrasts,
+        Estimate,
+        SE,
+        CI_low,
+        CI_high,
+        Test_statistic,
+        Test_p,
+        Adjusted_R2
+      ),
+      as.numeric
+    )
+  )
+
+############################################################
+# 12. CREATE THE PGLS TABLE
+#
+# Table cells contain only method-relevant numerical results and
+# the concise response-specific coverage adjustment.
+############################################################
+
+pgls_display <- pgls_results %>%
+  dplyr::transmute(
+    Response,
+    `N species` = as.integer(N_species),
+    `Beta [95% CI]` = paste0(
+      format_number(Estimate),
+      " ",
+      format_ci(CI_low, CI_high)
+    ),
+    `LR (df = 1)` = format_number(Test_statistic, 2),
+    P = format_p(Test_p),
+    `Lambda [95% CI]` = paste0(
+      format_number(Lambda),
+      " ",
+      format_ci(Lambda_CI_low, Lambda_CI_high)
+    ),
+    `Adjusted R2` = format_number(Adjusted_R2),
+    Adjustment = dplyr::case_when(
+      Response == "Mean TPF" ~
+        "No. dates; mean protein recovery",
+      Response == "Mean transporter Bray-Curtis" ~
+        "Mean protein recovery across paired dates",
+      TRUE ~ Covariates
+    )
+  )
+
+pgls_gt <- pgls_display %>%
+  gt::gt() %>%
+  gt::tab_header(
+    title = gt::md("**Phylogenetic generalized least-squares models**")
+  ) %>%
+  gt::cols_label(
+    `Beta [95% CI]` = gt::html("&beta; [95% CI]"),
+    `Lambda [95% CI]` = gt::html("&lambda; [95% CI]"),
+    `Adjusted R2` = gt::html("Adjusted R<sup>2</sup>")
+  ) %>%
+  gt::cols_align(
+    align = "center",
+    columns = -c(Response, Adjustment)
+  ) %>%
+  gt::cols_align(
+    align = "left",
+    columns = c(Response, Adjustment)
+  ) %>%
+  gt::opt_row_striping() %>%
+  gt::tab_options(
+    table.font.size = gt::px(10),
+    heading.title.font.size = gt::px(13),
+    data_row.padding = gt::px(5),
+    source_notes.font.size = gt::px(9)
+  ) %>%
+  gt::tab_source_note(
+    gt::md(
+      paste0(
+        "\u03B2 is the change in the logit-transformed response per 1-SD ",
+        "increase in trophic index after adjustment for covariates and shared ancestry; ",
+        "P is from a 1-df likelihood-ratio test."
+      )
+    )
+  )
+
+
+############################################################
+# 13. CREATE THE PIC TABLE
+############################################################
+
+pic_display <- pic_results %>%
+  dplyr::transmute(
+    Response,
+    `N species` = as.integer(N_species),
+    `N contrasts` = as.integer(N_contrasts),
+    `Beta [95% CI]` = paste0(
+      format_number(Estimate),
+      " ",
+      format_ci(CI_low, CI_high)
+    ),
+    `F (df = 1)` = format_number(Test_statistic, 2),
+    P = format_p(Test_p),
+    `Adjusted R2` = format_number(Adjusted_R2),
+    Adjustment = dplyr::case_when(
+      Response == "Mean TPF" ~
+        "Contrasts: no. dates; mean protein recovery",
+      Response == "Mean transporter Bray-Curtis" ~
+        "Contrast: mean protein recovery across paired dates",
+      TRUE ~ Covariates
+    )
+  )
+
+pic_gt <- pic_display %>%
+  gt::gt() %>%
+  gt::tab_header(
+    title = gt::md("**Phylogenetic independent-contrast models**")
+  ) %>%
+  gt::cols_label(
+    `Beta [95% CI]` = gt::html("&beta; [95% CI]"),
+    `Adjusted R2` = gt::html("Adjusted R<sup>2</sup>")
+  ) %>%
+  gt::cols_align(
+    align = "center",
+    columns = -c(Response, Adjustment)
+  ) %>%
+  gt::cols_align(
+    align = "left",
+    columns = c(Response, Adjustment)
+  ) %>%
+  gt::opt_row_striping() %>%
+  gt::tab_options(
+    table.font.size = gt::px(10),
+    heading.title.font.size = gt::px(13),
+    data_row.padding = gt::px(5),
+    source_notes.font.size = gt::px(9)
+  ) %>%
+  gt::tab_source_note(
+    gt::md(
+      paste0(
+        "Models were fitted through the origin (without an intercept). ",
+        "\u03B2 is the slope of the trophic-index contrast after adjustment for ",
+        "covariate contrasts; P is from a 1-df nested F-test."
+      )
+    )
+  )
+
+
+############################################################
+# 14. DISPLAY ONLY THE TWO FINAL TABLES
+#
+# No method section, results interpretation, or combined report
+# is generated here. Those elements can be written directly in
+# the supplementary text and table legends.
+############################################################
+
+invisible(print(pgls_gt))
+invisible(print(pic_gt))
+
+
+############################################################
+# 15. EXPORT ONLY SUPPORTING DATA AND TWO RENDERED TABLES
+#
+# FILES WRITTEN
+# -------------
+# 1. Complete numeric PGLS results (CSV)
+# 2. Complete numeric PIC results (CSV)
+# 3. Tree-matching audit for both responses (CSV)
+# 4. Final rendered PGLS table (HTML)
+# 5. Final rendered PIC table (HTML)
+############################################################
+
+pgls_html_file <- file.path(
+  overall_out_dir,
+  "Overall_PGLS_results.html"
+)
+
+pic_html_file <- file.path(
+  overall_out_dir,
+  "Overall_PIC_results.html"
+)
+
+pgls_csv_file <- file.path(
+  overall_out_dir,
+  "Overall_PGLS_results.csv"
+)
+
+pic_csv_file <- file.path(
+  overall_out_dir,
+  "Overall_PIC_results.csv"
+)
+
+overall_matching_file <- file.path(
+  overall_out_dir,
+  "Overall_tree_matching.csv"
+)
+
+gt::gtsave(
+  pgls_gt,
+  filename = pgls_html_file,
+  inline_css = TRUE
+)
+
+gt::gtsave(
+  pic_gt,
+  filename = pic_html_file,
+  inline_css = TRUE
+)
+
+readr::write_csv(
+  pgls_results,
+  pgls_csv_file
+)
+
+readr::write_csv(
+  pic_results,
+  pic_csv_file
+)
+
+readr::write_csv(
+  overall_tree_matching,
+  overall_matching_file
+)
+
+cat("\nOverall phylogenetic models completed.\n")
+cat("PGLS table: ", pgls_html_file, "\n", sep = "")
+cat("PIC table: ", pic_html_file, "\n", sep = "")
+cat("PGLS numeric results: ", pgls_csv_file, "\n", sep = "")
+cat("PIC numeric results: ", pic_csv_file, "\n", sep = "")
+cat("Tree matching: ", overall_matching_file, "\n", sep = "")
+cat("\n")
+
+############################################################
+# EXPORT BLOCK D TABLES AS PNG
+############################################################
+
+gt::gtsave(
+  pgls_gt,
+  filename = file.path(
+    overall_out_dir,
+    "BlockD_PGLS_results_portrait.png"
+  ),
+  vwidth = 1200,
+  vheight = 1500
+)
+
+gt::gtsave(
+  pic_gt,
+  filename = file.path(
+    overall_out_dir,
+    "BlockD_PIC_results_portrait.png"
+  ),
+  vwidth = 1200,
+  vheight = 1500
+)
+
+############################################################
+# 16. COMPACT CIRCULAR TREE USED FOR PGLS AND PIC
+#
+# Shows:
+#   - the 170 species included in both phylogenetic analyses
+#   - tip points coloured by trophic strategy
+#   - phylum clades labelled around the tree
+#   - ultrafast-bootstrap support summarized as:
+#       red  = 100%
+#       grey = <100%, with the observed range in the legend
+#
+# Species labels and individual support values are omitted
+# because the figure is intended as a phylogenetic overview.
+############################################################
+
+if (!requireNamespace("ggtree", quietly = TRUE)) {
+  stop(
+    "Package 'ggtree' is required. Install it using: ",
+    "BiocManager::install('ggtree')"
+  )
+}
+
+trophic_cols <- c(
+  "Oligotroph"   = "#99C3E6",
+  "Intermediate" = "#ECEAE9",
+  "Copiotroph"   = "#B25009"
+)
+
+
+############################################################
+# 16.1 PREPARE THE COMMON ANALYSIS TREE
+############################################################
+
+if (!setequal(tpf_tree$tip.label, bc_tree$tip.label)) {
+  stop(
+    "TPF and Bray-Curtis models do not contain the same species. ",
+    "A single common analysis tree cannot be plotted."
+  )
+}
+
+analysis_species <- tpf_tree$tip.label
+
+# Re-read the prepared Newick file because node-support labels
+# were removed from the trees used for model fitting.
+pic_phy <- ape::read.tree(tree_file) %>%
+  ape::keep.tip(analysis_species)
+
+if (!ape::is.rooted(pic_phy)) {
+  stop("The plotting tree is not rooted.")
+}
+
+if (!ape::is.binary(pic_phy)) {
+  stop("The plotting tree is not fully bifurcating.")
+}
+
+if (is.null(pic_phy$node.label)) {
+  stop("No node-support values were found in the Newick tree.")
+}
+
+if (ape::Ntip(pic_phy) != 170L) {
+  warning(
+    "The plotting tree contains ",
+    ape::Ntip(pic_phy),
+    " species rather than 170."
+  )
+}
+
+
+############################################################
+# 16.2 PREPARE TIP METADATA
+############################################################
+
+tip_metadata <- tpf_data %>%
+  dplyr::transmute(
+    label = as.character(Species_ID),
+    Phylum = as.character(Phylum)
+  )
+
+if ("TrophicGroupPlot" %in% names(tpf_data)) {
+
+  tip_metadata$TrophicGroup <- as.character(
+    tpf_data$TrophicGroupPlot
+  )
+
+} else if ("Group_For_Plots" %in% names(tpf_data)) {
+
+  tip_metadata$TrophicGroup <- dplyr::case_when(
+    tpf_data$Group_For_Plots == "Oligo_like"   ~ "Oligotroph",
+    tpf_data$Group_For_Plots == "Intermediate" ~ "Intermediate",
+    tpf_data$Group_For_Plots == "Copio_like"   ~ "Copiotroph",
+    TRUE                                       ~ NA_character_
+  )
+
+} else {
+
+  stop(
+    "Neither TrophicGroupPlot nor Group_For_Plots ",
+    "was found in tpf_data."
+  )
+}
+
+tip_metadata <- tip_metadata %>%
+  dplyr::filter(label %in% pic_phy$tip.label) %>%
+  dplyr::mutate(
+    TrophicGroup = factor(
+      TrophicGroup,
+      levels = names(trophic_cols)
+    )
+  ) %>%
+  dplyr::distinct(label, .keep_all = TRUE)
+
+if (
+  nrow(tip_metadata) != ape::Ntip(pic_phy) ||
+  anyNA(tip_metadata$Phylum) ||
+  anyNA(tip_metadata$TrophicGroup)
+) {
+  stop("Incomplete phylum or trophic metadata for tree tips.")
+}
+
+
+############################################################
+# 16.3 EXTRACT ULTRAFAST-BOOTSTRAP SUPPORT
+#
+# When both SH-aLRT and ultrafast-bootstrap values are present,
+# IQ-TREE stores node labels as:
+#
+#   SH-aLRT/UFBoot
+#
+# The second value is therefore extracted for this figure.
+# If only one value is present, that value is used.
+############################################################
+
+extract_ufboot <- function(x) {
+
+  vapply(
+    strsplit(as.character(x), "/", fixed = TRUE),
+    function(parts) {
+
+      support_field <- if (length(parts) >= 2L) {
+        parts[2L]
+      } else {
+        parts[1L]
+      }
+
+      as.numeric(
+        suppressWarnings(
+          readr::parse_number(support_field)
+        )
+      )
+    },
+    numeric(1)
+  )
+}
+
+bootstrap_values <- extract_ufboot(pic_phy$node.label)
+
+# Convert support values from proportions to percentages,
+# if necessary.
+if (
+  any(is.finite(bootstrap_values)) &&
+  max(bootstrap_values, na.rm = TRUE) <= 1
+) {
+  bootstrap_values <- bootstrap_values * 100
+}
+
+if (length(bootstrap_values) != ape::Nnode(pic_phy)) {
+  stop("Support values do not match the internal tree nodes.")
+}
+
+if (
+  any(
+    bootstrap_values < 0 | bootstrap_values > 100,
+    na.rm = TRUE
+  )
+) {
+  stop("Ultrafast-bootstrap values outside 0–100 were detected.")
+}
+
+sub100_values <- bootstrap_values[
+  is.finite(bootstrap_values) &
+    bootstrap_values < 100
+]
+
+format_support <- function(x) {
+  sub(
+    "\\.0$",
+    "",
+    formatC(x, format = "f", digits = 1)
+  )
+}
+
+if (length(sub100_values) > 0L) {
+
+  sub100_range <- range(sub100_values)
+
+  sub100_label <- paste0(
+    "<100% (",
+    format_support(sub100_range[1]),
+    "–",
+    format_support(sub100_range[2]),
+    "%)"
+  )
+
+} else {
+
+  sub100_label <- "<100%"
+
+}
+
+support_cols <- c(
+  "100%" = "#D73027",
+  stats::setNames("#969696", sub100_label)
+)
+
+node_support <- tibble::tibble(
+  node = ape::Ntip(pic_phy) +
+    seq_len(ape::Nnode(pic_phy)),
+  Bootstrap = bootstrap_values,
+  Bootstrap_class = dplyr::case_when(
+    !is.finite(Bootstrap) ~ NA_character_,
+    abs(Bootstrap - 100) < 1e-8 ~ "100%",
+    Bootstrap < 100 ~ sub100_label,
+    TRUE ~ NA_character_
+  )
+) %>%
+  dplyr::mutate(
+    Bootstrap_class = factor(
+      Bootstrap_class,
+      levels = names(support_cols)
+    )
+  )
+
+
+############################################################
+# 16.4 IDENTIFY MONOPHYLETIC PHYLUM CLADES
+############################################################
+
+phylum_tips <- split(
+  tip_metadata$label,
+  tip_metadata$Phylum
+)
+
+phylum_clades <- dplyr::bind_rows(
+  lapply(names(phylum_tips), function(phylum_name) {
+
+    these_tips <- phylum_tips[[phylum_name]]
+
+    monophyletic <- length(these_tips) == 1L ||
+      ape::is.monophyletic(
+        pic_phy,
+        these_tips
+      )
+
+    clade_node <- if (length(these_tips) == 1L) {
+      match(these_tips, pic_phy$tip.label)
+    } else {
+      ape::getMRCA(pic_phy, these_tips)
+    }
+
+    tibble::tibble(
+      Phylum = phylum_name,
+      node = as.integer(clade_node),
+      N_tips = length(these_tips),
+      Monophyletic = monophyletic
+    )
+  })
+)
+
+if (any(!phylum_clades$Monophyletic)) {
+  stop(
+    "A single phylum label would be misleading because these ",
+    "phyla are not monophyletic in the pruned tree: ",
+    paste(
+      phylum_clades$Phylum[
+        !phylum_clades$Monophyletic
+      ],
+      collapse = ", "
+    )
+  )
+}
+
+
+############################################################
+# 16.5 BUILD THE COMPACT CIRCULAR TREE
+############################################################
+
+pic_tree_plot <- ggtree::ggtree(
+  pic_phy,
+  layout = "circular",
+  open.angle = 5,
+  linewidth = 0.25
+)
+
+pic_tree_plot$data <- pic_tree_plot$data %>%
+  dplyr::left_join(
+    tip_metadata,
+    by = "label"
+  ) %>%
+  dplyr::left_join(
+    node_support,
+    by = "node"
+  )
+
+tree_radius <- max(
+  pic_tree_plot$data$x,
+  na.rm = TRUE
+)
+
+pic_tree_plot <- pic_tree_plot +
+  ggtree::geom_tippoint(
+    ggplot2::aes(fill = TrophicGroup),
+    shape = 21,
+    size = 2.5,
+    stroke = 0.20,
+    colour = "black"
+  ) +
+  ggtree::geom_point2(
+    ggplot2::aes(
+      subset =
+        !isTip &
+        !is.na(Bootstrap_class),
+      colour = Bootstrap_class
+    ),
+    size = 0.4
+  ) +
+  ggplot2::scale_fill_manual(
+    name = "Trophic strategy",
+    values = trophic_cols,
+    breaks = names(trophic_cols),
+    drop = FALSE
+  ) +
+  ggplot2::scale_colour_manual(
+    name = "Ultrafast bootstrap",
+    values = support_cols,
+    breaks = names(support_cols),
+    drop = FALSE
+  ) +
+  ggplot2::xlim(
+    0,
+    tree_radius * 1.20
+  ) +
+  ggplot2::guides(
+    fill = ggplot2::guide_legend(
+      order = 1,
+      nrow = 1,
+      title.position = "top",
+      override.aes = list(
+        shape = 21,
+        size = 2.5,
+        colour = "black"
+      )
+    ),
+    colour = ggplot2::guide_legend(
+      order = 2,
+      nrow = 1,
+      title.position = "top",
+      override.aes = list(
+        shape = 16,
+        size = 2.5
+      )
+    )
+  ) +
+  ggplot2::theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.title = ggplot2::element_text(
+      size = 8,
+      face = "bold"
+    ),
+    legend.text = ggplot2::element_text(
+      size = 7.5
+    ),
+    legend.spacing.x = grid::unit(2, "mm"),
+    legend.key.width = grid::unit(4, "mm"),
+    plot.margin = ggplot2::margin(
+      2,
+      8,
+      2,
+      8
+    )
+  )
+
+
+############################################################
+# 16.6 ADD PHYLUM CLADE LINES AND LABELS
+############################################################
+
+for (i in seq_len(nrow(phylum_clades))) {
+
+  pic_tree_plot <- pic_tree_plot +
+    ggtree::geom_cladelabel(
+      node = phylum_clades$node[i],
+      label = phylum_clades$Phylum[i],
+      align = TRUE,
+      angle = "auto",
+      offset = tree_radius * 0.025,
+      offset.text = tree_radius * 0.006,
+      barsize = 0.30,
+      fontsize = 2.5,
+      colour = "black"
+    )
+}
+
+
+############################################################
+# 16.7 DISPLAY AND EXPORT
+############################################################
+
+print(pic_tree_plot)
+
+ggplot2::ggsave(
+  filename = file.path(
+    overall_out_dir,
+    "BlockD_analysis_tree_circular.png"
+  ),
+  plot = pic_tree_plot,
+  width = 8.2,
+  height = 8.2,
+  units = "in",
+  dpi = 400,
+  bg = "white",
+  limitsize = FALSE
+)
+```
+
+
+```{r}
+############################################################
+# BLOCK E — WITHIN-PHYLUM TAXONOMIC ROBUSTNESS
+#
+# FIGURE
+# ------
+# A. Trophic-index distributions
+# B. Mean transporter proteome fraction
+# C. Mean transporter Bray-Curtis dissimilarity
+#
+# TABLE
+# -----
+# A. Model specification
+# B. Trophic-index evidence
+# C. Original-scale effect size
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(ggplot2)
+  library(glmmTMB)
+  library(patchwork)
+  library(gt)
+})
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+output_dir <- "BlockE_Within_Phylum_Overview"
+
+training_data_path <- paste0(
+  "../../TrophicIndex/LZ-BITS/",
+  "IndicatorSpecies_GenomicProperties.csv"
+)
+
+dir.create(
+  output_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+figure_rows <- c(
+  "Actinomycetota",
+  "Pseudomonadota",
+  "Other retained bacteria"
+)
+
+response_types <- c(
+  "TPF",
+  "Bray_Curtis"
+)
+
+highlight_colours <- c(
+  "Other retained species" = "#B8B8B8",
+  "Planktophila" = "#83D3D4",
+  "Fonsibacter" = "#C8F913"
+)
+
+highlight_sizes <- c(
+  "Other retained species" = 1.8,
+  "Planktophila" = 3.0,
+  "Fonsibacter" = 3.0
+)
+
+############################################################
+# 2) TROPHIC-INDEX CUTOFFS
+############################################################
+
+training_data <- readr::read_csv(
+  training_data_path,
+  show_col_types = FALSE
+) %>%
+  dplyr::filter(
+    dplyr::if_all(
+      c(
+        GENOME_LENGTH,
+        CODING_DENSITY,
+        TOTAL_TRNA,
+        NUM_SIGMA
+      ),
+      is.finite
+    )
+  )
+
+trophic_pca <- training_data %>%
+  dplyr::select(
+    GENOME_LENGTH,
+    CODING_DENSITY,
+    TOTAL_TRNA,
+    NUM_SIGMA
+  ) %>%
+  stats::prcomp(
+    center = TRUE,
+    scale. = TRUE
+  )
+
+training_pc1 <- trophic_pca$x[, 1]
+
+training_pc1 <- training_pc1 * sign(
+  stats::cor(
+    training_data$GENOME_LENGTH,
+    training_pc1
+  )
+)
+
+trophic_cutoffs <- stats::quantile(
+  training_pc1,
+  probs = c(0.25, 0.75),
+  type = 7
+)
+
+oligo_intermediate_cutoff <- unname(
+  trophic_cutoffs[1]
+)
+
+intermediate_copio_cutoff <- unname(
+  trophic_cutoffs[2]
+)
+
+############################################################
+# 3) HELPER FUNCTIONS
+############################################################
+
+add_plot_information <- function(data) {
+
+  data %>%
+    dplyr::mutate(
+      Phylum = as.character(Phylum),
+
+      Figure_Row = dplyr::case_when(
+        Phylum == "Actinomycetota" ~
+          "Actinomycetota",
+
+        Phylum == "Pseudomonadota" ~
+          "Pseudomonadota",
+
+        TRUE ~
+          "Other retained bacteria"
+      ),
+
+      Figure_Row = factor(
+        Figure_Row,
+        levels = figure_rows
+      ),
+
+      Taxon_Label = paste(
+        Species_ID,
+        dplyr::coalesce(
+          as.character(Species),
+          ""
+        )
+      ),
+
+      Highlight = dplyr::case_when(
+        grepl(
+          "Planktophila",
+          Taxon_Label,
+          ignore.case = TRUE
+        ) ~
+          "Planktophila",
+
+        grepl(
+          "Fonsibacter",
+          Taxon_Label,
+          ignore.case = TRUE
+        ) ~
+          "Fonsibacter",
+
+        TRUE ~
+          "Other retained species"
+      ),
+
+      Highlight = factor(
+        Highlight,
+        levels = c(
+          "Other retained species",
+          "Planktophila",
+          "Fonsibacter"
+        )
+      )
+    ) %>%
+    dplyr::select(
+      -Taxon_Label
+    )
+}
+
+standardize_to <- function(
+    x,
+    reference) {
+
+  (
+    x -
+      mean(reference, na.rm = TRUE)
+  ) /
+    stats::sd(reference, na.rm = TRUE)
+}
+
+logit_bounded <- function(
+    x,
+    eps = 1e-6) {
+
+  stats::qlogis(
+    pmin(
+      pmax(x, eps),
+      1 - eps
+    )
+  )
+}
+
+padded_range <- function(
+    x,
+    padding = 0.05,
+    lower = -Inf,
+    upper = Inf) {
+
+  observed_range <- range(
+    x[is.finite(x)],
+    na.rm = TRUE
+  )
+
+  width <- diff(
+    observed_range
+  )
+
+  c(
+    max(
+      lower,
+      observed_range[1] -
+        padding * width
+    ),
+
+    min(
+      upper,
+      observed_range[2] +
+        padding * width
+    )
+  )
+}
+
+format_number <- function(
+    x,
+    digits = 3) {
+
+  ifelse(
+    is.na(x),
+    "NA",
+    formatC(
+      x,
+      digits = digits,
+      format = "f"
+    )
+  )
+}
+
+format_p_value <- function(x) {
+
+  dplyr::case_when(
+    is.na(x) ~ "NA",
+    x < 0.001 ~ "<0.001",
+
+    TRUE ~
+      formatC(
+        x,
+        digits = 3,
+        format = "f"
+      )
+  )
+}
+
+format_signed_percent <- function(
+    x,
+    digits = 1) {
+
+  if (is.na(x)) {
+    return("NA")
+  }
+
+  paste0(
+    ifelse(x > 0, "+", ""),
+    formatC(
+      x,
+      digits = digits,
+      format = "f"
+    ),
+    "%"
+  )
+}
+
+format_signed_pp <- function(
+    x,
+    digits = 1) {
+
+  if (is.na(x)) {
+    return("NA")
+  }
+
+  paste0(
+    ifelse(x > 0, "+", ""),
+    formatC(
+      100 * x,
+      digits = digits,
+      format = "f"
+    ),
+    " percentage points"
+  )
+}
+
+############################################################
+# 4) PREPARE SPECIES-LEVEL DATA
+############################################################
+
+taxonomy_unique <- species_taxonomy %>%
+  dplyr::select(
+    Species_ID,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Species
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    .keep_all = TRUE
+  )
+
+taxonomy_labels <- taxonomy_unique %>%
+  dplyr::select(
+    Species_ID,
+    Class,
+    Order,
+    Family,
+    Species
+  )
+
+distribution_data <- retained_species %>%
+  dplyr::select(
+    Species_ID
+  ) %>%
+  dplyr::inner_join(
+    protein_final %>%
+      dplyr::select(
+        Species_ID,
+        TrophicIndex
+      ) %>%
+      dplyr::distinct(
+        Species_ID,
+        .keep_all = TRUE
+      ),
+    by = "Species_ID"
+  ) %>%
+  dplyr::left_join(
+    taxonomy_unique,
+    by = "Species_ID"
+  ) %>%
+  dplyr::filter(
+    !is.na(Phylum),
+    is.finite(TrophicIndex)
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    .keep_all = TRUE
+  ) %>%
+  add_plot_information()
+
+tpf_data <- species_tpf_df %>%
+  dplyr::mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = as.character(Phylum)
+  ) %>%
+  dplyr::left_join(
+    taxonomy_labels,
+    by = "Species_ID"
+  ) %>%
+  dplyr::filter(
+    !is.na(Phylum),
+    is.finite(TrophicIndex),
+    is.finite(mean_TPF),
+    mean_TPF > 0,
+    mean_TPF < 1
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    .keep_all = TRUE
+  ) %>%
+  add_plot_information()
+
+variability_data <- species_bc_df %>%
+  dplyr::mutate(
+    Species_ID = as.character(Species_ID),
+    Phylum = as.character(Phylum)
+  ) %>%
+  dplyr::left_join(
+    taxonomy_labels,
+    by = "Species_ID"
+  ) %>%
+  dplyr::filter(
+    !is.na(Phylum),
+    is.finite(TrophicIndex),
+    is.finite(mean_bc_abs),
+    mean_bc_abs >= 0,
+    mean_bc_abs <= 1
+  ) %>%
+  dplyr::distinct(
+    Species_ID,
+    .keep_all = TRUE
+  ) %>%
+  add_plot_information()
+
+############################################################
+# 5) STANDARDIZE MODEL VARIABLES
+############################################################
+
+trophic_reference_sd <- stats::sd(
+  distribution_data$TrophicIndex,
+  na.rm = TRUE
+)
+
+tpf_data <- tpf_data %>%
+  dplyr::mutate(
+    TrophicIndex_z = standardize_to(
+      TrophicIndex,
+      distribution_data$TrophicIndex
+    ),
+
+    n_dates_z = standardize_to(
+      n_dates,
+      n_dates
+    ),
+
+    log_prot_detected_z = standardize_to(
+      log1p(mean_prot_detected),
+      log1p(mean_prot_detected)
+    )
+  )
+
+variability_data <- variability_data %>%
+  dplyr::mutate(
+    mean_bc_abs_logit = logit_bounded(
+      mean_bc_abs
+    ),
+
+    TrophicIndex_z = standardize_to(
+      TrophicIndex,
+      distribution_data$TrophicIndex
+    ),
+
+    log_prot_pair_z = standardize_to(
+      log1p(mean_prot_pair),
+      log1p(mean_prot_pair)
+    )
+  )
+
+############################################################
+# 6) MODEL DEFINITIONS
+############################################################
+
+model_specs <- list(
+
+  TPF = list(
+    data = tpf_data,
+    response = "Mean TPF",
+    table_response = "Mean TPF (%)",
+    family_label = "Beta regression; logit link",
+
+    family = glmmTMB::beta_family(
+      link = "logit"
+    ),
+
+    full_formula = paste0(
+      "mean_TPF ~ TrophicIndex_z + ",
+      "n_dates_z + log_prot_detected_z"
+    ),
+
+    reduced_formula = paste0(
+      "mean_TPF ~ ",
+      "n_dates_z + log_prot_detected_z"
+    ),
+
+    full_effects = paste0(
+      "TI + number of dates + ",
+      "protein recovery"
+    ),
+
+    reduced_effects = paste0(
+      "Number of dates + ",
+      "protein recovery"
+    )
+  ),
+
+  Bray_Curtis = list(
+    data = variability_data,
+    response = "Mean transporter Bray-Curtis",
+    table_response = "Mean transporter Bray-Curtis (%)",
+    family_label = "Gaussian; logit-transformed response",
+
+    family = stats::gaussian(),
+
+    full_formula = paste0(
+      "mean_bc_abs_logit ~ ",
+      "TrophicIndex_z + log_prot_pair_z"
+    ),
+
+    reduced_formula = paste0(
+      "mean_bc_abs_logit ~ ",
+      "log_prot_pair_z"
+    ),
+
+    full_effects =
+      "TI + paired protein recovery",
+
+    reduced_effects =
+      "Paired protein recovery"
+  )
+)
+
+############################################################
+# 7) FIT GROUP-SPECIFIC MODELS
+############################################################
+
+fit_subgroup_model <- function(
+    row_name,
+    response_type) {
+
+  spec <- model_specs[[response_type]]
+
+  analysis_data <- spec$data %>%
+    dplyr::filter(
+      Figure_Row == row_name
+    ) %>%
+    droplevels()
+
+  use_random_effect <-
+    row_name == "Other retained bacteria"
+
+  random_term <- ifelse(
+    use_random_effect,
+    " + (1 | Phylum)",
+    ""
+  )
+
+  full_formula_text <- paste0(
+    spec$full_formula,
+    random_term
+  )
+
+  reduced_formula_text <- paste0(
+    spec$reduced_formula,
+    random_term
+  )
+
+  full_model <- glmmTMB::glmmTMB(
+    stats::as.formula(
+      full_formula_text
+    ),
+    family = spec$family,
+    data = analysis_data,
+    REML = FALSE
+  )
+
+  reduced_model <- glmmTMB::glmmTMB(
+    stats::as.formula(
+      reduced_formula_text
+    ),
+    family = spec$family,
+    data = analysis_data,
+    REML = FALSE
+  )
+
+  coefficient_matrix <-
+    summary(full_model)$coefficients$cond
+
+  trophic_estimate <- unname(
+    coefficient_matrix[
+      "TrophicIndex_z",
+      "Estimate"
+    ]
+  )
+
+  trophic_se <- unname(
+    coefficient_matrix[
+      "TrophicIndex_z",
+      "Std. Error"
+    ]
+  )
+
+  full_log_likelihood <- as.numeric(
+    stats::logLik(full_model)
+  )
+
+  reduced_log_likelihood <- as.numeric(
+    stats::logLik(reduced_model)
+  )
+
+  lrt_df <-
+    attr(stats::logLik(full_model), "df") -
+    attr(stats::logLik(reduced_model), "df")
+
+  lrt_chisq <- 2 * (
+    full_log_likelihood -
+      reduced_log_likelihood
+  )
+
+  lrt_p <- stats::pchisq(
+    lrt_chisq,
+    df = lrt_df,
+    lower.tail = FALSE
+  )
+
+  model_statistics <- tibble::tibble(
+    Figure_Row = row_name,
+    Response_Type = response_type,
+    Response = spec$response,
+    Table_Response = spec$table_response,
+    Model_Family = spec$family_label,
+    Full_Fixed_Effects = spec$full_effects,
+    Reduced_Fixed_Effects = spec$reduced_effects,
+
+    Random_Effect = ifelse(
+      use_random_effect,
+      "(1 | Phylum)",
+      "None"
+    ),
+
+    N_Species = nrow(
+      analysis_data
+    ),
+
+    N_Phyla = dplyr::n_distinct(
+      analysis_data$Phylum
+    ),
+
+    TI_Estimate =
+      trophic_estimate,
+
+    TI_CI_Lower =
+      trophic_estimate -
+      1.96 * trophic_se,
+
+    TI_CI_Upper =
+      trophic_estimate +
+      1.96 * trophic_se,
+
+    LRT_Chisq =
+      lrt_chisq,
+
+    LRT_DF =
+      lrt_df,
+
+    LRT_P =
+      lrt_p,
+
+    Delta_AIC_Reduced_Minus_Full =
+      stats::AIC(reduced_model) -
+      stats::AIC(full_model)
+  )
+
+  prediction_data <- tibble::tibble(
+    TrophicIndex = seq(
+      min(
+        analysis_data$TrophicIndex,
+        na.rm = TRUE
+      ),
+
+      max(
+        analysis_data$TrophicIndex,
+        na.rm = TRUE
+      ),
+
+      length.out = 250
+    ),
+
+    n_dates_z = 0,
+    log_prot_detected_z = 0,
+    log_prot_pair_z = 0,
+    Phylum = analysis_data$Phylum[1]
+  ) %>%
+    dplyr::mutate(
+      TrophicIndex_z = standardize_to(
+        TrophicIndex,
+        distribution_data$TrophicIndex
+      )
+    )
+
+  predicted_link <- stats::predict(
+    full_model,
+    newdata = prediction_data,
+    type = "link",
+    se.fit = TRUE,
+    re.form = NA,
+    allow.new.levels = TRUE
+  )
+
+  prediction_data <- prediction_data %>%
+    dplyr::mutate(
+      Fit_Link = as.numeric(
+        predicted_link$fit
+      ),
+
+      SE_Link = as.numeric(
+        predicted_link$se.fit
+      ),
+
+      Fitted_Response =
+        stats::plogis(
+          Fit_Link
+        ),
+
+      CI_Lower =
+        stats::plogis(
+          Fit_Link -
+            1.96 * SE_Link
+        ),
+
+      CI_Upper =
+        stats::plogis(
+          Fit_Link +
+            1.96 * SE_Link
+        ),
+
+      Figure_Row = row_name,
+      Response_Type = response_type
+    )
+
+  list(
+    full_model = full_model,
+    analysis_data = analysis_data,
+    statistics = model_statistics,
+    predictions = prediction_data
+  )
+}
+
+############################################################
+# 8) RUN ALL SIX MODELS
+############################################################
+
+model_fits <- stats::setNames(
+  lapply(
+    figure_rows,
+
+    function(row_name) {
+
+      stats::setNames(
+        lapply(
+          response_types,
+
+          function(response_type) {
+
+            fit_subgroup_model(
+              row_name,
+              response_type
+            )
+          }
+        ),
+
+        response_types
+      )
+    }
+  ),
+
+  figure_rows
+)
+
+model_statistics <- dplyr::bind_rows(
+  lapply(
+    model_fits,
+
+    function(group_models) {
+
+      dplyr::bind_rows(
+        lapply(
+          group_models,
+          function(x) x$statistics
+        )
+      )
+    }
+  )
+)
+
+model_predictions <- dplyr::bind_rows(
+  lapply(
+    model_fits,
+
+    function(group_models) {
+
+      dplyr::bind_rows(
+        lapply(
+          group_models,
+          function(x) x$predictions
+        )
+      )
+    }
+  )
+)
+
+############################################################
+# 9) CALCULATE ORIGINAL-SCALE EFFECT SIZES
+#
+# Each contrast spans exactly one SD of trophic index.
+#
+# Lower TI = group mean - 0.5 SD
+# Higher TI = group mean + 0.5 SD
+#
+# Technical covariates are fixed at their standardized means.
+############################################################
+
+predict_response_at_ti <- function(
+    row_name,
+    response_type,
+    trophic_values) {
+
+  fit_object <-
+    model_fits[[row_name]][[response_type]]
+
+  prediction_data <- tibble::tibble(
+    TrophicIndex = trophic_values,
+    n_dates_z = 0,
+    log_prot_detected_z = 0,
+    log_prot_pair_z = 0,
+    Phylum =
+      fit_object$analysis_data$Phylum[1]
+  ) %>%
+    dplyr::mutate(
+      TrophicIndex_z = standardize_to(
+        TrophicIndex,
+        distribution_data$TrophicIndex
+      )
+    )
+
+  predicted_link <- stats::predict(
+    fit_object$full_model,
+    newdata = prediction_data,
+    type = "link",
+    se.fit = TRUE,
+    re.form = NA,
+    allow.new.levels = TRUE
+  )
+
+  prediction_data %>%
+    dplyr::mutate(
+      Fit_Link =
+        as.numeric(
+          predicted_link$fit
+        ),
+
+      SE_Link =
+        as.numeric(
+          predicted_link$se.fit
+        ),
+
+      Predicted_Response =
+        stats::plogis(
+          Fit_Link
+        ),
+
+      Predicted_CI_Lower =
+        stats::plogis(
+          Fit_Link -
+            1.96 * SE_Link
+        ),
+
+      Predicted_CI_Upper =
+        stats::plogis(
+          Fit_Link +
+            1.96 * SE_Link
+        )
+    )
+}
+
+calculate_effect_size <- function(
+    row_name,
+    response_type) {
+
+  fit_object <-
+    model_fits[[row_name]][[response_type]]
+
+  analysis_data <-
+    fit_object$analysis_data
+
+  group_mean_ti <- mean(
+    analysis_data$TrophicIndex,
+    na.rm = TRUE
+  )
+
+  lower_ti <-
+    group_mean_ti -
+    0.5 * trophic_reference_sd
+
+  higher_ti <-
+    group_mean_ti +
+    0.5 * trophic_reference_sd
+
+  predictions <- predict_response_at_ti(
+    row_name,
+    response_type,
+    c(
+      lower_ti,
+      higher_ti
+    )
+  )
+
+  lower_prediction <-
+    predictions[1, ]
+
+  higher_prediction <-
+    predictions[2, ]
+
+  tibble::tibble(
+    Figure_Row = row_name,
+    Response_Type = response_type,
+
+    Lower_TrophicIndex =
+      lower_ti,
+
+    Higher_TrophicIndex =
+      higher_ti,
+
+    Predicted_Response_Lower_TI =
+      lower_prediction$Predicted_Response,
+
+    Predicted_Lower_CI_Lower =
+      lower_prediction$Predicted_CI_Lower,
+
+    Predicted_Lower_CI_Upper =
+      lower_prediction$Predicted_CI_Upper,
+
+    Predicted_Response_Higher_TI =
+      higher_prediction$Predicted_Response,
+
+    Predicted_Higher_CI_Lower =
+      higher_prediction$Predicted_CI_Lower,
+
+    Predicted_Higher_CI_Upper =
+      higher_prediction$Predicted_CI_Upper,
+
+    Absolute_Response_Change =
+      higher_prediction$Predicted_Response -
+      lower_prediction$Predicted_Response,
+
+    Relative_Percent_Response_Change =
+      100 * (
+        higher_prediction$Predicted_Response -
+          lower_prediction$Predicted_Response
+      ) /
+      lower_prediction$Predicted_Response
+  )
+}
+
+model_effect_sizes <- dplyr::bind_rows(
+  lapply(
+    figure_rows,
+
+    function(row_name) {
+
+      dplyr::bind_rows(
+        lapply(
+          response_types,
+
+          function(response_type) {
+
+            calculate_effect_size(
+              row_name,
+              response_type
+            )
+          }
+        )
+      )
+    }
+  )
+)
+
+############################################################
+# 10) FIGURE SETTINGS
+############################################################
+
+trophic_limits <- padded_range(
+  c(
+    distribution_data$TrophicIndex,
+    tpf_data$TrophicIndex,
+    variability_data$TrophicIndex,
+    oligo_intermediate_cutoff,
+    intermediate_copio_cutoff
+  ),
+  padding = 0.04
+)
+
+tpf_limits <- padded_range(
+  tpf_data$mean_TPF,
+  padding = 0.08,
+  lower = 0,
+  upper = 1
+)
+
+variability_limits <- padded_range(
+  variability_data$mean_bc_abs,
+  padding = 0.08,
+  lower = 0,
+  upper = 1
+)
+
+theme_nature_clean <- function(
+    show_x_axis = TRUE) {
+
+  figure_theme <-
+    ggplot2::theme_bw(
+      base_size = 9
+    ) +
+    ggplot2::theme(
+      panel.grid =
+        ggplot2::element_blank(),
+
+      panel.border =
+        ggplot2::element_rect(
+          colour = "black",
+          linewidth = 0.45
+        ),
+
+      axis.text =
+        ggplot2::element_text(
+          colour = "black"
+        ),
+
+      axis.title =
+        ggplot2::element_text(
+          colour = "black"
+        ),
+
+      plot.title =
+        ggplot2::element_text(
+          face = "bold",
+          size = 11,
+          hjust = 0
+        ),
+
+      legend.position = "none",
+
+      plot.margin =
+        ggplot2::margin(
+          4, 4, 4, 4
+        )
+    )
+
+  if (!show_x_axis) {
+
+    figure_theme <-
+      figure_theme +
+      ggplot2::theme(
+        axis.title.x =
+          ggplot2::element_blank(),
+
+        axis.text.x =
+          ggplot2::element_blank(),
+
+        axis.ticks.x =
+          ggplot2::element_blank()
+      )
+  }
+
+  figure_theme
+}
+
+fill_scale <- function() {
+
+  ggplot2::scale_fill_manual(
+    values = highlight_colours,
+
+    breaks = c(
+      "Other retained species",
+      "Planktophila",
+      "Fonsibacter"
+    ),
+
+    labels = c(
+      "Other species",
+      "Planktophila",
+      "Fonsibacter"
+    ),
+
+    drop = FALSE
+  )
+}
+
+size_scale <- function() {
+
+  ggplot2::scale_size_manual(
+    values = highlight_sizes,
+    guide = "none"
+  )
+}
+
+############################################################
+# 11) BUILD FIGURE PANELS
+############################################################
+
+shared_legend_data <- tibble::tibble(
+  Highlight = factor(
+    c(
+      "Other retained species",
+      "Planktophila",
+      "Fonsibacter"
+    ),
+
+    levels = c(
+      "Other retained species",
+      "Planktophila",
+      "Fonsibacter"
+    )
+  ),
+
+  x = 1:3,
+  y = 1
+)
+
+shared_legend_plot <- ggplot2::ggplot(
+  shared_legend_data,
+  ggplot2::aes(
+    x = x,
+    y = y,
+    fill = Highlight
+  )
+) +
+  ggplot2::geom_point(
+    shape = 21,
+    colour = "black",
+    stroke = 0.35,
+    size = 2.6,
+    alpha = 0,
+    show.legend = TRUE
+  ) +
+  fill_scale() +
+  ggplot2::guides(
+    fill = ggplot2::guide_legend(
+      nrow = 1,
+      byrow = TRUE,
+
+      override.aes = list(
+        alpha = 1,
+        size = c(
+          1.8,
+          3.0,
+          3.0
+        )
+      )
+    )
+  ) +
+  ggplot2::theme_void() +
+  ggplot2::theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.justification = "center",
+    legend.box.just = "center",
+    legend.title =
+      ggplot2::element_blank(),
+    legend.key =
+      ggplot2::element_blank(),
+    legend.margin =
+      ggplot2::margin(0),
+    plot.margin =
+      ggplot2::margin(0)
+  )
+
+make_distribution_panel <- function(
+    row_name,
+    panel_title = NULL) {
+
+  plot_data <- distribution_data %>%
+    dplyr::filter(
+      Figure_Row == row_name
+    ) %>%
+    dplyr::arrange(
+      Highlight
+    )
+
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(
+      x = factor(""),
+      y = TrophicIndex
+    )
+  ) +
+    ggplot2::geom_hline(
+      yintercept = c(
+        oligo_intermediate_cutoff,
+        intermediate_copio_cutoff
+      ),
+      colour = "grey35",
+      linetype = "dashed",
+      linewidth = 0.45
+    ) +
+    ggplot2::geom_boxplot(
+      width = 0.52,
+      fill = "grey95",
+      colour = "black",
+      linewidth = 0.55,
+      outlier.shape = NA
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(
+        fill = Highlight,
+        size = Highlight
+      ),
+      shape = 21,
+      colour = "black",
+      stroke = 0.35,
+      alpha = 0.95,
+      position = ggplot2::position_jitter(
+        width = 0.12,
+        height = 0,
+        seed = 20260813
+      )
+    ) +
+    fill_scale() +
+    size_scale() +
+    ggplot2::coord_cartesian(
+      ylim = trophic_limits
+    ) +
+    ggplot2::labs(
+      title = panel_title,
+      x = NULL,
+      y = "Trophic index"
+    ) +
+    theme_nature_clean(
+      show_x_axis = FALSE
+    )
+}
+
+make_response_panel <- function(
+    data,
+    response_variable,
+    response_type,
+    y_label,
+    y_limits,
+    row_name,
+    panel_title = NULL,
+    show_x_axis = TRUE) {
+
+  plot_data <- data %>%
+    dplyr::filter(
+      Figure_Row == row_name
+    ) %>%
+    dplyr::arrange(
+      Highlight
+    )
+
+  prediction_data <- model_predictions %>%
+    dplyr::filter(
+      Figure_Row == row_name,
+      Response_Type == response_type
+    )
+
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(
+      x = TrophicIndex,
+      y = .data[[response_variable]]
+    )
+  ) +
+    ggplot2::geom_vline(
+      xintercept = c(
+        oligo_intermediate_cutoff,
+        intermediate_copio_cutoff
+      ),
+      colour = "grey35",
+      linetype = "dashed",
+      linewidth = 0.45
+    ) +
+    ggplot2::geom_ribbon(
+      data = prediction_data,
+      ggplot2::aes(
+        x = TrophicIndex,
+        ymin = CI_Lower,
+        ymax = CI_Upper
+      ),
+      inherit.aes = FALSE,
+      fill = "grey70",
+      alpha = 0.25
+    ) +
+    ggplot2::geom_line(
+      data = prediction_data,
+      ggplot2::aes(
+        x = TrophicIndex,
+        y = Fitted_Response
+      ),
+      inherit.aes = FALSE,
+      colour = "black",
+      linewidth = 0.70
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(
+        fill = Highlight,
+        size = Highlight
+      ),
+      shape = 21,
+      colour = "black",
+      stroke = 0.35,
+      alpha = 0.95
+    ) +
+    fill_scale() +
+    size_scale() +
+    ggplot2::scale_y_continuous(
+      labels = scales::label_percent(
+        accuracy = 1
+      )
+    ) +
+    ggplot2::coord_cartesian(
+      xlim = trophic_limits,
+      ylim = y_limits
+    ) +
+    ggplot2::labs(
+      title = panel_title,
+
+      x = if (show_x_axis) {
+        "Trophic index"
+      } else {
+        NULL
+      },
+
+      y = y_label
+    ) +
+    theme_nature_clean(
+      show_x_axis
+    )
+}
+
+make_row_label <- function(label) {
+
+  ggplot2::ggplot() +
+    ggplot2::annotate(
+      "text",
+      x = 0,
+      y = 0,
+      label = label,
+      angle = 90,
+      fontface = "bold",
+      size = 3
+    ) +
+    ggplot2::xlim(-1, 1) +
+    ggplot2::ylim(-1, 1) +
+    ggplot2::theme_void()
+}
+
+############################################################
+# 12) ASSEMBLE AND EXPORT FIGURE
+############################################################
+
+figure_panels <- list()
+
+for (i in seq_along(figure_rows)) {
+
+  current_row <- figure_rows[i]
+  first_row <- i == 1
+  final_row <- i == length(figure_rows)
+
+  figure_panels <- c(
+    figure_panels,
+
+    list(
+      make_row_label(
+        current_row
+      ),
+
+      make_distribution_panel(
+        current_row,
+
+        panel_title = if (first_row) {
+          "A"
+        } else {
+          NULL
+        }
+      ),
+
+      make_response_panel(
+        data = tpf_data,
+        response_variable = "mean_TPF",
+        response_type = "TPF",
+        y_label = "Mean TPF (%)",
+        y_limits = tpf_limits,
+        row_name = current_row,
+
+        panel_title = if (first_row) {
+          "B"
+        } else {
+          NULL
+        },
+
+        show_x_axis = final_row
+      ),
+
+      make_response_panel(
+        data = variability_data,
+        response_variable = "mean_bc_abs",
+        response_type = "Bray_Curtis",
+        y_label = "Mean Bray-Curtis (%)",
+        y_limits = variability_limits,
+        row_name = current_row,
+
+        panel_title = if (first_row) {
+          "C"
+        } else {
+          NULL
+        },
+
+        show_x_axis = final_row
+      )
+    )
+  )
+}
+
+main_figure <- patchwork::wrap_plots(
+  plotlist = figure_panels,
+  ncol = 4,
+
+  widths = c(
+    0.10,
+    0.78,
+    1.18,
+    1.18
+  ),
+
+  heights = c(
+    1,
+    1,
+    1
+  )
+)
+
+combined_figure <-
+  (main_figure / shared_legend_plot) +
+  patchwork::plot_layout(
+    heights = c(
+      1,
+      0.08
+    )
+  )
+
+print(
+  combined_figure
+)
+
+ggplot2::ggsave(
+  filename = file.path(
+    output_dir,
+    "BlockE_Within_Phylum_Overview_A4_landscape.png"
+  ),
+
+  plot = combined_figure,
+  width = 11.69,
+  height = 8.27,
+  units = "in",
+  dpi = 600,
+  bg = "white"
+)
+
+ggplot2::ggsave(
+  filename = file.path(
+    output_dir,
+    "BlockE_Within_Phylum_Overview_A4_landscape.pdf"
+  ),
+
+  plot = combined_figure,
+  width = 11.69,
+  height = 8.27,
+  units = "in",
+  bg = "white"
+)
+
+############################################################
+# 13) BUILD A–C MODEL TABLE
+############################################################
+
+table_sections <- c(
+  rep("A. Model specification", 7),
+  rep("B. Trophic-index evidence", 4),
+  rep("C. Original-scale effect size", 4)
+)
+
+table_metrics <- c(
+  # A. Model specification
+  "Response",
+  "Family and link",
+  "Full fixed effects",
+  "Reduced fixed effects",
+  "Random effect",
+  "N species",
+  "N phyla",
+
+  # B. Trophic-index evidence
+  "TI estimate [95% CI]",
+  "Nested LRT chi-square (df)",
+  "Nested LRT p",
+  "Delta AIC (reduced - full)",
+
+  # C. Original-scale effect size
+  "TI contrast (1 SD)",
+  "Adjusted response [95% CI]",
+  "Absolute change",
+  "Relative change"
+)
+
+make_table_column <- function(
+    response_type,
+    row_name) {
+
+  statistics <- model_statistics %>%
+    dplyr::filter(
+      Response_Type == response_type,
+      Figure_Row == row_name
+    )
+
+  effect <- model_effect_sizes %>%
+    dplyr::filter(
+      Response_Type == response_type,
+      Figure_Row == row_name
+    )
+
+  adjusted_response <- paste0(
+    formatC(
+      100 *
+        effect$Predicted_Response_Lower_TI,
+      digits = 1,
+      format = "f"
+    ),
+    "% [",
+    formatC(
+      100 *
+        effect$Predicted_Lower_CI_Lower,
+      digits = 1,
+      format = "f"
+    ),
+    "–",
+    formatC(
+      100 *
+        effect$Predicted_Lower_CI_Upper,
+      digits = 1,
+      format = "f"
+    ),
+    "%] → ",
+    formatC(
+      100 *
+        effect$Predicted_Response_Higher_TI,
+      digits = 1,
+      format = "f"
+    ),
+    "% [",
+    formatC(
+      100 *
+        effect$Predicted_Higher_CI_Lower,
+      digits = 1,
+      format = "f"
+    ),
+    "–",
+    formatC(
+      100 *
+        effect$Predicted_Higher_CI_Upper,
+      digits = 1,
+      format = "f"
+    ),
+    "%]"
+  )
+
+  c(
+    # A. Model specification
+    statistics$Table_Response,
+    statistics$Model_Family,
+    statistics$Full_Fixed_Effects,
+    statistics$Reduced_Fixed_Effects,
+    statistics$Random_Effect,
+    as.character(
+      statistics$N_Species
+    ),
+    as.character(
+      statistics$N_Phyla
+    ),
+
+    # B. Trophic-index evidence
+    paste0(
+      format_number(
+        statistics$TI_Estimate
+      ),
+      " [",
+      format_number(
+        statistics$TI_CI_Lower
+      ),
+      ", ",
+      format_number(
+        statistics$TI_CI_Upper
+      ),
+      "]"
+    ),
+
+    paste0(
+      format_number(
+        statistics$LRT_Chisq,
+        2
+      ),
+      " (",
+      statistics$LRT_DF,
+      ")"
+    ),
+
+    format_p_value(
+      statistics$LRT_P
+    ),
+
+    format_number(
+      statistics$
+        Delta_AIC_Reduced_Minus_Full,
+      2
+    ),
+
+    # C. Original-scale effect size
+    paste0(
+      format_number(
+        effect$Lower_TrophicIndex,
+        2
+      ),
+      " → ",
+      format_number(
+        effect$Higher_TrophicIndex,
+        2
+      )
+    ),
+
+    adjusted_response,
+
+    format_signed_pp(
+      effect$Absolute_Response_Change
+    ),
+
+    format_signed_percent(
+      effect$
+        Relative_Percent_Response_Change
+    )
+  )
+}
+
+model_table_data <- tibble::tibble(
+  Section = table_sections,
+  Metric = table_metrics,
+
+  `TPF Actinomycetota` =
+    make_table_column(
+      "TPF",
+      "Actinomycetota"
+    ),
+
+  `TPF Pseudomonadota` =
+    make_table_column(
+      "TPF",
+      "Pseudomonadota"
+    ),
+
+  `TPF other bacteria` =
+    make_table_column(
+      "TPF",
+      "Other retained bacteria"
+    ),
+
+  `Bray-Curtis Actinomycetota` =
+    make_table_column(
+      "Bray_Curtis",
+      "Actinomycetota"
+    ),
+
+  `Bray-Curtis Pseudomonadota` =
+    make_table_column(
+      "Bray_Curtis",
+      "Pseudomonadota"
+    ),
+
+  `Bray-Curtis other bacteria` =
+    make_table_column(
+      "Bray_Curtis",
+      "Other retained bacteria"
+    )
+)
+
+############################################################
+# 14) EXPORT A–C MODEL TABLE
+############################################################
+
+readr::write_csv(
+  model_table_data,
+  file.path(
+    output_dir,
+    "BlockE_Transporter_model_table.csv"
+  )
+)
+
+model_table_gt <- model_table_data %>%
+  gt::gt(
+    groupname_col = "Section",
+    rowname_col = "Metric"
+  ) %>%
+  gt::tab_header(
+    title = gt::md(
+      paste0(
+        "**Taxonomic robustness of ",
+        "trophic-index associations**"
+      )
+    ),
+
+    subtitle = paste0(
+      "Model specification, statistical evidence ",
+      "and original-scale effect sizes"
+    )
+  ) %>%
+  gt::cols_label(
+    `TPF Actinomycetota` =
+      gt::html(
+        "TPF<br>Actinomycetota"
+      ),
+
+    `TPF Pseudomonadota` =
+      gt::html(
+        "TPF<br>Pseudomonadota"
+      ),
+
+    `TPF other bacteria` =
+      gt::html(
+        "TPF<br>other bacteria"
+      ),
+
+    `Bray-Curtis Actinomycetota` =
+      gt::html(
+        "Bray-Curtis<br>Actinomycetota"
+      ),
+
+    `Bray-Curtis Pseudomonadota` =
+      gt::html(
+        "Bray-Curtis<br>Pseudomonadota"
+      ),
+
+    `Bray-Curtis other bacteria` =
+      gt::html(
+        "Bray-Curtis<br>other bacteria"
+      )
+  ) %>%
+  gt::cols_align(
+    align = "center",
+    columns = gt::everything()
+  ) %>%
+  gt::cols_width(
+    gt::stub() ~
+      gt::px(225),
+
+    `TPF Actinomycetota` ~
+      gt::px(285),
+
+    `TPF Pseudomonadota` ~
+      gt::px(285),
+
+    `TPF other bacteria` ~
+      gt::px(285),
+
+    `Bray-Curtis Actinomycetota` ~
+      gt::px(295),
+
+    `Bray-Curtis Pseudomonadota` ~
+      gt::px(295),
+
+    `Bray-Curtis other bacteria` ~
+      gt::px(295)
+  ) %>%
+  gt::tab_stubhead(
+    label = "Metric"
+  ) %>%
+  gt::opt_row_striping() %>%
+  gt::tab_options(
+    table.font.size =
+      gt::px(9),
+
+    data_row.padding =
+      gt::px(5),
+
+    row_group.font.weight =
+      "bold",
+
+    row_group.font.size =
+      gt::px(10),
+
+    column_labels.font.size =
+      gt::px(9),
+
+    column_labels.font.weight =
+      "bold",
+
+    heading.title.font.size =
+      gt::px(14),
+
+    heading.subtitle.font.size =
+      gt::px(10),
+
+    table.border.top.width =
+      gt::px(2),
+
+    table.border.bottom.width =
+      gt::px(2)
+  )
+
+print(
+  model_table_gt
+)
+
+gt::gtsave(
+  model_table_gt,
+  filename = file.path(
+    output_dir,
+    "BlockE_Transporter_model_table.html"
+  )
+)
+
+gt::gtsave(
+  model_table_gt,
+  filename = file.path(
+    output_dir,
+    "BlockE_Transporter_model_table.png"
+  ),
+  vwidth = 3200,
+  vheight = 1750
+)
+
+############################################################
+# 15) CONSOLE OUTPUT
+############################################################
+
+cat(
+  "\nBlock E completed.\n\n",
+
+  "Output directory:\n",
+  output_dir,
+  "\n\n",
+
+  "Figure:\n",
+  "- BlockE_Within_Phylum_Overview_A4_landscape.png\n",
+  "- BlockE_Within_Phylum_Overview_A4_landscape.pdf\n\n",
+
+  "Model table:\n",
+  "- BlockE_Transporter_model_table.png\n",
+  "- BlockE_Transporter_model_table.html\n",
+  "- BlockE_Transporter_model_table.csv\n",
+
+  sep = ""
+)
+```
 

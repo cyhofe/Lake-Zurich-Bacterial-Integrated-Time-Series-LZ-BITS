@@ -823,5 +823,21 @@ ggsave(
   device   = pdf,
   bg       = "white"
 )
+
+
+readr::write_csv(
+  clean_dat %>%
+    dplyr::select(
+      Species_ID,
+      Peak_Date,
+      Species_Abundance_at_Peak,
+      Proteome_Abundance_on_PeakDate,
+      Detected_Proteins_at_Peak,
+      log10_species_abund,
+      log10_proteome_abund,
+      Detected_Protein_Class
+    ),
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_2f.csv"
+)
 ```
 

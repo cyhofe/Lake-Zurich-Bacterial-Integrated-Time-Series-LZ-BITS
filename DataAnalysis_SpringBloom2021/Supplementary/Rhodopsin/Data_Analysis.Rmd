@@ -438,3 +438,1349 @@ panel_data %>%
   print(n = 500)
 ```
 
+
+```{r}
+# =============================================================================
+# RHODOPSIN GENOMIC CONTEXT AND RETINAL PROTEOME
+#
+# Species_Gene_Table.csv contains all predicted genes and their KEGG hierarchy.
+# Species_Protein_Table.csv contains positive, normalized, species-specific
+# protein detections. No trophic-group or additional date filtering is applied.
+#
+# Output:
+#   Rhodopsin_Context_Core_Module_A4_Landscape.pdf/png
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(gggenes)
+  library(scales)
+  library(patchwork)
+})
+
+# This block does not clear the global environment, close graphics devices,
+# or clear the console when run in a notebook.
+
+# Use exactly the same taxonomy-plus-MAG labels in panels A and B.
+tested_label_map <- c(
+  "NZE03MAY2102.MAG_3038" = "Nanopelagicus unclassified sp26 (NZE03MAY2102.MAG_3038)",
+  "NZE08MAR2102.MAG_497"  = "Fonsibacter sp947497305 (NZE08MAR2102.MAG_497)",
+  "NZE10MAY2102.MAG_2928" = "Planktophila lacus C (NZE10MAY2102.MAG_2928)",
+  "NZE12APR2102.MAG_7894" = "Nanopelagicus limnes (NZE12APR2102.MAG_7894)",
+  "NZE12APR2102.MAG_8760" = "Nanopelagicaceae UBA7398 sp947498205 (NZE12APR2102.MAG_8760)",
+  "NZE12MAR2102.MAG_440"  = "Nanopelagicus sp947486485 (NZE12MAR2102.MAG_440)",
+  "NZE15MAR2102.MAG_4357" = "Nanopelagicaceae UBA3012 sp009701305 (NZE15MAR2102.MAG_4357)",
+  "NZE21MAY2102.MAG_3561" = "Planktophila sp947487595 (NZE21MAY2102.MAG_3561)",
+  "NZE28APR2102.MAG_4534" = "Sediminibacterium unclassified sp436 (NZE28APR2102.MAG_4534)",
+  "NZE31MAY2102.MAG_2275" = "Planktophila unclassified sp485 (NZE31MAY2102.MAG_2275)",
+  "NZE31MAY2102.MAG_3119" = "Rhodoluna sp021741685 (NZE31MAY2102.MAG_3119)",
+  "NZE31MAY2102.MAG_373"  = "Planktophila sp947490625 (NZE31MAY2102.MAG_373)",
+  "NZE21APR2102.MAG_682"  = "ATZT02 sp026393095 (NZE21APR2102.MAG_682)",
+  "NZE09APR2102.MAG_473"  = "Limnocylindrus sp003670475 (NZE09APR2102.MAG_473)",
+  "NZE14APR2102.MAG_3056" = "Schleiferiaceae TMED14 sp002292855 (NZE14APR2102.MAG_3056)",
+  "NZE21APR2102.MAG_149"  = "Actinomycetota UBA5976 unclassified sp358 (NZE21APR2102.MAG_149)",
+  "NZE23APR2102.MAG_5483" = "Planktophila unclassified sp398 (NZE23APR2102.MAG_5483)",
+  "NZE19MAY2102.MAG_493"  = "Rhodoluna sp947489135 (NZE19MAY2102.MAG_493)",
+  "NZE12APR2102.MAG_976"  = "Ilumatobacteraceae UBA2093 sp026393575 (NZE12APR2102.MAG_976)",
+  "NZE02JUN2102.MAG_271"  = "Planktophila dulcis (NZE02JUN2102.MAG_271)"
+)
+
+# 1. Load input tables --------------------------------------------------------
+
+rhodopsin_positions <- read_csv(
+  "rhodopsin_positions.csv",
+  show_col_types = FALSE
+)
+
+neighbours <- read_csv(
+  "rhodopsin_neighborhoods.csv",
+  show_col_types = FALSE
+)
+
+gene_table <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Gene_Table.csv",
+  show_col_types = FALSE
+)
+
+protein_table <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Protein_Table.csv",
+  show_col_types = FALSE
+)
+
+rhodopsin_species <- rhodopsin_positions %>%
+  transmute(
+    Species_ID = str_replace(MAG_ID, "\\.MAG-", ".MAG_")
+  ) %>%
+  distinct()
+
+genes <- gene_table %>%
+  semi_join(rhodopsin_species, by = "Species_ID") %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    KEGG_Category,
+    KEGG_Subcategory
+  ) %>%
+  mutate(across(everything(), as.character)) %>%
+  distinct()
+
+proteins <- protein_table %>%
+  semi_join(rhodopsin_species, by = "Species_ID") %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    Date,
+    Protein_Abundance_IBAQ_Norm
+  )
+
+# 2. Prepare the gene/proteome table -----------------------------------------
+
+protein_summary <- proteins %>%
+  group_by(Species_ID, Protein_ID) %>%
+  summarise(
+    Protein_abundance = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  )
+
+gene_proteome <- genes %>%
+  left_join(
+    protein_summary,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+  mutate(
+    Protein_abundance = replace_na(Protein_abundance, 0),
+    Protein_detected = Protein_abundance > 0,
+
+    Gene_key = Protein_ID %>%
+      str_extract("contig[-_][0-9]+-cds[0-9]+") %>%
+      str_replace("^contig-", "contig_"),
+
+    Target_gene = case_when(
+      str_detect(KEGG_ID, "K04641|K04643") ~ "Rhodopsin",
+      str_detect(KEGG_ID, "K13789|K13787") ~ "crtE",
+      str_detect(KEGG_ID, "K02291") ~ "crtB",
+      str_detect(KEGG_ID, "K10027") ~ "crtI",
+      str_detect(KEGG_ID, "K06443|K22502") ~ "crtY",
+      str_detect(KEGG_ID, "K21817") ~ "blh",
+      TRUE ~ NA_character_
+    ),
+
+    Retinal_module = if_else(
+      Target_gene %in% c("crtE", "crtB", "crtI", "crtY", "blh"),
+      "Core",
+      NA_character_
+    ),
+
+    Is_transporter = str_detect(
+      str_c(
+        replace_na(KEGG_Category, ""),
+        replace_na(KEGG_Subcategory, ""),
+        sep = "; "
+      ),
+      regex("Transporters", ignore_case = TRUE)
+    )
+  )
+
+write_csv(
+  gene_proteome,
+  "Rhodopsin_Gene_Proteome_Table.csv"
+)
+
+# 3. Retain only genes on the rhodopsin-containing contig --------------------
+
+rhodopsin_contigs <- rhodopsin_positions %>%
+  transmute(
+    MAG_ID,
+    Rhodopsin_ID,
+    Rhodopsin_contig = Contig_ID
+  ) %>%
+  distinct()
+
+neighbour_contig_check <- neighbours %>%
+  left_join(
+    rhodopsin_contigs,
+    by = c("MAG_ID", "Rhodopsin_ID")
+  ) %>%
+  mutate(
+    Same_contig = Contig_ID == Rhodopsin_contig
+  )
+
+if (any(is.na(neighbour_contig_check$Same_contig))) {
+  stop(
+    "At least one neighborhood row could not be matched to its rhodopsin ",
+    "contig. Check MAG_ID, Rhodopsin_ID and Contig_ID."
+  )
+}
+
+message(
+  sum(!neighbour_contig_check$Same_contig),
+  " neighborhood rows from other contigs removed before plotting."
+)
+
+neighbours_same_contig <- neighbour_contig_check %>%
+  filter(Same_contig) %>%
+  select(
+    -Rhodopsin_contig,
+    -Same_contig
+  )
+
+rhodopsin_meta <- rhodopsin_positions %>%
+  transmute(
+    MAG_ID,
+
+    Species_ID = str_replace(
+      MAG_ID,
+      "\\.MAG-",
+      ".MAG_"
+    ),
+
+    Tested_label = unname(
+      tested_label_map[Species_ID]
+    ),
+
+    Rhodopsin_ID,
+    Contig_ID,
+
+    Rhodopsin_midpoint =
+      (Start_1based + End_1based) / 2,
+
+    Rhodopsin_strand = Strand
+  ) %>%
+  add_count(
+    MAG_ID,
+    name = "N_rhodopsins"
+  ) %>%
+  mutate(
+    Base_label = Tested_label,
+
+    Display_label = if_else(
+      N_rhodopsins > 1,
+      paste0(
+        Base_label,
+        " [",
+        str_extract(Rhodopsin_ID, "cds[0-9]+$"),
+        "]"
+      ),
+      Base_label
+    )
+  )
+
+if (any(is.na(rhodopsin_meta$Tested_label))) {
+  stop(
+    "Tested label missing for: ",
+    paste(
+      unique(
+        rhodopsin_meta$Species_ID[
+          is.na(rhodopsin_meta$Tested_label)
+        ]
+      ),
+      collapse = ", "
+    )
+  )
+}
+
+gene_lookup <- gene_proteome %>%
+  transmute(
+    Species_ID,
+    Gene_key,
+
+    Gene_Protein_ID = Protein_ID,
+    Gene_KEGG_ID = KEGG_ID,
+    Gene_KEGG_Category = KEGG_Category,
+    Gene_KEGG_Subcategory = KEGG_Subcategory,
+
+    Gene_Target = Target_gene,
+    Gene_Retinal_module = Retinal_module,
+    Gene_is_transporter = Is_transporter
+  ) %>%
+  distinct(
+    Species_ID,
+    Gene_key,
+    .keep_all = TRUE
+  )
+
+neighbours_annotated <- neighbours_same_contig %>%
+  mutate(
+    Species_ID = str_replace(
+      MAG_ID,
+      "\\.MAG-",
+      ".MAG_"
+    ),
+
+    Gene_key = Gene_ID %>%
+      str_extract("contig[-_][0-9]+-cds[0-9]+") %>%
+      str_replace("^contig-", "contig_"),
+
+    Start_1based = as.numeric(Start_1based),
+    End_1based = as.numeric(End_1based)
+  ) %>%
+  inner_join(
+    rhodopsin_meta,
+    by = c(
+      "MAG_ID",
+      "Species_ID",
+      "Rhodopsin_ID",
+      "Contig_ID"
+    )
+  ) %>%
+  left_join(
+    gene_lookup,
+    by = c("Species_ID", "Gene_key")
+  ) %>%
+  mutate(
+    Is_rhodopsin =
+      Gene_ID == Rhodopsin_ID,
+
+    Annotation = case_when(
+      Is_rhodopsin ~
+        "Rhodopsin",
+
+      Gene_Retinal_module == "Core" ~
+        "Core retinal biosynthesis",
+
+      replace_na(Gene_is_transporter, FALSE) ~
+        "Transporter",
+
+      TRUE ~
+        "Other"
+    ),
+
+    # Minus-strand neighborhoods are reflected around the rhodopsin midpoint.
+    Plot_start = if_else(
+      Rhodopsin_strand == "+",
+      Start_1based - Rhodopsin_midpoint,
+      Rhodopsin_midpoint - End_1based
+    ),
+
+    Plot_end = if_else(
+      Rhodopsin_strand == "+",
+      End_1based - Rhodopsin_midpoint,
+      Rhodopsin_midpoint - Start_1based
+    ),
+
+    Plot_forward = if_else(
+      Rhodopsin_strand == "+",
+      Strand == "+",
+      Strand == "-"
+    )
+  )
+
+write_csv(
+  neighbours_annotated,
+  "Rhodopsin_Neighborhoods_Annotated.csv"
+)
+
+# 4. Panel A: rhodopsin-centered genomic neighborhoods -----------------------
+
+alignment_rows <- neighbours_annotated %>%
+  distinct(
+    MAG_ID,
+    Rhodopsin_ID,
+    Display_label,
+    Rhodopsin_strand
+  ) %>%
+  arrange(
+    Display_label,
+    Rhodopsin_ID
+  ) %>%
+  mutate(
+    # ASCII-safe label. Reflection is retained in the plotted coordinates.
+    Plot_label = Display_label
+  )
+
+alignment_data <- neighbours_annotated %>%
+  left_join(
+    alignment_rows %>%
+      select(
+        MAG_ID,
+        Rhodopsin_ID,
+        Plot_label
+      ),
+    by = c(
+      "MAG_ID",
+      "Rhodopsin_ID"
+    )
+  ) %>%
+  mutate(
+    Plot_label = factor(
+      Plot_label,
+      levels = rev(alignment_rows$Plot_label)
+    ),
+
+    Annotation = factor(
+      Annotation,
+      levels = c(
+        "Rhodopsin",
+        "Core retinal biosynthesis",
+        "Transporter",
+        "Other"
+      )
+    )
+  )
+
+p_alignment <- ggplot(
+  alignment_data,
+  aes(
+    xmin = Plot_start,
+    xmax = Plot_end,
+    y = Plot_label,
+    fill = Annotation,
+    forward = Plot_forward
+  )
+) +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed",
+    colour = "grey50"
+  ) +
+  geom_gene_arrow(
+    colour = "grey25",
+    linewidth = 0.25,
+    arrow_body_height = grid::unit(3, "mm"),
+    arrowhead_height = grid::unit(4, "mm"),
+    arrowhead_width = grid::unit(1.5, "mm")
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Rhodopsin" = "#762A83",
+      "Core retinal biosynthesis" = "#D95F02",
+      "Transporter" = "#2166AC",
+      "Other" = "#D9D9D9"
+    ),
+    drop = FALSE
+  ) +
+  scale_x_continuous(
+    labels = label_comma()
+  ) +
+  labs(
+    title = "Rhodopsin-centered genomic neighborhoods",
+    subtitle = paste(
+      "Up to 20 genes on each side, restricted to the",
+      "rhodopsin-containing contig; minus-strand regions are reflected"
+    ),
+    x = "Position relative to rhodopsin midpoint (bp)",
+    y = NULL,
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 7),
+    legend.position = "bottom"
+  )
+
+# 5. Panel B: core carotenoid-module genome/proteome matrix ------------------
+
+# This matrix searches the complete annotated gene catalogue of the selected
+# rhodopsin species. It is not restricted to the plotted neighborhoods.
+#
+# Only rhodopsin and the requested carotenoid-core genes are plotted:
+# Rhodopsin, crtE, crtB, crtI and crtY.
+# blh, idi, ispA/FDPS and diox1 are not included in panel B.
+
+feature_order <- c(
+  "Rhodopsin",
+  "crtE",
+  "crtB",
+  "crtI",
+  "crtY"
+)
+
+feature_labels <- c(
+  "Rhodopsin\nK04641/K04643",
+  "crtE\nK13789/K13787",
+  "crtB\nK02291",
+  "crtI\nK10027",
+  "crtY\nK06443/K22502"
+)
+
+matrix_summary <- gene_proteome %>%
+  filter(
+    Target_gene %in% feature_order
+  ) %>%
+  group_by(
+    Species_ID,
+    Target_gene
+  ) %>%
+  summarise(
+    N_genes = n_distinct(Protein_ID),
+    Protein_detected = any(Protein_abundance > 0),
+    .groups = "drop"
+  )
+
+species_labels <- rhodopsin_meta %>%
+  distinct(
+    Species_ID,
+    MAG_ID,
+    Tested_label,
+    Base_label
+  ) %>%
+  arrange(
+    Tested_label,
+    MAG_ID
+  )
+
+species_order <- species_labels %>%
+  pull(Species_ID)
+
+species_display_order <- species_labels %>%
+  pull(Base_label)
+
+matrix_data <- crossing(
+  Species_ID = species_order,
+  Target_gene = feature_order
+) %>%
+  left_join(
+    matrix_summary,
+    by = c(
+      "Species_ID",
+      "Target_gene"
+    )
+  ) %>%
+  left_join(
+    species_labels %>%
+      select(
+        Species_ID,
+        Species_label = Base_label
+      ),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    N_genes = replace_na(N_genes, 0L),
+    Protein_detected = replace_na(Protein_detected, FALSE),
+
+    Status = case_when(
+      N_genes == 0 ~
+        "Not encoded",
+
+      Protein_detected ~
+        "Encoded and detected",
+
+      TRUE ~
+        "Encoded, not detected"
+    ),
+
+    Status = factor(
+      Status,
+      levels = c(
+        "Not encoded",
+        "Encoded, not detected",
+        "Encoded and detected"
+      )
+    ),
+
+    Target_gene = factor(
+      Target_gene,
+      levels = feature_order,
+      labels = feature_labels
+    ),
+
+    Species_label = factor(
+      Species_label,
+      levels = rev(species_display_order)
+    )
+  )
+
+write_csv(
+  matrix_data %>%
+    mutate(
+      across(
+        where(is.factor),
+        as.character
+      )
+    ),
+  "Rhodopsin_Retinal_Matrix.csv"
+)
+
+p_matrix <- ggplot(
+  matrix_data,
+  aes(
+    x = Target_gene,
+    y = Species_label,
+    fill = Status
+  )
+) +
+  geom_tile(
+    colour = "grey70",
+    linewidth = 0.35
+  ) +
+  geom_text(
+    aes(
+      label = if_else(
+        N_genes > 0,
+        as.character(N_genes),
+        ""
+      ),
+      colour = Status
+    ),
+    size = 3
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Not encoded" = "white",
+      "Encoded, not detected" = "#D9D9D9",
+      "Encoded and detected" = "#1B9E77"
+    ),
+    drop = FALSE
+  ) +
+  scale_colour_manual(
+    values = c(
+      "Not encoded" = "black",
+      "Encoded, not detected" = "black",
+      "Encoded and detected" = "white"
+    ),
+    guide = "none"
+  ) +
+  labs(
+    title = "Rhodopsin and carotenoid-biosynthesis potential",
+    subtitle = paste(
+      "Carotenoid core (crtE/B/I/Y); numbers = genomic gene counts;",
+      "tile colour = protein detection"
+    ),
+    x = NULL,
+    y = NULL,
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+
+    axis.text.y = element_text(size = 7),
+    legend.position = "bottom"
+  )
+
+# 6. Combine and save as one A4 landscape figure -----------------------------
+
+combined_figure <- (
+  p_alignment /
+    p_matrix
+) +
+  plot_layout(
+    heights = c(2, 1)
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 11
+    )
+  )
+
+ggsave(
+  "Rhodopsin_Context_Core_Module_A4_Landscape.pdf",
+  plot = combined_figure,
+  width = 297,
+  height = 210,
+  units = "mm"
+)
+
+ggsave(
+  "Rhodopsin_Context_Core_Module_A4_Landscape.png",
+  plot = combined_figure,
+  width = 297,
+  height = 210,
+  units = "mm",
+  dpi = 600
+)
+
+combined_figure
+```
+
+```{r}
+# =============================================================================
+# RHODOPSIN GENOMIC CONTEXT AND RETINAL PROTEOME
+#
+# Species_Gene_Table.csv contains all predicted genes and their KEGG hierarchy.
+# Species_Protein_Table.csv contains positive, normalized, species-specific
+# protein detections. No trophic-group or additional date filtering is applied.
+#
+# Output:
+#   Rhodopsin_Context_Core_Module_A4_Landscape.pdf/png
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(gggenes)
+  library(scales)
+  library(patchwork)
+})
+
+# This block does not clear the global environment, close graphics devices,
+# or clear the console when run in a notebook.
+
+# Use exactly the same taxonomy-plus-MAG labels in panels A and B.
+tested_label_map <- c(
+  "NZE03MAY2102.MAG_3038" = "Nanopelagicus unclassified sp26 (NZE03MAY2102.MAG_3038)",
+  "NZE08MAR2102.MAG_497"  = "Fonsibacter sp947497305 (NZE08MAR2102.MAG_497)",
+  "NZE10MAY2102.MAG_2928" = "Planktophila lacus C (NZE10MAY2102.MAG_2928)",
+  "NZE12APR2102.MAG_7894" = "Nanopelagicus limnes (NZE12APR2102.MAG_7894)",
+  "NZE12APR2102.MAG_8760" = "Nanopelagicaceae UBA7398 sp947498205 (NZE12APR2102.MAG_8760)",
+  "NZE12MAR2102.MAG_440"  = "Nanopelagicus sp947486485 (NZE12MAR2102.MAG_440)",
+  "NZE15MAR2102.MAG_4357" = "Nanopelagicaceae UBA3012 sp009701305 (NZE15MAR2102.MAG_4357)",
+  "NZE21MAY2102.MAG_3561" = "Planktophila sp947487595 (NZE21MAY2102.MAG_3561)",
+  "NZE28APR2102.MAG_4534" = "Sediminibacterium unclassified sp436 (NZE28APR2102.MAG_4534)",
+  "NZE31MAY2102.MAG_2275" = "Planktophila unclassified sp485 (NZE31MAY2102.MAG_2275)",
+  "NZE31MAY2102.MAG_3119" = "Rhodoluna sp021741685 (NZE31MAY2102.MAG_3119)",
+  "NZE31MAY2102.MAG_373"  = "Planktophila sp947490625 (NZE31MAY2102.MAG_373)",
+  "NZE21APR2102.MAG_682"  = "ATZT02 sp026393095 (NZE21APR2102.MAG_682)",
+  "NZE09APR2102.MAG_473"  = "Limnocylindrus sp003670475 (NZE09APR2102.MAG_473)",
+  "NZE14APR2102.MAG_3056" = "Schleiferiaceae TMED14 sp002292855 (NZE14APR2102.MAG_3056)",
+  "NZE21APR2102.MAG_149"  = "Actinomycetota UBA5976 unclassified sp358 (NZE21APR2102.MAG_149)",
+  "NZE23APR2102.MAG_5483" = "Planktophila unclassified sp398 (NZE23APR2102.MAG_5483)",
+  "NZE19MAY2102.MAG_493"  = "Rhodoluna sp947489135 (NZE19MAY2102.MAG_493)",
+  "NZE12APR2102.MAG_976"  = "Ilumatobacteraceae UBA2093 sp026393575 (NZE12APR2102.MAG_976)",
+  "NZE02JUN2102.MAG_271"  = "Planktophila dulcis (NZE02JUN2102.MAG_271)"
+)
+
+# 1. Load input tables --------------------------------------------------------
+
+rhodopsin_positions <- read_csv(
+  "rhodopsin_positions.csv",
+  show_col_types = FALSE
+)
+
+neighbours <- read_csv(
+  "rhodopsin_neighborhoods.csv",
+  show_col_types = FALSE
+)
+
+gene_table <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Gene_Table.csv",
+  show_col_types = FALSE
+)
+
+protein_table <- read_csv(
+  "../../Figure_03/LakeOverview/Species_Protein_Table.csv",
+  show_col_types = FALSE
+)
+
+rhodopsin_species <- rhodopsin_positions %>%
+  transmute(
+    Species_ID = str_replace(MAG_ID, "\\.MAG-", ".MAG_")
+  ) %>%
+  distinct()
+
+genes <- gene_table %>%
+  semi_join(rhodopsin_species, by = "Species_ID") %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    KEGG_Category,
+    KEGG_Subcategory
+  ) %>%
+  mutate(across(everything(), as.character)) %>%
+  distinct()
+
+proteins <- protein_table %>%
+  semi_join(rhodopsin_species, by = "Species_ID") %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    Date,
+    Protein_Abundance_IBAQ_Norm
+  )
+
+# 2. Prepare the gene/proteome table -----------------------------------------
+
+protein_summary <- proteins %>%
+  group_by(Species_ID, Protein_ID) %>%
+  summarise(
+    Protein_abundance = sum(
+      Protein_Abundance_IBAQ_Norm,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  )
+
+gene_proteome <- genes %>%
+  left_join(
+    protein_summary,
+    by = c("Species_ID", "Protein_ID")
+  ) %>%
+  mutate(
+    Protein_abundance = replace_na(Protein_abundance, 0),
+    Protein_detected = Protein_abundance > 0,
+
+    Gene_key = Protein_ID %>%
+      str_extract("contig[-_][0-9]+-cds[0-9]+") %>%
+      str_replace("^contig-", "contig_"),
+
+    Target_gene = case_when(
+      str_detect(KEGG_ID, "K04641|K04643") ~ "Rhodopsin",
+      str_detect(KEGG_ID, "K13789|K13787") ~ "crtE",
+      str_detect(KEGG_ID, "K02291") ~ "crtB",
+      str_detect(KEGG_ID, "K10027") ~ "crtI",
+      str_detect(KEGG_ID, "K06443|K22502") ~ "crtY",
+      str_detect(KEGG_ID, "K21817") ~ "blh",
+      TRUE ~ NA_character_
+    ),
+
+    Retinal_module = if_else(
+      Target_gene %in% c("crtE", "crtB", "crtI", "crtY", "blh"),
+      "Core",
+      NA_character_
+    ),
+
+    Is_transporter = str_detect(
+      str_c(
+        replace_na(KEGG_Category, ""),
+        replace_na(KEGG_Subcategory, ""),
+        sep = "; "
+      ),
+      regex("Transporters", ignore_case = TRUE)
+    )
+  )
+
+write_csv(
+  gene_proteome,
+  "Rhodopsin_Gene_Proteome_Table.csv"
+)
+
+# 3. Retain only genes on the rhodopsin-containing contig --------------------
+
+rhodopsin_contigs <- rhodopsin_positions %>%
+  transmute(
+    MAG_ID,
+    Rhodopsin_ID,
+    Rhodopsin_contig = Contig_ID
+  ) %>%
+  distinct()
+
+neighbour_contig_check <- neighbours %>%
+  left_join(
+    rhodopsin_contigs,
+    by = c("MAG_ID", "Rhodopsin_ID")
+  ) %>%
+  mutate(
+    Same_contig = Contig_ID == Rhodopsin_contig
+  )
+
+if (any(is.na(neighbour_contig_check$Same_contig))) {
+  stop(
+    "At least one neighborhood row could not be matched to its rhodopsin ",
+    "contig. Check MAG_ID, Rhodopsin_ID and Contig_ID."
+  )
+}
+
+message(
+  sum(!neighbour_contig_check$Same_contig),
+  " neighborhood rows from other contigs removed before plotting."
+)
+
+neighbours_same_contig <- neighbour_contig_check %>%
+  filter(Same_contig) %>%
+  select(
+    -Rhodopsin_contig,
+    -Same_contig
+  )
+
+rhodopsin_meta <- rhodopsin_positions %>%
+  transmute(
+    MAG_ID,
+
+    Species_ID = str_replace(
+      MAG_ID,
+      "\\.MAG-",
+      ".MAG_"
+    ),
+
+    Tested_label = unname(
+      tested_label_map[Species_ID]
+    ),
+
+    Rhodopsin_ID,
+    Contig_ID,
+
+    Rhodopsin_midpoint =
+      (Start_1based + End_1based) / 2,
+
+    Rhodopsin_strand = Strand
+  ) %>%
+  add_count(
+    MAG_ID,
+    name = "N_rhodopsins"
+  ) %>%
+  mutate(
+    Base_label = Tested_label,
+
+    Display_label = if_else(
+      N_rhodopsins > 1,
+      paste0(
+        Base_label,
+        " [",
+        str_extract(Rhodopsin_ID, "cds[0-9]+$"),
+        "]"
+      ),
+      Base_label
+    )
+  )
+
+if (any(is.na(rhodopsin_meta$Tested_label))) {
+  stop(
+    "Tested label missing for: ",
+    paste(
+      unique(
+        rhodopsin_meta$Species_ID[
+          is.na(rhodopsin_meta$Tested_label)
+        ]
+      ),
+      collapse = ", "
+    )
+  )
+}
+
+gene_lookup <- gene_proteome %>%
+  transmute(
+    Species_ID,
+    Gene_key,
+
+    Gene_Protein_ID = Protein_ID,
+    Gene_KEGG_ID = KEGG_ID,
+    Gene_KEGG_Category = KEGG_Category,
+    Gene_KEGG_Subcategory = KEGG_Subcategory,
+
+    Gene_Target = Target_gene,
+    Gene_Retinal_module = Retinal_module,
+    Gene_is_transporter = Is_transporter
+  ) %>%
+  distinct(
+    Species_ID,
+    Gene_key,
+    .keep_all = TRUE
+  )
+
+neighbours_annotated <- neighbours_same_contig %>%
+  mutate(
+    Species_ID = str_replace(
+      MAG_ID,
+      "\\.MAG-",
+      ".MAG_"
+    ),
+
+    Gene_key = Gene_ID %>%
+      str_extract("contig[-_][0-9]+-cds[0-9]+") %>%
+      str_replace("^contig-", "contig_"),
+
+    Start_1based = as.numeric(Start_1based),
+    End_1based = as.numeric(End_1based)
+  ) %>%
+  inner_join(
+    rhodopsin_meta,
+    by = c(
+      "MAG_ID",
+      "Species_ID",
+      "Rhodopsin_ID",
+      "Contig_ID"
+    )
+  ) %>%
+  left_join(
+    gene_lookup,
+    by = c("Species_ID", "Gene_key")
+  ) %>%
+  mutate(
+    Is_rhodopsin =
+      Gene_ID == Rhodopsin_ID,
+
+    Annotation = case_when(
+      Is_rhodopsin ~
+        "Rhodopsin",
+
+      Gene_Retinal_module == "Core" ~
+        "Core retinal biosynthesis",
+
+      replace_na(Gene_is_transporter, FALSE) ~
+        "Transporter",
+
+      TRUE ~
+        "Other"
+    ),
+
+    # Minus-strand neighborhoods are reflected around the rhodopsin midpoint.
+    Plot_start = if_else(
+      Rhodopsin_strand == "+",
+      Start_1based - Rhodopsin_midpoint,
+      Rhodopsin_midpoint - End_1based
+    ),
+
+    Plot_end = if_else(
+      Rhodopsin_strand == "+",
+      End_1based - Rhodopsin_midpoint,
+      Rhodopsin_midpoint - Start_1based
+    ),
+
+    Plot_forward = if_else(
+      Rhodopsin_strand == "+",
+      Strand == "+",
+      Strand == "-"
+    )
+  )
+
+write_csv(
+  neighbours_annotated,
+  "Rhodopsin_Neighborhoods_Annotated.csv"
+)
+
+# 4. Panel A: rhodopsin-centered genomic neighborhoods -----------------------
+
+alignment_rows <- neighbours_annotated %>%
+  distinct(
+    MAG_ID,
+    Rhodopsin_ID,
+    Display_label,
+    Rhodopsin_strand
+  ) %>%
+  arrange(
+    Display_label,
+    Rhodopsin_ID
+  ) %>%
+  mutate(
+    # ASCII-safe label. Reflection is retained in the plotted coordinates.
+    Plot_label = Display_label
+  )
+
+alignment_data <- neighbours_annotated %>%
+  left_join(
+    alignment_rows %>%
+      select(
+        MAG_ID,
+        Rhodopsin_ID,
+        Plot_label
+      ),
+    by = c(
+      "MAG_ID",
+      "Rhodopsin_ID"
+    )
+  ) %>%
+  mutate(
+    Plot_label = factor(
+      Plot_label,
+      levels = rev(alignment_rows$Plot_label)
+    ),
+
+    Annotation = factor(
+      Annotation,
+      levels = c(
+        "Rhodopsin",
+        "Core retinal biosynthesis",
+        "Transporter",
+        "Other"
+      )
+    )
+  )
+
+p_alignment <- ggplot(
+  alignment_data,
+  aes(
+    xmin = Plot_start,
+    xmax = Plot_end,
+    y = Plot_label,
+    fill = Annotation,
+    forward = Plot_forward
+  )
+) +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed",
+    colour = "grey50"
+  ) +
+  geom_gene_arrow(
+    colour = "grey25",
+    linewidth = 0.25,
+    arrow_body_height = grid::unit(3, "mm"),
+    arrowhead_height = grid::unit(4, "mm"),
+    arrowhead_width = grid::unit(1.5, "mm")
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Rhodopsin" = "#762A83",
+      "Core retinal biosynthesis" = "#D95F02",
+      "Transporter" = "#2166AC",
+      "Other" = "#D9D9D9"
+    ),
+    drop = FALSE
+  ) +
+  scale_x_continuous(
+    labels = label_comma()
+  ) +
+  labs(
+    title = "Rhodopsin-centered genomic neighborhoods",
+    subtitle = paste(
+      "Up to 20 genes on each side, restricted to the",
+      "rhodopsin-containing contig; minus-strand regions are reflected"
+    ),
+    x = "Position relative to rhodopsin midpoint (bp)",
+    y = NULL,
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 7),
+    legend.position = "bottom"
+  )
+
+# 5. Panel B: core carotenoid-module genome/proteome matrix ------------------
+
+# This matrix searches the complete annotated gene catalogue of the selected
+# rhodopsin species. It is not restricted to the plotted neighborhoods.
+#
+# Only rhodopsin and the requested carotenoid-core genes are plotted:
+# Rhodopsin, crtE, crtB, crtI and crtY.
+# blh, idi, ispA/FDPS and diox1 are not included in panel B.
+#
+# Numbers inside the tiles show:
+#   detected genes / encoded genes
+#
+# Examples:
+#   0/1 = one encoded gene, not detected
+#   1/1 = one encoded gene, detected
+#   1/2 = one of two encoded copies detected
+#   2/2 = both encoded copies detected
+
+feature_order <- c(
+  "Rhodopsin",
+  "crtE",
+  "crtB",
+  "crtI",
+  "crtY"
+)
+
+feature_labels <- c(
+  "Rhodopsin\nK04641/K04643",
+  "crtE\nK13789/K13787",
+  "crtB\nK02291",
+  "crtI\nK10027",
+  "crtY\nK06443/K22502"
+)
+
+matrix_summary <- gene_proteome %>%
+  filter(
+    Target_gene %in% feature_order
+  ) %>%
+  group_by(
+    Species_ID,
+    Target_gene
+  ) %>%
+  summarise(
+    N_genes = n_distinct(Protein_ID),
+
+    # Number of distinct encoded copies detected at least once.
+    N_detected = n_distinct(
+      Protein_ID[Protein_detected]
+    ),
+
+    .groups = "drop"
+  )
+
+# Sanity check: detected copies cannot exceed encoded copies.
+if (any(matrix_summary$N_detected > matrix_summary$N_genes)) {
+  stop(
+    "Detected gene count exceeds encoded gene count in panel B."
+  )
+}
+
+species_labels <- rhodopsin_meta %>%
+  distinct(
+    Species_ID,
+    MAG_ID,
+    Tested_label,
+    Base_label
+  ) %>%
+  arrange(
+    Tested_label,
+    MAG_ID
+  )
+
+species_order <- species_labels %>%
+  pull(Species_ID)
+
+species_display_order <- species_labels %>%
+  pull(Base_label)
+
+matrix_data <- crossing(
+  Species_ID = species_order,
+  Target_gene = feature_order
+) %>%
+  left_join(
+    matrix_summary,
+    by = c(
+      "Species_ID",
+      "Target_gene"
+    )
+  ) %>%
+  left_join(
+    species_labels %>%
+      select(
+        Species_ID,
+        Species_label = Base_label
+      ),
+    by = "Species_ID"
+  ) %>%
+  mutate(
+    N_genes = replace_na(N_genes, 0L),
+    N_detected = replace_na(N_detected, 0L),
+
+    Status = case_when(
+      N_genes == 0 ~
+        "Not encoded",
+
+      N_detected == 0 ~
+        "Encoded, none detected",
+
+      N_detected == N_genes ~
+        "Encoded, all detected",
+
+      TRUE ~
+        "Encoded, partly detected"
+    ),
+
+    Status = factor(
+      Status,
+      levels = c(
+        "Not encoded",
+        "Encoded, none detected",
+        "Encoded, partly detected",
+        "Encoded, all detected"
+      )
+    ),
+
+    Target_gene = factor(
+      Target_gene,
+      levels = feature_order,
+      labels = feature_labels
+    ),
+
+    Species_label = factor(
+      Species_label,
+      levels = rev(species_display_order)
+    )
+  )
+
+write_csv(
+  matrix_data %>%
+    mutate(
+      across(
+        where(is.factor),
+        as.character
+      )
+    ),
+  "Rhodopsin_Retinal_Matrix.csv"
+)
+
+p_matrix <- ggplot(
+  matrix_data,
+  aes(
+    x = Target_gene,
+    y = Species_label,
+    fill = Status
+  )
+) +
+  geom_tile(
+    colour = "grey70",
+    linewidth = 0.35
+  ) +
+  geom_text(
+    aes(
+      label = if_else(
+        N_genes > 0,
+        paste0(N_detected, "/", N_genes),
+        ""
+      ),
+      colour = Status
+    ),
+    size = 3
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Not encoded" = "white",
+      "Encoded, none detected" = "#D9D9D9",
+      "Encoded, partly detected" = "#E6AB02",
+      "Encoded, all detected" = "#1B9E77"
+    ),
+    drop = FALSE
+  ) +
+  scale_colour_manual(
+    values = c(
+      "Not encoded" = "black",
+      "Encoded, none detected" = "black",
+      "Encoded, partly detected" = "black",
+      "Encoded, all detected" = "white"
+    ),
+    guide = "none"
+  ) +
+  labs(
+    title = "Rhodopsin and carotenoid-biosynthesis potential",
+    subtitle = paste(
+      "Carotenoid core (crtE/B/I/Y); numbers = detected/encoded genes;",
+      "tile colour = extent of protein detection"
+    ),
+    x = NULL,
+    y = NULL,
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+
+    axis.text.y = element_text(size = 7),
+    legend.position = "bottom"
+  )
+
+# 6. Combine and save as one A4 landscape figure -----------------------------
+
+combined_figure <- (
+  p_alignment /
+    p_matrix
+) +
+  plot_layout(
+    heights = c(2, 1)
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    plot.tag = element_text(
+      face = "bold",
+      size = 11
+    )
+  )
+
+ggsave(
+  "Rhodopsin_Context_Core_Module_A4_Landscape.pdf",
+  plot = combined_figure,
+  width = 297,
+  height = 210,
+  units = "mm"
+)
+
+ggsave(
+  "Rhodopsin_Context_Core_Module_A4_Landscape.png",
+  plot = combined_figure,
+  width = 297,
+  height = 210,
+  units = "mm",
+  dpi = 600
+)
+
+combined_figure
+```
+

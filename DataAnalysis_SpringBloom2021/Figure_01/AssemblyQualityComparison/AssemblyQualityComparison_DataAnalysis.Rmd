@@ -644,6 +644,11 @@ p_final
 
 ggsave("AssemblyComparison.pdf", p_final, width = 17, height = 4.3, device = pdf)
 # ggsave("hybrid_comparison_sqrt_customticks.png", p_final, width = 1600, height = 330, dpi = 300, units = "px")
+
+readr::write_csv(
+  df0,
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Source_Data_Main/Figure_1a.csv"
+)
 ```
 
 
