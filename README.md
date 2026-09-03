@@ -7,7 +7,7 @@
 \* Corresponding author: stefan.andrei@limnol.uzh.ch
 
 **Archived analysis release and supporting data:**  
-👉 DOI:/10.5281/zenodo.19735006
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19735006.svg)](https://doi.org/10.5281/zenodo.19735006)
 
 ---
 
@@ -63,7 +63,7 @@ Raw Lake Zurich omics data are deposited in the corresponding domain-specific re
 
 The archived analysis release and additional supporting datasets are available via Zenodo:
 
-👉 DOI: /10.5281/zenodo.19735006
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19735006.svg)](https://doi.org/10.5281/zenodo.19735006)
 
 The Zenodo archive contains the data required by the analysis workflows in this repository, including:
 
@@ -105,7 +105,7 @@ PRIDE – Proteomics Identifications Database
 
 **Archived analysis data, Lake Zurich flow cytometry, MockD6300 benchmarking data, and supporting files:**  
 Zenodo  
-DOI: /10.5281/zenodo.19735006
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19735006.svg)](https://doi.org/10.5281/zenodo.19735006)
 
 ---
 
