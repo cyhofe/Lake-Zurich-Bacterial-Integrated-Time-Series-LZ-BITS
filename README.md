@@ -1,6 +1,6 @@
 #### Lake-Zurich-Bacterial-Integrated-Time-Series-LZ-BITS
 
-# Genome architecture predicts proteome allocation in natural bacterial communities
+# Genomic traits predict proteome allocation in natural bacterial communities
 
 **Cyrill Hofer¹, Lucas Serra Moncadas¹, Jakob Pernthaler¹, Adrian-Stefan Andrei¹**\*  
 ¹ Limnological Station, Department of Plant and Microbial Biology, University of Zurich, Kilchberg 8802, Switzerland  
@@ -15,7 +15,7 @@
 
 This repository contains the analysis workflow for the study:
 
-> **Genome architecture predicts proteome allocation in natural bacterial communities**
+> **Genomic traits predict proteome allocation in natural bacterial communities**
 
 The project integrates metagenomic, metaproteomic, flow-cytometric, and environmental data from a Lake Zurich time series to investigate how genome architecture constrains and predicts proteome investment patterns in natural microbial communities.
 
