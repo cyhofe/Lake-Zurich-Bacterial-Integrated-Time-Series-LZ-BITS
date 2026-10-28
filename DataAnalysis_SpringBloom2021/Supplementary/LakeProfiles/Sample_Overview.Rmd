@@ -2094,132 +2094,110 @@ ggsave(
   bg = "white"
 )
 
-# ============================================================
-# Source-data export: Supplementary Figure 37a-d
-# ============================================================
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 37
+# Minimal panel-specific tables
+############################################################
 
-base_dir <- paste0(
+source_dir <- paste0(
   "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
-  "DataAnalysis_SpringBloom2021"
-)
-
-source_dir <- file.path(
-  base_dir,
-  "Source_Data_Supplement"
-)
-
-dir.create(
-  source_dir,
-  recursive = TRUE,
-  showWarnings = FALSE
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
 )
 
 
-# ------------------------------------------------------------
-# Supplementary Figure 37a
-# One row = one environmental measurement at one date and depth
-# ------------------------------------------------------------
+# ============================================================
+# Figure 37a — chlorophyll and temperature
+# ============================================================
 
-suppl_figure_37a <- abiotic_ST_dat |>
-  dplyr::filter(
-    depth >= 2,
-    depth <= 8,
-    date %in% environment_2_8m$Date
-  ) |>
-  dplyr::transmute(
-    Date = as.Date(date),
-    Depth_m = as.numeric(depth),
-    Temperature_C = as.numeric(temperature),
-    Chlorophyll_ug_per_L = as.numeric(chlorophyll)
-  ) |>
-  dplyr::arrange(Date, Depth_m)
-
-readr::write_excel_csv(
-  suppl_figure_37a,
-  file.path(source_dir, "Suppl_Figure_37a.csv"),
-  na = ""
-)
-
-
-# ------------------------------------------------------------
-# Supplementary Figure 37b
-# One row = one protein observation for one species and date
-# ------------------------------------------------------------
-
-suppl_figure_37b <- retained_protein |>
-  dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Protein_ID = as.character(Protein_ID),
-    Trophic_Group = as.character(TrophicGroupPlot),
-    KEGG_Subcategory = as.character(KEGG_Subcategory),
-    Protein_Class = dplyr::if_else(
-      is_transporter,
-      "Transporter",
-      "Non-transporter"
-    ),
-    Normalized_iBAQ = as.numeric(Protein_Abundance)
-  ) |>
-  dplyr::arrange(Date, Species_ID, Protein_ID)
-
-readr::write_excel_csv(
-  suppl_figure_37b,
-  file.path(source_dir, "Suppl_Figure_37b.csv"),
-  na = ""
-)
-
-
-# ------------------------------------------------------------
-# Supplementary Figure 37c
-# One row = one retained species-date TPF observation
-# ------------------------------------------------------------
-
-suppl_figure_37c <- species_date_tpf |>
-  dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Trophic_Group = as.character(TrophicGroupPlot),
-    Total_Normalized_iBAQ = as.numeric(
-      Total_Protein_Abundance
-    ),
-    Transporter_Normalized_iBAQ = as.numeric(
-      Transporter_Abundance
-    ),
-    Transporter_Proteome_Fraction_Percent = as.numeric(
-      TPF_Percent
-    )
-  ) |>
-  dplyr::arrange(Trophic_Group, Species_ID, Date)
-
-readr::write_excel_csv(
-  suppl_figure_37c,
-  file.path(source_dir, "Suppl_Figure_37c.csv"),
-  na = ""
-)
-
-
-# ------------------------------------------------------------
-# Supplementary Figure 37d
-# One row = one species contributing on one sampling date
-# ------------------------------------------------------------
-
-suppl_figure_37d <- retained_protein |>
-  dplyr::distinct(
-    Species_ID,
+Suppl_Figure_37a <- panel_a_data %>%
+  dplyr::select(
     Date,
-    TrophicGroupPlot
-  ) |>
-  dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Trophic_Group = as.character(TrophicGroupPlot)
-  ) |>
-  dplyr::arrange(Trophic_Group, Date, Species_ID)
+    Series,
+    Original_Value
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = Series,
+    values_from = Original_Value
+  ) %>%
+  dplyr::rename(
+    Chlorophyll_ug_L = Chlorophyll,
+    Temperature_C = Temperature
+  ) %>%
+  dplyr::arrange(Date)
 
-readr::write_excel_csv(
-  suppl_figure_37d,
-  file.path(source_dir, "Suppl_Figure_37d.csv"),
-  na = ""
+readr::write_csv(
+  Suppl_Figure_37a,
+  file.path(source_dir, "Suppl_Figure_37a.csv")
+)
+
+
+# ============================================================
+# Figure 37b — overall community proteome allocation
+# ============================================================
+
+Suppl_Figure_37b <- panel_b_data %>%
+  dplyr::select(
+    Date,
+    Series,
+    Original_Value
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = Series,
+    values_from = Original_Value
+  ) %>%
+  dplyr::rename(
+    Transporter_Percent = Transporter,
+    Non_Transporter_Percent = `Non-transporter`
+  ) %>%
+  dplyr::arrange(Date)
+
+readr::write_csv(
+  Suppl_Figure_37b,
+  file.path(source_dir, "Suppl_Figure_37b.csv")
+)
+
+
+# ============================================================
+# Figure 37c — pooled TPF by trophic strategy
+# ============================================================
+
+Suppl_Figure_37c <- panel_c_data %>%
+  dplyr::transmute(
+    Date,
+    Trophic_Strategy = Series,
+    Pooled_TPF_Percent = Original_Value,
+    TPF_Q1_Percent = Lower_Value,
+    TPF_Q3_Percent = Upper_Value
+  ) %>%
+  dplyr::arrange(
+    Trophic_Strategy,
+    Date
+  )
+
+readr::write_csv(
+  Suppl_Figure_37c,
+  file.path(source_dir, "Suppl_Figure_37c.csv")
+)
+
+
+# ============================================================
+# Figure 37d — contributing species
+# ============================================================
+
+Suppl_Figure_37d <- panel_d_data %>%
+  dplyr::transmute(
+    Date,
+    Trophic_Strategy = Series,
+    N_Contributing_Species = as.integer(Original_Value)
+  ) %>%
+  dplyr::arrange(
+    Trophic_Strategy,
+    Date
+  )
+
+readr::write_csv(
+  Suppl_Figure_37d,
+  file.path(source_dir, "Suppl_Figure_37d.csv")
 )
 ```
 
@@ -3501,173 +3479,100 @@ if (n_detected_species != 47L) {
 
 
 Rhodopsin_Environmental_Figure
-```
 
-```{r}
-# ============================================================
-# SOURCE DATA: SUPPLEMENTARY FIGURE 43
-# ============================================================
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 43
+# Minimal panel-specific tables
+############################################################
 
-base_dir <- paste0(
+source_dir <- paste0(
   "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
-  "DataAnalysis_SpringBloom2021"
-)
-
-source_dir <- file.path(
-  base_dir,
-  "Source_Data_Supplement"
-)
-
-dir.create(
-  source_dir,
-  recursive = TRUE,
-  showWarnings = FALSE
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
 )
 
 
 # ============================================================
-# Suppl. Figure 43a
-# One row = one measured environmental value at one depth/date
+# Figure 43a — measured light and temperature
 # ============================================================
 
-suppl_figure_43a <- dplyr::bind_rows(
-
-  light_clean |>
-    dplyr::filter(
-      depth >= 2,
-      depth <= 8,
-      Date %in% environment_2_8m$Date
-    ) |>
-    dplyr::transmute(
-      Date = as.Date(Date),
-      Depth_m = as.numeric(depth),
-      Environmental_Parameter = "Spherical light",
-      Measured_Value = as.numeric(Light),
-      Unit = "µmol photons m^-2 s^-1"
-    ),
-
-  temperature_clean |>
-    dplyr::filter(
-      depth >= 2,
-      depth <= 8,
-      Date %in% environment_2_8m$Date
-    ) |>
-    dplyr::transmute(
-      Date = as.Date(Date),
-      Depth_m = as.numeric(depth),
-      Environmental_Parameter = "Temperature",
-      Measured_Value = as.numeric(Temperature),
-      Unit = "°C"
-    )
-) |>
-  dplyr::arrange(
+Suppl_Figure_43a <- panel_a_long %>%
+  dplyr::select(
     Date,
-    Environmental_Parameter,
-    Depth_m
-  )
+    Series,
+    Original_Value
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = Series,
+    values_from = Original_Value
+  ) %>%
+  dplyr::rename(
+    Light = Light,
+    Temperature_C = Temperature
+  ) %>%
+  dplyr::arrange(Date)
 
-readr::write_excel_csv(
-  suppl_figure_43a,
-  file.path(source_dir, "Suppl_Figure_43a.csv"),
-  na = ""
+readr::write_csv(
+  Suppl_Figure_43a,
+  file.path(source_dir, "Suppl_Figure_43a.csv")
 )
 
 
 # ============================================================
-# Suppl. Figure 43b
-# One row = one detected protein from one species/date
+# Figure 43b — community rhodopsin proteome fraction
 # ============================================================
 
-suppl_figure_43b <- protein_analysis |>
+Suppl_Figure_43b <- overall_date_rpf %>%
   dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Protein_ID = as.character(Protein_ID),
-    Figure5_Group = as.character(Figure5_Group),
-    Protein_Class = dplyr::if_else(
-      is_rhodopsin,
-      "Rhodopsin",
-      "Other detected protein"
-    ),
-    Normalized_iBAQ = as.numeric(Protein_Abundance)
-  ) |>
-  dplyr::arrange(
     Date,
-    Figure5_Group,
-    Species_ID,
-    Protein_ID
-  )
+    Rhodopsin_Proteome_Fraction_Percent = Rhodopsin_Percent
+  ) %>%
+  dplyr::arrange(Date)
 
-readr::write_excel_csv(
-  suppl_figure_43b,
-  file.path(source_dir, "Suppl_Figure_43b.csv"),
-  na = ""
+readr::write_csv(
+  Suppl_Figure_43b,
+  file.path(source_dir, "Suppl_Figure_43b.csv")
 )
 
 
 # ============================================================
-# Suppl. Figure 43c
-# One row = one species-date rhodopsin fraction
+# Figure 43c — pooled rhodopsin fraction by group
 # ============================================================
 
-suppl_figure_43c <- species_date_rpf |>
+Suppl_Figure_43c <- group_date_rpf %>%
   dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Figure5_Group = as.character(Figure5_Group),
-    Total_Normalized_iBAQ = as.numeric(
-      Total_Protein_Abundance
-    ),
-    Rhodopsin_Normalized_iBAQ = as.numeric(
-      Rhodopsin_Abundance
-    ),
-    Rhodopsin_Proteome_Fraction_Percent = as.numeric(
-      RPF_Percent
-    )
-  ) |>
+    Date,
+    Group = as.character(Figure5_Group),
+    Pooled_Rhodopsin_Proteome_Fraction_Percent = Pooled_RPF_Percent
+  ) %>%
   dplyr::arrange(
-    Figure5_Group,
-    Species_ID,
+    Group,
     Date
   )
 
-readr::write_excel_csv(
-  suppl_figure_43c,
-  file.path(source_dir, "Suppl_Figure_43c.csv"),
-  na = ""
+readr::write_csv(
+  Suppl_Figure_43c,
+  file.path(source_dir, "Suppl_Figure_43c.csv")
 )
 
 
 # ============================================================
-# Suppl. Figure 43d
-# One row = one rhodopsin-expressing species/date observation
+# Figure 43d — species with detected rhodopsin protein
 # ============================================================
 
-suppl_figure_43d <- species_date_rpf |>
-  dplyr::semi_join(
-    rhodopsin_detected_species,
-    by = c("Species_ID", "Figure5_Group")
-  ) |>
+Suppl_Figure_43d <- rhodopsin_contributors %>%
   dplyr::transmute(
-    Date = as.Date(Date),
-    Species_ID = as.character(Species_ID),
-    Figure5_Group = as.character(Figure5_Group),
-    Rhodopsin_Normalized_iBAQ = as.numeric(
-      Rhodopsin_Abundance
-    ),
-    Rhodopsin_Detected =
-      Rhodopsin_Abundance > 0
-  ) |>
-  dplyr::arrange(
-    Figure5_Group,
     Date,
-    Species_ID
+    Group = as.character(Figure5_Group),
+    N_Rhodopsin_Species
+  ) %>%
+  dplyr::arrange(
+    Group,
+    Date
   )
 
-readr::write_excel_csv(
-  suppl_figure_43d,
-  file.path(source_dir, "Suppl_Figure_43d.csv"),
-  na = ""
+readr::write_csv(
+  Suppl_Figure_43d,
+  file.path(source_dir, "Suppl_Figure_43d.csv")
 )
 ```
 

@@ -562,6 +562,90 @@ ggsave("Plot_Protein_Signal_Overview.png",
        device = "png")
 
 
+############################################################
+# SUPPLEMENTARY FIGURE 18 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 18A — Peptide abundance distributions
+# ----------------------------------------------------------
+
+Suppl_Figure_18_Peptides <- dat %>%
+  filter(
+    !is.na(Peptide_Abundance),
+    Peptide_Abundance > 0
+  ) %>%
+  group_by(Date) %>%
+  mutate(
+    Log2_Abundance = log2(Peptide_Abundance),
+    Median_Log2_Abundance = median(
+      Log2_Abundance,
+      na.rm = TRUE
+    ),
+    Centered_Log2_Abundance =
+      Log2_Abundance - Median_Log2_Abundance
+  ) %>%
+  ungroup() %>%
+  transmute(
+    Date,
+    Peptide_ID,
+    Raw_Abundance = Peptide_Abundance,
+    Log2_Abundance,
+    Median_Log2_Abundance,
+    Centered_Log2_Abundance
+  )
+
+write_csv(
+  Suppl_Figure_18_Peptides,
+  file.path(
+    source_dir,
+    "Suppl_Figure_18_Peptides.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 18B — Protein abundance distributions
+# ----------------------------------------------------------
+
+Suppl_Figure_18_Proteins <- dat %>%
+  filter(
+    !is.na(Protein_Abundance_IBAQ),
+    Protein_Abundance_IBAQ > 0
+  ) %>%
+  group_by(Date) %>%
+  mutate(
+    Log2_Abundance = log2(Protein_Abundance_IBAQ),
+    Median_Log2_Abundance = median(
+      Log2_Abundance,
+      na.rm = TRUE
+    ),
+    Centered_Log2_Abundance =
+      Log2_Abundance - Median_Log2_Abundance
+  ) %>%
+  ungroup() %>%
+  transmute(
+    Date,
+    Protein_ID,
+    Raw_Abundance_IBAQ = Protein_Abundance_IBAQ,
+    Log2_Abundance,
+    Median_Log2_Abundance,
+    Centered_Log2_Abundance
+  )
+
+write_csv(
+  Suppl_Figure_18_Proteins,
+  file.path(
+    source_dir,
+    "Suppl_Figure_18_Proteins.csv"
+  )
+)
 ```
 
 
@@ -764,6 +848,33 @@ ggsave(
   height = 9,
   units = "in",
   dpi = 300
+)
+
+############################################################
+# SUPPLEMENTARY FIGURE 24 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_24 <- pca_df %>%
+  transmute(
+    Date,
+    Month = as.character(Month),
+    PC1,
+    PC2,
+    PC1_Variance_Percent = pca_var_exp[1],
+    PC2_Variance_Percent = pca_var_exp[2]
+  )
+
+write_csv(
+  Suppl_Figure_24,
+  file.path(
+    source_dir,
+    "Suppl_Figure_24.csv"
+  )
 )
 ```
 

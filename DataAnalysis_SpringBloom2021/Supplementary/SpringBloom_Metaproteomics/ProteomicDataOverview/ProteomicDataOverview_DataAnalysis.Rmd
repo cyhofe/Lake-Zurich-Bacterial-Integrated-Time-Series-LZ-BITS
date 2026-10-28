@@ -566,6 +566,64 @@ ggsave(
   units = "cm",
   dpi = 300
 )
+
+############################################################
+# SUPPLEMENTARY FIGURE 20 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_20 <- bind_rows(
+
+  pep_count %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Count"
+    ),
+
+  pep_abund %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Abundance"
+    ),
+
+  prot_count %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Count"
+    ),
+
+  prot_abund %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Abundance"
+    )
+
+) %>%
+  group_by(Date, Data_Level, Metric) %>%
+  mutate(
+    Percentage = 100 * Value / sum(Value)
+  ) %>%
+  ungroup() %>%
+  transmute(
+    Date,
+    Data_Level,
+    Metric,
+    Phylum_Group = as.character(Phylum_Group),
+    Absolute_Value = Value,
+    Percentage
+  )
+
+write_csv(
+  Suppl_Figure_20,
+  file.path(
+    source_dir,
+    "Suppl_Figure_20.csv"
+  )
+)
 ```
 
 
@@ -1023,6 +1081,64 @@ ggsave(
   height = 36,
   units = "cm",
   dpi = 300
+)
+
+############################################################
+# SUPPLEMENTARY FIGURE 19 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_19 <- bind_rows(
+
+  pep_rep_count %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Count"
+    ),
+
+  pep_rep_abund %>%
+    mutate(
+      Data_Level = "Peptide",
+      Metric = "Abundance"
+    ),
+
+  prot_rep_count %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Count"
+    ),
+
+  prot_rep_abund %>%
+    mutate(
+      Data_Level = "Protein",
+      Metric = "Abundance"
+    )
+
+) %>%
+  group_by(Date, Data_Level, Metric) %>%
+  mutate(
+    Percentage = 100 * Value / sum(Value)
+  ) %>%
+  ungroup() %>%
+  transmute(
+    Date,
+    Data_Level,
+    Metric,
+    Replicate_Group = as.character(Replicate_Group),
+    Absolute_Value = Value,
+    Percentage
+  )
+
+write_csv(
+  Suppl_Figure_19,
+  file.path(
+    source_dir,
+    "Suppl_Figure_19.csv"
+  )
 )
 ```
 

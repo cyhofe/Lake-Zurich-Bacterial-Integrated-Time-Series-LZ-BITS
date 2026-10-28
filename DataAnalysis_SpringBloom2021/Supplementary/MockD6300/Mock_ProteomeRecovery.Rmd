@@ -459,6 +459,63 @@ ggsave(
 )
 
 replicate_overlap_plot
+
+############################################################
+# SUPPLEMENTARY FIGURE 11 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_11 <- replicate_overlap_source %>%
+  mutate(
+    Panel = case_when(
+      Data_Level == "Peptide" &
+        Metric == "Identification count" ~
+        "Peptide counts (n)",
+
+      Data_Level == "Peptide" &
+        Metric == "Median-centered abundance" ~
+        "Peptide abundance",
+
+      Data_Level == "Protein" &
+        Metric == "Identification count" ~
+        "Protein counts (n)",
+
+      Data_Level == "Protein" &
+        Metric == "Median-centered iBAQ" ~
+        "Protein abundance (iBAQ)"
+    )
+  ) %>%
+  transmute(
+    Panel,
+    Sample = as.character(Sample),
+    Detection_Category = as.character(Presence),
+    Plotted_Value = Value
+  ) %>%
+  arrange(
+    factor(
+      Panel,
+      levels = c(
+        "Peptide counts (n)",
+        "Peptide abundance",
+        "Protein counts (n)",
+        "Protein abundance (iBAQ)"
+      )
+    ),
+    Sample,
+    Detection_Category
+  )
+
+write_csv(
+  Suppl_Figure_11,
+  file.path(
+    source_dir,
+    "Suppl_Figure_11.csv"
+  )
+)
 ```
 
 # Signal distributions and quantitative reproducibility
@@ -638,6 +695,66 @@ ggsave(
 )
 
 quantitative_reproducibility_plot
+
+############################################################
+# SUPPLEMENTARY FIGURE 12 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# A) Signal distributions
+# ----------------------------------------------------------
+
+Suppl_Figure_12_Distributions <-
+  reproducibility_distribution_source %>%
+  mutate(
+    Data_Level = as.character(Data_Level),
+    Sample = as.character(Sample)
+  )
+
+write_csv(
+  Suppl_Figure_12_Distributions,
+  file.path(
+    source_dir,
+    "Suppl_Figure_12_Distributions.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# B) Replicate comparison
+# ----------------------------------------------------------
+
+Suppl_Figure_12_Comparison <- bind_rows(
+
+  peptide_pairs %>%
+    mutate(
+      Data_Level = "Peptides"
+    ),
+
+  protein_pairs %>%
+    mutate(
+      Data_Level = "Proteins"
+    )
+
+) %>%
+  relocate(
+    Data_Level,
+    Feature_ID
+  )
+
+write_csv(
+  Suppl_Figure_12_Comparison,
+  file.path(
+    source_dir,
+    "Suppl_Figure_12_Comparison.csv"
+  )
+)
 ```
 
 # Quality filtering and species specificity
@@ -1213,6 +1330,60 @@ ggsave(
 
 
 quality_filtering_plot
+
+############################################################
+# SUPPLEMENTARY FIGURE 13 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# A) Filtering bars
+# ----------------------------------------------------------
+
+Suppl_Figure_13_Bars <- filtering_source %>%
+  transmute(
+    Data_Level,
+    Filter = as.character(Filter),
+    Specificity = as.character(Specificity),
+    Count,
+    Total,
+    Percentage
+  )
+
+write_csv(
+  Suppl_Figure_13_Bars,
+  file.path(
+    source_dir,
+    "Suppl_Figure_13_Bars.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# B) Retention pies
+# ----------------------------------------------------------
+
+Suppl_Figure_13_Pies <- specificity_retention_source %>%
+  transmute(
+    Metric,
+    Status,
+    Value,
+    Total,
+    Percentage
+  )
+
+write_csv(
+  Suppl_Figure_13_Pies,
+  file.path(
+    source_dir,
+    "Suppl_Figure_13_Pies.csv"
+  )
+)
 ```
 
 # Community composition and proteome recovery
@@ -1735,5 +1906,62 @@ ggsave(
 
 
 community_proteome_recovery_plot
+
+############################################################
+# SUPPLEMENTARY FIGURE 14 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# A) Community composition
+# ----------------------------------------------------------
+
+Suppl_Figure_14_Community <- community_composition_source %>%
+  transmute(
+    Community_Measure = as.character(Community_Measure),
+    Species = as.character(Species),
+    Value,
+    Relative_Contribution
+  )
+
+write_csv(
+  Suppl_Figure_14_Community,
+  file.path(
+    source_dir,
+    "Suppl_Figure_14_Community.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# B) Proteome recovery
+# ----------------------------------------------------------
+
+Suppl_Figure_14_Recovery <- proteome_recovery_source %>%
+  transmute(
+    Species = as.character(Species),
+    Organism,
+    Organism_Type,
+    Gram,
+    Genome_Size_Mb,
+    Reference_Proteins,
+    Detected_Proteins,
+    Not_Detected,
+    Recovery_Percentage
+  )
+
+write_csv(
+  Suppl_Figure_14_Recovery,
+  file.path(
+    source_dir,
+    "Suppl_Figure_14_Recovery.csv"
+  )
+)
 ```
+
 

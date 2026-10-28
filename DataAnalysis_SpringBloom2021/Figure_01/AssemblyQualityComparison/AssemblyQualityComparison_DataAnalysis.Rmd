@@ -1005,3 +1005,5 @@ Crucially (and consistent with the last panel in the figure) :contentReference[o
 
 ## One-sentence summary
 Long-read assemblies dramatically improve contiguity (fewer contigs, higher N50), but raw Nanopore assemblies show markedly higher error rates; correction substantially reduces SNP/INDEL rates and restores intact-protein density close to Illumina, while total assembly span remains similar across strategies :contentReference[oaicite:8]{index=8}.
+
+

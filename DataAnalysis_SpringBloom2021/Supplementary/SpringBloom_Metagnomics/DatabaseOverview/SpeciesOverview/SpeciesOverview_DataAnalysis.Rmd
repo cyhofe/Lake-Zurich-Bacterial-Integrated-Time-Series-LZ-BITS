@@ -230,7 +230,81 @@ ggsave(
   device = pdf
 )
 
+
+############################################################
+# SUPPLEMENTARY FIGURE 17 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 17A — Phylum relative abundance over time
+# ----------------------------------------------------------
+
+Suppl_Figure_17a <- phylum_pct_df %>%
+  transmute(
+    Date,
+    Phylum = as.character(Phylum),
+    Total_Abundance = total_abund,
+    Relative_Abundance = pct_abund
+  )
+
+write_csv(
+  Suppl_Figure_17a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_17a.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 17B — Genome size by phylum + middle labels
+# ----------------------------------------------------------
+
+phylum_labels <- dat_time %>%
+  group_by(Phylum) %>%
+  summarise(
+    Species_n = n_distinct(Species_ID),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Phylum_Label = paste0(
+      Phylum,
+      " (",
+      Species_n,
+      ")"
+    )
+  )
+
+Suppl_Figure_17b <- dat %>%
+  select(
+    Phylum,
+    Species_ID,
+    Estimated_Genome_Size
+  ) %>%
+  left_join(
+    phylum_labels,
+    by = "Phylum"
+  ) %>%
+  mutate(
+    Phylum = as.character(Phylum)
+  )
+
+write_csv(
+  Suppl_Figure_17b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_17b.csv"
+  )
+)
 ```
+
+
 ```{r}
 Big_Actinos <- dat %>%
   filter(Phylum == "Actinomycetota" & Estimated_Genome_Size > 2100000)
@@ -383,5 +457,234 @@ top3_abundant_genera <- genus_abundance %>%
 
 top3_abundant_genera
 
+```
+
+```{r}
+# ── Presentation-ready stacked bar plots ──────────────────────────────────────
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(grid)
+
+# 1) Register Arial for plotting on Windows
+if (.Platform$OS.type == "windows") {
+  windowsFonts(Arial = windowsFont("Arial"))
+}
+
+# 2) Assign consecutive positions to the sampling dates
+sampling_dates <- sort(unique(plot_data$Date))
+
+sample_key <- data.frame(
+  Date = sampling_dates,
+  Sample = seq_along(sampling_dates)
+)
+
+presentation_data <- plot_data %>%
+  left_join(sample_key, by = "Date")
+
+# 3) Aggregate relative abundance by phylum
+phylum_plot_data <- presentation_data %>%
+  mutate(
+    PhylumGroup = if_else(Phylum %in% top6_phyla, Phylum, "Rest"),
+    PhylumGroup = factor(
+      PhylumGroup,
+      levels = c(top6_phyla, "Rest")
+    )
+  ) %>%
+  group_by(Sample, PhylumGroup) %>%
+  summarise(
+    Relative = sum(Relative),
+    .groups = "drop"
+  )
+
+# 4) Aggregate the same relative abundances by genome size
+size_plot_data <- presentation_data %>%
+  mutate(
+    SizeClass = if_else(
+      Estimated_Genome_Size <= genome_cutoff,
+      small_label,
+      large_label
+    ),
+    SizeClass = factor(
+      SizeClass,
+      levels = c(small_label, large_label)
+    )
+  ) %>%
+  group_by(Sample, SizeClass) %>%
+  summarise(
+    Relative = sum(Relative),
+    .groups = "drop"
+  )
+
+# 5) Define one date label per month
+# Samples remain equally spaced. Monthly reference dates are mapped onto
+# that sample sequence, so labels may fall between two sampling bars.
+month_dates <- seq(
+  as.Date(format(min(sampling_dates), "%Y-%m-01")),
+  as.Date(format(max(sampling_dates), "%Y-%m-01")),
+  by = "month"
+) + 1
+
+month_dates <- month_dates[
+  month_dates >= min(sampling_dates) &
+    month_dates <= max(sampling_dates)
+]
+
+month_positions <- approx(
+  x = as.numeric(sampling_dates),
+  y = seq_along(sampling_dates),
+  xout = as.numeric(month_dates)
+)$y
+
+month_names <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+
+month_labels <- paste(
+  format(month_dates, "%d"),
+  month_names[as.integer(format(month_dates, "%m"))]
+)
+
+# 6) Define shared axes and presentation styling
+presentation_style <- list(
+  scale_x_continuous(
+    breaks = month_positions,
+    labels = month_labels,
+    expand = expansion(mult = c(0, 0))
+  ),
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.25),
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0))
+  ),
+  # Viewing limits preserve all data, including rounding above 100%.
+  coord_cartesian(
+    xlim = c(0.5, length(sampling_dates) + 0.5),
+    ylim = c(0, 1),
+    expand = FALSE
+  ),
+  labs(x = NULL, y = "Relative abundance"),
+  theme_minimal(base_size = 20, base_family = "Arial"),
+  theme(
+    legend.position = "right",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 16),
+    legend.key.width = unit(0.5, "cm"),
+    legend.key.height = unit(0.6, "cm"),
+    axis.text.x = element_text(
+      size = 17,
+      colour = "black",
+      margin = margin(t = 10)
+    ),
+    axis.text.y = element_text(size = 17, colour = "black"),
+    axis.title.y = element_text(
+      size = 20,
+      margin = margin(r = 14)
+    ),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(
+      colour = "#E3E3E3",
+      linewidth = 0.25
+    ),
+    # Reserve space for the PowerPoint header and footer.
+    # Margins are in points; both charts use exactly the same values.
+    plot.margin = margin(t = 65, r = 25, b = 45, l = 25),
+    plot.background = element_rect(fill = "white", colour = NA)
+  )
+)
+
+# 7) Plot the top six phyla and Rest
+p_phyla <- ggplot(
+  phylum_plot_data,
+  aes(x = Sample, y = Relative, fill = PhylumGroup)
+) +
+  geom_col(
+    width = 0.85,
+    colour = "black",
+    linewidth = 0.15,
+    position = position_stack(reverse = TRUE)
+  ) +
+  scale_fill_manual(
+    values = phylum_colours,
+    drop = FALSE
+  ) +
+  presentation_style
+
+# 8) Plot small and large genomes
+p_size <- ggplot(
+  size_plot_data,
+  aes(x = Sample, y = Relative, fill = SizeClass)
+) +
+  geom_col(
+    width = 0.85,
+    colour = "black",
+    linewidth = 0.15,
+    position = position_stack(reverse = TRUE)
+  ) +
+  scale_fill_manual(
+    values = size_colours,
+    drop = FALSE
+  ) +
+  presentation_style
+
+# 9) Verify that no bar segments have been removed
+for (p in list(p_phyla, p_size)) {
+  plotted <- ggplot_build(p)$data[[1]]
+
+  stopifnot(
+    nrow(plotted) == nrow(p$data),
+    all(is.finite(plotted$x)),
+    all(is.finite(plotted$ymin)),
+    all(is.finite(plotted$ymax))
+  )
+}
+
+# 10) Align the plotting areas for a precise PowerPoint overlay
+g_phyla <- ggplotGrob(p_phyla)
+g_size <- ggplotGrob(p_size)
+
+stopifnot(
+  length(g_phyla$widths) == length(g_size$widths),
+  length(g_phyla$heights) == length(g_size$heights)
+)
+
+shared_widths <- unit.pmax(g_phyla$widths, g_size$widths)
+shared_heights <- unit.pmax(g_phyla$heights, g_size$heights)
+
+g_phyla$widths <- g_size$widths <- shared_widths
+g_phyla$heights <- g_size$heights <- shared_heights
+
+# 11) Export as matching 16:9 PNGs
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+ggsave(
+  filename = file.path(output_dir, "RelativeAbundance_Top6Phyla_Slide.png"),
+  plot = g_phyla,
+  width = 16,
+  height = 9,
+  units = "in",
+  dpi = 200,
+  device = "png",
+  type = "cairo",
+  bg = "white"
+)
+
+ggsave(
+  filename = file.path(output_dir, "RelativeAbundance_GenomeSize_Slide.png"),
+  plot = g_size,
+  width = 16,
+  height = 9,
+  units = "in",
+  dpi = 200,
+  device = "png",
+  type = "cairo",
+  bg = "white"
+)
+
+# 12) Print to viewer
+print(p_phyla)
+print(p_size)
 ```
 

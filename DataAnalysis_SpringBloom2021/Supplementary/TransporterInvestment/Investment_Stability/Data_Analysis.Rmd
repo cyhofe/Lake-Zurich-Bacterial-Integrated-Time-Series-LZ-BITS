@@ -486,7 +486,68 @@ write.csv(
 )
 
 print(fig1_summary)
+
+
+############################################################
+# 11) SOURCE DATA — SUPPLEMENTARY FIGURE 33
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# Panel A — species-level mean TPF
+# ----------------------------------------------------------
+
+Suppl_Figure_33a <- species_tpf_df %>%
+  transmute(
+    Species_ID,
+    Trophic_Index = TrophicIndex,
+    Trophic_Group = Group_For_Plots,
+    Phylum,
+    Class,
+    Number_of_Dates = n_dates,
+    Mean_TPF = mean_TPF
+  )
+
+write_csv(
+  Suppl_Figure_33a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_33a.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# Panel B — species-level mean transporter Bray-Curtis
+# ----------------------------------------------------------
+
+Suppl_Figure_33b <- species_bc_df %>%
+  transmute(
+    Species_ID,
+    Trophic_Index = TrophicIndex,
+    Trophic_Group = Group_For_Plots,
+    Phylum,
+    Class,
+    Number_of_Transitions = n_transitions,
+    Mean_Bray_Curtis = mean_bc_abs,
+    Logit_Mean_Bray_Curtis = mean_bc_abs_logit
+  )
+
+write_csv(
+  Suppl_Figure_33b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_33b.csv"
+  )
+)
 ```
+
+
 
 # QC table
 ```{r}
@@ -539,7 +600,7 @@ out_dir <- "Supplementary_ModelQC"
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 fig_width  <- 12
-fig_height <- 4
+fig_height <- 5
 dpi_out    <- 300
 
 # Species-level summaries are built from the retained
@@ -987,6 +1048,50 @@ ggsave(
 )
 
 ############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 34
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# Panel A — TPF beta model
+Suppl_Figure_34a <- model_df_tpf %>%
+  transmute(
+    Species_ID,
+    Fitted_Mean_TPF = diag_tpf$fitted,
+    DHARMa_Scaled_Residual = diag_tpf$resid
+  )
+
+
+# Panel B — Bray-Curtis Gaussian model
+Suppl_Figure_34b <- model_df_bc %>%
+  transmute(
+    Species_ID,
+    Fitted_Logit_Mean_Bray_Curtis = diag_bc$fitted,
+    DHARMa_Scaled_Residual = diag_bc$resid
+  )
+
+
+write_csv(
+  Suppl_Figure_34a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_34a.csv"
+  )
+)
+
+write_csv(
+  Suppl_Figure_34b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_34b.csv"
+  )
+)
+
+############################################################
 # 9) TABLE S1 — PURE QC METRICS
 ############################################################
 # Only adequacy and numerical stability metrics are reported:
@@ -1107,7 +1212,8 @@ gtsave(
   table_s1_gt,
   filename = file.path(out_dir, "Table_S1_model_adequacy_diagnostics.png"),
   vwidth = 1200,
-  vheight = 1100
+  vheight = 1100,
+  zoom = 4
 )
 
 gtsave(
@@ -1832,6 +1938,113 @@ ggsave(
 )
 
 ############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 35
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Panel A — trophic-index coverage
+# Underlying species-level observations used for histogram
+# ============================================================
+
+Suppl_Figure_35a <- coverage_df %>%
+  transmute(
+    Species_ID,
+    Trophic_Index = TrophicIndex,
+    Trophic_Group = as.character(TrophicGroupPlot)
+  )
+
+write_csv(
+  Suppl_Figure_35a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_35a.csv"
+  )
+)
+
+
+# ============================================================
+# Panel B — mean TPF + fitted beta-model response
+# ============================================================
+
+Suppl_Figure_35b <- bind_rows(
+
+  # Species observations
+  species_tpf_df %>%
+    transmute(
+      Data_Type = "Species observation",
+      Species_ID,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = as.character(TrophicGroupPlot),
+      Mean_TPF = mean_TPF,
+      Model_Fit = NA_real_
+    ),
+
+  # Model-implied fitted line
+  pred_tpf %>%
+    transmute(
+      Data_Type = "Model fit",
+      Species_ID = NA_character_,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = NA_character_,
+      Mean_TPF = NA_real_,
+      Model_Fit = fit
+    )
+)
+
+write_csv(
+  Suppl_Figure_35b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_35b.csv"
+  )
+)
+
+
+# ============================================================
+# Panel C — mean Bray-Curtis + fitted Gaussian-model response
+# Fitted values exported on the raw Bray-Curtis scale
+# ============================================================
+
+Suppl_Figure_35c <- bind_rows(
+
+  # Species observations
+  species_bc_df %>%
+    transmute(
+      Data_Type = "Species observation",
+      Species_ID,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = as.character(TrophicGroupPlot),
+      Mean_Bray_Curtis = mean_bc_abs,
+      Model_Fit = NA_real_
+    ),
+
+  # Model-implied fitted line
+  pred_bc %>%
+    transmute(
+      Data_Type = "Model fit",
+      Species_ID = NA_character_,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = NA_character_,
+      Mean_Bray_Curtis = NA_real_,
+      Model_Fit = fit_bc_raw
+    )
+)
+
+write_csv(
+  Suppl_Figure_35c,
+  file.path(
+    source_dir,
+    "Suppl_Figure_35c.csv"
+  )
+)
+
+############################################################
 # 14) RENDERED SUPPLEMENTARY MODEL TABLE
 ############################################################
 # Model attributes are arranged in rows and the two primary
@@ -1943,4 +2156,5 @@ gtsave(
   filename = file.path(out_dir, "Supp_ModelTable_primary_species_models_portrait.html")
 )
 ```
+
 

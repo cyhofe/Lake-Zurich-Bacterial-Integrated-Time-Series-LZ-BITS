@@ -1,0 +1,673 @@
+---
+title: "Functional Overlap - SpringBloom2021"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, message=FALSE, warning=FALSE, include=FALSE}
+# Reproducibility
+set.seed(1)
+
+############################################################
+# 0) Clear R "brain" + libraries
+############################################################
+rm(list = ls())
+gc()
+
+suppressPackageStartupMessages({
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(lubridate)
+  library(tibble)   # for glimpse()
+  library(ggplot2)
+})
+
+
+############################################################
+# 1) Set working directory (analysis folder)
+############################################################
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/FunctionalOverlap/")
+
+# Load the color palette
+source("ColorPalette.R")
+
+############################################################
+# 2) Load exported analysis tables (from the preparation script)
+############################################################
+
+species_meta      <- readr::read_csv("../../Figure_03/LakeOverview/Species_Meta_Table.csv", show_col_types = FALSE)
+species_abundance <- readr::read_csv("../../Figure_03/LakeOverview/Species_Abundance_Table.csv", show_col_types = FALSE)
+gene_table        <- readr::read_csv("../../Figure_03/LakeOverview/Species_Gene_Table.csv", show_col_types = FALSE)
+protein_table     <- readr::read_csv("../../Figure_03/LakeOverview/Species_Protein_Table.csv", show_col_types = FALSE)
+
+############################################################
+# 3) Quick look
+############################################################
+glimpse(species_meta)
+glimpse(species_abundance)
+glimpse(gene_table)
+glimpse(protein_table)
+
+############################################################
+# 4) Ensure Date columns are Date class (robust to CSV parsing)
+############################################################
+if ("Date" %in% names(species_abundance)) {
+  species_abundance <- species_abundance %>% mutate(Date = as.Date(Date))
+}
+if ("Date" %in% names(protein_table)) {
+  protein_table <- protein_table %>% mutate(Date = as.Date(Date))
+}
+```
+
+
+```{r}
+############################################################
+# SUPPLEMENTARY FIGURE 31
+# Functional KEGG overlap across trophic strategies
+#
+# Same functional module definitions and >=5-date
+# protein-detection rule as the main analysis.
+############################################################
+
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(ggplot2)
+  library(scales)
+  library(readr)
+})
+
+
+############################################################
+# 1) SETTINGS
+############################################################
+
+detection_filter <- 5
+
+groups_use <- c(
+  "Oligotroph",
+  "Intermediate",
+  "Copiotroph"
+)
+
+modules_focus <- c(
+  "Core metabolism/biosynthesis",
+  "Resource acquisition",
+  "Growth machinery"
+)
+
+comparison_order <- c(
+  "Oligotroph–Intermediate",
+  "Oligotroph–Copiotroph",
+  "Intermediate–Copiotroph"
+)
+
+recode_group <- function(x) {
+  recode(
+    as.character(x),
+    "Oligo_like" = "Oligotroph",
+    "Copio_like" = "Copiotroph",
+    .default = as.character(x)
+  )
+}
+
+
+############################################################
+# 2) EXACT FUNCTIONAL MODULE DEFINITIONS
+#    Same classification as main analysis
+############################################################
+
+module_map <- tribble(
+  ~Label,                                    ~Module,
+
+  # Resource acquisition
+  "Transporters",                             "Resource acquisition",
+  "Secretion system",                         "Resource acquisition",
+  "Two-component system",                     "Resource acquisition",
+  "Membrane trafficking",                     "Resource acquisition",
+  "Ion channels",                             "Resource acquisition",
+  "Lectins",                                  "Resource acquisition",
+
+  # Growth machinery
+  "Ribosome",                                 "Growth machinery",
+  "Ribosome biogenesis",                      "Growth machinery",
+  "Translation factors",                      "Growth machinery",
+  "Transfer RNA biogenesis",                  "Growth machinery",
+
+  # Core metabolism / biosynthesis
+  "Enzymes",                                  "Core metabolism/biosynthesis",
+  "Amino acid related enzymes",               "Core metabolism/biosynthesis",
+  "Lipid biosynthesis proteins",              "Core metabolism/biosynthesis",
+  "Lipopolysaccharide biosynthesis proteins", "Core metabolism/biosynthesis",
+  "Glycosyltransferases",                     "Core metabolism/biosynthesis",
+  "Polyketide biosynthesis proteins",         "Core metabolism/biosynthesis",
+  "Prenyltransferases",                       "Core metabolism/biosynthesis",
+  "Cytochrome P450",                          "Core metabolism/biosynthesis"
+)
+
+
+############################################################
+# 3) GENOMIC KEGG REPERTOIRE
+#
+# Unique KEGG IDs encoded within each trophic strategy.
+# Collapse first for speed.
+############################################################
+
+genes_long <- gene_table %>%
+  transmute(
+    Group = recode_group(Group_For_Plots),
+    KEGG_ID,
+    KEGG_Subcategory
+  ) %>%
+  filter(
+    Group %in% groups_use,
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified",
+    !is.na(KEGG_Subcategory)
+  ) %>%
+  distinct() %>%
+  mutate(
+    .sub = str_replace_all(
+      KEGG_Subcategory,
+      "\\s*;\\s*",
+      ";"
+    )
+  ) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(
+    Label = str_trim(.sub)
+  ) %>%
+  inner_join(
+    module_map,
+    by = "Label"
+  ) %>%
+  filter(
+    Module %in% modules_focus
+  ) %>%
+  distinct(
+    Group,
+    Module,
+    KEGG_ID
+  )
+
+
+############################################################
+# 4) PROTEINS DETECTED ON >=5 SAMPLING DATES
+#
+# Same rule as main analysis:
+# each Species_ID x Protein_ID must have normalized iBAQ > 0
+# on at least 5 dates.
+############################################################
+
+prot_expr <- protein_table %>%
+  mutate(
+    Group = recode_group(Group_For_Plots),
+    detected = Protein_Abundance_IBAQ_Norm > 0
+  ) %>%
+  filter(
+    Group %in% groups_use
+  ) %>%
+  group_by(
+    Species_ID,
+    Protein_ID,
+    Group
+  ) %>%
+  summarise(
+    n_dates_detected = sum(
+      detected,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) %>%
+  filter(
+    n_dates_detected >= detection_filter
+  )
+
+
+############################################################
+# 5) ANNOTATE ONLY RETAINED PROTEINS WITH KEGG
+############################################################
+
+protein_annotation <- gene_table %>%
+  semi_join(
+    prot_expr,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  select(
+    Species_ID,
+    Protein_ID,
+    KEGG_ID,
+    KEGG_Subcategory
+  ) %>%
+  filter(
+    !is.na(KEGG_ID),
+    KEGG_ID != "",
+    KEGG_ID != "Unclassified",
+    !is.na(KEGG_Subcategory)
+  ) %>%
+  distinct()
+
+
+proteins_long <- prot_expr %>%
+  inner_join(
+    protein_annotation,
+    by = c(
+      "Species_ID",
+      "Protein_ID"
+    )
+  ) %>%
+  mutate(
+    .sub = str_replace_all(
+      KEGG_Subcategory,
+      "\\s*;\\s*",
+      ";"
+    )
+  ) %>%
+  separate_rows(.sub, sep = ";") %>%
+  mutate(
+    Label = str_trim(.sub)
+  ) %>%
+  inner_join(
+    module_map,
+    by = "Label"
+  ) %>%
+  filter(
+    Module %in% modules_focus
+  ) %>%
+  distinct(
+    Group,
+    Module,
+    KEGG_ID
+  )
+
+
+############################################################
+# 6) PAIRWISE FUNCTIONAL OVERLAP
+############################################################
+
+compare_pair <- function(g1, g2) {
+
+  bind_rows(
+    lapply(
+      modules_focus,
+      function(mod) {
+
+        # Genomically encoded KEGG repertoires
+        G1 <- genes_long %>%
+          filter(Group == g1, Module == mod) %>%
+          pull(KEGG_ID)
+
+        G2 <- genes_long %>%
+          filter(Group == g2, Module == mod) %>%
+          pull(KEGG_ID)
+
+        # Detected KEGG repertoires
+        P1 <- proteins_long %>%
+          filter(Group == g1, Module == mod) %>%
+          pull(KEGG_ID)
+
+        P2 <- proteins_long %>%
+          filter(Group == g2, Module == mod) %>%
+          pull(KEGG_ID)
+
+
+        # Only KEGG functions expressed in at least one group
+        expressed <- union(P1, P2)
+
+
+        tibble(
+          KEGG_ID = expressed
+        ) %>%
+          mutate(
+
+            Encoded_Group1 = KEGG_ID %in% G1,
+            Encoded_Group2 = KEGG_ID %in% G2,
+
+            Detected_Group1 = KEGG_ID %in% P1,
+            Detected_Group2 = KEGG_ID %in% P2,
+
+            Category = case_when(
+
+              Encoded_Group1 &
+                Encoded_Group2 &
+                Detected_Group1 &
+                Detected_Group2 ~
+                "Shared + detected in both",
+
+              Encoded_Group1 &
+                Encoded_Group2 &
+                xor(
+                  Detected_Group1,
+                  Detected_Group2
+                ) ~
+                "Shared + detected in one group only",
+
+              TRUE ~
+                "Unique + detected"
+            ),
+
+            Comparison = paste0(
+              g1,
+              "–",
+              g2
+            ),
+
+            Module = mod
+          )
+      }
+    )
+  )
+}
+
+
+overlap_detail <- bind_rows(
+
+  compare_pair(
+    "Oligotroph",
+    "Intermediate"
+  ),
+
+  compare_pair(
+    "Oligotroph",
+    "Copiotroph"
+  ),
+
+  compare_pair(
+    "Intermediate",
+    "Copiotroph"
+  )
+)
+
+
+############################################################
+# 7) COUNTS AND FRACTIONS
+############################################################
+
+overlap_summary <- overlap_detail %>%
+  count(
+    Comparison,
+    Module,
+    Category,
+    name = "KEGG_Count"
+  ) %>%
+  complete(
+    Comparison,
+    Module,
+    Category = c(
+      "Shared + detected in both",
+      "Shared + detected in one group only",
+      "Unique + detected"
+    ),
+    fill = list(
+      KEGG_Count = 0
+    )
+  ) %>%
+  group_by(
+    Comparison,
+    Module
+  ) %>%
+  mutate(
+    Total_Expressed_KEGGs =
+      sum(KEGG_Count),
+
+    Fraction =
+      KEGG_Count /
+      Total_Expressed_KEGGs,
+
+    Percentage =
+      100 * Fraction
+  ) %>%
+  ungroup()
+
+
+############################################################
+# 8) PREPARE PLOT
+#
+# Unique + detected is NOT plotted.
+# It therefore appears as white space up to 100%.
+############################################################
+
+plot_df <- overlap_summary %>%
+  filter(
+    Category != "Unique + detected"
+  ) %>%
+  mutate(
+
+    Comparison = factor(
+      Comparison,
+      levels = comparison_order
+    ),
+
+    Module = factor(
+      Module,
+      levels = modules_focus
+    ),
+
+    # Blue first in legend.
+    # Default ggplot stacking then places yellow at bottom
+    # and blue on top.
+    Category = factor(
+      Category,
+      levels = c(
+        "Shared + detected in both",
+        "Shared + detected in one group only"
+      )
+    )
+  )
+
+
+############################################################
+# 9) FIGURE
+############################################################
+
+Functional_Overlap_KEGG <- ggplot(
+  plot_df,
+  aes(
+    x = Module,
+    y = Fraction,
+    fill = Category
+  )
+) +
+
+  geom_col(
+    width = 0.72
+  ) +
+
+  facet_grid(
+    . ~ Comparison
+  ) +
+
+  scale_fill_manual(
+    values = c(
+      "Shared + detected in both" =
+        ColorPalette[2],
+
+      "Shared + detected in one group only" =
+        ColorPalette[4]
+    ),
+    breaks = c(
+      "Shared + detected in both",
+      "Shared + detected in one group only"
+    ),
+    name = NULL
+  ) +
+
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(
+      0,
+      1,
+      by = 0.2
+    ),
+    labels = percent_format(
+      accuracy = 1
+    ),
+    expand = c(0, 0)
+  ) +
+
+  labs(
+    x = NULL,
+    y = "Fraction of expressed KEGG annotation functions"
+  ) +
+
+  theme_classic(
+    base_size = 10
+  ) +
+
+  theme(
+
+    strip.background =
+      element_blank(),
+
+    strip.text =
+      element_text(
+        face = "bold",
+        size = 10
+      ),
+
+    axis.text.x =
+      element_text(
+        angle = 30,
+        hjust = 1,
+        vjust = 1,
+        size = 8,
+        color = "black"
+      ),
+
+    axis.text.y =
+      element_text(
+        size = 9,
+        color = "black"
+      ),
+
+    axis.title.y =
+      element_text(
+        size = 10,
+        color = "black"
+      ),
+
+    legend.position =
+      "top",
+
+    legend.justification =
+      "center",
+
+    legend.direction =
+      "horizontal",
+
+    legend.text =
+      element_text(
+        size = 8
+      ),
+
+    panel.spacing =
+      unit(
+        0.8,
+        "lines"
+      )
+  )
+
+
+print(
+  Functional_Overlap_KEGG
+)
+
+
+############################################################
+# 10) SAVE FIGURE
+############################################################
+
+ggsave(
+  filename =
+    "FunctionalOverlap_KEGG_TrophicStrategies.png",
+
+  plot =
+    Functional_Overlap_KEGG,
+
+  width =
+    12,
+
+  height =
+    5,
+
+  units =
+    "in",
+
+  dpi =
+    600,
+
+  bg =
+    "white"
+)
+
+
+############################################################
+# 11) SOURCE DATA — SUPPLEMENTARY FIGURE 31
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+Suppl_Figure_31 <- overlap_summary %>%
+  mutate(
+    Comparison = factor(
+      Comparison,
+      levels = comparison_order
+    ),
+
+    Module = factor(
+      Module,
+      levels = modules_focus
+    ),
+
+    Category = factor(
+      Category,
+      levels = c(
+        "Shared + detected in both",
+        "Shared + detected in one group only",
+        "Unique + detected"
+      )
+    )
+  ) %>%
+  arrange(
+    Comparison,
+    Module,
+    Category
+  ) %>%
+  transmute(
+    # ASCII-safe labels for CSV export
+    Comparison = str_replace_all(
+      as.character(Comparison),
+      "[–—]",
+      "-"
+    ),
+
+    Module = as.character(Module),
+    Category = as.character(Category),
+
+    KEGG_Count,
+    Total_Expressed_KEGGs,
+    Fraction,
+    Percentage
+  )
+
+
+write_csv(
+  Suppl_Figure_31,
+  file.path(
+    source_dir,
+    "Suppl_Figure_31.csv"
+  )
+)
+```

@@ -2999,7 +2999,70 @@ ggsave(
   units = "in",
   dpi = 600
 )
+
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 39
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Figure 39a — retained antiSMASH BGC regions per MAG
+# ============================================================
+
+Suppl_Figure_39a <- bgc_per_mag %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Strategy = as.character(Trophic_Strategy),
+    N_BGC_Regions
+  ) %>%
+  dplyr::arrange(
+    Trophic_Strategy,
+    Species_ID
+  )
+
+readr::write_csv(
+  Suppl_Figure_39a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_39a.csv"
+  )
+)
+
+
+# ============================================================
+# Figure 39b — prevalence of antiSMASH BGC types
+# ============================================================
+
+Suppl_Figure_39b <- bgc_type_prevalence %>%
+  dplyr::transmute(
+    BGC_Type = as.character(BGC_Type),
+    Trophic_Strategy = as.character(Trophic_Strategy),
+    N_MAGs_Total = N_MAGs,
+    N_MAGs_With_Type,
+    Percent_MAGs_With_Type,
+    N_Retained_BGC_Proteins,
+    N_Detected_BGC_Proteins
+  ) %>%
+  dplyr::arrange(
+    BGC_Type,
+    Trophic_Strategy
+  )
+
+readr::write_csv(
+  Suppl_Figure_39b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_39b.csv"
+  )
+)
 ```
+
+
 
 ```{r}
 ############################################################
@@ -3879,6 +3942,67 @@ ggsave(
   height = defence_figure_height,
   units = "in",
   dpi = 600
+)
+
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 40
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Figure 40a — predicted defence systems per MAG
+# ============================================================
+
+Suppl_Figure_40a <- defence_per_mag %>%
+  dplyr::transmute(
+    Species_ID,
+    Trophic_Strategy = as.character(Trophic_Strategy),
+    N_Predicted_Defense_Systems
+  ) %>%
+  dplyr::arrange(
+    Trophic_Strategy,
+    Species_ID
+  )
+
+readr::write_csv(
+  Suppl_Figure_40a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_40a.csv"
+  )
+)
+
+
+# ============================================================
+# Figure 40b — prevalence of DefenseFinder system types
+# ============================================================
+
+Suppl_Figure_40b <- defence_type_prevalence %>%
+  dplyr::transmute(
+    Defense_Type = as.character(Defense_Type),
+    Trophic_Strategy = as.character(Trophic_Strategy),
+    N_MAGs_Total = N_MAGs,
+    N_MAGs_With_Type,
+    Percent_MAGs_With_Type,
+    N_Detected_Defense_Proteins,
+    N_Retained_Defense_Proteins
+  ) %>%
+  dplyr::arrange(
+    Defense_Type,
+    Trophic_Strategy
+  )
+
+readr::write_csv(
+  Suppl_Figure_40b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_40b.csv"
+  )
 )
 ```
 

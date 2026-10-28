@@ -2418,5 +2418,92 @@ message(
 
 # Display the finished figure in RStudio.
 transporter_overview_figure
+
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 38
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Figure 38a — genetic potential
+# ============================================================
+
+Suppl_Figure_38a <- transporter_figure_group_summary %>%
+  dplyr::filter(
+    as.character(Panel) == "A. Genetic potential"
+  ) %>%
+  dplyr::transmute(
+    Transporter_Class = as.character(Final_Class),
+    Trophic_Strategy = as.character(Trophic_Group),
+    N_Species,
+    Mean_Encoded_Transporter_Genes = Mean,
+    SD_Encoded_Transporter_Genes = SD
+  ) %>%
+  dplyr::arrange(
+    Transporter_Class,
+    Trophic_Strategy
+  )
+
+readr::write_csv(
+  Suppl_Figure_38a,
+  file.path(source_dir, "Suppl_Figure_38a.csv")
+)
+
+
+# ============================================================
+# Figure 38b — detected transporter proteins
+# ============================================================
+
+Suppl_Figure_38b <- transporter_figure_group_summary %>%
+  dplyr::filter(
+    as.character(Panel) == "B. Detected proteins"
+  ) %>%
+  dplyr::transmute(
+    Transporter_Class = as.character(Final_Class),
+    Trophic_Strategy = as.character(Trophic_Group),
+    N_Species,
+    Mean_Detected_Transporter_Proteins = Mean,
+    SD_Detected_Transporter_Proteins = SD
+  ) %>%
+  dplyr::arrange(
+    Transporter_Class,
+    Trophic_Strategy
+  )
+
+readr::write_csv(
+  Suppl_Figure_38b,
+  file.path(source_dir, "Suppl_Figure_38b.csv")
+)
+
+
+# ============================================================
+# Figure 38c — transporter protein abundance
+# ============================================================
+
+Suppl_Figure_38c <- transporter_figure_group_summary %>%
+  dplyr::filter(
+    as.character(Panel) == "C. Protein abundance"
+  ) %>%
+  dplyr::transmute(
+    Transporter_Class = as.character(Final_Class),
+    Trophic_Strategy = as.character(Trophic_Group),
+    N_Species,
+    Mean_Normalized_iBAQ = Mean,
+    SD_Normalized_iBAQ = SD
+  ) %>%
+  dplyr::arrange(
+    Transporter_Class,
+    Trophic_Strategy
+  )
+
+readr::write_csv(
+  Suppl_Figure_38c,
+  file.path(source_dir, "Suppl_Figure_38c.csv")
+)
 ```
 

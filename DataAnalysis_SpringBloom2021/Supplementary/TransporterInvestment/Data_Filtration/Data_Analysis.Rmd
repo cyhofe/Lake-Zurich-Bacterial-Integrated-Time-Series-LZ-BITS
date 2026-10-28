@@ -81,6 +81,10 @@ protein_table <- protein_table %>%
   filter(Protein_ID %in% gene_table$Protein_ID)
 ```
 
+
+
+
+
 # highlight proteme and species filtering for analysis!
 ```{r}
 ############################################################
@@ -588,6 +592,147 @@ ggsave(
   dpi = 600,
   bg = "white"
 )
+
+############################################################
+# 21) SOURCE DATA — SUPPLEMENTARY FIGURE 32
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# Species panel
+# ----------------------------------------------------------
+
+source_species <- species_plot_df %>%
+  mutate(
+    Panel = "Species retained",
+    Reference_Total = species_total_ref
+  ) %>%
+  left_join(
+    species_totals %>%
+      rename(Step_Total = total),
+    by = "step"
+  ) %>%
+  transmute(
+    Panel,
+    Step = as.character(step),
+    Trophic_Group = as.character(Group_For_Plots),
+    Absolute_Value = value,
+    Reference_Total,
+    Step_Total,
+    Percentage = value_pct
+  )
+
+
+# ----------------------------------------------------------
+# Protein panel
+# ----------------------------------------------------------
+
+source_proteins <- protein_count_plot_df %>%
+  mutate(
+    Panel = "Proteins retained",
+    Reference_Total = protein_total_ref
+  ) %>%
+  left_join(
+    protein_count_totals %>%
+      rename(Step_Total = total),
+    by = "step"
+  ) %>%
+  transmute(
+    Panel,
+    Step = as.character(step),
+    Trophic_Group = as.character(Group_For_Plots),
+    Absolute_Value = value,
+    Reference_Total,
+    Step_Total,
+    Percentage = value_pct
+  )
+
+
+# ----------------------------------------------------------
+# Protein-signal panel
+# ----------------------------------------------------------
+
+source_signal <- signal_plot_df %>%
+  mutate(
+    Panel = "Protein signal retained",
+    Reference_Total = signal_total_ref
+  ) %>%
+  left_join(
+    signal_totals %>%
+      rename(Step_Total = total),
+    by = "step"
+  ) %>%
+  transmute(
+    Panel,
+    Step = as.character(step),
+    Trophic_Group = as.character(Group_For_Plots),
+    Absolute_Value = value,
+    Reference_Total,
+    Step_Total,
+    Percentage = value_pct
+  )
+
+
+# ----------------------------------------------------------
+# Combine all panels
+# ----------------------------------------------------------
+
+Suppl_Figure_32 <- bind_rows(
+  source_species,
+  source_proteins,
+  source_signal
+) %>%
+  mutate(
+    Panel = factor(
+      Panel,
+      levels = c(
+        "Species retained",
+        "Proteins retained",
+        "Protein signal retained"
+      )
+    ),
+
+    Trophic_Group = factor(
+      Trophic_Group,
+      levels = c(
+        "Copiotroph",
+        "Intermediate",
+        "Oligotroph"
+      )
+    ),
+
+    # ASCII-safe labels for CSV
+    Step = str_replace_all(
+      Step,
+      c(
+        "\n" = " ",
+        "≥" = ">="
+      )
+    )
+  ) %>%
+  arrange(
+    Panel,
+    Step,
+    Trophic_Group
+  ) %>%
+  mutate(
+    Panel = as.character(Panel),
+    Trophic_Group = as.character(Trophic_Group)
+  )
+
+
+write_csv(
+  Suppl_Figure_32,
+  file.path(
+    source_dir,
+    "Suppl_Figure_32.csv"
+  )
+)
 ```
 
 
@@ -1000,4 +1145,28 @@ ggsave(
   bg = "white"
 )
 ```
+```{r}
+cat("\nFIG. 32 - FULL DATASET DENOMINATORS\n")
+print(data.frame(
+  Metric = c("Species", "Distinct proteins", "Normalized iBAQ"),
+  Reference = c(species_total_ref, protein_total_ref, signal_total_ref)
+))
+
+cat("\nFIG. 32 - STEP TOTALS\n")
+print(species_totals)
+print(protein_count_totals)
+print(signal_totals)
+
+cat("\nSPECIES WITH TROPHIC INDEX BUT OUTSIDE THE 3 GROUPS\n")
+species_meta %>%
+  filter(TrophicInfo_Available %in% TRUE,
+         !Group_For_Plots %in% groups_to_analyze) %>%
+  select(Species_ID, Group_For_Plots) %>%
+  print(n = Inf)
+
+cat("\nANALYSED SPECIES WITHOUT ANNOTATED DETECTED PROTEINS\n")
+print(setdiff(species_with_trophic$Species_ID,
+              unique(prot_step1$Species_ID)))
+```
+
 

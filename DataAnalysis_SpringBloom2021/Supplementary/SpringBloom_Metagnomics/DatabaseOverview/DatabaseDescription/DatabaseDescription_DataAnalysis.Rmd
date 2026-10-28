@@ -164,7 +164,35 @@ ggsave("Per_phylum_database_summary.png",
        units  = "in",
        dpi    = 300)
 
+
+############################################################
+# SUPPLEMENTARY FIGURE 16 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_16 <- species_summary %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Species_ID,
+    Proteins,
+    Tryptic_Peptides = Peptides,
+    KEGG_Classified_Proteins = KEGG_Classified
+  )
+
+write_csv(
+  Suppl_Figure_16,
+  file.path(
+    source_dir,
+    "Suppl_Figure_16.csv"
+  )
+)
 ```
+
+
 
 ```{r}
 # STEP 1: Generate long-format peptide-level data
@@ -800,4 +828,27 @@ ggsave(
   width    = 3, height = 10.27, units = "in", dpi = 300
 )
 
+############################################################
+# SUPPLEMENTARY FIGURE 17C — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_17c <- phylum_means %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Mean_Proteins,
+    Mean_KEGG
+  )
+
+write_csv(
+  Suppl_Figure_17c,
+  file.path(
+    source_dir,
+    "Suppl_Figure_17c.csv"
+  )
+)
 ```

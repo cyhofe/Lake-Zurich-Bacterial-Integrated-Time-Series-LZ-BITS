@@ -3667,5 +3667,3 @@ write_csv(changed_export, "ChangedTaxa_LakeDat_WithObsEstTIandGroups.csv")
 cat("Wrote: ChangedTaxa_LakeDat_WithObsEstTIandGroups.csv\n",
     "Rows (changed taxa): ", nrow(changed_export), "\n", sep = "")
 ```
-
-

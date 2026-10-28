@@ -649,3 +649,29 @@ readr::write_excel_csv(
 )
 ```
 
+
+
+```{r}
+phos_interp %>%
+  filter(date >= PANEL_START, date <= PANEL_END) %>%
+  distinct(date) %>%
+  mutate(Year = lubridate::year(date)) %>%
+  count(Year, name = "n_sampling_dates") %>%
+  print(n = Inf)
+```
+
+```{r}
+env %>%
+  filter(
+    date >= PANEL_START,
+    date <= PANEL_END,
+    depth >= 0,
+    depth <= 120,
+    is.finite(Oxygen)
+  ) %>%
+  distinct(date) %>%
+  mutate(Year = lubridate::year(date)) %>%
+  count(Year, name = "n_sampling_dates") %>%
+  print(n = Inf)
+```
+

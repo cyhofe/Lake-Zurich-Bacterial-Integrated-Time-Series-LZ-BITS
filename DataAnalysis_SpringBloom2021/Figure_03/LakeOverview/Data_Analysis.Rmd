@@ -2432,5 +2432,3 @@ print(p_compact_nature)
 ggsave("Fig_Dumbbell_Compact_NatureReady.pdf", p_compact_nature,
        width = 8.2, height = 6, units = "in", dpi = 300)
 ```
-
-

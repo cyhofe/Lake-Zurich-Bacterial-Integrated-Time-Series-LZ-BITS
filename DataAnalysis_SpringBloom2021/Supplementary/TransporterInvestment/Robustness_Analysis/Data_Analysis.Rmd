@@ -39,7 +39,7 @@ species_taxonomy <- read_csv(species_summary_path, show_col_types = FALSE)
 species_abundance <- read_csv(species_summary_path, show_col_types = FALSE)
 
 species_abundance <- species_abundance %>%
-  select(Species_ID, Date, Species_Abundance)
+  dplyr::select(Species_ID, Date, Species_Abundance)
 
 species_taxonomy <- species_taxonomy %>%
   dplyr::select(Species_ID, Phylum, Class, Order, Family, Genus, Species) %>%
@@ -281,7 +281,7 @@ analysis_species_dates <- retained_species_dates %>%
 
 prot_counts <- protein_final %>%
   semi_join(
-    analysis_species_dates %>% select(Species_ID, Date),
+    analysis_species_dates %>% dplyr::select(Species_ID, Date),
     by = c("Species_ID", "Date")
   ) %>%
   group_by(Species_ID, Date) %>%
@@ -320,7 +320,7 @@ protein_flagged <- protein_final %>%
 
 species_date_tpf <- protein_flagged %>%
   semi_join(
-    analysis_species_dates %>% select(Species_ID, Date),
+    analysis_species_dates %>% dplyr::select(Species_ID, Date),
     by = c("Species_ID", "Date")
   ) %>%
   group_by(Species_ID, Date) %>%
@@ -332,7 +332,7 @@ species_date_tpf <- protein_flagged %>%
   ) %>%
   left_join(
     analysis_species_dates %>%
-      select(Species_ID, Date, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class, N_prot_detected, n_dates),
+      dplyr::select(Species_ID, Date, TrophicIndex, Group_For_Plots, TrophicGroupPlot, Phylum, Class, N_prot_detected, n_dates),
     by = c("Species_ID", "Date")
   ) %>%
   filter(
@@ -371,7 +371,7 @@ write_csv(
 
 kegg_sd_trans <- protein_final %>%
   semi_join(
-    analysis_species_dates %>% select(Species_ID, Date),
+    analysis_species_dates %>% dplyr::select(Species_ID, Date),
     by = c("Species_ID", "Date")
   ) %>%
   filter(
@@ -708,6 +708,108 @@ ggsave(
 )
 
 ############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 36
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Panel A — non-aggregated TPF
+# Species x date observations + fitted beta-model response
+# ============================================================
+
+Suppl_Figure_36a <- bind_rows(
+
+  # Observed species-date values
+  species_date_tpf %>%
+    transmute(
+      Data_Type = "Species-date observation",
+      Species_ID = as.character(Species_ID),
+      Date,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = as.character(TrophicGroupPlot),
+      TPF,
+      Proteins_Detected = N_prot_detected,
+      Number_of_Retained_Dates = n_dates,
+      Model_Fit = NA_real_
+    ),
+
+  # Population-level fitted response
+  pred_tpf %>%
+    transmute(
+      Data_Type = "Model fit",
+      Species_ID = NA_character_,
+      Date = as.Date(NA),
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = NA_character_,
+      TPF = NA_real_,
+      Proteins_Detected = NA_real_,
+      Number_of_Retained_Dates = NA_real_,
+      Model_Fit = fit
+    )
+)
+
+write_csv(
+  Suppl_Figure_36a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_36a.csv"
+  )
+)
+
+
+# ============================================================
+# Panel B — non-aggregated transporter Bray-Curtis
+# Species x consecutive-date transition observations
+# + fitted Gaussian-model response
+# ============================================================
+
+Suppl_Figure_36b <- bind_rows(
+
+  # Observed consecutive-date transitions
+  transitions %>%
+    transmute(
+      Data_Type = "Species-transition observation",
+      Species_ID = as.character(Species_ID),
+      Date_1 = Date1,
+      Date_2 = Date2,
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = as.character(TrophicGroupPlot),
+      Bray_Curtis = bc_abs,
+      Mean_Paired_Proteins_Detected = N_prot_pair,
+      Model_Fit_Logit = NA_real_,
+      Model_Fit_Bray_Curtis = NA_real_
+    ),
+
+  # Population-level fitted response
+  pred_bc %>%
+    transmute(
+      Data_Type = "Model fit",
+      Species_ID = NA_character_,
+      Date_1 = as.Date(NA),
+      Date_2 = as.Date(NA),
+      Trophic_Index = TrophicIndex,
+      Trophic_Group = NA_character_,
+      Bray_Curtis = NA_real_,
+      Mean_Paired_Proteins_Detected = NA_real_,
+      Model_Fit_Logit = fit_logit,
+      Model_Fit_Bray_Curtis = fit_bc_raw
+    )
+)
+
+write_csv(
+  Suppl_Figure_36b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_36b.csv"
+  )
+)
+
+############################################################
 # 12) DIAGNOSTICS
 ############################################################
 
@@ -950,6 +1052,7 @@ cat(file.path(out_dir, "BlockA_nonaggregated_primary_aligned_models.png"), "\n")
 cat(file.path(out_dir, "BlockA_nonaggregated_model_summary_portrait.png"), "\n")
 ```
 
+
 ```{r}
 ####################################################################################################
 # BLOCK B — TAXONOMY ROBUSTNESS
@@ -1087,7 +1190,7 @@ retained_species_dates <- retained_species_dates %>%
   mutate(Date = as.Date(Date))
 
 species_taxonomy_use <- species_taxonomy %>%
-  select(
+  dplyr::select(
     Species_ID,
     Phylum,
     Class
@@ -1505,7 +1608,7 @@ analysis_species_dates <- retained_species_dates %>%
 kegg_sd_trans <- protein_final %>%
   semi_join(
     analysis_species_dates %>%
-      select(
+      dplyr::select(
         Species_ID,
         Date
       ),
@@ -1569,7 +1672,7 @@ compute_species_transitions_bc <- function(
     mutate(
       Date_chr = as.character(Date)
     ) %>%
-    select(
+    dplyr::select(
       Date_chr,
       KEGG_ID,
       kegg_abund
@@ -1596,7 +1699,7 @@ compute_species_transitions_bc <- function(
 
   M_abs <- as.matrix(
     mat_wide %>%
-      select(-Date_chr)
+      dplyr::select(-Date_chr)
   )
 
   rownames(M_abs) <- as.character(
@@ -2034,7 +2137,7 @@ table_source <- global_pooled_tbl %>%
       digits = 3
     )
   ) %>%
-  select(
+  dplyr::select(
     Model_name,
     Response,
     Family,
@@ -2183,7 +2286,8 @@ gtsave(
     "BlockB_taxonomy_robustness_summary_table_portrait.png"
   ),
   vwidth = 1700,
-  vheight = 1200
+  vheight = 1200,
+  zoom = 4
 )
 
 
@@ -2569,7 +2673,7 @@ cat("QC-passed species:", dplyr::n_distinct(species_date_keep_global$Species_ID)
 
 protein_base <- protein_final_u %>%
   inner_join(
-    species_date_keep_global %>% select(Species_ID, Date),
+    species_date_keep_global %>% dplyr::select(Species_ID, Date),
     by = c("Species_ID", "Date")
   ) %>%
   mutate(
@@ -2637,7 +2741,7 @@ build_feature_table <- function(mode) {
     return(
       species_abundance_u %>%
         inner_join(
-          species_date_keep_global %>% select(Species_ID, Date),
+          species_date_keep_global %>% dplyr::select(Species_ID, Date),
           by = c("Species_ID", "Date")
         ) %>%
         filter(is.finite(Species_Abundance), Species_Abundance > 0) %>%
@@ -2789,7 +2893,7 @@ compute_transitions_bc <- function(feature_tbl, keep_tbl, analysis_label) {
       ) %>%
       arrange(match(Date, as.character(dates)))
 
-    M <- as.matrix(mat_wide %>% select(-Species_ID, -Date))
+    M <- as.matrix(mat_wide %>% dplyr::select(-Species_ID, -Date))
     rownames(M) <- mat_wide$Date
 
     if (nrow(M) < 2) return(NULL)
@@ -3443,7 +3547,8 @@ gtsave(
   summary_table_gt,
   filename = file.path(outdir, "Final_FunctionalSpecificity_summary_table_portrait.png"),
   vwidth = 1700,
-  vheight = 1100
+  vheight = 1100,
+  zoom = 4
 )
 
 gtsave(
@@ -4549,7 +4654,8 @@ gt::gtsave(
     "BlockD_PGLS_results_portrait.png"
   ),
   vwidth = 1200,
-  vheight = 1500
+  vheight = 1500,
+  zoom = 4
 )
 
 gt::gtsave(
@@ -4559,7 +4665,8 @@ gt::gtsave(
     "BlockD_PIC_results_portrait.png"
   ),
   vwidth = 1200,
-  vheight = 1500
+  vheight = 1500,
+  zoom = 4
 )
 
 ############################################################
@@ -4982,11 +5089,109 @@ ggplot2::ggsave(
   width = 8.2,
   height = 8.2,
   units = "in",
-  dpi = 400,
+  dpi = 600,
   bg = "white",
   limitsize = FALSE
 )
+
+############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 42
+# Separate source-data files by datatype
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# 42 — phylogenetic tree
+# Complete topology, branch lengths and original node labels
+# ============================================================
+
+ape::write.tree(
+  pic_phy,
+  file = file.path(
+    source_dir,
+    "Suppl_Figure_42_tree.nwk"
+  )
+)
+
+
+# ============================================================
+# 42 — tip metadata
+# ============================================================
+
+Suppl_Figure_42_tips <- tip_metadata %>%
+  dplyr::transmute(
+    Species_ID = label,
+    Phylum,
+    Trophic_Group = as.character(TrophicGroup)
+  ) %>%
+  dplyr::arrange(
+    Phylum,
+    Species_ID
+  )
+
+readr::write_csv(
+  Suppl_Figure_42_tips,
+  file.path(
+    source_dir,
+    "Suppl_Figure_42_tips.csv"
+  )
+)
+
+
+# ============================================================
+# 42 — internal-node bootstrap support
+# ============================================================
+
+Suppl_Figure_42_nodes <- node_support %>%
+  dplyr::transmute(
+    Node = node,
+    Ultrafast_Bootstrap = Bootstrap,
+    Bootstrap_Class = stringr::str_replace_all(
+      as.character(Bootstrap_class),
+      "[–—]",
+      "-"
+    )
+  ) %>%
+  dplyr::arrange(Node)
+
+readr::write_csv(
+  Suppl_Figure_42_nodes,
+  file.path(
+    source_dir,
+    "Suppl_Figure_42_nodes.csv"
+  )
+)
+
+
+# ============================================================
+# 42 — phylum clade annotations
+# ============================================================
+
+Suppl_Figure_42_phyla <- phylum_clades %>%
+  dplyr::transmute(
+    Phylum,
+    Clade_Node = node,
+    Number_of_Tips = N_tips,
+    Monophyletic
+  ) %>%
+  dplyr::arrange(Phylum)
+
+readr::write_csv(
+  Suppl_Figure_42_phyla,
+  file.path(
+    source_dir,
+    "Suppl_Figure_42_phyla.csv"
+  )
+)
 ```
+
+
+
 
 
 ```{r}
@@ -5022,7 +5227,7 @@ suppressPackageStartupMessages({
 output_dir <- "BlockE_Within_Phylum_Overview"
 
 training_data_path <- paste0(
-  "../../TrophicIndex/LZ-BITS/",
+  "../../TrophicIndex/",
   "IndicatorSpecies_GenomicProperties.csv"
 )
 
@@ -5362,7 +5567,7 @@ tpf_data <- species_tpf_df %>%
   ) %>%
   dplyr::left_join(
     taxonomy_labels,
-    by = "Species_ID"
+    by = c("Species_ID","Class")
   ) %>%
   dplyr::filter(
     !is.na(Phylum),
@@ -5384,7 +5589,7 @@ variability_data <- species_bc_df %>%
   ) %>%
   dplyr::left_join(
     taxonomy_labels,
-    by = "Species_ID"
+    by = c("Species_ID", "Class")
   ) %>%
   dplyr::filter(
     !is.na(Phylum),
@@ -6457,6 +6662,177 @@ ggplot2::ggsave(
 )
 
 ############################################################
+# SOURCE DATA — SUPPLEMENTARY FIGURE 41
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ============================================================
+# Panel A — trophic-index distributions
+# ============================================================
+
+Suppl_Figure_41a <- distribution_data %>%
+  transmute(
+    Figure_Row = as.character(Figure_Row),
+    Species_ID,
+    Phylum,
+    Class,
+    Order,
+    Family,
+    Species,
+    Highlight = as.character(Highlight),
+    Trophic_Index = TrophicIndex,
+    Oligotroph_Intermediate_Cutoff = oligo_intermediate_cutoff,
+    Intermediate_Copiotroph_Cutoff = intermediate_copio_cutoff
+  ) %>%
+  arrange(
+    Figure_Row,
+    Trophic_Index
+  )
+
+write_csv(
+  Suppl_Figure_41a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_41a.csv"
+  )
+)
+
+
+# ============================================================
+# Panel B — mean transporter proteome fraction
+# Observations + fitted model response + 95% CI
+# ============================================================
+
+Suppl_Figure_41b <- bind_rows(
+
+  # Species observations
+  tpf_data %>%
+    transmute(
+      Data_Type = "Species observation",
+      Figure_Row = as.character(Figure_Row),
+      Species_ID,
+      Phylum,
+      Class,
+      Order,
+      Family,
+      Species,
+      Highlight = as.character(Highlight),
+      Trophic_Index = TrophicIndex,
+      Mean_TPF = mean_TPF,
+      Fitted_Response = NA_real_,
+      CI_Lower = NA_real_,
+      CI_Upper = NA_real_,
+      Oligotroph_Intermediate_Cutoff = oligo_intermediate_cutoff,
+      Intermediate_Copiotroph_Cutoff = intermediate_copio_cutoff
+    ),
+
+  # Model predictions
+  model_predictions %>%
+    filter(Response_Type == "TPF") %>%
+    transmute(
+      Data_Type = "Model fit",
+      Figure_Row = as.character(Figure_Row),
+      Species_ID = NA_character_,
+      Phylum = NA_character_,
+      Class = NA_character_,
+      Order = NA_character_,
+      Family = NA_character_,
+      Species = NA_character_,
+      Highlight = NA_character_,
+      Trophic_Index = TrophicIndex,
+      Mean_TPF = NA_real_,
+      Fitted_Response,
+      CI_Lower,
+      CI_Upper,
+      Oligotroph_Intermediate_Cutoff = oligo_intermediate_cutoff,
+      Intermediate_Copiotroph_Cutoff = intermediate_copio_cutoff
+    )
+) %>%
+  arrange(
+    Figure_Row,
+    Data_Type,
+    Trophic_Index
+  )
+
+write_csv(
+  Suppl_Figure_41b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_41b.csv"
+  )
+)
+
+
+# ============================================================
+# Panel C — mean transporter Bray-Curtis
+# Observations + fitted model response + 95% CI
+# ============================================================
+
+Suppl_Figure_41c <- bind_rows(
+
+  # Species observations
+  variability_data %>%
+    transmute(
+      Data_Type = "Species observation",
+      Figure_Row = as.character(Figure_Row),
+      Species_ID,
+      Phylum,
+      Class,
+      Order,
+      Family,
+      Species,
+      Highlight = as.character(Highlight),
+      Trophic_Index = TrophicIndex,
+      Mean_Bray_Curtis = mean_bc_abs,
+      Fitted_Response = NA_real_,
+      CI_Lower = NA_real_,
+      CI_Upper = NA_real_,
+      Oligotroph_Intermediate_Cutoff = oligo_intermediate_cutoff,
+      Intermediate_Copiotroph_Cutoff = intermediate_copio_cutoff
+    ),
+
+  # Model predictions
+  model_predictions %>%
+    filter(Response_Type == "Bray_Curtis") %>%
+    transmute(
+      Data_Type = "Model fit",
+      Figure_Row = as.character(Figure_Row),
+      Species_ID = NA_character_,
+      Phylum = NA_character_,
+      Class = NA_character_,
+      Order = NA_character_,
+      Family = NA_character_,
+      Species = NA_character_,
+      Highlight = NA_character_,
+      Trophic_Index = TrophicIndex,
+      Mean_Bray_Curtis = NA_real_,
+      Fitted_Response,
+      CI_Lower,
+      CI_Upper,
+      Oligotroph_Intermediate_Cutoff = oligo_intermediate_cutoff,
+      Intermediate_Copiotroph_Cutoff = intermediate_copio_cutoff
+    )
+) %>%
+  arrange(
+    Figure_Row,
+    Data_Type,
+    Trophic_Index
+  )
+
+write_csv(
+  Suppl_Figure_41c,
+  file.path(
+    source_dir,
+    "Suppl_Figure_41c.csv"
+  )
+)
+
+############################################################
 # 13) BUILD A–C MODEL TABLE
 ############################################################
 
@@ -6809,7 +7185,8 @@ gt::gtsave(
     "BlockE_Transporter_model_table.png"
   ),
   vwidth = 3200,
-  vheight = 1750
+  vheight = 1750,
+  zoom = 4
 )
 
 ############################################################
@@ -6835,4 +7212,5 @@ cat(
   sep = ""
 )
 ```
+
 

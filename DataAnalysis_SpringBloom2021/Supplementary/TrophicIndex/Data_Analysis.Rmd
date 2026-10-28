@@ -32,12 +32,12 @@ suppressPackageStartupMessages({
 })
 
 # ---- Working directory ----
-setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TrophicIndex/LZ-BITS/")
+setwd("/SynologyDrive/PhD/Projects/SpringBloom2021/DataAnalysis_SpringBloom2021/Supplementary/TrophicIndex/")
 
 # ---- Load data ----
 train_dat <- read_csv("IndicatorSpecies_GenomicProperties.csv")
 lake_dat  <- read_csv("Species_GenomicProperties_ObservedVsEstimated.csv")
-species_dat <- read_csv("../../../../Data/Species_Data/Final_Data/Species_Table.csv")
+species_dat <- read_csv("../../../Data/Species_Data/Final_Data/Species_Table.csv")
 source(file = "ColorPalette.R")
 
 # ---- Core metadata columns ----
@@ -341,7 +341,92 @@ ggsave(
   dpi = 600,
   bg = "white"
 )
+
+############################################################
+# SUPPLEMENTARY FIGURE 25 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 25A — Genome size vs trophic classification
+# ----------------------------------------------------------
+
+Suppl_Figure_25a <- train_plot %>%
+  transmute(
+    Taxonomy,
+    Classification = as.character(Classification),
+    Genome_Size_Mbp = Genome_Mbp,
+    Size_Class = as.character(Size_Class)
+  )
+
+write_csv(
+  Suppl_Figure_25a,
+  file.path(source_dir, "Suppl_Figure_25a.csv")
+)
+
+
+# ----------------------------------------------------------
+# 25B — Trait correlation matrix
+# ----------------------------------------------------------
+
+Suppl_Figure_25b <- corr_long %>%
+  transmute(
+    Trait_1 = as.character(Trait1),
+    Trait_2 = as.character(Trait2),
+    Pearson_r = r
+  )
+
+write_csv(
+  Suppl_Figure_25b,
+  file.path(source_dir, "Suppl_Figure_25b.csv")
+)
+
+
+# ----------------------------------------------------------
+# 25C — PCA sample scores
+# ----------------------------------------------------------
+
+Suppl_Figure_25c_Scores <- scores %>%
+  transmute(
+    Taxonomy,
+    Classification = as.character(Classification),
+    Size_Class = as.character(Size_Class),
+    PC1,
+    PC2,
+    PC1_Variance_Percent = var_exp[1],
+    PC2_Variance_Percent = var_exp[2]
+  )
+
+write_csv(
+  Suppl_Figure_25c_Scores,
+  file.path(source_dir, "Suppl_Figure_25c_Scores.csv")
+)
+
+
+# ----------------------------------------------------------
+# 25C — PCA loadings
+# ----------------------------------------------------------
+
+Suppl_Figure_25c_Loadings <- loadings %>%
+  transmute(
+    Trait,
+    PC1,
+    PC2
+  )
+
+write_csv(
+  Suppl_Figure_25c_Loadings,
+  file.path(source_dir, "Suppl_Figure_25c_Loadings.csv")
+)
 ```
+
+
+
 
 # Highlight from discrete genome size based cutoff towards continuous trophic axis
 ```{r}
@@ -536,7 +621,1320 @@ ggsave("TrophicIndex_Final_Clean.png", final_fig,
        width = 12, height = 7, dpi = 600)
 
 final_fig
+
+############################################################
+# SUPPLEMENTARY FIGURE 26 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_26 <- train_plot %>%
+  transmute(
+    Taxonomy,
+    Classification = as.character(Classification),
+    Genome_Size_Mbp = GenomeSize_Mbp,
+    Trophic_Index = TrophicIndex
+  )
+
+write_csv(
+  Suppl_Figure_26,
+  file.path(
+    source_dir,
+    "Suppl_Figure_26.csv"
+  )
+)
+
+############################################################
+# SUPPLEMENTARY FIGURE 26 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_26 <- train_plot %>%
+  transmute(
+    Taxonomy,
+    Classification = as.character(Classification),
+    Genome_Size_Mbp = GenomeSize_Mbp,
+    Trophic_Index = TrophicIndex
+  )
+
+write_csv(
+  Suppl_Figure_26,
+  file.path(
+    source_dir,
+    "Suppl_Figure_26.csv"
+  )
+)
 ```
+
+
+
+
+```{r}
+# =============================================================================
+# TROPHIC INDEX ROBUSTNESS
+#
+# Panels:
+#   a) Null distribution of variance explained by PC1
+#   b) Observed vs null variance explained across PCs
+#   c) Robustness after removing GENOME_LENGTH
+#   d) Robustness after removing CODING_DENSITY
+#   e) Robustness after removing GENOME_LENGTH + CODING_DENSITY
+#   f) Stress test with additional redundant biological traits:
+#        - rRNA operon copy number
+#        - signal-transduction gene count
+#
+# Plot:
+#   TrophicIndex_Robustness.png
+#
+# Source data:
+#   Suppl_Figure_27a.csv
+#   Suppl_Figure_27b.csv
+#   Suppl_Figure_27c.csv
+#   Suppl_Figure_27d.csv
+#   Suppl_Figure_27e.csv
+#   Suppl_Figure_27f.csv
+# =============================================================================
+
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(readr)
+
+set.seed(1234)
+
+
+# =============================================================================
+# 1. SETTINGS
+# =============================================================================
+
+n_perm <- 5000
+
+core_traits <- c(
+  "GENOME_LENGTH",
+  "CODING_DENSITY",
+  "TOTAL_TRNA",
+  "NUM_SIGMA"
+)
+
+trophic_cols <- c(
+  Oligotroph   = "#2166AC",
+  Intermediate = "grey65",
+  Copiotroph   = "#B2182B"
+)
+
+
+# =============================================================================
+# 2. IDENTIFY STRESS-TEST TRAITS
+# =============================================================================
+
+rrna_candidates <- names(train_dat)[
+  grepl(
+    "rrna.*operon|operon.*rrna",
+    names(train_dat),
+    ignore.case = TRUE
+  )
+]
+
+signal_candidates <- names(train_dat)[
+  grepl(
+    "signal.*transduction|transduction.*signal",
+    names(train_dat),
+    ignore.case = TRUE
+  )
+]
+
+# fallback searches
+if (length(rrna_candidates) == 0) {
+  rrna_candidates <- names(train_dat)[
+    grepl(
+      "rrna",
+      names(train_dat),
+      ignore.case = TRUE
+    )
+  ]
+}
+
+if (length(signal_candidates) == 0) {
+  signal_candidates <- names(train_dat)[
+    grepl(
+      "signal|transduction",
+      names(train_dat),
+      ignore.case = TRUE
+    )
+  ]
+}
+
+if (length(rrna_candidates) == 0) {
+  stop("Could not identify rRNA operon column.")
+}
+
+if (length(signal_candidates) == 0) {
+  stop("Could not identify signal-transduction column.")
+}
+
+rrna_col <- rrna_candidates[1]
+signal_col <- signal_candidates[1]
+
+cat(
+  "\nStress-test columns:\n",
+  "rRNA operons: ", rrna_col, "\n",
+  "Signal transduction: ", signal_col, "\n\n"
+)
+
+
+# =============================================================================
+# 3. PREPARE TRAINING DATA
+# =============================================================================
+
+train_eval <- train_dat %>%
+  mutate(
+    Classification = case_when(
+
+      Classification %in%
+        c("Oligotroph", "Oligotrophic") ~
+        "Oligotroph",
+
+      Classification %in%
+        c("Mesotroph", "Mesotrophic", "Intermediate") ~
+        "Intermediate",
+
+      Classification %in%
+        c("Copiotroph", "Copiotrophic") ~
+        "Copiotroph",
+
+      TRUE ~ as.character(Classification)
+    )
+  ) %>%
+  filter(
+    Classification %in%
+      c(
+        "Oligotroph",
+        "Intermediate",
+        "Copiotroph"
+      )
+  ) %>%
+  filter(
+    if_all(
+      all_of(core_traits),
+      ~ !is.na(.)
+    )
+  ) %>%
+  mutate(
+    Classification = factor(
+      Classification,
+      levels = c(
+        "Oligotroph",
+        "Intermediate",
+        "Copiotroph"
+      )
+    )
+  )
+
+
+# =============================================================================
+# 4. FULL FOUR-TRAIT PCA
+# =============================================================================
+
+full_matrix <- train_eval %>%
+  select(
+    all_of(core_traits)
+  )
+
+pca_full <- prcomp(
+  full_matrix,
+  center = TRUE,
+  scale. = TRUE
+)
+
+full_scores <- pca_full$x[, 1]
+
+# Orient trophic axis:
+# small genomes = lower trophic index
+# large genomes = higher trophic index
+if (
+  cor(
+    train_eval$GENOME_LENGTH,
+    full_scores,
+    use = "complete.obs"
+  ) < 0
+) {
+
+  full_scores <- -full_scores
+}
+
+train_eval$PC1_full <- full_scores
+
+obs_var <- pca_full$sdev^2 /
+  sum(pca_full$sdev^2)
+
+cat(
+  "Observed PC1 variance:",
+  round(obs_var[1], 3),
+  "\n"
+)
+
+
+# =============================================================================
+# 5. PERMUTATION NULL MODEL
+# =============================================================================
+
+perm_var <- replicate(
+  n_perm,
+  {
+
+    perm_matrix <- full_matrix
+
+    # independently shuffle each trait
+    perm_matrix[] <- lapply(
+      perm_matrix,
+      sample
+    )
+
+    perm_fit <- prcomp(
+      perm_matrix,
+      center = TRUE,
+      scale. = TRUE
+    )
+
+    perm_fit$sdev^2 /
+      sum(perm_fit$sdev^2)
+  }
+)
+
+perm_var <- t(perm_var)
+
+colnames(perm_var) <- paste0(
+  "PC",
+  seq_len(ncol(perm_var))
+)
+
+
+# permutation p-values
+perm_p <- sapply(
+  seq_along(obs_var),
+  function(i) {
+
+    (
+      sum(
+        perm_var[, i] >= obs_var[i]
+      ) + 1
+    ) /
+      (n_perm + 1)
+  }
+)
+
+
+# summary for panel b
+null_summary <- tibble(
+  PC = seq_along(obs_var),
+
+  Observed = obs_var,
+
+  NullMean = apply(
+    perm_var,
+    2,
+    mean
+  ),
+
+  NullLow = apply(
+    perm_var,
+    2,
+    quantile,
+    probs = 0.025
+  ),
+
+  NullHigh = apply(
+    perm_var,
+    2,
+    quantile,
+    probs = 0.975
+  ),
+
+  Permutation_P = perm_p
+)
+
+
+# =============================================================================
+# 6. HELPER FUNCTION FOR REDUCED MODELS
+# =============================================================================
+
+make_reduced_model <- function(
+    traits,
+    model_name
+) {
+
+  fit <- prcomp(
+    train_eval %>%
+      select(
+        all_of(traits)
+      ),
+    center = TRUE,
+    scale. = TRUE
+  )
+
+  alt_scores <- fit$x[, 1]
+
+  # sign-align alternative PC1 with full PC1
+  if (
+    cor(
+      train_eval$PC1_full,
+      alt_scores,
+      use = "complete.obs"
+    ) < 0
+  ) {
+
+    alt_scores <- -alt_scores
+  }
+
+  r_val <- cor(
+    train_eval$PC1_full,
+    alt_scores,
+    use = "complete.obs"
+  )
+
+  pc1_var <- fit$sdev[1]^2 /
+    sum(fit$sdev^2)
+
+  tibble(
+    Species_ID = train_eval$Species_ID,
+    Taxonomy = train_eval$Taxonomy,
+    Classification = train_eval$Classification,
+
+    Model = model_name,
+
+    PC1_full = train_eval$PC1_full,
+    PC1_alt = alt_scores,
+
+    Pearson_r = r_val,
+    PC1_Variance = pc1_var
+  )
+}
+
+
+# =============================================================================
+# 7. PANELS C-E — TRAIT REMOVAL
+# =============================================================================
+
+comp_c <- make_reduced_model(
+
+  c(
+    "CODING_DENSITY",
+    "TOTAL_TRNA",
+    "NUM_SIGMA"
+  ),
+
+  "No GENOME_LENGTH"
+)
+
+
+comp_d <- make_reduced_model(
+
+  c(
+    "GENOME_LENGTH",
+    "TOTAL_TRNA",
+    "NUM_SIGMA"
+  ),
+
+  "No CODING_DENSITY"
+)
+
+
+comp_e <- make_reduced_model(
+
+  c(
+    "TOTAL_TRNA",
+    "NUM_SIGMA"
+  ),
+
+  "No GENOME_LENGTH + no CODING_DENSITY"
+)
+
+
+# =============================================================================
+# 8. PANEL F — CORRECT STRESS TEST
+# =============================================================================
+#
+# Compare:
+#
+# full model:
+#   GENOME_LENGTH
+#   CODING_DENSITY
+#   TOTAL_TRNA
+#   NUM_SIGMA
+#
+# stress model:
+#   all four above +
+#   rRNA operon copy number +
+#   signal-transduction gene count
+#
+# IMPORTANT:
+# Both PCAs use EXACTLY the same genomes.
+# =============================================================================
+
+stress_dat <- train_eval %>%
+  mutate(
+    RRNA_OPERONS =
+      .data[[rrna_col]],
+
+    SIGNAL_TRANSDUCTION =
+      .data[[signal_col]]
+  ) %>%
+  filter(
+    !is.na(RRNA_OPERONS),
+    !is.na(SIGNAL_TRANSDUCTION)
+  )
+
+
+# -----------------------------------------------------------------------------
+# Full 4-trait model on stress-test genomes
+# -----------------------------------------------------------------------------
+
+full_stress_matrix <- stress_dat %>%
+  select(
+    GENOME_LENGTH,
+    CODING_DENSITY,
+    TOTAL_TRNA,
+    NUM_SIGMA
+  )
+
+pca_full_stress <- prcomp(
+  full_stress_matrix,
+  center = TRUE,
+  scale. = TRUE
+)
+
+pc1_full_stress <- pca_full_stress$x[, 1]
+
+
+# orient using genome size
+if (
+  cor(
+    stress_dat$GENOME_LENGTH,
+    pc1_full_stress,
+    use = "complete.obs"
+  ) < 0
+) {
+
+  pc1_full_stress <-
+    -pc1_full_stress
+}
+
+
+# -----------------------------------------------------------------------------
+# 6-trait stress model
+# -----------------------------------------------------------------------------
+
+stress_matrix <- stress_dat %>%
+  select(
+    GENOME_LENGTH,
+    CODING_DENSITY,
+    TOTAL_TRNA,
+    NUM_SIGMA,
+    RRNA_OPERONS,
+    SIGNAL_TRANSDUCTION
+  )
+
+pca_stress <- prcomp(
+  stress_matrix,
+  center = TRUE,
+  scale. = TRUE
+)
+
+pc1_stress <- pca_stress$x[, 1]
+
+
+# sign-align stress PC1
+if (
+  cor(
+    pc1_full_stress,
+    pc1_stress,
+    use = "complete.obs"
+  ) < 0
+) {
+
+  pc1_stress <-
+    -pc1_stress
+}
+
+
+# -----------------------------------------------------------------------------
+# Stress-test statistics
+# -----------------------------------------------------------------------------
+
+stress_r <- cor(
+  pc1_full_stress,
+  pc1_stress,
+  method = "pearson"
+)
+
+stress_var <- pca_stress$sdev[1]^2 /
+  sum(pca_stress$sdev^2)
+
+
+cat(
+  "\nStress-test genomes:",
+  nrow(stress_dat),
+  "\n"
+)
+
+cat(
+  "Stress-test Pearson r:",
+  round(stress_r, 3),
+  "\n"
+)
+
+cat(
+  "Stress-test PC1 variance explained:",
+  round(stress_var, 3),
+  "\n\n"
+)
+
+
+comp_f <- tibble(
+
+  Species_ID =
+    stress_dat$Species_ID,
+
+  Taxonomy =
+    stress_dat$Taxonomy,
+
+  Classification =
+    stress_dat$Classification,
+
+  Model =
+    "Stress + redundant traits",
+
+  PC1_full =
+    pc1_full_stress,
+
+  PC1_alt =
+    pc1_stress,
+
+  Pearson_r =
+    stress_r,
+
+  PC1_Variance =
+    stress_var,
+
+  RRNA_OPERONS =
+    stress_dat$RRNA_OPERONS,
+
+  SIGNAL_TRANSDUCTION =
+    stress_dat$SIGNAL_TRANSDUCTION
+)
+
+
+# =============================================================================
+# 9. REVERSE DISPLAY ORIENTATION
+# =============================================================================
+#
+# Only plotting orientation is changed here.
+# Correlations are unaffected.
+#
+# This gives the desired full-model PC1 direction:
+# approximately -4 -> +2.
+# =============================================================================
+
+comp_c <- comp_c %>%
+  mutate(
+    PC1_full_plot = -PC1_full,
+    PC1_alt_plot  = -PC1_alt
+  )
+
+comp_d <- comp_d %>%
+  mutate(
+    PC1_full_plot = -PC1_full,
+    PC1_alt_plot  = -PC1_alt
+  )
+
+comp_e <- comp_e %>%
+  mutate(
+    PC1_full_plot = -PC1_full,
+    PC1_alt_plot  = -PC1_alt
+  )
+
+comp_f <- comp_f %>%
+  mutate(
+    PC1_full_plot = -PC1_full,
+    PC1_alt_plot  = -PC1_alt
+  )
+
+
+# =============================================================================
+# 10. DETERMINE SAFE AXIS RANGE FROM ALL ACTUAL POINTS
+# =============================================================================
+#
+# NO fixed scale limits are used.
+# Therefore NO observations can be removed by ggplot.
+# =============================================================================
+
+all_pc_values <- c(
+
+  comp_c$PC1_full_plot,
+  comp_c$PC1_alt_plot,
+
+  comp_d$PC1_full_plot,
+  comp_d$PC1_alt_plot,
+
+  comp_e$PC1_full_plot,
+  comp_e$PC1_alt_plot,
+
+  comp_f$PC1_full_plot,
+  comp_f$PC1_alt_plot
+)
+
+pc_range <- range(
+  all_pc_values,
+  na.rm = TRUE
+)
+
+pc_padding <-
+  diff(pc_range) * 0.07
+
+pc_limits <- c(
+  pc_range[1] - pc_padding,
+  pc_range[2] + pc_padding
+)
+
+pc_breaks <- pretty(
+  pc_limits,
+  n = 5
+)
+
+cat(
+  "Plotting range:",
+  round(pc_limits[1], 2),
+  "to",
+  round(pc_limits[2], 2),
+  "\n"
+)
+
+
+# =============================================================================
+# 11. FIGURE THEME
+# =============================================================================
+
+theme_robust <- theme_bw(
+  base_size = 10
+) +
+  theme(
+
+    panel.grid = element_blank(),
+
+    panel.border = element_rect(
+      colour = "grey60",
+      linewidth = 0.4
+    ),
+
+    axis.text = element_text(
+      size = 9,
+      colour = "black"
+    ),
+
+    axis.title = element_text(
+      size = 10,
+      colour = "black"
+    ),
+
+    plot.title = element_text(
+      size = 11,
+      face = "bold",
+      hjust = 0
+    ),
+
+    plot.subtitle = element_text(
+      size = 9,
+      hjust = 0,
+      lineheight = 1.05
+    ),
+
+    legend.position = "none",
+
+    plot.margin = margin(
+      6,
+      6,
+      6,
+      6
+    )
+  )
+
+
+# =============================================================================
+# 12. PANEL A
+# =============================================================================
+
+pc1_p <- perm_p[1]
+
+p_a <- ggplot(
+
+  tibble(
+    Null_PC1 =
+      perm_var[, 1]
+  ),
+
+  aes(
+    x = Null_PC1
+  )
+
+) +
+
+  geom_histogram(
+    bins = 20,
+    fill = "grey80",
+    colour = "grey40",
+    linewidth = 0.35
+  ) +
+
+  geom_vline(
+    xintercept = obs_var[1],
+    colour = "red",
+    linewidth = 0.9
+  ) +
+
+  labs(
+
+    title = "a",
+
+    subtitle = paste0(
+      "Null distribution for PC1\n",
+      "Observed = ",
+      sprintf(
+        "%.3f",
+        obs_var[1]
+      ),
+      " | p ",
+      ifelse(
+        pc1_p < 0.001,
+        "< 0.001",
+        paste0(
+          "= ",
+          sprintf(
+            "%.3f",
+            pc1_p
+          )
+        )
+      )
+    ),
+
+    x =
+      "Variance explained by PC1 (null)",
+
+    y =
+      "Frequency"
+  ) +
+
+  theme_robust
+
+
+# =============================================================================
+# 13. PANEL B
+# =============================================================================
+
+p_b <- ggplot(
+  null_summary,
+  aes(
+    x = PC,
+    y = NullMean
+  )
+) +
+
+  geom_errorbar(
+    aes(
+      ymin = NullLow,
+      ymax = NullHigh
+    ),
+    width = 0,
+    colour = "black",
+    linewidth = 0.55
+  ) +
+
+  geom_point(
+    colour = "black",
+    size = 2.5
+  ) +
+
+  geom_point(
+    aes(
+      y = Observed
+    ),
+    colour = "red",
+    size = 2.8
+  ) +
+
+  scale_x_continuous(
+    breaks = 1:4
+  ) +
+
+  scale_y_continuous(
+    expand = expansion(
+      mult = c(
+        0.03,
+        0.05
+      )
+    )
+  ) +
+
+  labs(
+
+    title = "b",
+
+    subtitle =
+      "Observed vs null variance across PCs\nRed = observed | Black = null mean ± 95% interval",
+
+    x =
+      "Principal component",
+
+    y =
+      "Variance explained"
+  ) +
+
+  theme_robust
+
+
+# =============================================================================
+# 14. HELPER FUNCTION FOR PANELS C-F
+# =============================================================================
+
+make_comparison_plot <- function(
+    df,
+    panel_letter,
+    subtitle_text,
+    y_label
+) {
+
+  r_value <- unique(
+    df$Pearson_r
+  )[1]
+
+  ggplot(
+
+    df,
+
+    aes(
+      x = PC1_full_plot,
+      y = PC1_alt_plot,
+      colour = Classification
+    )
+
+  ) +
+
+    geom_abline(
+      intercept = 0,
+      slope = 1,
+      colour = "black",
+      linewidth = 0.65
+    ) +
+
+    geom_point(
+      size = 2.7,
+      alpha = 0.95
+    ) +
+
+    scale_colour_manual(
+      values = trophic_cols
+    ) +
+
+    scale_x_continuous(
+      breaks = pc_breaks
+    ) +
+
+    scale_y_continuous(
+      breaks = pc_breaks
+    ) +
+
+    # zoom only:
+    # DOES NOT REMOVE DATA
+    coord_cartesian(
+      xlim = pc_limits,
+      ylim = pc_limits,
+      expand = FALSE
+    ) +
+
+    labs(
+
+      title =
+        panel_letter,
+
+      subtitle =
+        paste0(
+          subtitle_text,
+          "\nPearson r = ",
+          sprintf(
+            "%.3f",
+            r_value
+          ),
+          " (sign-aligned)"
+        ),
+
+      x =
+        "PC1 (full curated model)",
+
+      y =
+        y_label
+    ) +
+
+    theme_robust
+}
+
+
+# =============================================================================
+# 15. PANELS C-F
+# =============================================================================
+
+p_c <- make_comparison_plot(
+  comp_c,
+  "c",
+  "No GENOME_LENGTH",
+  "PC1 (no GENOME_LENGTH)"
+)
+
+
+p_d <- make_comparison_plot(
+  comp_d,
+  "d",
+  "No CODING_DENSITY",
+  "PC1 (no CODING_DENSITY)"
+)
+
+
+p_e <- make_comparison_plot(
+  comp_e,
+  "e",
+  "No GENOME_LENGTH + no CODING_DENSITY",
+  "PC1 (no GENOME_LENGTH + no CODING_DENSITY)"
+)
+
+
+p_f <- make_comparison_plot(
+  comp_f,
+  "f",
+  "Stress (+ redundant traits)",
+  "PC1 (stress + redundant traits)"
+)
+
+
+# =============================================================================
+# 16. COMBINE FIGURE
+# =============================================================================
+
+TrophicIndex_Robustness <-
+
+  (p_a | p_b) /
+
+  (p_c | p_d) /
+
+  (p_e | p_f) +
+
+  plot_layout(
+    heights = c(
+      1,
+      1,
+      1
+    )
+  )
+
+
+print(
+  TrophicIndex_Robustness
+)
+
+
+# =============================================================================
+# 17. SAVE FIGURE
+# =============================================================================
+
+ggsave(
+  filename =
+    "TrophicIndex_Robustness.png",
+
+  plot =
+    TrophicIndex_Robustness,
+
+  width =
+    8,
+
+  height =
+    8.3,
+
+  units =
+    "in",
+
+  dpi =
+    600,
+
+  bg =
+    "white"
+)
+
+
+# =============================================================================
+# 18. SUMMARY
+# =============================================================================
+
+robustness_summary <- tibble(
+
+  Model = c(
+    "Full model",
+    "No GENOME_LENGTH",
+    "No CODING_DENSITY",
+    "No GENOME_LENGTH + no CODING_DENSITY",
+    "Stress + redundant traits"
+  ),
+
+  Pearson_r = c(
+    1,
+    unique(comp_c$Pearson_r),
+    unique(comp_d$Pearson_r),
+    unique(comp_e$Pearson_r),
+    stress_r
+  ),
+
+  PC1_Variance_Explained = c(
+    obs_var[1],
+    unique(comp_c$PC1_Variance),
+    unique(comp_d$PC1_Variance),
+    unique(comp_e$PC1_Variance),
+    stress_var
+  )
+)
+
+print(
+  robustness_summary
+)
+
+
+# =============================================================================
+# SOURCE DATA — SUPPLEMENTARY FIGURE 27
+# =============================================================================
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27A
+# Null distribution of PC1 variance
+# =============================================================================
+
+Suppl_Figure_27a <- tibble(
+
+  Permutation =
+    seq_len(n_perm),
+
+  Null_PC1_Variance =
+    perm_var[, 1],
+
+  Observed_PC1_Variance =
+    obs_var[1],
+
+  Permutation_P =
+    perm_p[1]
+)
+
+write_csv(
+  Suppl_Figure_27a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27a.csv"
+  )
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27B
+# Observed vs null variance across PCs
+# =============================================================================
+
+Suppl_Figure_27b <- null_summary %>%
+  transmute(
+
+    PC,
+
+    Observed_Variance =
+      Observed,
+
+    Null_Mean =
+      NullMean,
+
+    Null_95CI_Lower =
+      NullLow,
+
+    Null_95CI_Upper =
+      NullHigh,
+
+    Permutation_P
+  )
+
+write_csv(
+  Suppl_Figure_27b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27b.csv"
+  )
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27C
+# No genome length
+# =============================================================================
+
+Suppl_Figure_27c <- comp_c %>%
+  transmute(
+
+    Species_ID,
+
+    Taxonomy,
+
+    Classification =
+      as.character(Classification),
+
+    PC1_Full_Model =
+      PC1_full_plot,
+
+    PC1_No_Genome_Length =
+      PC1_alt_plot,
+
+    Pearson_r,
+
+    PC1_Variance_Explained =
+      PC1_Variance
+  )
+
+write_csv(
+  Suppl_Figure_27c,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27c.csv"
+  )
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27D
+# No coding density
+# =============================================================================
+
+Suppl_Figure_27d <- comp_d %>%
+  transmute(
+
+    Species_ID,
+
+    Taxonomy,
+
+    Classification =
+      as.character(Classification),
+
+    PC1_Full_Model =
+      PC1_full_plot,
+
+    PC1_No_Coding_Density =
+      PC1_alt_plot,
+
+    Pearson_r,
+
+    PC1_Variance_Explained =
+      PC1_Variance
+  )
+
+write_csv(
+  Suppl_Figure_27d,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27d.csv"
+  )
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27E
+# No genome length + no coding density
+# =============================================================================
+
+Suppl_Figure_27e <- comp_e %>%
+  transmute(
+
+    Species_ID,
+
+    Taxonomy,
+
+    Classification =
+      as.character(Classification),
+
+    PC1_Full_Model =
+      PC1_full_plot,
+
+    PC1_No_Genome_Length_No_Coding_Density =
+      PC1_alt_plot,
+
+    Pearson_r,
+
+    PC1_Variance_Explained =
+      PC1_Variance
+  )
+
+write_csv(
+  Suppl_Figure_27e,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27e.csv"
+  )
+)
+
+
+# =============================================================================
+# SUPPLEMENTARY FIGURE 27F
+# Stress test with rRNA operons + signal-transduction genes
+# =============================================================================
+
+Suppl_Figure_27f <- comp_f %>%
+  transmute(
+
+    Species_ID,
+
+    Taxonomy,
+
+    Classification =
+      as.character(Classification),
+
+    RRNA_Operon_Copy_Number =
+      RRNA_OPERONS,
+
+    Signal_Transduction_Genes =
+      SIGNAL_TRANSDUCTION,
+
+    PC1_Full_Model =
+      PC1_full_plot,
+
+    PC1_Stress_Model =
+      PC1_alt_plot,
+
+    Pearson_r,
+
+    PC1_Variance_Explained =
+      PC1_Variance
+  )
+
+write_csv(
+  Suppl_Figure_27f,
+  file.path(
+    source_dir,
+    "Suppl_Figure_27f.csv"
+  )
+)
+```
+
+
+
 
 # show how LZ-BTIS taxa >80% complete, parasites, cyanobacteria and archea removed were estimated to 100% for trophic index fitting only
 ```{r}
@@ -983,7 +2381,82 @@ print(summary_tbl)
 # Preview figure
 # ------------------------------------------------------------
 final_fig
+
+############################################################
+# SUPPLEMENTARY FIGURE 28 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 28A-C — Observed vs estimated genomic traits
+# ----------------------------------------------------------
+
+Suppl_Figure_28abc <- plot_dat %>%
+  transmute(
+    Species_ID,
+    Phylum,
+    Genus,
+    Completeness,
+    Completeness_Group = as.character(completeness_bin),
+
+    Observed_Genome_Size = GS_obs,
+    Estimated_Genome_Size = GS_est,
+
+    Observed_tRNA_Count = TRNA_obs,
+    Estimated_tRNA_Count = TRNA_est,
+
+    Observed_Sigma_Factors = SIGMA_obs,
+    Estimated_Sigma_Factors = SIGMA_est
+  )
+
+write_csv(
+  Suppl_Figure_28abc,
+  file.path(
+    source_dir,
+    "Suppl_Figure_28abc.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 28D — Taxa changing trophic group after correction
+# ----------------------------------------------------------
+
+Suppl_Figure_28d <- changed_dat %>%
+  transmute(
+    Species_ID,
+    Phylum,
+    Genus,
+    Completeness,
+    Completeness_Group = as.character(completeness_bin),
+
+    Trophic_Index_Observed = TI_obs,
+    Trophic_Index_Estimated = TI_est,
+    Delta_Trophic_Index = delta_TI,
+
+    Group_Observed = Group_obs,
+    Group_Estimated = Group_est,
+
+    Q25_Cutoff = ti_q25,
+    Q75_Cutoff = ti_q75
+  )
+
+write_csv(
+  Suppl_Figure_28d,
+  file.path(
+    source_dir,
+    "Suppl_Figure_28d.csv"
+  )
+)
 ```
+
+
+
 
 # fit the lz-bits estimated to 100% complentess on trophic index axis based on estimated genome traits
 ```{r}
@@ -1260,7 +2733,62 @@ ggsave(
   dpi = 600,
   bg = "white"
 )
+
+############################################################
+# SUPPLEMENTARY FIGURE 29 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 29 — Ranked lake + training taxa
+# ----------------------------------------------------------
+
+Suppl_Figure_29_Points <- combined_rank_df %>%
+  transmute(
+    Rank,
+    Source,
+    Species_ID,
+    Label,
+    Phylum,
+    Classification,
+    Trophic_Index = TrophicIndex
+  )
+
+write_csv(
+  Suppl_Figure_29_Points,
+  file.path(
+    source_dir,
+    "Suppl_Figure_29_Points.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 29 — Training-derived trophic cutoffs
+# ----------------------------------------------------------
+
+Suppl_Figure_29_Cutoffs <- tibble(
+  Cutoff = c("Q25", "Q75"),
+  Trophic_Index = c(
+    ti_q25,
+    ti_q75
+  )
+)
+
+write_csv(
+  Suppl_Figure_29_Cutoffs,
+  file.path(
+    source_dir,
+    "Suppl_Figure_29_Cutoffs.csv"
+  )
+)
 ```
+
 # where did all the species end up according to the phylum ? 
 ```{r}
 # =============================================================================
@@ -1494,6 +3022,9 @@ ggsave(
   bg = "white"
 )
 ```
+
+
+
 
 ```{r}
 # =============================================================================
@@ -1760,6 +3291,34 @@ ggsave(
   units = "in",
   dpi = 600,
   bg = "white"
+)
+
+############################################################
+# SUPPLEMENTARY FIGURE 30 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_30 <- plot_df %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Trophic_Class = as.character(TrophicClass),
+    Retained_MAGs = n,
+    Percentage = pct,
+    Retained_Species = retained_species,
+    Total_Species = total_species,
+    Retained_Total_Label = retain_label
+  )
+
+write_csv(
+  Suppl_Figure_30,
+  file.path(
+    source_dir,
+    "Suppl_Figure_30.csv"
+  )
 )
 ```
 

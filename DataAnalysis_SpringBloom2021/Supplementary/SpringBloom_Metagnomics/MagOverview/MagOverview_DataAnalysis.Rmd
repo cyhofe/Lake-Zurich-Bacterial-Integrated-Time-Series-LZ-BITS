@@ -158,6 +158,31 @@ summary_stats <- dat %>%
   )
 
 summary_stats
+
+############################################################
+# SUPPLEMENTARY FIGURE 15 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_15 <- df %>%
+  transmute(
+    MAG_ID,
+    Completeness,
+    Contamination,
+    Quality = as.character(Quality)
+  )
+
+write_csv(
+  Suppl_Figure_15,
+  file.path(
+    source_dir,
+    "Suppl_Figure_15.csv"
+  )
+)
 ```
 
 

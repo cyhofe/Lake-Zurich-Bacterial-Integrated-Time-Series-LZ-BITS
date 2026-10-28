@@ -261,6 +261,56 @@ ggsave("Plot_Protein_LengthDistribution_In_Database.png",
        height = 21, width = 29.7,
        units  = "cm", dpi = 300)
 
+
+############################################################
+# SUPPLEMENTARY FIGURE 22 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 22A — Peptide length distributions
+# ----------------------------------------------------------
+
+Suppl_Figure_22_Peptides <- PDp %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Peptide_Length,
+    Facet_Label = as.character(Facet_Label)
+  )
+
+write_csv(
+  Suppl_Figure_22_Peptides,
+  file.path(
+    source_dir,
+    "Suppl_Figure_22_Peptides.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 22B — Protein length distributions
+# ----------------------------------------------------------
+
+Suppl_Figure_22_Proteins <- PDpr %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Protein_ID,
+    Protein_Length,
+    Facet_Label = as.character(Facet_Label)
+  )
+
+write_csv(
+  Suppl_Figure_22_Proteins,
+  file.path(
+    source_dir,
+    "Suppl_Figure_22_Proteins.csv"
+  )
+)
 ```
 
 ```{r}
@@ -548,6 +598,62 @@ ggsave(
   height   = 4,
   units    = "in",
   dpi      = 300
+)
+```
+
+```{r}
+############################################################
+# SUPPLEMENTARY FIGURE 23 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+
+# ----------------------------------------------------------
+# 23A — Peptides, proteins and KEGG proteins per species
+# ----------------------------------------------------------
+
+Suppl_Figure_23a <- Protein_Distribution %>%
+  group_by(Phylum, Species_ID) %>%
+  summarise(
+    Proteins = n_distinct(Protein_ID),
+    Peptides = n_distinct(Peptide_ID),
+    KEGG_Classified = n_distinct(
+      KEGG_ID[!is.na(KEGG_ID) & KEGG_ID != "Unclassified"]
+    ),
+    .groups = "drop"
+  )
+
+write_csv(
+  Suppl_Figure_23a,
+  file.path(
+    source_dir,
+    "Suppl_Figure_23a.csv"
+  )
+)
+
+
+# ----------------------------------------------------------
+# 23B — Proteins per species, Top-8 phyla + Rest
+# ----------------------------------------------------------
+
+Suppl_Figure_23b <- species_summary %>%
+  transmute(
+    Phylum = as.character(Phylum),
+    Species_ID,
+    Phylum_Group = as.character(Phylum_Concatenated),
+    Proteins
+  )
+
+write_csv(
+  Suppl_Figure_23b,
+  file.path(
+    source_dir,
+    "Suppl_Figure_23b.csv"
+  )
 )
 ```
 

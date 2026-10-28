@@ -366,3 +366,13 @@ readr::write_excel_csv(
   file.path(source_dir, "Suppl_Figure_3.csv"),
   na = ""
 )
+
+profiles_all %>%
+  distinct(month_lab, date) %>%
+  count(month_lab, name = "n_sampling_dates") %>%
+  print(n = Inf)
+
+profiles_all %>%
+  distinct(parameter, month_lab, date) %>%
+  count(parameter, month_lab, name = "n_sampling_dates") %>%
+  print(n = Inf)

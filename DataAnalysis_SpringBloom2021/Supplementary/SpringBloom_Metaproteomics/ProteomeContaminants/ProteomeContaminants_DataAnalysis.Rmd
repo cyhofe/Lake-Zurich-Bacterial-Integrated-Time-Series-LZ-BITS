@@ -428,6 +428,33 @@ ggsave(
   units = "in",
   dpi = 600
 )
+
+############################################################
+# SUPPLEMENTARY FIGURE 21 — SOURCE DATA
+############################################################
+
+source_dir <- paste0(
+  "C:/SynologyDrive/PhD/Projects/SpringBloom2021/",
+  "DataAnalysis_SpringBloom2021/Source_Data_Supplement"
+)
+
+Suppl_Figure_21 <- cont_summary %>%
+  transmute(
+    Date,
+    Contaminant_Proteins = num_contaminants,
+    Contaminant_Abundance = cont_abundance,
+    Total_Protein_Count = total_protein_count_all,
+    Total_Protein_Abundance = total_protein_abund_all,
+    Contaminant_Signal_Percent = percent_cont_signal
+  )
+
+write_csv(
+  Suppl_Figure_21,
+  file.path(
+    source_dir,
+    "Suppl_Figure_21.csv"
+  )
+)
 ```
 
 
